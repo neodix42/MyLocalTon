@@ -56,12 +56,17 @@ Make sure you have write rights inside the directory.
 Today upgrade is not supported, that means once you have a new version of MyLocalTon.jar just overwrite the existing MyLocalTon.jar and delete myLocalTon directory next to it. The upgrade
 functionality is in the backlog, so it will be implemented in future releases.
 
-## Build instructions
+## Build from sources
 
 ### Common actions for all platforms
 
-* Install IntelliJ IDEA Community Edition
+* Install OpenJDK 11 or higher
+* Install IntelliJ IDEA Community Edition 2019 or higher
+* Install SceneBuilder from https://gluonhq.com/products/scene-builder/
+* Clone this repository and open it in IntelliJ as Maven project.
+* Click Add configuration, select new "Application" type and specify main class "org.ton.main.Main".
+* In Settings - JavaFX specify path to SceneBuilder.
+* Now you can compile and run the application from IntelliJ.
 
-### Windows
-
-TODO
+| :point_up:    | On Windows don't forget to install Microsoft Visual C++ Redistributable installation (see above) |
+|---------------|:------------------------|
