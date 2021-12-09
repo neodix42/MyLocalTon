@@ -1,0 +1,6 @@
+Loading wallet address from /home/alex/Desktop/myLocalTonTemp/myLocalTon/genesis/bin/smartcont/main-wallet.addr
+Source wallet address = -1:0000000000000000000000000000000000000000000000000000000000000000
+Non-bounceable address (for init only): 0f8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANZb
+Bounceable address (for later access): kf8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIue
+Private key available in file /home/alex/Desktop/myLocalTonTemp/myLocalTon/genesis/bin/smartcont/main-wallet.pk
+Corresponding public key is PuYh335vljbReJtBrW/3C/OsC/QVMGlyY/H09ZrNH9NmtD7K = 21DF7E6F9636D1789B41AD6FF70BF3AC0BF41530697263F1F4F59ACD1FD366B4

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<BorderPane fx:id="blockRowBorderPane" onMouseClicked="#blockRowClick" onMouseEntered="#handleMouseEnter" onMouseExited="#handleMouseExit" prefHeight="46.0" prefWidth="1045.0"
+            style="-fx-background-color: dbedff;"
+            stylesheets="@../css/global-font.css" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.BlockController">
+
+    <center>
+        <HBox prefHeight="46.0" prefWidth="1085.0" BorderPane.alignment="CENTER">
+            <VBox prefHeight="46.0" prefWidth="99.0">
+                <Label fx:id="seqno" onMouseClicked="#blockRowSeqnoClick" contentDisplay="BOTTOM" prefHeight="20.0" prefWidth="123.0" style="-fx-alignment: center; -fx-font-size: 14;" text="2132156"
+                       textAlignment="CENTER"/>
+            </VBox>
+            <VBox prefHeight="46.0" prefWidth="99.0">
+                <Label fx:id="wc" prefHeight="20.0" prefWidth="102.0" style="-fx-alignment: center; -fx-font-size: 14;" text="-10" textAlignment="CENTER" textOverrun="CLIP"/>
+            </VBox>
+            <VBox prefHeight="46.0" prefWidth="183.0">
+                <Label fx:id="shard" prefHeight="20.0" prefWidth="218.0" style="-fx-alignment: center; -fx-font-size: 14;" text="8000000000000000"/>
+            </VBox>
+
+            <VBox prefHeight="46.0" prefWidth="160.0">
+                <Label fx:id="createdat" prefHeight="20.0" prefWidth="216.0" style="-fx-alignment: center; -fx-font-size: 11;" text="2021.03.26 15:55:32"/>
+            </VBox>
+            <VBox prefHeight="46.0" prefWidth="438.0">
+                <Label fx:id="filehash" onMouseClicked="#blockRowHashClick" prefHeight="20.0" prefWidth="432.0" style="-fx-font-size: 11;"
+                       text="B34238F49A4EDB9559A5F44E7D567D133C6A0A1BD3555041079F24C2EF67E8D8"/>
+
+                <Label fx:id="roothash" onMouseClicked="#blockRowHashClick" prefHeight="20.0" prefWidth="430.0" style="-fx-font-size: 11;"
+                       text="E247EA02117AC3024B78D834EF7CAD424F0F9D9C3052810863E08FA6020BB34C"/>
+            </VBox>
+        </HBox>
+    </center>
+    <right>
+        <HBox alignment="CENTER_RIGHT" prefHeight="46.0" prefWidth="67.0" style="-fx-padding: 0 25 0 0;" BorderPane.alignment="CENTER">
+            <JFXButton onAction="#blockInfoBtn" prefHeight="30.0" prefWidth="30.0">
+                <graphic>
+                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../images/info.png"/>
+                    </ImageView>
+                </graphic>
+            </JFXButton>
+        </HBox>
+    </right>
+</BorderPane>

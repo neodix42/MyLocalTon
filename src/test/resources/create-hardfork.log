@@ -1,0 +1,83 @@
+[ 1][t 1][2021-04-14 17:18:18.661173622][manager-hardfork.cpp:57][!manager]	running collate query
+[ 2][t 1][2021-04-14 17:18:18.661704215][collator.cpp:217][!collate(-1,8000000000000000):282]	generating a hardfork block
+[ 1][t 4][2021-04-14 17:18:18.714741578][archive-manager.cpp:870][!archive]	checking file /home/alex/Desktop/myLocalTon/node3/db//archive/states/zerostate_0_90E8D9953E90A00E67D26E887F61DD7214DD1C8C797B71DE0193BD7E8E59436B
+[ 1][t 4][2021-04-14 17:18:18.714825477][archive-manager.cpp:870][!archive]	checking file /home/alex/Desktop/myLocalTon/node3/db//archive/states/zerostate_-1_DB089E3CBF61678CFAA458BF1EAC7E754A4C5A2F43660220C44F3C873EE7040B
+[ 3][t 3][2021-04-14 17:18:18.877594620][collator.cpp:1164][!collate(-1,8000000000000000):282]	unpacking most recent masterchain state
+[ 3][t 3][2021-04-14 17:18:18.883732246][collator.cpp:1552][!collate(-1,8000000000000000):282]	start_lt set to 360000000
+[ 3][t 3][2021-04-14 17:18:18.896343396][collator.cpp:1843][!collate(-1,8000000000000000):282]	cleaning outbound queue from messages already imported by neighbors
+[ 3][t 3][2021-04-14 17:18:18.897900077][collator.cpp:1733][!collate(-1,8000000000000000):282]	create tick transactions
+[ 3][t 3][2021-04-14 17:18:18.898882465][transaction.cpp:997][!collate(-1,8000000000000000):282]	steps: 48 gas: used=4914, max=10000000, limit=10000000, credit=0
+[ 3][t 3][2021-04-14 17:18:18.898962664][transaction.cpp:999][!collate(-1,8000000000000000):282]	out_of_gas=false, accepted=true, success=true
+[ 3][t 3][2021-04-14 17:18:18.904739394][transaction.cpp:997][!collate(-1,8000000000000000):282]	steps: 150 gas: used=7517, max=10000000, limit=10000000, credit=0
+[ 3][t 3][2021-04-14 17:18:18.904830793][transaction.cpp:999][!collate(-1,8000000000000000):282]	out_of_gas=false, accepted=true, success=true
+[ 3][t 3][2021-04-14 17:18:18.916364054][collator.cpp:2087][!collate(-1,8000000000000000):282]	creating special transaction to recover 1700000000ng to account 3333333333333333333333333333333333333333333333333333333333333333
+[ 3][t 3][2021-04-14 17:18:18.916770249][transaction.cpp:997][!collate(-1,8000000000000000):282]	steps: 62 gas: used=3004, max=10000000, limit=170000, credit=0
+[ 3][t 3][2021-04-14 17:18:18.916797148][transaction.cpp:999][!collate(-1,8000000000000000):282]	out_of_gas=false, accepted=true, success=true
+[ 3][t 3][2021-04-14 17:18:18.917389541][collator.cpp:1747][!collate(-1,8000000000000000):282]	process inbound internal messages
+[ 3][t 3][2021-04-14 17:18:18.917445441][collator.cpp:1752][!collate(-1,8000000000000000):282]	process inbound external messages
+[ 3][t 3][2021-04-14 17:18:18.917468940][collator.cpp:1758][!collate(-1,8000000000000000):282]	process newly-generated messages
+[ 3][t 3][2021-04-14 17:18:18.917489940][collator.cpp:1769][!collate(-1,8000000000000000):282]	create tock transactions
+[ 3][t 3][2021-04-14 17:18:18.917635738][transaction.cpp:997][!collate(-1,8000000000000000):282]	steps: 48 gas: used=4914, max=10000000, limit=10000000, credit=0
+[ 3][t 3][2021-04-14 17:18:18.917658938][transaction.cpp:999][!collate(-1,8000000000000000):282]	out_of_gas=false, accepted=true, success=true
+[ 3][t 3][2021-04-14 17:18:18.919012122][transaction.cpp:997][!collate(-1,8000000000000000):282]	steps: 46 gas: used=2179, max=10000000, limit=10000000, credit=0
+[ 3][t 3][2021-04-14 17:18:18.919125721][transaction.cpp:999][!collate(-1,8000000000000000):282]	out_of_gas=false, accepted=true, success=true
+[ 3][t 3][2021-04-14 17:18:18.933093953][collator.cpp:1774][!collate(-1,8000000000000000):282]	enqueue newly-generated messages
+[ 3][t 3][2021-04-14 17:18:18.933161053][collator.cpp:3432][!collate(-1,8000000000000000):282]	block load statistics: gas=22528 lt_delta=4 size_estimate=6244
+[ 3][t 3][2021-04-14 17:18:18.933185352][collator.cpp:3438][!collate(-1,8000000000000000):282]	block is underloaded
+[ 3][t 3][2021-04-14 17:18:18.933209752][collator.cpp:3461][!collate(-1,8000000000000000):282]	want_merge set because of underload history ffffffffffffffff
+updated shard configuration to (
+  (hme_root
+    root:(hm_edge
+      label:(hml_same v:0 n:32)
+      node:(hmn_leaf
+        value:^(bt_fork
+          left:(bt_leaf
+            leaf:(shard_descr_new seq_no:267 reg_mc_seqno:279 start_lt:355000000 end_lt:355000001 root_hash:x5B6BDE2A3E4D841DF02E04409E78AB3906705B832263101E364C31C4C3799587 file_hash:xB9C3F42E919962992F96AC014BAC83CC135BA21C4DE952F2DA9120F2E5B8422C before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:4 next_validator_shard:4611686018427387904 min_ref_mc_seqno:277 gen_utime:1618420683
+              split_merge_at:fsm_none
+              (
+                fees_collected:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:500000000))
+                  other:(extra_currencies
+                    dict:hme_empty))
+                funds_created:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:500000000))
+                  other:(extra_currencies
+                    dict:hme_empty)))))
+          right:(bt_leaf
+            leaf:(shard_descr_new seq_no:271 reg_mc_seqno:281 start_lt:358000000 end_lt:358000001 root_hash:x7C4F82AFC676523441FBCA5CBE3A0A401D65DC7281A610B91B77A370C83569FA file_hash:xDD03D6C35A015E475E4B799A96F3EFE8CCF29522EDD1BF3599A00BB724F7998C before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:4 next_validator_shard:13835058055282163712 min_ref_mc_seqno:279 gen_utime:1618420686
+              split_merge_at:fsm_none
+              (
+                fees_collected:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:500000000))
+                  other:(extra_currencies
+                    dict:hme_empty))
+                funds_created:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:500000000))
+                  other:(extra_currencies
+                    dict:hme_empty))))))))))
+[ 3][t 3][2021-04-14 17:18:18.941532351][collator.cpp:3217][!collate(-1,8000000000000000):282]	increased masterchain catchain seqno to 4
+[ 3][t 3][2021-04-14 17:18:18.941583351][collator.cpp:3223][!collate(-1,8000000000000000):282]	masterchain validator set hash changed from 2788896824 to 2788896824
+[ 3][t 3][2021-04-14 17:18:18.941921647][collator.cpp:3266][!collate(-1,8000000000000000):282]	Global balance is (4999990769400000000ng+666666666666.$239+1000000000000.$-17)
+[ 3][t 3][2021-04-14 17:18:18.942034645][collator.cpp:3356][!collate(-1,8000000000000000):282]	updating block creator statistics
+[ 3][t 3][2021-04-14 17:18:18.942076545][collator.cpp:3372][!collate(-1,8000000000000000):282]	scanning for outdated CreatorStats entries
+[ 3][t 3][2021-04-14 17:18:18.946124496][collator.cpp:3398][!collate(-1,8000000000000000):282]	removed 0 stale CreatorStats entries out of 1 scanned
+[ 3][t 3][2021-04-14 17:18:18.946225395][collator.cpp:3304][!collate(-1,8000000000000000):282]	McStateExtra created
+[ 3][t 3][2021-04-14 17:18:18.946538191][collator.cpp:3643][!collate(-1,8000000000000000):282]	creating Merkle update for the ShardState
+[ 3][t 3][2021-04-14 17:18:18.947442880][collator.cpp:3650][!collate(-1,8000000000000000):282]	updating block profile statistics
+[ 3][t 3][2021-04-14 17:18:18.947542879][collator.cpp:3652][!collate(-1,8000000000000000):282]	new ShardState and corresponding Merkle update created
+[ 3][t 3][2021-04-14 17:18:18.947601578][collator.cpp:3805][!collate(-1,8000000000000000):282]	Value flow: (value-flow from_prev_blk:(4999990767700000000ng+666666666666.$239+1000000000000.$-17) to_next_blk:(4999990769400000000ng+666666666666.$239+1000000000000.$-17) imported:0ng exported:0ng fees_collected:1700000000ng fees_imported:0ng recovered:1700000000ng created:1700000000ng minted:0ng)
+[ 3][t 3][2021-04-14 17:18:18.947723776][collator.cpp:3870][!collate(-1,8000000000000000):282]	verifying new Block
+[ 3][t 3][2021-04-14 17:18:18.948560666][collator.cpp:3875][!collate(-1,8000000000000000):282]	new Block created
+[ 3][t 3][2021-04-14 17:18:18.948621966][collator.cpp:3920][!collate(-1,8000000000000000):282]	serializing new Block
+[ 3][t 3][2021-04-14 17:18:18.951337234][collator.cpp:3951][!collate(-1,8000000000000000):282]	serialized block size 7178 bytes (preliminary estimate was 6244), collated data 0 bytes
+[ 3][t 3][2021-04-14 17:18:18.951390633][collator.cpp:3954][!collate(-1,8000000000000000):282]	size regression stats: 7178 57 20979 70 25 3 5
+[ 3][t 3][2021-04-14 17:18:18.951433633][collator.cpp:3964][!collate(-1,8000000000000000):282]	saving new BlockCandidate
+[ 3][t 3][2021-04-14 17:18:18.951508132][collator.cpp:3988][!collate(-1,8000000000000000):282]	sending new BlockCandidate to Promise
+[ 1][t 3][2021-04-14 17:18:18.951533031][manager-hardfork.cpp:49][!collate(-1,8000000000000000):282]	created block [ w=-1 s=9223372036854775808 seq=282 TQdmdTnCgSldW7jUTHngENyc1RiQ8F/VQgR7njaNBfY= S271OG0cIoCUHq+uXRBBOE8ohX2NFTNOtq/Yz/2bV/E= ]
+[ 2][t 3][2021-04-14 17:18:18.951625530][Timer.cpp:81][!collate(-1,8000000000000000):282][&duration > max_duration_]	SLOW: [name:collate][duration:290.0ms]
+[ 1][t 3][2021-04-14 17:18:18.954265699][manager-hardfork.cpp:63][!manager]	success, block [ w=-1 s=9223372036854775808 seq=282 TQdmdTnCgSldW7jUTHngENyc1RiQ8F/VQgR7njaNBfY= S271OG0cIoCUHq+uXRBBOE8ohX2NFTNOtq/Yz/2bV/E= ] = (-1,8000000000000000,282):4D07667539C281295D5BB8D44C79E010DC9CD51890F05FD542047B9E368D05F6:4B6EF5386D1C2280941EAFAE5D1041384F28857D8D15334EB6AFD8CFFD9B57F1 saved to disk
+(-1,8000000000000000,282):4D07667539C281295D5BB8D44C79E010DC9CD51890F05FD542047B9E368D05F6:4B6EF5386D1C2280941EAFAE5D1041384F28857D8D15334EB6AFD8CFFD9B57F1

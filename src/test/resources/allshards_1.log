@@ -1,0 +1,1666 @@
+[ 3][t 1][1586184501.602454901][lite-client.cpp:2096][!testnode]        requesting recent shard configuration
+[ 3][t 1][1586184501.611239195][lite-client.cpp:2113][!testnode]        got shard configuration with respect to block (-1,8000000000000000,3082274):E6F5F397F798415B1E92F25B2B89EEF11B7336D11E13856CDEBF951FD099ECAD:682637528353EFB6C566EAE141524AE802E223CF68C9507A93497B6C09F2E4AA
+shard configuration is (
+  (hme_root
+    root:(hm_edge
+      label:(hml_same v:0 n:32)
+      node:(hmn_leaf
+        value:^(bt_fork
+          left:(bt_fork
+            left:(bt_fork
+              left:(bt_fork
+                left:(bt_fork
+                  left:(bt_fork
+                    left:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4168295 reg_mc_seqno:3082124 start_lt:4793344000000 end_lt:4793344000001 root_hash:xA84C52CF750AFF5C33619F4A71453638BBCB0D308F5FA96306B2187C4FED4D19 file_hash:x1DDE42C69EBA0DEEA93B1374F864F2334B59DAC3ED24D49DD6D5DCBAF0E7B42B before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:144115188075855872 min_ref_mc_seqno:3082122 gen_utime:1586128749
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:62500000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:62500000))
+                            other:(extra_currencies
+                              dict:hme_empty)))))
+                    right:(bt_fork
+                      left:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4168403 reg_mc_seqno:3082212 start_lt:4793551000000 end_lt:4793551000001 root_hash:x09733597116F1CE4385E80878F9CCF229CD8C593759B60823E7B6D6E7AE8A3E1 file_hash:x2821B659BFE4512A742E8795D3EF4067C83404200402F3FF90EE0A8E6E7E954C before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:360287970189639680 min_ref_mc_seqno:3082211 gen_utime:1586136753
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:4 value:39062500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:4 value:39062500))
+                              other:(extra_currencies
+                                dict:hme_empty)))))
+                      right:(bt_fork
+                        left:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4168225 reg_mc_seqno:3082156 start_lt:4793423000000 end_lt:4793423000001 root_hash:x8B5C542B9FD99A75034553E4119C7747E373A40AC71CADC1EFC55FDD47383EA4 file_hash:xB2BC3D0DF2F079D4A2E4C20A0C4ACD89DC504044DCEE3A3D1442C026CB765014 before_split:0 before_merge:0 want_split:1 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:468374361246531584 min_ref_mc_seqno:3082155 gen_utime:1586131501
+                            split_merge_at:(fsm_split split_utime:1586141249 interval:100)
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:4 value:940796460))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:4 value:31250000))
+                                other:(extra_currencies
+                                  dict:hme_empty)))))
+                        right:(bt_fork
+                          left:(bt_fork
+                            left:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4168311 reg_mc_seqno:3082222 start_lt:4793568000000 end_lt:4793568000001 root_hash:x04169126A8DA3D2691F886D5EC792F985F62D0398197D93B8044AA7F18A41E46 file_hash:xA68AC292395E67A21C3C5ED7BF88EE0625CAD5B27DFCAEFCA9BDA2761B503506 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:513410357520236544 min_ref_mc_seqno:3082220 gen_utime:1586140201
+                                split_merge_at:fsm_none
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:976562))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:976562))
+                                    other:(extra_currencies
+                                      dict:hme_empty)))))
+                            right:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4168306 reg_mc_seqno:3082181 start_lt:4793487000000 end_lt:4793487000092 root_hash:x8C15F5A6CB434378EC53924E4E638FE43A37739EFD680AE2303A3BD8CD378999 file_hash:x694D3909FF1EDDA34D2B13C4E068D71B936607009556023490F44235B5C1AE8C before_split:0 before_merge:0 want_split:1 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:531424756029718528 min_ref_mc_seqno:3081982 gen_utime:1586132572
+                                split_merge_at:(fsm_split split_utime:1586141249 interval:100)
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:4 value:533009601))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:976562))
+                                    other:(extra_currencies
+                                      dict:hme_empty))))))
+                          right:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4168232 reg_mc_seqno:3082082 start_lt:4793233000000 end_lt:4793233000001 root_hash:xFE769842989A2EA94BACE5AECE314DE721715EB0AA3D142E139211B32A095BE3 file_hash:x7024F989872C41D4573E0EBC35770F55A54AFD21F3BEEF03C8617E5A5409696C before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:558446353793941504 min_ref_mc_seqno:3082081 gen_utime:1586125895
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:4 value:359246757))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:9765625))
+                                  other:(extra_currencies
+                                    dict:hme_empty)))))))))
+                  right:(bt_fork
+                    left:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4168261 reg_mc_seqno:3082066 start_lt:4793186000000 end_lt:4793186000001 root_hash:xF32FBC184A706BB9FD38573857C2AE3294E661A3F06725503202B61486E0E442 file_hash:xA469DEF3651FE75507509F5DFF20390C72BBCC91F89AFEE0B69CC87AD821C0FA before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:720575940379279360 min_ref_mc_seqno:3082063 gen_utime:1586125204
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:3 value:15625000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:3 value:15625000))
+                            other:(extra_currencies
+                              dict:hme_empty)))))
+                    right:(bt_fork
+                      left:(bt_fork
+                        left:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4168253 reg_mc_seqno:3082222 start_lt:4793568000000 end_lt:4793568000001 root_hash:xFD184D9E53A2538EDB85E1594572D0B51E5356A8AB4FAA620E6CBF21448E1F96 file_hash:x54EAD0EAA1F17E40BE505962025A5A7DDC46EB5AF9F8733A76CB8145BCE4DD5A before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:900719925474099200 min_ref_mc_seqno:3082220 gen_utime:1586140190
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:3906250))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:3906250))
+                                other:(extra_currencies
+                                  dict:hme_empty)))))
+                        right:(bt_fork
+                          left:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4168227 reg_mc_seqno:3082212 start_lt:4793551000000 end_lt:4793551000001 root_hash:x9F27907138BC3D7C324887D277ADC372BC26A72B95B5D7020242F17DD354F28A file_hash:xF6EFC7067867E23198413E6A96D434071C8A487FABE458C05658D285CBDEBDB7 before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:954763121002545152 min_ref_mc_seqno:3082211 gen_utime:1586136785
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:4 value:93469245))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:9765625))
+                                  other:(extra_currencies
+                                    dict:hme_empty)))))
+                          right:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4168245 reg_mc_seqno:3082124 start_lt:4793341000000 end_lt:4793341000208 root_hash:xD9FA8FAEA6DAB1770AFF3A73679950086E9C901187168C211630EA268DFDD942 file_hash:x4FF405ADFD6A5BD4F53470A37A58072C6923A9A1CF91B0B32F8C7814E87FAA3C before_split:1 before_merge:0 want_split:1 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:990791918021509120 min_ref_mc_seqno:3082116 gen_utime:1586128746
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:4 value:582871625))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:1953125))
+                                  other:(extra_currencies
+                                    dict:hme_empty)))))))
+                      right:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4168265 reg_mc_seqno:3082172 start_lt:4793463000000 end_lt:4793463000001 root_hash:xD8D614AC2194F011F16E0F750988157805685CB47C9BEEDD8CDA02ABFC1452AA file_hash:x7B2E44E955EFF97CB1DEE658E483D27702D66F111FD6FF8285DA4A24545C5866 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:1080863910568919040 min_ref_mc_seqno:3082170 gen_utime:1586132142
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:4 value:23437500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:4 value:23437500))
+                              other:(extra_currencies
+                                dict:hme_empty))))))))
+                right:(bt_leaf
+                  leaf:(shard_descr_new seq_no:4168312 reg_mc_seqno:3082208 start_lt:4793539000000 end_lt:4793539000001 root_hash:xDF81A67D72487A368433C47099BB5F497CDD703AB9390B4E3BE718D420B2A465 file_hash:x28EE4A868EECE21514BF88BD302E9567B5B2510510AE35F332FB4225FC93C8F3 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:1729382256910270464 min_ref_mc_seqno:3082206 gen_utime:1586134957
+                    split_merge_at:fsm_none
+                    (
+                      fees_collected:(currencies
+                        grams:(nanograms
+                          amount:(var_uint len:4 value:375000000))
+                        other:(extra_currencies
+                          dict:hme_empty))
+                      funds_created:(currencies
+                        grams:(nanograms
+                          amount:(var_uint len:4 value:375000000))
+                        other:(extra_currencies
+                          dict:hme_empty))))))
+              right:(bt_fork
+                left:(bt_fork
+                  left:(bt_leaf
+                    leaf:(shard_descr_new seq_no:4168222 reg_mc_seqno:3082184 start_lt:4793489000000 end_lt:4793489000001 root_hash:x7B169CE920EADE5E058766CB20D1288F5B69BEA761691A9C53044D36E4B21635 file_hash:x413B454CFE660FCFFF082AB0B806D289788DA20751AD8B551EF7924BB0D8C911 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:2594073385365405696 min_ref_mc_seqno:3082181 gen_utime:1586132631
+                      split_merge_at:fsm_none
+                      (
+                        fees_collected:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:31250000))
+                          other:(extra_currencies
+                            dict:hme_empty))
+                        funds_created:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:31250000))
+                          other:(extra_currencies
+                            dict:hme_empty)))))
+                  right:(bt_fork
+                    left:(bt_fork
+                      left:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4168281 reg_mc_seqno:3082218 start_lt:4793564000000 end_lt:4793564000001 root_hash:x0483E87F989A25246F7BA066DC71DAB36F15242DECF8A7D5B84B5A958816BA09 file_hash:x749AD787C72FC73BC9CECD3333C53DF33679633AC1FFA8EF4D6CA8A2AB9C042C before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:2954361355555045376 min_ref_mc_seqno:3082217 gen_utime:1586139236
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty)))))
+                      right:(bt_fork
+                        left:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4168337 reg_mc_seqno:3082222 start_lt:4793569000000 end_lt:4793569000001 root_hash:x8A38BFDAC449265B6D44EBCF6CDCD39B934D9F1BEB596DF3FF47F3D9DC13108F file_hash:x5A95A353EFAE06B7CEE05A2B0FFE1A0104D30370F68A785DE9BED61A060F28FB before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:3062447746611937280 min_ref_mc_seqno:3082220 gen_utime:1586140201
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:7812500))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:7812500))
+                                other:(extra_currencies
+                                  dict:hme_empty)))))
+                        right:(bt_fork
+                          left:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4168194 reg_mc_seqno:3081937 start_lt:4792879000000 end_lt:4792879000208 root_hash:xAA08AF763F07648B0E2F6C1A79BE197D977BAD0275EEB144A634FC6568353EC4 file_hash:x23C2504112F1E9797DD2EDFF83787A7ED2B359B4B1C1F2267E8F03D9DE526169 before_split:1 before_merge:0 want_split:1 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:3116490942140383232 min_ref_mc_seqno:3081936 gen_utime:1586115282
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:4 value:2290599110))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:7812500))
+                                  other:(extra_currencies
+                                    dict:hme_empty)))))
+                          right:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4168188 reg_mc_seqno:3082215 start_lt:4793557000000 end_lt:4793557000001 root_hash:xA7D5E7E0C689E0FDF8624FFE631DD4B39D058161F25AE68ED94BBAF3445C2D69 file_hash:x26F52477CB4FCAD22CCB378554CC03799FB2672F5F451FEE98A8DC270CBD8F82 before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:3152519739159347200 min_ref_mc_seqno:3082213 gen_utime:1586137751
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:1953125))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:1953125))
+                                  other:(extra_currencies
+                                    dict:hme_empty))))))))
+                    right:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4168229 reg_mc_seqno:3081989 start_lt:4793010000000 end_lt:4793010000001 root_hash:x2014B518ABD3AFE8C9E54A5BE9C2E82AA7DC56724930C90F7C25121763F6CCDB file_hash:x41653A8460F97C0A53D3BB69EB4599B2F32688178F413850266C648B1833ADCD before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:3314649325744685056 min_ref_mc_seqno:3081987 gen_utime:1586117998
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:3 value:15625000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:3 value:15625000))
+                            other:(extra_currencies
+                              dict:hme_empty)))))))
+                right:(bt_leaf
+                  leaf:(shard_descr_new seq_no:4168245 reg_mc_seqno:3082212 start_lt:4793554000000 end_lt:4793554000001 root_hash:x55E0AC783CF13A02C73BB8C6EC2171D0CDF9A88FF43D6F5FDC17D9DAAF950FFB file_hash:x42CE0829226E43DFC35873051832DF71EEBFA037FE88553A65D9B5A49AE44E39 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:4035225266123964416 min_ref_mc_seqno:3082211 gen_utime:1586136739
+                    split_merge_at:fsm_none
+                    (
+                      fees_collected:(currencies
+                        grams:(nanograms
+                          amount:(var_uint len:4 value:500000000))
+                        other:(extra_currencies
+                          dict:hme_empty))
+                      funds_created:(currencies
+                        grams:(nanograms
+                          amount:(var_uint len:4 value:500000000))
+                        other:(extra_currencies
+                          dict:hme_empty)))))))
+            right:(bt_fork
+              left:(bt_fork
+                left:(bt_fork
+                  left:(bt_fork
+                    left:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4164117 reg_mc_seqno:3081812 start_lt:4792704000000 end_lt:4792704000001 root_hash:x5E2681D06624D42BC4019FA82B732F7FF1062CED6A9C639A508277037B5B56B8 file_hash:xE6F04B6BAABF4AACEA0ACAFE3414333D7CD9E850DE0434AFCEAD982718CAC6DD before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:4755801206503243776 min_ref_mc_seqno:3081811 gen_utime:1586064396
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:125000000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:125000000))
+                            other:(extra_currencies
+                              dict:hme_empty)))))
+                    right:(bt_fork
+                      left:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4164163 reg_mc_seqno:3082067 start_lt:4793191000000 end_lt:4793191000001 root_hash:x48A2AFCF63ECA784E9BBB1E93D2897ED9819A942A1365812271647410D670192 file_hash:x1459D716270B3C8423CD51144A293A965536C10DE5EEDBB204F40E3CDE4D23EE before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:4971973988617027584 min_ref_mc_seqno:3082065 gen_utime:1586125243
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:4 value:23437500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:4 value:23437500))
+                              other:(extra_currencies
+                                dict:hme_empty)))))
+                      right:(bt_fork
+                        left:(bt_fork
+                          left:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4164088 reg_mc_seqno:3082112 start_lt:4793311000000 end_lt:4793311000001 root_hash:x6287736D70482DBBE3F459C502A32E8DE11BA028B44E334864667F32508B29D9 file_hash:x61425527AD0B3A5B87D5198A83D68BF86666190FD1814CD36551BC567BCE2047 before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:5062045981164437504 min_ref_mc_seqno:3082109 gen_utime:1586128471
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:4 value:58841957))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:1953125))
+                                  other:(extra_currencies
+                                    dict:hme_empty)))))
+                          right:(bt_fork
+                            left:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4164109 reg_mc_seqno:3082108 start_lt:4793307000000 end_lt:4793307000208 root_hash:x3F79CAF6DDD7D0A7378EEE66B10A5052774EC19134658431AD80505578FCC787 file_hash:xA545D612F17CADDD48D420188CB97B42C52215530D35E087BD6D1D7C2FE26C83 before_split:1 before_merge:0 want_split:1 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:5089067578928660480 min_ref_mc_seqno:3082107 gen_utime:1586128030
+                                split_merge_at:fsm_none
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:4 value:4001710386))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:6835934))
+                                    other:(extra_currencies
+                                      dict:hme_empty)))))
+                            right:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4164110 reg_mc_seqno:3082108 start_lt:4793308000000 end_lt:4793308000001 root_hash:x499862571896666D2E2FDDDEAA7FD14F010B212566B1552DC248AE305EF66F8E file_hash:x059049281A147B8E4016B19AD3CBA0644280277E2DEC6560EF6F77C6568DBE59 before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:5107081977438142464 min_ref_mc_seqno:3082107 gen_utime:1586128106
+                                split_merge_at:fsm_none
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:7812496))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:7812496))
+                                    other:(extra_currencies
+                                      dict:hme_empty)))))))
+                        right:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4164139 reg_mc_seqno:3082212 start_lt:4793554000000 end_lt:4793554000001 root_hash:x18D7124ABD22DE10F1C1C024907A056858AA3A2FE91A6F5A52253B7323D2B567 file_hash:xFCCCD30A46416D302F6B71ED03567DA0FED0AA61E6C7AF6F6FE676C10845B2FA before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:5152117973711847424 min_ref_mc_seqno:3082211 gen_utime:1586136760
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:4 value:31250000))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:4 value:31250000))
+                                other:(extra_currencies
+                                  dict:hme_empty))))))))
+                  right:(bt_leaf
+                    leaf:(shard_descr_new seq_no:4164248 reg_mc_seqno:3082156 start_lt:4793423000000 end_lt:4793423000001 root_hash:x86DCF20A91C6BF9CB854CDB7A2AF6A93BB50CEB5D239CADFAB6740550AEDB693 file_hash:x85B80A75F5A9285C8D307C3965B3DDDFB7993E9FD326D2871CD759D96B1B42E1 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:5476377146882523136 min_ref_mc_seqno:3082155 gen_utime:1586131360
+                      split_merge_at:fsm_none
+                      (
+                        fees_collected:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:250000000))
+                          other:(extra_currencies
+                            dict:hme_empty))
+                        funds_created:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:250000000))
+                          other:(extra_currencies
+                            dict:hme_empty))))))
+                right:(bt_leaf
+                  leaf:(shard_descr_new seq_no:4164341 reg_mc_seqno:3082208 start_lt:4793539000000 end_lt:4793539000001 root_hash:x553424AD5E426B5D5E8A6668FB1730415559A5DC0AF9EDBB5CA3A1163FE5DCF1 file_hash:x4872704D35242F00CEDDFDAF50817AFC891AEA9FA06AD89C11569F370A5FCBD0 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48653 next_validator_shard:6341068275337658368 min_ref_mc_seqno:3082206 gen_utime:1586134949
+                    split_merge_at:fsm_none
+                    (
+                      fees_collected:(currencies
+                        grams:(nanograms
+                          amount:(var_uint len:4 value:250000000))
+                        other:(extra_currencies
+                          dict:hme_empty))
+                      funds_created:(currencies
+                        grams:(nanograms
+                          amount:(var_uint len:4 value:250000000))
+                        other:(extra_currencies
+                          dict:hme_empty))))))
+              right:(bt_fork
+                left:(bt_fork
+                  left:(bt_leaf
+                    leaf:(shard_descr_new seq_no:4164261 reg_mc_seqno:3082197 start_lt:4793513000000 end_lt:4793513000001 root_hash:xD0D48ED2FE1196A53776B9345B3D095975FEDA88268944596C9120C2B6EDC3FF file_hash:x7BE0FBB6E43DC20A67B749CCEAE146E636660358724615DD5AF092EFE204B5EF before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:7205759403792793600 min_ref_mc_seqno:3082195 gen_utime:1586134460
+                      split_merge_at:fsm_none
+                      (
+                        fees_collected:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:93750000))
+                          other:(extra_currencies
+                            dict:hme_empty))
+                        funds_created:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:93750000))
+                          other:(extra_currencies
+                            dict:hme_empty)))))
+                  right:(bt_fork
+                    left:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4164273 reg_mc_seqno:3082212 start_lt:4793554000000 end_lt:4793554000001 root_hash:xA05D04D684C38C10812629221D8032C44E3A90B8874F57D0CDCB31F91A344ED8 file_hash:xE9E75A325F681260494682F4997960690E116C5B8631FFA51328773A42EC4C05 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:7638104968020361216 min_ref_mc_seqno:3082211 gen_utime:1586136761
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:125000000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:125000000))
+                            other:(extra_currencies
+                              dict:hme_empty)))))
+                    right:(bt_fork
+                      left:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4164194 reg_mc_seqno:3082222 start_lt:4793568000000 end_lt:4793568000001 root_hash:x5F4CC0B9E7D0683ED97142BB2E40D8A6172F8AF2E00A370C3B05396EDF53A0C6 file_hash:x0BEBDCCE11DF68271B3FFE774CD9BEC9E93E37EF08C8ABE471E6EC8205D1E656 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:7854277750134145024 min_ref_mc_seqno:3082220 gen_utime:1586140190
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty)))))
+                      right:(bt_fork
+                        left:(bt_fork
+                          left:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4164115 reg_mc_seqno:3082100 start_lt:4793281000000 end_lt:4793281000001 root_hash:x900A8ADB6023695C912C4D64101CDD0A9CEF476F2DD3170EF8FAF7CE59B1D7B9 file_hash:x6D12620525DDB64DBBDCFC5A103342957F51EB5532F911C417FEB11EF23ADB70 before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:7944349742681554944 min_ref_mc_seqno:3082098 gen_utime:1586126925
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:4 value:77656753))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:1953125))
+                                  other:(extra_currencies
+                                    dict:hme_empty)))))
+                          right:(bt_fork
+                            left:(bt_fork
+                              left:(bt_leaf
+                                leaf:(shard_descr_new seq_no:4164202 reg_mc_seqno:3082222 start_lt:4793569000000 end_lt:4793569000001 root_hash:x68A82F6DF6FA4C19A8FE8C127F669BFA4747560CCD73D77AB39B77754B676242 file_hash:xF19BD78B92AC10799857DB906C304137BEE47CFB322BC60DF43C2DB50CD7341F before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:7966867740818407424 min_ref_mc_seqno:3082220 gen_utime:1586140191
+                                  split_merge_at:fsm_none
+                                  (
+                                    fees_collected:(currencies
+                                      grams:(nanograms
+                                        amount:(var_uint len:3 value:488281))
+                                      other:(extra_currencies
+                                        dict:hme_empty))
+                                    funds_created:(currencies
+                                      grams:(nanograms
+                                        amount:(var_uint len:3 value:488281))
+                                      other:(extra_currencies
+                                        dict:hme_empty)))))
+                              right:(bt_fork
+                                left:(bt_leaf
+                                  leaf:(shard_descr_new seq_no:4164151 reg_mc_seqno:3082212 start_lt:4793554000000 end_lt:4793554000001 root_hash:x212100FA9B50A10F8787351AFB498282607C7F0890735C81E66160340F252BE0 file_hash:x3FF71621D5A0B8391B7396D460E26299D5C05FA29760DA7885FC83AE8630A924 before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:7973623140259463168 min_ref_mc_seqno:3082211 gen_utime:1586136692
+                                    split_merge_at:fsm_none
+                                    (
+                                      fees_collected:(currencies
+                                        grams:(nanograms
+                                          amount:(var_uint len:3 value:1953120))
+                                        other:(extra_currencies
+                                          dict:hme_empty))
+                                      funds_created:(currencies
+                                        grams:(nanograms
+                                          amount:(var_uint len:3 value:1953120))
+                                        other:(extra_currencies
+                                          dict:hme_empty)))))
+                                right:(bt_leaf
+                                  leaf:(shard_descr_new seq_no:4164149 reg_mc_seqno:3082204 start_lt:4793524000000 end_lt:4793524000091 root_hash:xD80D4AE1A6B336BAE2AF9059CCF586DE9F684B0CCC6E87A6C9C093FE8A78CE4E file_hash:x9958DDF3E3FF54B185F30D9D77B9869CCE28BB47971943DB351DA99C49170160 before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:7978126739886833664 min_ref_mc_seqno:3081797 gen_utime:1586134715
+                                    split_merge_at:fsm_none
+                                    (
+                                      fees_collected:(currencies
+                                        grams:(nanograms
+                                          amount:(var_uint len:4 value:1596156372))
+                                        other:(extra_currencies
+                                          dict:hme_empty))
+                                      funds_created:(currencies
+                                        grams:(nanograms
+                                          amount:(var_uint len:3 value:732420))
+                                        other:(extra_currencies
+                                          dict:hme_empty)))))))
+                            right:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4164247 reg_mc_seqno:3082208 start_lt:4793539000000 end_lt:4793539000001 root_hash:x0DF49FB7851E421C9974032F72CF57EAE552EA64582483568399B4D77327D7F9 file_hash:x88ED1712E2C375F9817A549EB889F3D2D91A90C659224141BC448E0109D96967 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:7989385738955259904 min_ref_mc_seqno:3082206 gen_utime:1586134948
+                                split_merge_at:fsm_none
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:3906248))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:3906248))
+                                    other:(extra_currencies
+                                      dict:hme_empty)))))))
+                        right:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4164250 reg_mc_seqno:3082224 start_lt:4793573000000 end_lt:4793573000001 root_hash:xA6ACE7D26ACA87939175C4AEFD6A4F2D058258F8A382593760ED6E77ACA89C94 file_hash:x6CD5CDAA18DD25DA1F1CDA19CF6DECEEA590E2C648F42B49FFBD7E346FF409C4 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:8034421735228964864 min_ref_mc_seqno:3082223 gen_utime:1586140790
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:3906250))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:3906250))
+                                other:(extra_currencies
+                                  dict:hme_empty)))))))))
+                right:(bt_fork
+                  left:(bt_fork
+                    left:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4164245 reg_mc_seqno:3082218 start_lt:4793564000000 end_lt:4793564000001 root_hash:x83B3EED952A245D9764D4BB2221DB503AF21046AEBF9874E719E607830D44EB8 file_hash:xD86C651A30E46189E99C38A04311C0209D09E80A88AB49C7F40EA39A22C13C6E before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48641 next_validator_shard:8214565720323784704 min_ref_mc_seqno:3082217 gen_utime:1586139237
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:3 value:15625000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:3 value:15625000))
+                            other:(extra_currencies
+                              dict:hme_empty)))))
+                    right:(bt_fork
+                      left:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4164198 reg_mc_seqno:3082222 start_lt:4793568000000 end_lt:4793568000001 root_hash:x3D6D5A598D54A6C3749E3B70B85B8CFC3FC8064F9E3E76465F0D2AA6BC31F63E file_hash:xD3BAE97C45EEEA2A153F3B2CD0BB36AF4FAF1F1601B4C8CFAE63157C8BBE2171 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48641 next_validator_shard:8430738502437568512 min_ref_mc_seqno:3082220 gen_utime:1586140202
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty)))))
+                      right:(bt_fork
+                        left:(bt_fork
+                          left:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4164202 reg_mc_seqno:3082212 start_lt:4793550000000 end_lt:4793550000001 root_hash:x3A992512DE7DA23AEE34949FC0725111D19AE6274424F48E04799E669C519EFA file_hash:x4938B1ECECE742FB2EF7546C8482DE56A768A1B42836D83AD80412ED81B9A5FA before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48641 next_validator_shard:8520810494984978432 min_ref_mc_seqno:3082211 gen_utime:1586136798
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:7812500))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:7812500))
+                                  other:(extra_currencies
+                                    dict:hme_empty)))))
+                          right:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4164202 reg_mc_seqno:3082108 start_lt:4793306000000 end_lt:4793306000208 root_hash:xF7863EC686205984271D6DB8D7A3A424783C75DE823F7569F9BEB41E2DBCC100 file_hash:x6160899016BE959AC8156AE1A757B4AE4FB2290287C78B30CCFF59252416A12F before_split:1 before_merge:0 want_split:1 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48641 next_validator_shard:8556839292003942400 min_ref_mc_seqno:3082013 gen_utime:1586128028
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:4 value:2865206323))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:11718750))
+                                  other:(extra_currencies
+                                    dict:hme_empty))))))
+                        right:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4164210 reg_mc_seqno:3082208 start_lt:4793539000000 end_lt:4793539000001 root_hash:x36D1D34248E182F41C828A14ED504ED0C61D887ACE55858E3C5094DA36AE66E6 file_hash:x7BD7371A2372EFDFB936D475533F8C15E2BE5B7C145646F4815DCA2C0150253B before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48641 next_validator_shard:8610882487532388352 min_ref_mc_seqno:3082206 gen_utime:1586135002
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:4 value:23437500))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:4 value:23437500))
+                                other:(extra_currencies
+                                  dict:hme_empty))))))))
+                  right:(bt_fork
+                    left:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4164181 reg_mc_seqno:3082215 start_lt:4793559000000 end_lt:4793559000001 root_hash:x97703A433645A50F0C6EA216C219B6683523A49FBB2505327C7E44B4BF3DDE4F file_hash:xDBF33CB44EDBF79027E3F7A972005577CD4B2418246D2CBB78665FB43650BC3C before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:8791026472627208192 min_ref_mc_seqno:3082213 gen_utime:1586137786
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:46875000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:46875000))
+                            other:(extra_currencies
+                              dict:hme_empty)))))
+                    right:(bt_fork
+                      left:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4164178 reg_mc_seqno:3082196 start_lt:4793509000000 end_lt:4793509000001 root_hash:xD3E8B99162B2D9287E3D609EF30D684E3C875785AB5CC5CC1D0B8D982F67D6D2 file_hash:xF813BE938F9FD76A77FC840460233D462B6FE8D4B282A3B61683C260137564EC before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:9007199254740992000 min_ref_mc_seqno:3082193 gen_utime:1586134410
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty)))))
+                      right:(bt_fork
+                        left:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4164266 reg_mc_seqno:3082184 start_lt:4793489000000 end_lt:4793489000001 root_hash:xD5287BD4E64300183028402F7504EC8E9813F2520C95C9C470E6B405C2BB2060 file_hash:xDDF70CB2E84368A0B50D532174F742898CF4F4B482813DA6BCBA5AA8D9E1AF7D before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:9115285645797883904 min_ref_mc_seqno:3082181 gen_utime:1586132657
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:3906250))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:3906250))
+                                other:(extra_currencies
+                                  dict:hme_empty)))))
+                        right:(bt_fork
+                          left:(bt_fork
+                            left:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4164191 reg_mc_seqno:3082179 start_lt:4793480000000 end_lt:4793480000208 root_hash:x5F184C9B64E5EC8B42040DC17B0089EFF067C637278BCA10EAEDF898C4A2C756 file_hash:x62C16B5FA8E8FAACFDCDCA2EC20B4E7F90E159FA80F83ECF22DF95B3B97D105A before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:9160321642071588864 min_ref_mc_seqno:3081807 gen_utime:1586132501
+                                split_merge_at:fsm_none
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:4 value:1715018429))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:2929686))
+                                    other:(extra_currencies
+                                      dict:hme_empty)))))
+                            right:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4164177 reg_mc_seqno:3082222 start_lt:4793568000000 end_lt:4793568000001 root_hash:xF6D28B5BE7B4C0BFA0755CEC98650478C3441845F0BCE670218B2966EF4DA694 file_hash:x4C070CD11B34D6EB6C2EE25C3EFEFAAF20BC614202935D537D24C67D69DB1129 before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:9178336040581070848 min_ref_mc_seqno:3082220 gen_utime:1586140190
+                                split_merge_at:fsm_none
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:976562))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:976562))
+                                    other:(extra_currencies
+                                      dict:hme_empty))))))
+                          right:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4164188 reg_mc_seqno:3082215 start_lt:4793560000000 end_lt:4793560000001 root_hash:xCFDE6DDCD80D212E2BDB5B02DC485E114E3E1F17086CE576E70A4847B7726A4B file_hash:x1807EA294894F2250C9AB2B2DB89C302FDD15FC453A364E708E0EC1C14D70D27 before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48640 next_validator_shard:9205357638345293824 min_ref_mc_seqno:3082213 gen_utime:1586137783
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:7812500))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:7812500))
+                                  other:(extra_currencies
+                                    dict:hme_empty)))))))))))))
+          right:(bt_fork
+            left:(bt_fork
+              left:(bt_leaf
+                leaf:(shard_descr_new seq_no:4167830 reg_mc_seqno:3082215 start_lt:4793559000000 end_lt:4793559000001 root_hash:x1BD02E881CE3C90235996377ECFBB25FEE72992018643D4F0508B978450B68DA file_hash:x6464DFEEE5A4D4E29DFC0812465D643A0F2C1BC96942F53F0ABAFD7900478694 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:10376293541461622784 min_ref_mc_seqno:3082213 gen_utime:1586137788
+                  split_merge_at:fsm_none
+                  (
+                    fees_collected:(currencies
+                      grams:(nanograms
+                        amount:(var_uint len:4 value:375000000))
+                      other:(extra_currencies
+                        dict:hme_empty))
+                    funds_created:(currencies
+                      grams:(nanograms
+                        amount:(var_uint len:4 value:375000000))
+                      other:(extra_currencies
+                        dict:hme_empty)))))
+              right:(bt_fork
+                left:(bt_fork
+                  left:(bt_fork
+                    left:(bt_fork
+                      left:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4167801 reg_mc_seqno:3082204 start_lt:4793523000000 end_lt:4793523000001 root_hash:x38EEDEF4CA3570A73DE827C00E471D60192939216C42791E23A3C2B98231B426 file_hash:x1033786320365928049101133308B91692CD413391C06912A3F0DB0FCFC7B106 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:11601272640106397696 min_ref_mc_seqno:3082201 gen_utime:1586134706
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty)))))
+                      right:(bt_fork
+                        left:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4167875 reg_mc_seqno:3082167 start_lt:4793447000000 end_lt:4793447000001 root_hash:xF81F007F3999FE3AF5B7AD74499AEECB6653B65DEA206211CB46A544516ACC80 file_hash:x8649211478DCD972A8A770990E6C8EB4D3E5B982BEB859AE9CF30ECAAAAE867B before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:11709359031163289600 min_ref_mc_seqno:3082165 gen_utime:1586131998
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:15625000))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:15625000))
+                                other:(extra_currencies
+                                  dict:hme_empty)))))
+                        right:(bt_fork
+                          left:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4167729 reg_mc_seqno:3082162 start_lt:4793429000000 end_lt:4793429000001 root_hash:x650A4703C957F266888E62EAB7BD287CF79984E0B522134552CE7BDED46DD879 file_hash:x8C82A253D4880EBF066693F8269991AE12A278D257930D0D57DE78500D361ECF before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:11763402226691735552 min_ref_mc_seqno:3082159 gen_utime:1586131933
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:4 value:77656753))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:1953125))
+                                  other:(extra_currencies
+                                    dict:hme_empty)))))
+                          right:(bt_fork
+                            left:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4167731 reg_mc_seqno:3082215 start_lt:4793557000000 end_lt:4793557000001 root_hash:xC6AAB49C46762E5B2180001A3A39D64E00B4E3767FF676D3AE97BDE0445B90FA file_hash:x3BD70DC7840EB757EF74221FF356FD1AADAFFF73A977386F420D119EEBEA5131 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:11790423824455958528 min_ref_mc_seqno:3082213 gen_utime:1586137761
+                                split_merge_at:fsm_none
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:4 value:33569122))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:976562))
+                                    other:(extra_currencies
+                                      dict:hme_empty)))))
+                            right:(bt_fork
+                              left:(bt_leaf
+                                leaf:(shard_descr_new seq_no:4167788 reg_mc_seqno:3082212 start_lt:4793554000000 end_lt:4793554000001 root_hash:xFF1F0316C40515E98596421759C6BABC1DB984CB4F0CEE84C45EEF0D8E9302C2 file_hash:x40166D98D6D0196B9AEE1ED282B367C69B024E507FE1EB73CEC5518529709EE1 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:11803934623338070016 min_ref_mc_seqno:3082211 gen_utime:1586136715
+                                  split_merge_at:fsm_none
+                                  (
+                                    fees_collected:(currencies
+                                      grams:(nanograms
+                                        amount:(var_uint len:3 value:3906248))
+                                      other:(extra_currencies
+                                        dict:hme_empty))
+                                    funds_created:(currencies
+                                      grams:(nanograms
+                                        amount:(var_uint len:3 value:3906248))
+                                      other:(extra_currencies
+                                        dict:hme_empty)))))
+                              right:(bt_leaf
+                                leaf:(shard_descr_new seq_no:4167691 reg_mc_seqno:3081937 start_lt:4792880000000 end_lt:4792880000208 root_hash:xFDA9CE849777881ECE1EA55D2E8E10EB7067634B4C2538DCA0F693C5729CAB21 file_hash:xF584CDCEE320561018F55B8F9A19CBF933507CC55CF2DC9C2DEF971755E3CDBA before_split:1 before_merge:0 want_split:1 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:11812941822592811008 min_ref_mc_seqno:3081936 gen_utime:1586115277
+                                  split_merge_at:fsm_none
+                                  (
+                                    fees_collected:(currencies
+                                      grams:(nanograms
+                                        amount:(var_uint len:4 value:2855924041))
+                                      other:(extra_currencies
+                                        dict:hme_empty))
+                                    funds_created:(currencies
+                                      grams:(nanograms
+                                        amount:(var_uint len:3 value:2441405))
+                                      other:(extra_currencies
+                                        dict:hme_empty))))))))))
+                    right:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4167708 reg_mc_seqno:3082113 start_lt:4793313000000 end_lt:4793313000001 root_hash:x586FF3259023B5D5AE73409EA14257DBD68A8C8B4FADF4D9A6BA5FA31243A4EB file_hash:xE1C7DFD9F0499E5AF5D774AF7DB10D3E1BE9747F631403C3D7D60EA207116D85 before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:11961560610296037376 min_ref_mc_seqno:3082111 gen_utime:1586128493
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:31250000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:31250000))
+                            other:(extra_currencies
+                              dict:hme_empty))))))
+                  right:(bt_leaf
+                    leaf:(shard_descr_new seq_no:4167831 reg_mc_seqno:3082056 start_lt:4793175000000 end_lt:4793175000001 root_hash:x66D6C470376D6DD0AA4060BD5D0F89BD57ADA06F4D0FC79448E0B2A4B351E6C9 file_hash:xF21117F7108FC4C05506D6862EBCEB8C9E68D0C84955D3E1B8CBB81982CCD186 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:12393906174523604992 min_ref_mc_seqno:3082054 gen_utime:1586123173
+                      split_merge_at:fsm_none
+                      (
+                        fees_collected:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:187500000))
+                          other:(extra_currencies
+                            dict:hme_empty))
+                        funds_created:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:187500000))
+                          other:(extra_currencies
+                            dict:hme_empty))))))
+                right:(bt_fork
+                  left:(bt_fork
+                    left:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4167737 reg_mc_seqno:3082222 start_lt:4793568000000 end_lt:4793568000001 root_hash:xC191FB6F0257B169ABD8032262C987251CD87DDE743A2F3FF7809EE0D39BB6C4 file_hash:x6C5DD53C681893C085250491D35E6E76A030047023E1A103019E2D5A90F04F9E before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:12826251738751172608 min_ref_mc_seqno:3082220 gen_utime:1586140190
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:3 value:15625000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:3 value:15625000))
+                            other:(extra_currencies
+                              dict:hme_empty)))))
+                    right:(bt_fork
+                      left:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4167765 reg_mc_seqno:3082179 start_lt:4793484000000 end_lt:4793484000001 root_hash:x9186F6680A6242FBFD8F016F57000D1C7339EBA4E5299E4DBCDB28DFBA6E59E8 file_hash:xD2D45008578EFB4DE8CFF18654CA806EB51D44150B80254FAB191359316A996C before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:13042424520864956416 min_ref_mc_seqno:3082177 gen_utime:1586132504
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:4 value:23437500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:4 value:23437500))
+                              other:(extra_currencies
+                                dict:hme_empty)))))
+                      right:(bt_fork
+                        left:(bt_fork
+                          left:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4167734 reg_mc_seqno:3082222 start_lt:4793568000000 end_lt:4793568000001 root_hash:x710EDC6903D927239F904234152D909886220C40C61D553EE511A7FDC548B786 file_hash:xAB727FB538C1927670A4DE9320448876C6FE950DB73A121EE6CC3F05A81BADF3 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:13132496513412366336 min_ref_mc_seqno:3082220 gen_utime:1586140188
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:4 value:77804901))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:1953125))
+                                  other:(extra_currencies
+                                    dict:hme_empty)))))
+                          right:(bt_fork
+                            left:(bt_fork
+                              left:(bt_fork
+                                left:(bt_leaf
+                                  leaf:(shard_descr_new seq_no:4167661 reg_mc_seqno:3081949 start_lt:4792904000000 end_lt:4792904000208 root_hash:xA9008975C4A262480AC2850884415B58DDC9DF8DA3FDB1653324B492F50E69AD file_hash:x927A53CB47817B3A407FE070EA9C08D0BF9EEE73A9DB2E7FDD2A7956979C545C before_split:1 before_merge:0 want_split:1 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:13152762711735533568 min_ref_mc_seqno:3081947 gen_utime:1586116662
+                                    split_merge_at:fsm_none
+                                    (
+                                      fees_collected:(currencies
+                                        grams:(nanograms
+                                          amount:(var_uint len:4 value:570940425))
+                                        other:(extra_currencies
+                                          dict:hme_empty))
+                                      funds_created:(currencies
+                                        grams:(nanograms
+                                          amount:(var_uint len:3 value:244140))
+                                        other:(extra_currencies
+                                          dict:hme_empty)))))
+                                right:(bt_leaf
+                                  leaf:(shard_descr_new seq_no:4167795 reg_mc_seqno:3082095 start_lt:4793273000000 end_lt:4793273000001 root_hash:xEFF432906D74AC58A50F9A440EEF99EE561CC84CF2F533B1EBAE37947D969D94 file_hash:x3D75FFA6C822D0D51EE7B09227A218A713CDE82FC75097536A4502A5262D9DDA before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:13157266311362904064 min_ref_mc_seqno:3082094 gen_utime:1586126264
+                                    split_merge_at:fsm_none
+                                    (
+                                      fees_collected:(currencies
+                                        grams:(nanograms
+                                          amount:(var_uint len:3 value:1953120))
+                                        other:(extra_currencies
+                                          dict:hme_empty))
+                                      funds_created:(currencies
+                                        grams:(nanograms
+                                          amount:(var_uint len:3 value:1953120))
+                                        other:(extra_currencies
+                                          dict:hme_empty))))))
+                              right:(bt_leaf
+                                leaf:(shard_descr_new seq_no:4167741 reg_mc_seqno:3082189 start_lt:4793502000000 end_lt:4793502000001 root_hash:xA030E03510C00F61F665C29E0B980F36D8934CE45217085A9B26682CD73A9292 file_hash:x443620CAD3BCBBE309899042D9C8A68AE79CCB59E65FDF14105CE4F2D43C513E before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:13164021710803959808 min_ref_mc_seqno:3082188 gen_utime:1586133535
+                                  split_merge_at:fsm_none
+                                  (
+                                    fees_collected:(currencies
+                                      grams:(nanograms
+                                        amount:(var_uint len:3 value:488281))
+                                      other:(extra_currencies
+                                        dict:hme_empty))
+                                    funds_created:(currencies
+                                      grams:(nanograms
+                                        amount:(var_uint len:3 value:488281))
+                                      other:(extra_currencies
+                                        dict:hme_empty))))))
+                            right:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4167757 reg_mc_seqno:3082184 start_lt:4793489000000 end_lt:4793489000001 root_hash:x047843554E17D099B988297FB0EF47DC725981905C6288A34CD0DFEF7997CFBE file_hash:x984DB6C653515E331DDA21C24311C76D0FF7A54AAFE1B37D565798409F71C4EE before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:13177532509686071296 min_ref_mc_seqno:3082181 gen_utime:1586132663
+                                split_merge_at:fsm_none
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:976562))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:976562))
+                                    other:(extra_currencies
+                                      dict:hme_empty)))))))
+                        right:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4167718 reg_mc_seqno:3082215 start_lt:4793558000000 end_lt:4793558000001 root_hash:xA04E3771B670631DBF86CC12C06E352013208F284AA3D5D307DF9BE83E2D2A05 file_hash:x165DB8FC92AD6A6434F4EE3DE781178468722302992E2B2C72F4A17E1CCA6F71 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:13222568505959776256 min_ref_mc_seqno:3082213 gen_utime:1586137757
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:7812500))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:7812500))
+                                other:(extra_currencies
+                                  dict:hme_empty))))))))
+                  right:(bt_leaf
+                    leaf:(shard_descr_new seq_no:4167781 reg_mc_seqno:3082204 start_lt:4793524000000 end_lt:4793524000001 root_hash:x9AC581BF442944947D7F7EF4626070F36811FB1ACFCAF28E0C8BE2BB626ABFF9 file_hash:x2AD99D4D3F01484F3817C5B7FE159B85FA0496649FD881A95D80303EA5487279 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48639 next_validator_shard:13546827679130451968 min_ref_mc_seqno:3082202 gen_utime:1586134716
+                      split_merge_at:fsm_none
+                      (
+                        fees_collected:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:62500000))
+                          other:(extra_currencies
+                            dict:hme_empty))
+                        funds_created:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:62500000))
+                          other:(extra_currencies
+                            dict:hme_empty))))))))
+            right:(bt_fork
+              left:(bt_fork
+                left:(bt_fork
+                  left:(bt_fork
+                    left:(bt_fork
+                      left:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4166651 reg_mc_seqno:3082105 start_lt:4793295000000 end_lt:4793295000001 root_hash:x6597D2B0CE2075D29FD46070A1C15B6730C8A43D2C1F6A68F7189BE4DD3D8D98 file_hash:x1B383DADA1668039B948C9D2EE06683E2F27318BBCA59BC152C64A742E9B987E before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:13907115649320091648 min_ref_mc_seqno:3082103 gen_utime:1586127011
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:4 value:31250000))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:4 value:31250000))
+                              other:(extra_currencies
+                                dict:hme_empty)))))
+                      right:(bt_fork
+                        left:(bt_fork
+                          left:(bt_fork
+                            left:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4166623 reg_mc_seqno:3082188 start_lt:4793494000000 end_lt:4793494000001 root_hash:x91604CB89D3DE25E746FE6CF159C82370C7419EBA947D463F837954A3B48B925 file_hash:xE21161880EA424ADD7500EA829313549BC2DF7E73788F78CCA536B588DA1B47C before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:13988180442612760576 min_ref_mc_seqno:3082185 gen_utime:1586133208
+                                split_merge_at:fsm_none
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:4 value:102902386))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:976562))
+                                    other:(extra_currencies
+                                      dict:hme_empty)))))
+                            right:(bt_leaf
+                              leaf:(shard_descr_new seq_no:4166635 reg_mc_seqno:3082222 start_lt:4793569000000 end_lt:4793569000208 root_hash:x07080B783EFB2ED09E8B14056B250FCD1A8E7A1023A832C6C63E663551227595 file_hash:x1C2FEAD9C31CBCAF957EEBF7F194A902F3F9A68B5C15BFB264993A54E610F5AE before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:14006194841122242560 min_ref_mc_seqno:3082220 gen_utime:1586140199
+                                split_merge_at:fsm_none
+                                (
+                                  fees_collected:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:4 value:1143348193))
+                                    other:(extra_currencies
+                                      dict:hme_empty))
+                                  funds_created:(currencies
+                                    grams:(nanograms
+                                      amount:(var_uint len:3 value:1953124))
+                                    other:(extra_currencies
+                                      dict:hme_empty))))))
+                          right:(bt_leaf
+                            leaf:(shard_descr_new seq_no:4166604 reg_mc_seqno:3082197 start_lt:4793510000000 end_lt:4793510000001 root_hash:x753E6C232886DAB6EFB186CC4E68A112C356392F37AAFD55AB257BD7AA53591D file_hash:x0C0240EDCD346BE936D4EB6CCE288CDA1DF7741483FA8DA35807AC00FFDA7EBA before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:14033216438886465536 min_ref_mc_seqno:3082194 gen_utime:1586134433
+                              split_merge_at:fsm_none
+                              (
+                                fees_collected:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:4 value:66101209))
+                                  other:(extra_currencies
+                                    dict:hme_empty))
+                                funds_created:(currencies
+                                  grams:(nanograms
+                                    amount:(var_uint len:3 value:1953125))
+                                  other:(extra_currencies
+                                    dict:hme_empty))))))
+                        right:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4166700 reg_mc_seqno:3082222 start_lt:4793569000000 end_lt:4793569000001 root_hash:x247F2DA65D66987CBB87787A710FDC513A29656FDE54A25D3590947F73A5BCA3 file_hash:x3978F7876F6B5C7AF4C2D3A8DB3CC695482437C3B6200A36CFB8EFDA6F645B60 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:14087259634414911488 min_ref_mc_seqno:3082220 gen_utime:1586140201
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:7812500))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:7812500))
+                                other:(extra_currencies
+                                  dict:hme_empty)))))))
+                    right:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4166672 reg_mc_seqno:3082197 start_lt:4793513000000 end_lt:4793513000001 root_hash:x108B844A5F64D9E3F4124861945C948709D5081167A6F1BE37C1793CCF140750 file_hash:x4ABA7968784E199B5B09AB30D72952CEAEC08B0AD979DFD10BD8AAD3368EC797 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:14267403619509731328 min_ref_mc_seqno:3082195 gen_utime:1586134462
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:46875000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:46875000))
+                            other:(extra_currencies
+                              dict:hme_empty))))))
+                  right:(bt_leaf
+                    leaf:(shard_descr_new seq_no:4166646 reg_mc_seqno:3081812 start_lt:4792703000000 end_lt:4792703000001 root_hash:xECF4CA31786A03FDC054CBFF1FEBC8173517A4F7E21BEDC1462E22B746B0C686 file_hash:xCDA480A75534779AEE4AC5ACBF975389FC686A86F5BFEAD0D9C81A40A89AD7AF before_split:0 before_merge:0 want_split:0 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:14699749183737298944 min_ref_mc_seqno:3081811 gen_utime:1586064139
+                      split_merge_at:fsm_none
+                      (
+                        fees_collected:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:341415440))
+                          other:(extra_currencies
+                            dict:hme_empty))
+                        funds_created:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:218750000))
+                          other:(extra_currencies
+                            dict:hme_empty))))))
+                right:(bt_leaf
+                  leaf:(shard_descr_new seq_no:4166757 reg_mc_seqno:3082215 start_lt:4793558000000 end_lt:4793558000001 root_hash:x7B804325D3684C03098835BA8CD97CBB4DEB1866830BA61FE718892B614FB194 file_hash:x576207C4F3BA4AE490DE4CF46E098A2A45F83B818DCAB2F75DF52EB371B6449A before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:15564440312192434176 min_ref_mc_seqno:3082213 gen_utime:1586137761
+                    split_merge_at:fsm_none
+                    (
+                      fees_collected:(currencies
+                        grams:(nanograms
+                          amount:(var_uint len:4 value:125000000))
+                        other:(extra_currencies
+                          dict:hme_empty))
+                      funds_created:(currencies
+                        grams:(nanograms
+                          amount:(var_uint len:4 value:125000000))
+                        other:(extra_currencies
+                          dict:hme_empty))))))
+              right:(bt_fork
+                left:(bt_fork
+                  left:(bt_fork
+                    left:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4166643 reg_mc_seqno:3082222 start_lt:4793569000000 end_lt:4793569000001 root_hash:x3C975FDF099DB8BC5FAEA449D67C81A86287CF62FEEF4708A381DFE8BD646BB4 file_hash:xA63702E79706E80268DA407A8829AF42032AE5206953FDE39F9BBA1A4D6A6EC4 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48636 next_validator_shard:16285016252571713536 min_ref_mc_seqno:3082220 gen_utime:1586140201
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:31250000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:4 value:31250000))
+                            other:(extra_currencies
+                              dict:hme_empty)))))
+                    right:(bt_fork
+                      left:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4166679 reg_mc_seqno:3082215 start_lt:4793557000000 end_lt:4793557000001 root_hash:xE48BEC509097269DA6AC6A747B3FE781C9443BEB812E4D8C7EAD1F0E1880D51A file_hash:xA4E3F2FFCAA00482A7271DB54CFB2D28F646201D177DD0673C8859E34F34FDE1 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48636 next_validator_shard:16501189034685497344 min_ref_mc_seqno:3082213 gen_utime:1586137786
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty)))))
+                      right:(bt_fork
+                        left:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4166579 reg_mc_seqno:3082172 start_lt:4793458000000 end_lt:4793458000001 root_hash:xC94D97C7B4432B2CEF2C02BC22D649DEDAE4657FD8AE0FF43FEDC7A9F11CF4C4 file_hash:x9C73C0F9251403CF8A6F7FAD14F05C63F20F13E4A784F250735A4127ECEFB7BE before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48636 next_validator_shard:16609275425742389248 min_ref_mc_seqno:3082170 gen_utime:1586132151
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:7812500))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:7812500))
+                                other:(extra_currencies
+                                  dict:hme_empty)))))
+                        right:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4166564 reg_mc_seqno:3081812 start_lt:4792701000000 end_lt:4792701000208 root_hash:x7895C671550CD79E6DE29236BC9DAF15968139C9CA18124F44A02A3BB44B4FAA file_hash:xF33651BF221FF35E0511F7B9C9CF3AC053D83C47907F865A7252BB70F9F4F634 before_split:1 before_merge:0 want_split:1 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48636 next_validator_shard:16681333019780317184 min_ref_mc_seqno:3081811 gen_utime:1586063047
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:4 value:2924123636))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:4 value:19531250))
+                                other:(extra_currencies
+                                  dict:hme_empty))))))))
+                  right:(bt_leaf
+                    leaf:(shard_descr_new seq_no:4166639 reg_mc_seqno:3082184 start_lt:4793489000000 end_lt:4793489000001 root_hash:x9D984EFDD4F30A788FB13F25820A195EED528ED9069525F823812DA9CC5986F7 file_hash:xC7E37E566BC6B72BFE93250F281398C669F54660153F06D72D2A15EB857078B0 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48636 next_validator_shard:17005592192950992896 min_ref_mc_seqno:3082181 gen_utime:1586132658
+                      split_merge_at:fsm_none
+                      (
+                        fees_collected:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:144804420))
+                          other:(extra_currencies
+                            dict:hme_empty))
+                        funds_created:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:31250000))
+                          other:(extra_currencies
+                            dict:hme_empty))))))
+                right:(bt_fork
+                  left:(bt_leaf
+                    leaf:(shard_descr_new seq_no:4166786 reg_mc_seqno:3082137 start_lt:4793373000000 end_lt:4793373000001 root_hash:x5F75832206167CFFD3B22DE89CAE65E7E162FB0B00D9588887E7B7590BED6A30 file_hash:x681F25DB222343253632DEDF780948F4B3E23A81FFFD30E4374C116E65C76C4E before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:17582052945254416384 min_ref_mc_seqno:3082136 gen_utime:1586130112
+                      split_merge_at:fsm_none
+                      (
+                        fees_collected:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:250000000))
+                          other:(extra_currencies
+                            dict:hme_empty))
+                        funds_created:(currencies
+                          grams:(nanograms
+                            amount:(var_uint len:4 value:250000000))
+                          other:(extra_currencies
+                            dict:hme_empty)))))
+                  right:(bt_fork
+                    left:(bt_fork
+                      left:(bt_fork
+                        left:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4166698 reg_mc_seqno:3081974 start_lt:4792975000000 end_lt:4792975000208 root_hash:x9409F081147DE5079DDC3775638F9C123C5CF45CA5E9848B4D0D672AFFE5FA98 file_hash:x2E2620B132D70E0A3EDE108337183F944E46267E05E2FB6BE6853AC7E76D5480 before_split:1 before_merge:0 want_split:1 want_merge:0 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:17906312118425092096 min_ref_mc_seqno:3081971 gen_utime:1586117093
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:4 value:584825043))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:3906250))
+                                other:(extra_currencies
+                                  dict:hme_empty)))))
+                        right:(bt_leaf
+                          leaf:(shard_descr_new seq_no:4166752 reg_mc_seqno:3082172 start_lt:4793462000000 end_lt:4793462000001 root_hash:x6C97C09B8C9953AFECE00DAC54461F0677EEA6B098653DB4782439377D96B0DF file_hash:xBC4E719FD103D863B4112AE4A42A2492587CC89C798F693B99AB3F410B68A55E before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:17978369712463020032 min_ref_mc_seqno:3082170 gen_utime:1586132143
+                            split_merge_at:fsm_none
+                            (
+                              fees_collected:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:11718750))
+                                other:(extra_currencies
+                                  dict:hme_empty))
+                              funds_created:(currencies
+                                grams:(nanograms
+                                  amount:(var_uint len:3 value:11718750))
+                                other:(extra_currencies
+                                  dict:hme_empty))))))
+                      right:(bt_leaf
+                        leaf:(shard_descr_new seq_no:4166858 reg_mc_seqno:3082222 start_lt:4793568000000 end_lt:4793568000001 root_hash:x849002D1B112FC3FCE1F8E2554BA8ADB9140C4BC385E39F3D56960D7E4A950F0 file_hash:x089BF0A5851D87EB88CBE6C58D4C713842890F9869A84D291ECB50E9228C45B5 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:18086456103519911936 min_ref_mc_seqno:3082220 gen_utime:1586140199
+                          split_merge_at:fsm_none
+                          (
+                            fees_collected:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty))
+                            funds_created:(currencies
+                              grams:(nanograms
+                                amount:(var_uint len:3 value:7812500))
+                              other:(extra_currencies
+                                dict:hme_empty))))))
+                    right:(bt_leaf
+                      leaf:(shard_descr_new seq_no:4166761 reg_mc_seqno:3082222 start_lt:4793569000000 end_lt:4793569000001 root_hash:x61B12D0A2E18F1DFD37B8AA1F02E0C251DFA8890488BA7141037707026C1F74A file_hash:x5FBF703A7FDE0E143DB0D956CC92A17CDE9DF543223E38F91C8D53992D2144B9 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:48637 next_validator_shard:18302628885633695744 min_ref_mc_seqno:3082220 gen_utime:1586140201
+                        split_merge_at:fsm_none
+                        (
+                          fees_collected:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:3 value:15625000))
+                            other:(extra_currencies
+                              dict:hme_empty))
+                          funds_created:(currencies
+                            grams:(nanograms
+                              amount:(var_uint len:3 value:15625000))
+                            other:(extra_currencies
+                              dict:hme_empty)))))))))))))))
+x{C_}
+ x{D04_}
+  x{C_}
+   x{C_}
+    x{C_}
+     x{C_}
+      x{C_}
+       x{C_}
+        x{5001FCD33801783C60000022E04C880000000022E04C88000D4262967BA857FAE19B0CFA538A29B1C5DE5869847AFD4B183590C3E27F6A68C8EEF21634F5D06F7549D89BA7C327919A5ACED61F6926A4EEB6AEE5D7873DA158800005EFF8100000000000000001783C52F4533B6A_}
+         x{403B9ACA0201DCD6502_}
+        x{C_}
+         x{5001FCD69801783F20000022E0AF3C8E00000022E0AF3C8E084B99ACB88B78E721C2F4043C7CE67914E6C62C9BACDB0411F3DB6B73D7451F09410DB2CDFF228953A1743CAE9F7A033E41A0210020179FFC8770547373F4AA60800005EFF8280000000000000001783F1AF454358A_}
+          x{402540BE42012A05F22_}
+         x{C_}
+          x{5001FCD10801783D60000022E072338E00000022E072338E0C5AE2A15CFECCD3A81A2A9F208CE3BA3F1B9D205638E56E0F7E2AFEEA39C1F52595E1E86F9783CEA51726105062566C4EE2820226E771D1E8A21601365BB280A1000005EFF8340000000000000001783D5AF453916CBD153082000000C9_}
+           x{438136A2C200EE6B282_}
+          x{C_}
+           x{C_}
+            x{5001FCD3B801783F70000022E0B757C000000022E0B757C00820B4893546D1E9348FC436AF63C97CC2FB1681CC0CBEC9DC022553F8C520F23534561491CAF33D10E1E2F6BDFC4770312E56AD93EFE577E54DED13B0DA81A830800005EFF8390000000000000001783F62F454A14A_}
+             x{30EE6B218773592_}
+            x{5001FCD39001783E28000022E090B80E00000022E090B810E460AFAD365A1A1BC7629C9272731C7F21D1BB9CF7EB40571181D1DEC669BC4CCB4A69C84FF8F6ED1A69589E270346B8DC9B303804AAB011A487A211ADAE0D7461000005EFF83B00000000000000017837F2F453B2E4BD153082000000C9_}
+             x{41FC514C118773592_}
+           x{5001FCD14001783B10000022E0179A3200000022E0179A320FF3B4C214C4D1754A5D672D76718A6F390B8AF58551E8A1709C908D99504ADF1B8127CC4C39620EA2B9F075E1ABB87AAD2A57E90F9DF7781E430BF2D2A04B4B60000005EFF83E0000000000000001783B0AF452E23A_}
+            x{41569ABA51CA817CA_}
+       x{C_}
+        x{5001FCD22801783A90000022E00130E400000022E00130E40F997DE0C253835DCFE9C2B9C2BE157194A7330D1F83392A819015B0A437072215234EF79B28FF3AA83A84FAEFF901C86395DE648FC4D7F705B4E643D6C10E07D0800005EFF8500000000000000001783A7AF452CCA2_}
+         x{3EE6B281F735942_}
+        x{C_}
+         x{C_}
+          x{5001FCD1E801783F70000022E0B757C000000022E0B757C00FE8C26CF29D129C76DC2F0ACA2B9685A8F29AB5455A7D53107365F90A2470FCB2A75687550F8BF205F282CB1012D2D3EEE2375AD7CFC399D3B65C0A2DE726EAD0800005EFF8640000000000000001783F62F454A0F2_}
+           x{33B9ACA19DCD652_}
+          x{C_}
+           x{5001FCD11801783F20000022E0AF3C8E00000022E0AF3C8E0CF93C8389C5E1EBE192443E93BD6E1B95E135395CADAEB81012178BEE9AA79457B77E3833C33F118CC209F354B6A1A038E45243FD5F22C602B2C6942E5EF5EDB8000005EFF86A0000000000000001783F1AF454368A_}
+            x{405923A3D1CA817CA_}
+           x{5001FCD1A801783C60000022E04B19CA00000022E04B19D086CFD47D7536D58BB857F9D39B3CCA804374E4808C38B46108B18751346FEECA127FA02D6FEB52DEA7A9A3851BD2C03963491D4D0E7C8D85997C63C0A743FD51E5000005EFF86E0000000000000001783C22F4533B52_}
+            x{422BDEA4918EE6B2A_}
+         x{5001FCD24801783DE0000022E085465E00000022E085465E0EC6B0A5610CA7808F8B707BA84C40ABC02B42E5A3E4DF76EC66D0155FE0A29553D972274AAF7FCBE58EF732C7241E93B816B37888FEB7FC142ED25122A2E2C330800005EFF8780000000000000001783DD2F453A572_}
+          x{40165A0BC200B2D05E2_}
+      x{5001FCD3C001783F00000022E0A983B600000022E0A983B60EFC0D33EB9243D1B4219E2384CDDAFA4BE6EB81D5C9C85A71DF38C6A10595232947725434776710A8A5FC45E98174AB3DAD9288288571AF9997DA112FE49E4798800005EFF8C00000000000000001783EF2F453FD6A_}
+       x{4165A0BC020B2D05E02_}
+     x{C_}
+      x{C_}
+       x{5001FCD0F001783E40000022E091AC3200000022E091AC320BD8B4E7490756F2F02C3B36590689447ADB4DF53B0B48D4E2982269B72590B1AA09DA2A67F3307E7FF8415585C036944BC46D103A8D6C5AA8F7BC925D86C64888800005EFF9200000000000000001783E2AF453B4BA_}
+        x{401DCD650200EE6B282_}
+       x{C_}
+        x{C_}
+         x{5001FCD2C801783F50000022E0B56F7800000022E0B56F7808241F43FCC4D129237BDD0336E38ED59B78A9216F67C53EADC25AD4AC40B5D04BA4D6BC3E397E39DE4E7669999E29EF99B3CB19D60FFD477A6B6545155CE02160800005EFF9480000000000000001783F4AF4548322_}
+          x{37735941BB9ACA2_}
+         x{C_}
+          x{5001FCD48801783F70000022E0B7D1D200000022E0B7D1D20C51C5FED6224932DB6A275E7B66E69CDC9A6CF8DF5ACB6F9FFA3F9ECEE098847AD4AD1A9F7D7035BE7702D1587FF0D00826981B87B453C2EF4DF6B0D0307947D8800005EFF9540000000000000001783F62F454A14A_}
+           x{37735941BB9ACA2_}
+          x{C_}
+           x{5001FCD01001783688000022DF6ECD4E00000022DF6ECD548550457BB1F83B2458717B60D3CDF0CBECBBDD6813AF758A2531A7E32B41A9F6211E128208978F4BCBEE976FFC1BC3D3F6959ACDA58E0F9133F4781ECEF2930B4D000005EFF95A0000000000000001783682F4519692_}
+            x{48887C4C61BB9ACA2_}
+           x{5001FCCFE001783F38000022E0B218FA00000022E0B218FA0D3EAF3F06344F07EFC3127FF318EEA59CE82C0B0F92D73476CA5DD79A22E16B4937A923BE5A7E56916659BC2AA6601BCCFD93397AFA28FF74C546E13865EC7C10000005EFF95E0000000000000001783F2AF45454BA_}
+            x{31DCD6518EE6B2A_}
+        x{5001FCD12801783828000022DFAD448400000022DFAD44840900A5A8C55E9D7F464F2A52DF4E1741553EE2B3924986487BE12890BB1FB666DA0B29D42307CBE0529E9DDB4F5A2CCD97993440BC7A09C28133632458C19D6E68800005EFF970000000000000000178381AF451EB72_}
+         x{3EE6B281F735942_}
+      x{5001FCD1A801783F20000022E0B0AAC400000022E0B0AAC40AAF0563C1E789D01639DDC637610B8E866FCD447FA1EB7AFEE0BECED57CA87FDA1670414913721EFE1AC39828C196FB8F75FD01BFF442A9D32ECDAD24D72271C8800005EFF9C00000000000000001783F1AF454351A_}
+       x{41DCD650020EE6B2802_}
+    x{C_}
+     x{C_}
+      x{C_}
+       x{C_}
+        x{5001FC50A8017832A0000022DF1B5B0000000022DF1B5B000AF1340E833126A15E200CFD415B997BFF8831676B54E31CD28413B81BDADAB5C737825B5D55FA5567505657F1A0A199EBE6CF4286F021A57E756CC138C65636E8800005F00210000000000000000178329AF44B6062_}
+         x{407735940203B9ACA02_}
+        x{C_}
+         x{5001FC521801783A98000022E003933E00000022E003933E0A45157E7B1F653C274DDD8F49E944BF6CC0CD4A1509B2C09138B23A086B380C90A2CEB8B13859E4211E6A88A25149D4B2A9B6086F2F76DD9027A071E6F2691F70800005F002280000000000000001783A8AF452CDDA_}
+          x{40165A0BC200B2D05E2_}
+         x{C_}
+          x{C_}
+           x{5001FC4FC001783C00000022E03CCBAE00000022E03CCBAE0B143B9B6B82416DDF1FA2CE281519746F08DD0145A2719A432333F99284594ECB0A12A93D6859D2DC3EA8CC541EB45FC33330C87E8C0A669B2A8DE2B3DE710238000005F002320000000000000001783BEAF45332BA_}
+            x{40381DB6518EE6B2A_}
+           x{C_}
+            x{5001FC506801783BE0000022E03AE36600000022E03AE36C81FBCE57B6EEBE8539BC77733588528293BA760C89A32C218D6C0282ABC7E63C3D2A2EB0978BE56EEA46A100C465CBDA162910AA9869AF043DEB68EBE17F13641D000005F002350000000000000001783BDAF45324F2_}
+             x{4EE8541321B4276F2_}
+            x{5001FC507001783BE0000022E03B5D7800000022E03B5D780A4CC312B8C4B33369717EEEF553FE8A780859092B358AA96E12457182F7B37C702C824940D0A3DC7200B58CD69E5D032214013BF16F632B077B7BBE32B46DF2C8000005F002370000000000000001783BDAF4532752_}
+             x{37735901BB9AC82_}
+          x{5001FC515801783F20000022E0B0AAC400000022E0B0AAC408C6B89255E916F0878E0E012483D02B42C551D17F48D37AD29129DB991E95AB3FE6669852320B69817B5B8F681AB3ED07F685530F363D7B7B7F33B608422D97D0800005F0023C0000000000000001783F1AF45435C2_}
+           x{401DCD650200EE6B282_}
+       x{5001FC54C001783D60000022E072338E00000022E072338E0C36E790548E35FCE5C2A66DBD157B549DDA8675AE91CE56FD5B3A02A8576DB49C2DC053AFAD4942E46983E1CB2D9EEEFDBCC9F4FE99369438E6BACECB58DA1708800005F002600000000000000001783D5AF4538D02_}
+        x{40EE6B2802077359402_}
+      x{5001FC57A801783F00000022E0A983B600000022E0A983B60AA9A1256AF2135AEAF4533347D8B9820AAACD2EE057CF6DDAE51D08B1FF2EE78A43938269A921780676EFED7A840BD7E448D754FD0356C4E08AB4F9B852FE5E80800005F06AC00000000000000001783EF2F453FD2A_}
+       x{40EE6B2802077359402_}
+     x{C_}
+      x{C_}
+       x{5001FC552801783EA8000022E09D1DE200000022E09D1DE20E86A47697F08CB529BBB5C9A2D9E84ACBAFF6D441344A22CB64890615B76E1FFBDF07DDB721EE10533DBA4E67570A3731B3301AC39230AEEAD784977F1025AF78800005F003200000000000000001783E9AF453EDE2_}
+        x{4059682F0202CB41782_}
+       x{C_}
+        x{5001FC558801783F20000022E0B0AAC400000022E0B0AAC40D02E826B4261C608409314910EC01962271D485C43A7ABE866E598FC8D1A276C74F3AD192FB4093024A3417A4CBCB0348708B62DC318FFD289943B9D217626028800005F003500000000000000001783F1AF45435CA_}
+         x{407735940203B9ACA02_}
+        x{C_}
+         x{5001FC531001783F70000022E0B757C000000022E0B757C00AFA6605CF3E8341F6CB8A15D97206C530B97C57970051B861D829CB76FA9D06305F5EE6708EFB4138D9FFF3BA66CDF64F49F1BF7846455F238F3764102E8F32B0800005F003680000000000000001783F62F454A0F2_}
+          x{37735941BB9ACA2_}
+         x{C_}
+          x{C_}
+           x{5001FC509801783BA0000022E02E7D9200000022E02E7D920C805456DB011B4AE489626B2080E6E854E77A3B796E98B877C7D7BE72CD8EBDCB689310292EEDB26DDEE7E2D0819A14ABFA8F5AA997C88E20BFF588F791D6DB80000005F003720000000000000001783B92F453026A_}
+            x{404A0F2B118EE6B2A_}
+           x{C_}
+            x{C_}
+             x{5001FC535001783F70000022E0B7D1D200000022E0B7D1D20B45417B6FB7D260CD47F46093FB34DFD23A3AB0666B9EBBD59CDBBBAA5B3B12178CDEBC5C956083CCC2BEDC83618209BDF723E7D9915E306FA1E16DA866B9A0F8800005F003748000000000000001783F62F454A0FA_}
+              x{3077359183B9ACA_}
+             x{C_}
+              x{5001FC51B801783F20000022E0B0AAC400000022E0B0AAC409090807D4DA85087C3C39A8D7DA4C141303E3F844839AE40F330B01A079295F01FFB8B10EAD05C1C8DB9CB6A3071314CEAE02FD14BB06D3C42FE41D7431854920000005F003754000000000000001783F1AF45433A2_}
+               x{31DCD6018EE6B02_}
+              x{5001FC51A801783EE0000022E0A25CA800000022E0A25CAADEC06A570D3599B5D7157C82CE67AC36F4FB42586663743D364E049FF453C67274CAC6EF9F1FFAA58C2F986CEBBDCC34E67145DA3CB8CA1ED9A8ED4CE248B80B00000005F00375C00000000000000178322AF453F5DA_}
+               x{45F2369D418596822_}
+            x{5001FC54B801783F00000022E0A983B600000022E0A983B6086FA4FDBC28F210E4CBA0197B967ABF572A975322C1241AB41CCDA6BB993EBFCC4768B897161BAFCC0BD2A4F5C44F9E96C8D48632C9120A0DE22470084ECB4B38800005F003770000000000000001783EF2F453FD22_}
+             x{33B9AC819DCD642_}
+          x{5001FC54D001783F80000022E0B9BA1A00000022E0B9BA1A0D35673E9356543C9C8BAE2577EB5279682C12C7C51C12C9BB076B73BD6544E4A366AE6D50C6E92ED0F8E6D0CE7B6F67752C87163247A15A4FFDEBF1A37FA04E20800005F0037C0000000000000001783F7AF454B3B2_}
+           x{33B9ACA19DCD652_}
+      x{C_}
+       x{C_}
+        x{5001FC54A801783F50000022E0B56F7800000022E0B56F780C1D9F76CA95122ECBB26A5D9110EDA81D790823575FCC3A738CF303C186A275C6C36328D187230C4F4CE1C502188E0104E84F4054455A4E3FA0751CD11609E370800005F00B900000000000000001783F4AF454832A_}
+         x{3EE6B281F735942_}
+        x{C_}
+         x{5001FC533001783F70000022E0B757C000000022E0B757C009EB6AD2CC6AA5361BA4F1DB85C2DC67E1FE40327CF1F3B232F8695535E18FB1F69DD74BE22F775150A9F9D96685D9B57A7D78F8B00DA6467D7318ABE45DF10B88800005F00BA80000000000000001783F62F454A152_}
+          x{37735941BB9ACA2_}
+         x{C_}
+          x{C_}
+           x{5001FC535001783F20000022E0AEC27C00000022E0AEC27C09D4C92896F3ED11D771A4A4FE0392888E8CD7313A2127A47023CCF334E28CF7D249C58F67673A17D977BAA3642416F2B53B450DA141B6C1D6C020976C0DCD2FD0000005F00BB20000000000000001783F1AF45436F2_}
+            x{37735941BB9ACA2_}
+           x{5001FC535001783BE0000022E03A695400000022E03A695A87BC31F6343102CC2138EB6DC6BD1D2123C1E3AEF411FBAB4FCDF5A0F16DE608030B044C80B5F4ACD640AB570D3ABDA5727D9148143E3C598667FAC92920B5097D000005F00BB600000000000000017838EAF45324E2_}
+            x{4AAC794331D9682F2_}
+          x{5001FC539001783F00000022E0A983B600000022E0A983B609B68E9A12470C17A0E41450A76A82768630EC43D672AC2C71E284A6D1B5733733DEB9B8D11B977EFDC9B6A3AA99FC60AF15F2DBE0A2B237A40AEE51600A8129D8800005F00BBC0000000000000001783EF2F453FED2_}
+           x{40165A0BC200B2D05E2_}
+       x{C_}
+        x{5001FC52A801783F38000022E0B30D1E00000022E0B30D1E0CBB81D219B22D2878637510B610CDB341A91D24FDD9282993E3F225A5F9EEF27EDF99E5A276DFBC813F1FBD4B9002ABBE6A5920C1236965DBC332FDA1B285E1E0800005F003D00000000000000001783F2AF45455D2_}
+         x{402CB417820165A0BC2_}
+        x{C_}
+         x{5001FC529001783EA0000022E09B359A00000022E09B359A0E9F45CC8B1596C943F1EB04F7986B4271E43ABC2D5AE62E60E85C6CC17B3EB697C09DF49C7CFEBB53BFE420230119EA315B7F46A594151DB0B41E13009BAB2760800005F003E80000000000000001783E8AF453EC52_}
+          x{37735941BB9ACA2_}
+         x{C_}
+          x{5001FC555001783E40000022E091AC3200000022E091AC320EA943DEA7321800C18142017BA8276474C09F929064AE4E238735A02E15D90306EFB86597421B4505A86A990BA7BA144C67A7A5A41409ED35E5D2D546CF0D7BE8800005F003F40000000000000001783E2AF453B58A_}
+           x{33B9ACA19DCD652_}
+          x{C_}
+           x{C_}
+            x{5001FC52F801783E18000022E08D619000000022E08D619682F8C264DB272F645A10206E0BD8044F7F833E31B93C5E5087576FC4C625163AB3160B5AFD4747D567EE6E5176105A73FC870ACFD407C1F67916FCAD9DCBE882D0000005F003F9000000000000000178327AF453B0AA_}
+             x{466391ABD1965A0B2_}
+            x{5001FC528801783F70000022E0B757C000000022E0B757C00FB6945ADF3DA605FD03AAE764C32823C61A20C22F85E733810C594B377A6D34A260386688D9A6B75B617712E1F7F7D57905E30A10149AEA9BE92633EB4ED88948000005F003FB0000000000000001783F62F454A0F2_}
+             x{30EE6B218773592_}
+           x{5001FC52E001783F38000022E0B3873000000022E0B387300E7EF36EE6C06909715EDAD816E242F08A71F0F8B843672BB73852423DBB935258C03F514A44A7912864D59596DC4E1817EE8AFE229D1B2738470760E0A6B86938000005F003FE0000000000000001783F2AF45455BA_}
+            x{37735941BB9ACA2_}
+   x{C_}
+    x{C_}
+     x{5001FCC4B001783F38000022E0B30D1E00000022E0B30D1E08DE817440E71E4811ACCB1BBF67DD92FF7394C900C321EA782845CBC2285B46D32326FF772D26A714EFE0409232EB21D07960DE4B4A17A9F855D7EBC8023C34A0800005EFFC800000000000000001783F2AF45455E2_}
+      x{4165A0BC020B2D05E02_}
+     x{C_}
+      x{C_}
+       x{C_}
+        x{C_}
+         x{5001FCC3C801783EE0000022E0A1E29600000022E0A1E29609C776F7A651AB8539EF413E007238EB00C949C90B6213C8F11D1E15CC118DA130819BC31901B2C940248808999845C8B4966A099C8E0348951F86D87E7E3D8830800005EFFD080000000000000001783ECAF453F592_}
+          x{37735941BB9ACA2_}
+         x{C_}
+          x{5001FCC61801783DB8000022E07DA53E00000022E07DA53E0FC0F803F9CCCFF1D7ADBD6BA24CD7765B329DB2EF5103108E5A352A228B566404324908A3C6E6CB95453B84C8736475A69F2DCC15F5C2CD74E7987655557433D8800005EFFD140000000000000001783DAAF453A0F2_}
+           x{3EE6B281F735942_}
+          x{C_}
+           x{5001FCC18801783D90000022E0750FFA00000022E0750FFA0B2852381E4ABF933444731755BDE943E7BCCC2705A9109A2A9673DEF6A36EC3CC6415129EA44075F833349FC134CC8D709513C692BC98686ABEF3C28069B0F678800005EFFD1A0000000000000001783D7AF4539EEA_}
+            x{404A0F2B118EE6B2A_}
+           x{C_}
+            x{5001FCC19801783F38000022E0B218FA00000022E0B218FA0E3555A4E233B172D90C0000D1D1CEB27005A71BB3FFB3B69D74BDEF0222DC87D1DEB86E3C2075BABF7BA110FF9AB7E8D56D7FFB9D4BB9C37A10688CF75F528988800005EFFD1D0000000000000001783F2AF454550A_}
+             x{40200396218773592_}
+            x{C_}
+             x{5001FCC36001783F20000022E0B0AAC400000022E0B0AAC40FF8F818B62028AF4C2CB210BACE35D5E0EDCC265A7867742622F7786C7498161200B36CC6B680CB5CD770F694159B3E34D8127283FF0F5B9E762A8C294B84F708800005EFFD1E8000000000000001783F1AF454345A_}
+              x{33B9AC819DCD642_}
+             x{5001FCC05801783688000022DF6F476000000022DF6F476687ED4E7424BBBC40F670F52AE97470875B833B1A5A6129C6E507B49E2B94E5590FAC266E771902B080C7AADC7CD0CE5FC99A83E62AE796E4E16F7CB8BAAF1E6DD5000005EFFD1F8000000000000001783682F451966A_}
+              x{4AA39F149192A05EA_}
+        x{5001FCC0E001783C08000022E03DBFD200000022E03DBFD20AC37F992C811DAEAD739A04F50A12BEDEB454645A7D6FA6CD35D2FD18921D275F0E3EFECF824CF2D7AEBBA57BED8869F0DF4BA3FB18A01E1EBEB07510388B6C28000005EFFD300000000000000001783BFAF453336A_}
+         x{401DCD650200EE6B282_}
+       x{5001FCC4B801783A40000022DFFBF21E00000022DFFBF21E0B36B62381BB6B6E85520305EAE87C4DEABD6D037A687E3CA2470595259A8F364F9088BFB8847E2602A836B43175E75C64F34686424AAE9F0DC65DC0CC16668C30800005EFFD600000000000000001783A32F4528D2A_}
+        x{40B2D05E02059682F02_}
+      x{C_}
+       x{C_}
+        x{5001FCC1C801783F70000022E0B757C000000022E0B757C00E0C8FDB7812BD8B4D5EC01913164C3928E6C3EEF3A1D179FFBC04F7069CDDB62362EEA9E340C49E042928248E9AF373B5018023811F0D08180CF16AD487827CF0800005EFFD900000000000000001783F62F454A0F2_}
+         x{3EE6B281F735942_}
+        x{C_}
+         x{5001FCC2A801783E18000022E08F49D800000022E08F49D80C8C37B340531217DFEC780B7AB80068E399CF5D27294CF26DE6D946FDD372CF4696A28042BC77DA6F467F8C32A6540375A8EA20A85C012A7D58C89AC98B54CB60800005EFFDA80000000000000001783E0AF453B0C2_}
+          x{40165A0BC200B2D05E2_}
+         x{C_}
+          x{C_}
+           x{5001FCC1B001783F70000022E0B757C000000022E0B757C00B8876E3481EC9391CFC8211A0A96C84C43110620630EAA9F7288D3FEE2A45BC355B93FDA9C60C93B38526F499022443B637F4A86DB9D090F73661F82D40DD6F98800005EFFDB20000000000000001783F62F454A0E2_}
+            x{404A3356518EE6B2A_}
+           x{C_}
+            x{C_}
+             x{C_}
+              x{5001FCBF68017836E8000022DF7AB91000000022DF7AB9168548044BAE2513124056142844220ADAC6EE4EFC6D1FED8B299925A497A8734D6C93D29E5A3C0BD9D203FF038754E04685FCF7739D4ED973FEE953CAB4BCE2A2E5000005EFFDB440000000000000017836DAF451C1B2_}
+               x{42207DC09181DCD62_}
+              x{5001FCC39801783B78000022E02AAD0200000022E02AAD020F7FA194836BA562C5287CD220777CCF72B0E6426797A99D8F5D71BCA3ECB4ECA1EBAFFD36411686A8F73D84913D10C5389E6F417E3A84BA9B52281529316CEED0800005EFFDB4C000000000000001783B72F452EDC2_}
+               x{31DCD6018EE6B02_}
+             x{5001FCC1E801783E68000022E097DF1C00000022E097DF1C0D018701A886007B0FB32E14F05CC079B6C49A672290B842D4D9334166B9D4949221B106569DE5DF184C4C8216CE4534573CE65ACF32FEF8A082E72796A1E289F0800005EFFDB58000000000000001783E62F453D0FA_}
+              x{3077359183B9ACA_}
+            x{5001FCC26801783E40000022E091AC3200000022E091AC320823C21AAA70BE84CDCC414BFD877A3EE392CC0C82E314451A6686FF7BCCBE7DF4C26DB6329A8AF198EED10E12188E3B687FBD2A557F0D9BEAB2BCC204FB8E2770800005EFFDB70000000000000001783E2AF453B5BA_}
+             x{30EE6B218773592_}
+          x{5001FCC13001783F38000022E0B2930C00000022E0B2930C0D0271BB8DB38318EDFC3660960371A90099047942551EAE983EFCDF41F1695028B2EDC7E4956B5321A7A771EF3C08BC2343911814C971596397A50BF0E6537B88800005EFFDBC0000000000000001783F2AF45454EA_}
+           x{37735941BB9ACA2_}
+       x{5001FCC32801783EE0000022E0A25CA800000022E0A25CA80CD62C0DFA214A24A3EBFBF7A31303879B408FD8D67E579470645F15DB1355FFC956CCEA69F80A4279C0BE2DBFF0ACDC2FD024B324FEC40D4AEC0181F52A4393C8800005EFFDE00000000000000001783ED2F453F5E2_}
+        x{403B9ACA0201DCD6502_}
+    x{C_}
+     x{C_}
+      x{C_}
+       x{C_}
+        x{C_}
+         x{5001FC9FD801783BC8000022E0352A8E00000022E0352A8E0B2CBE95867103AE94FEA303850E0ADB39864521E960FB5347B8C4DF26E9EC6CC0D9C1ED6D0B3401CDCA464E97703341F179398C5DE52CDE0A963253A174DCC3F0800005EFEE080000000000000001783BBAF453051A_}
+          x{401DCD650200EE6B282_}
+         x{C_}
+          x{C_}
+           x{C_}
+            x{5001FC9EF801783E60000022E0940E8C00000022E0940E8C0C8B0265C4E9EF12F3A37F3678ACE411B863A0CF5D4A3EA31FC1BCAA51DA45C92F108B0C407521256EBA8075414989AA4DE16FBF39BC47BC66529B5AC46D0DA3E0000005EFEE110000000000000001783E4AF453C6C2_}
+             x{406222A7218773592_}
+            x{5001FC9F5801783F70000022E0B7D1D200000022E0B7D1D88038405BC1F7D97684F458A02B59287E68D473D0811D41963631F331AA8913ACA8E17F56CE18E5E57CABF75FBF8CA548179FCD345AE0ADFD9324C9D2A73087AD70000005EFEE130000000000000001783F62F454A13A_}
+             x{444261BE118EE6B22_}
+           x{5001FC9E6001783EA8000022E09BAFAC00000022E09BAFAC0BA9F361194436D5B77D8C3662734508961AB1C979BD57EAAD592BDEBD529AC8E86012076E69A35F49B6A75B66714466D0EFBBA0A41FD46D1AC03D6007FED3F5D0000005EFEE160000000000000001783E92F453ED0A_}
+            x{403F09FD918EE6B2A_}
+          x{5001FCA16001783F70000022E0B7D1D200000022E0B7D1D20923F96D32EB34C3E5DC3BC3D3887EE289D14B2B7EF2A512E9AC84A3FB9D2DE519CBC7BC3B7B5AE3D7A6169D46D9E634AA4121BE1DB10051B67DC77ED37B22DB00800005EFEE1C0000000000000001783F62F454A14A_}
+           x{37735941BB9ACA2_}
+        x{5001FCA08001783EA8000022E09D1DE200000022E09D1DE208845C2252FB26CF1FA092430CA2E4A4384EA8408B3D378DF1BE0BC9E678A03A8255D3CB43C270CCDAD84D5986B94A967576045856CBCEFE885EC55699B4763CB8800005EFEE300000000000000001783E9AF453EDF2_}
+         x{402CB417820165A0BC2_}
+       x{5001FC9FB0017832A0000022DF1AE0EE00000022DF1AE0EE0F67A6518BC3501FEE02A65FF8FF5E40B9A8BD27BF10DF6E0A317115BA358634366D24053AA9A3BCD772562D65FCBA9C4FE3435437ADFF5686CE40D20544D6BD78000005EFEE60000000000000000178329AF44B585A_}
+        x{41459961020684EE182_}
+      x{5001FCA32801783F38000022E0B2930C00000022E0B2930C0BDC02192E9B4260184C41ADD466CBE5DA6F58C334185D30FF38C4495B0A7D8CA2BB103E279DD2572486F267A3704C51522FC1DC0C6E5597BAEFA9759B8DB224D0800005EFEEC00000000000000001783F2AF454550A_}
+       x{407735940203B9ACA02_}
+     x{C_}
+      x{C_}
+       x{C_}
+        x{5001FC9F9801783F70000022E0B7D1D200000022E0B7D1D209E4BAFEF84CEDC5E2FD75224EB3E40D43143E7B17F77A38451C0EFF45EB235DA531B8173CB837401346D203D4414D7A10195729034A9FEF1CFCDDD0D26B537620800005EFE7100000000000000001783F62F454A14A_}
+         x{401DCD650200EE6B282_}
+        x{C_}
+         x{5001FCA0B801783F38000022E0B218FA00000022E0B218FA0F245F628484B934ED356353A3D9FF3C0E4A21DF5C09726C63F568F870C406A8D5271F97FE550024153938EDAA67D96947B23100E8BBEE8339E442CF1A79A7EF08800005EFE7280000000000000001783F2AF45455D2_}
+          x{37735941BB9ACA2_}
+         x{C_}
+          x{5001FC9D9801783DE0000022E082E40400000022E082E4040E4A6CBE3DA2195967796015E116B24EF6D7232BFEC5707FA1FF6E3D4F88E7A624E39E07C928A01E7C537BFD68A782E31F90789F253C2792839AD2093F677DBDF0800005EFE7340000000000000001783DD2F453A5BA_}
+           x{37735941BB9ACA2_}
+          x{5001FC9D20017832A0000022DF19ECCA00000022DF19ECD083C4AE338AA866BCF36F1491B5E4ED78ACB409CE4E50C0927A250151DDA25A7D5799B28DF910FF9AF0288FBDCE4E79D6029EC1E23C83FC32D39295DB87CFA7B1A5000005EFE73C000000000000000178329AF44B363A_}
+           x{4AE4A95F42009502F92_}
+       x{5001FC9F7801783E40000022E091AC3200000022E091AC320CECC277EEA79853C47D89F92C1050CAF76A9476C834A92FC11C096D4E62CC37BE3F1BF2B35E35B95FF4992879409CC6334FAA3300A9F836B96950AF5C2B83C580800005EFE7600000000000000001783E2AF453B592_}
+        x{408A18A44200EE6B282_}
+      x{C_}
+       x{5001FCA41001783CC8000022E05A5C0A00000022E05A5C0A0AFBAC191030B3E7FE9D916F44E5732F3F0B17D85806CAC4443F3DBAC85F6B518340F92ED9111A1929B196F6FBC04A47A59F11D40FFFE98721BA608B732E3B6270800005EFEFA00000000000000001783CC2F4536602_}
+        x{40EE6B2802077359402_}
+       x{C_}
+        x{C_}
+         x{C_}
+          x{5001FCA150017837B0000022DF9C940E00000022DF9C941484A04F8408A3EF283CEEE1BBAB1C7CE091E2E7A2E52F4C245A686B3957FF2FD4C17131058996B87051F6F08419B8C1FCA2723133F02F17DB5F3429D63F3B6AA405000005EFEFC4000000000000000178379AF451CF2A_}
+           x{422DBB8D319DCD652_}
+          x{5001FCA30001783DE0000022E084CC4C00000022E084CC4C0B64BE04DC64CA9D7F67006D62A230F833BF753584C329EDA3C121C9BBECB586FDE2738CFE881EC31DA089572521512492C3E644E3CC7B49DCCD59FA085B452AF0800005EFEFCC0000000000000001783DD2F453A57A_}
+           x{3B2D05E1D9682F2_}
+         x{5001FCA65001783F70000022E0B757C000000022E0B757C00C2480168D8897E1FE70FC712AA5D456DC8A0625E1C2F1CF9EAB4B06BF254A878044DF852C28EC3F5C465F362C6A6389C214487CC34D426948F65A874914622DA8800005EFEFD80000000000000001783F62F454A13A_}
+          x{37735941BB9ACA2_}
+        x{5001FCA34801783F70000022E0B7D1D200000022E0B7D1D20B0D89685170C78EFE9BDC550F81706128EFD44482445D38A081BB8381360FBA52FDFB81D3FEF070A1ED86CAB664950BE6F4EFAA1911F1C7C8E46A9CC9690A25C8800005EFEFF00000000000000001783F62F454A14A_}
+         x{3EE6B281F735942_}
+shard #1 : (0,0200000000000000,4168295):A84C52CF750AFF5C33619F4A71453638BBCB0D308F5FA96306B2187C4FED4D19:1DDE42C69EBA0DEEA93B1374F864F2334B59DAC3ED24D49DD6D5DCBAF0E7B42B @ 1586128749 lt 4793344000000 .. 4793344000001
+shard #2 : (0,0500000000000000,4168403):09733597116F1CE4385E80878F9CCF229CD8C593759B60823E7B6D6E7AE8A3E1:2821B659BFE4512A742E8795D3EF4067C83404200402F3FF90EE0A8E6E7E954C @ 1586136753 lt 4793551000000 .. 4793551000001
+shard #3 : (0,0680000000000000,4168225):8B5C542B9FD99A75034553E4119C7747E373A40AC71CADC1EFC55FDD47383EA4:B2BC3D0DF2F079D4A2E4C20A0C4ACD89DC504044DCEE3A3D1442C026CB765014 @ 1586131501 lt 4793423000000 .. 4793423000001
+shard #4 : (0,0720000000000000,4168311):04169126A8DA3D2691F886D5EC792F985F62D0398197D93B8044AA7F18A41E46:A68AC292395E67A21C3C5ED7BF88EE0625CAD5B27DFCAEFCA9BDA2761B503506 @ 1586140201 lt 4793568000000 .. 4793568000001
+shard #5 : (0,0760000000000000,4168306):8C15F5A6CB434378EC53924E4E638FE43A37739EFD680AE2303A3BD8CD378999:694D3909FF1EDDA34D2B13C4E068D71B936607009556023490F44235B5C1AE8C @ 1586132572 lt 4793487000000 .. 4793487000092
+shard #6 : (0,07c0000000000000,4168232):FE769842989A2EA94BACE5AECE314DE721715EB0AA3D142E139211B32A095BE3:7024F989872C41D4573E0EBC35770F55A54AFD21F3BEEF03C8617E5A5409696C @ 1586125895 lt 4793233000000 .. 4793233000001
+shard #7 : (0,0a00000000000000,4168261):F32FBC184A706BB9FD38573857C2AE3294E661A3F06725503202B61486E0E442:A469DEF3651FE75507509F5DFF20390C72BBCC91F89AFEE0B69CC87AD821C0FA @ 1586125204 lt 4793186000000 .. 4793186000001
+shard #8 : (0,0c80000000000000,4168253):FD184D9E53A2538EDB85E1594572D0B51E5356A8AB4FAA620E6CBF21448E1F96:54EAD0EAA1F17E40BE505962025A5A7DDC46EB5AF9F8733A76CB8145BCE4DD5A @ 1586140190 lt 4793568000000 .. 4793568000001
+shard #9 : (0,0d40000000000000,4168227):9F27907138BC3D7C324887D277ADC372BC26A72B95B5D7020242F17DD354F28A:F6EFC7067867E23198413E6A96D434071C8A487FABE458C05658D285CBDEBDB7 @ 1586136785 lt 4793551000000 .. 4793551000001
+shard #10 : (0,0dc0000000000000,4168245):D9FA8FAEA6DAB1770AFF3A73679950086E9C901187168C211630EA268DFDD942:4FF405ADFD6A5BD4F53470A37A58072C6923A9A1CF91B0B32F8C7814E87FAA3C @ 1586128746 lt 4793341000000 .. 4793341000208
+shard #11 : (0,0f00000000000000,4168265):D8D614AC2194F011F16E0F750988157805685CB47C9BEEDD8CDA02ABFC1452AA:7B2E44E955EFF97CB1DEE658E483D27702D66F111FD6FF8285DA4A24545C5866 @ 1586132142 lt 4793463000000 .. 4793463000001
+shard #12 : (0,1800000000000000,4168312):DF81A67D72487A368433C47099BB5F497CDD703AB9390B4E3BE718D420B2A465:28EE4A868EECE21514BF88BD302E9567B5B2510510AE35F332FB4225FC93C8F3 @ 1586134957 lt 4793539000000 .. 4793539000001
+shard #13 : (0,2400000000000000,4168222):7B169CE920EADE5E058766CB20D1288F5B69BEA761691A9C53044D36E4B21635:413B454CFE660FCFFF082AB0B806D289788DA20751AD8B551EF7924BB0D8C911 @ 1586132631 lt 4793489000000 .. 4793489000001
+shard #14 : (0,2900000000000000,4168281):0483E87F989A25246F7BA066DC71DAB36F15242DECF8A7D5B84B5A958816BA09:749AD787C72FC73BC9CECD3333C53DF33679633AC1FFA8EF4D6CA8A2AB9C042C @ 1586139236 lt 4793564000000 .. 4793564000001
+shard #15 : (0,2a80000000000000,4168337):8A38BFDAC449265B6D44EBCF6CDCD39B934D9F1BEB596DF3FF47F3D9DC13108F:5A95A353EFAE06B7CEE05A2B0FFE1A0104D30370F68A785DE9BED61A060F28FB @ 1586140201 lt 4793569000000 .. 4793569000001
+shard #16 : (0,2b40000000000000,4168194):AA08AF763F07648B0E2F6C1A79BE197D977BAD0275EEB144A634FC6568353EC4:23C2504112F1E9797DD2EDFF83787A7ED2B359B4B1C1F2267E8F03D9DE526169 @ 1586115282 lt 4792879000000 .. 4792879000208
+shard #17 : (0,2bc0000000000000,4168188):A7D5E7E0C689E0FDF8624FFE631DD4B39D058161F25AE68ED94BBAF3445C2D69:26F52477CB4FCAD22CCB378554CC03799FB2672F5F451FEE98A8DC270CBD8F82 @ 1586137751 lt 4793557000000 .. 4793557000001
+shard #18 : (0,2e00000000000000,4168229):2014B518ABD3AFE8C9E54A5BE9C2E82AA7DC56724930C90F7C25121763F6CCDB:41653A8460F97C0A53D3BB69EB4599B2F32688178F413850266C648B1833ADCD @ 1586117998 lt 4793010000000 .. 4793010000001
+shard #19 : (0,3800000000000000,4168245):55E0AC783CF13A02C73BB8C6EC2171D0CDF9A88FF43D6F5FDC17D9DAAF950FFB:42CE0829226E43DFC35873051832DF71EEBFA037FE88553A65D9B5A49AE44E39 @ 1586136739 lt 4793554000000 .. 4793554000001
+shard #20 : (0,4200000000000000,4164117):5E2681D06624D42BC4019FA82B732F7FF1062CED6A9C639A508277037B5B56B8:E6F04B6BAABF4AACEA0ACAFE3414333D7CD9E850DE0434AFCEAD982718CAC6DD @ 1586064396 lt 4792704000000 .. 4792704000001
+shard #21 : (0,4500000000000000,4164163):48A2AFCF63ECA784E9BBB1E93D2897ED9819A942A1365812271647410D670192:1459D716270B3C8423CD51144A293A965536C10DE5EEDBB204F40E3CDE4D23EE @ 1586125243 lt 4793191000000 .. 4793191000001
+shard #22 : (0,4640000000000000,4164088):6287736D70482DBBE3F459C502A32E8DE11BA028B44E334864667F32508B29D9:61425527AD0B3A5B87D5198A83D68BF86666190FD1814CD36551BC567BCE2047 @ 1586128471 lt 4793311000000 .. 4793311000001
+shard #23 : (0,46a0000000000000,4164109):3F79CAF6DDD7D0A7378EEE66B10A5052774EC19134658431AD80505578FCC787:A545D612F17CADDD48D420188CB97B42C52215530D35E087BD6D1D7C2FE26C83 @ 1586128030 lt 4793307000000 .. 4793307000208
+shard #24 : (0,46e0000000000000,4164110):499862571896666D2E2FDDDEAA7FD14F010B212566B1552DC248AE305EF66F8E:059049281A147B8E4016B19AD3CBA0644280277E2DEC6560EF6F77C6568DBE59 @ 1586128106 lt 4793308000000 .. 4793308000001
+shard #25 : (0,4780000000000000,4164139):18D7124ABD22DE10F1C1C024907A056858AA3A2FE91A6F5A52253B7323D2B567:FCCCD30A46416D302F6B71ED03567DA0FED0AA61E6C7AF6F6FE676C10845B2FA @ 1586136760 lt 4793554000000 .. 4793554000001
+shard #26 : (0,4c00000000000000,4164248):86DCF20A91C6BF9CB854CDB7A2AF6A93BB50CEB5D239CADFAB6740550AEDB693:85B80A75F5A9285C8D307C3965B3DDDFB7993E9FD326D2871CD759D96B1B42E1 @ 1586131360 lt 4793423000000 .. 4793423000001
+shard #27 : (0,5800000000000000,4164341):553424AD5E426B5D5E8A6668FB1730415559A5DC0AF9EDBB5CA3A1163FE5DCF1:4872704D35242F00CEDDFDAF50817AFC891AEA9FA06AD89C11569F370A5FCBD0 @ 1586134949 lt 4793539000000 .. 4793539000001
+shard #28 : (0,6400000000000000,4164261):D0D48ED2FE1196A53776B9345B3D095975FEDA88268944596C9120C2B6EDC3FF:7BE0FBB6E43DC20A67B749CCEAE146E636660358724615DD5AF092EFE204B5EF @ 1586134460 lt 4793513000000 .. 4793513000001
+shard #29 : (0,6a00000000000000,4164273):A05D04D684C38C10812629221D8032C44E3A90B8874F57D0CDCB31F91A344ED8:E9E75A325F681260494682F4997960690E116C5B8631FFA51328773A42EC4C05 @ 1586136761 lt 4793554000000 .. 4793554000001
+shard #30 : (0,6d00000000000000,4164194):5F4CC0B9E7D0683ED97142BB2E40D8A6172F8AF2E00A370C3B05396EDF53A0C6:0BEBDCCE11DF68271B3FFE774CD9BEC9E93E37EF08C8ABE471E6EC8205D1E656 @ 1586140190 lt 4793568000000 .. 4793568000001
+shard #31 : (0,6e40000000000000,4164115):900A8ADB6023695C912C4D64101CDD0A9CEF476F2DD3170EF8FAF7CE59B1D7B9:6D12620525DDB64DBBDCFC5A103342957F51EB5532F911C417FEB11EF23ADB70 @ 1586126925 lt 4793281000000 .. 4793281000001
+shard #32 : (0,6e90000000000000,4164202):68A82F6DF6FA4C19A8FE8C127F669BFA4747560CCD73D77AB39B77754B676242:F19BD78B92AC10799857DB906C304137BEE47CFB322BC60DF43C2DB50CD7341F @ 1586140191 lt 4793569000000 .. 4793569000001
+shard #33 : (0,6ea8000000000000,4164151):212100FA9B50A10F8787351AFB498282607C7F0890735C81E66160340F252BE0:3FF71621D5A0B8391B7396D460E26299D5C05FA29760DA7885FC83AE8630A924 @ 1586136692 lt 4793554000000 .. 4793554000001
+shard #34 : (0,6eb8000000000000,4164149):D80D4AE1A6B336BAE2AF9059CCF586DE9F684B0CCC6E87A6C9C093FE8A78CE4E:9958DDF3E3FF54B185F30D9D77B9869CCE28BB47971943DB351DA99C49170160 @ 1586134715 lt 4793524000000 .. 4793524000091
+shard #35 : (0,6ee0000000000000,4164247):0DF49FB7851E421C9974032F72CF57EAE552EA64582483568399B4D77327D7F9:88ED1712E2C375F9817A549EB889F3D2D91A90C659224141BC448E0109D96967 @ 1586134948 lt 4793539000000 .. 4793539000001
+shard #36 : (0,6f80000000000000,4164250):A6ACE7D26ACA87939175C4AEFD6A4F2D058258F8A382593760ED6E77ACA89C94:6CD5CDAA18DD25DA1F1CDA19CF6DECEEA590E2C648F42B49FFBD7E346FF409C4 @ 1586140790 lt 4793573000000 .. 4793573000001
+shard #37 : (0,7200000000000000,4164245):83B3EED952A245D9764D4BB2221DB503AF21046AEBF9874E719E607830D44EB8:D86C651A30E46189E99C38A04311C0209D09E80A88AB49C7F40EA39A22C13C6E @ 1586139237 lt 4793564000000 .. 4793564000001
+shard #38 : (0,7500000000000000,4164198):3D6D5A598D54A6C3749E3B70B85B8CFC3FC8064F9E3E76465F0D2AA6BC31F63E:D3BAE97C45EEEA2A153F3B2CD0BB36AF4FAF1F1601B4C8CFAE63157C8BBE2171 @ 1586140202 lt 4793568000000 .. 4793568000001
+shard #39 : (0,7640000000000000,4164202):3A992512DE7DA23AEE34949FC0725111D19AE6274424F48E04799E669C519EFA:4938B1ECECE742FB2EF7546C8482DE56A768A1B42836D83AD80412ED81B9A5FA @ 1586136798 lt 4793550000000 .. 4793550000001
+shard #40 : (0,76c0000000000000,4164202):F7863EC686205984271D6DB8D7A3A424783C75DE823F7569F9BEB41E2DBCC100:6160899016BE959AC8156AE1A757B4AE4FB2290287C78B30CCFF59252416A12F @ 1586128028 lt 4793306000000 .. 4793306000208
+shard #41 : (0,7780000000000000,4164210):36D1D34248E182F41C828A14ED504ED0C61D887ACE55858E3C5094DA36AE66E6:7BD7371A2372EFDFB936D475533F8C15E2BE5B7C145646F4815DCA2C0150253B @ 1586135002 lt 4793539000000 .. 4793539000001
+shard #42 : (0,7a00000000000000,4164181):97703A433645A50F0C6EA216C219B6683523A49FBB2505327C7E44B4BF3DDE4F:DBF33CB44EDBF79027E3F7A972005577CD4B2418246D2CBB78665FB43650BC3C @ 1586137786 lt 4793559000000 .. 4793559000001
+shard #43 : (0,7d00000000000000,4164178):D3E8B99162B2D9287E3D609EF30D684E3C875785AB5CC5CC1D0B8D982F67D6D2:F813BE938F9FD76A77FC840460233D462B6FE8D4B282A3B61683C260137564EC @ 1586134410 lt 4793509000000 .. 4793509000001
+shard #44 : (0,7e80000000000000,4164266):D5287BD4E64300183028402F7504EC8E9813F2520C95C9C470E6B405C2BB2060:DDF70CB2E84368A0B50D532174F742898CF4F4B482813DA6BCBA5AA8D9E1AF7D @ 1586132657 lt 4793489000000 .. 4793489000001
+shard #45 : (0,7f20000000000000,4164191):5F184C9B64E5EC8B42040DC17B0089EFF067C637278BCA10EAEDF898C4A2C756:62C16B5FA8E8FAACFDCDCA2EC20B4E7F90E159FA80F83ECF22DF95B3B97D105A @ 1586132501 lt 4793480000000 .. 4793480000208
+shard #46 : (0,7f60000000000000,4164177):F6D28B5BE7B4C0BFA0755CEC98650478C3441845F0BCE670218B2966EF4DA694:4C070CD11B34D6EB6C2EE25C3EFEFAAF20BC614202935D537D24C67D69DB1129 @ 1586140190 lt 4793568000000 .. 4793568000001
+shard #47 : (0,7fc0000000000000,4164188):CFDE6DDCD80D212E2BDB5B02DC485E114E3E1F17086CE576E70A4847B7726A4B:1807EA294894F2250C9AB2B2DB89C302FDD15FC453A364E708E0EC1C14D70D27 @ 1586137783 lt 4793560000000 .. 4793560000001
+shard #48 : (0,9000000000000000,4167830):1BD02E881CE3C90235996377ECFBB25FEE72992018643D4F0508B978450B68DA:6464DFEEE5A4D4E29DFC0812465D643A0F2C1BC96942F53F0ABAFD7900478694 @ 1586137788 lt 4793559000000 .. 4793559000001
+shard #49 : (0,a100000000000000,4167801):38EEDEF4CA3570A73DE827C00E471D60192939216C42791E23A3C2B98231B426:1033786320365928049101133308B91692CD413391C06912A3F0DB0FCFC7B106 @ 1586134706 lt 4793523000000 .. 4793523000001
+shard #50 : (0,a280000000000000,4167875):F81F007F3999FE3AF5B7AD74499AEECB6653B65DEA206211CB46A544516ACC80:8649211478DCD972A8A770990E6C8EB4D3E5B982BEB859AE9CF30ECAAAAE867B @ 1586131998 lt 4793447000000 .. 4793447000001
+shard #51 : (0,a340000000000000,4167729):650A4703C957F266888E62EAB7BD287CF79984E0B522134552CE7BDED46DD879:8C82A253D4880EBF066693F8269991AE12A278D257930D0D57DE78500D361ECF @ 1586131933 lt 4793429000000 .. 4793429000001
+shard #52 : (0,a3a0000000000000,4167731):C6AAB49C46762E5B2180001A3A39D64E00B4E3767FF676D3AE97BDE0445B90FA:3BD70DC7840EB757EF74221FF356FD1AADAFFF73A977386F420D119EEBEA5131 @ 1586137761 lt 4793557000000 .. 4793557000001
+shard #53 : (0,a3d0000000000000,4167788):FF1F0316C40515E98596421759C6BABC1DB984CB4F0CEE84C45EEF0D8E9302C2:40166D98D6D0196B9AEE1ED282B367C69B024E507FE1EB73CEC5518529709EE1 @ 1586136715 lt 4793554000000 .. 4793554000001
+shard #54 : (0,a3f0000000000000,4167691):FDA9CE849777881ECE1EA55D2E8E10EB7067634B4C2538DCA0F693C5729CAB21:F584CDCEE320561018F55B8F9A19CBF933507CC55CF2DC9C2DEF971755E3CDBA @ 1586115277 lt 4792880000000 .. 4792880000208
+shard #55 : (0,a600000000000000,4167708):586FF3259023B5D5AE73409EA14257DBD68A8C8B4FADF4D9A6BA5FA31243A4EB:E1C7DFD9F0499E5AF5D774AF7DB10D3E1BE9747F631403C3D7D60EA207116D85 @ 1586128493 lt 4793313000000 .. 4793313000001
+shard #56 : (0,ac00000000000000,4167831):66D6C470376D6DD0AA4060BD5D0F89BD57ADA06F4D0FC79448E0B2A4B351E6C9:F21117F7108FC4C05506D6862EBCEB8C9E68D0C84955D3E1B8CBB81982CCD186 @ 1586123173 lt 4793175000000 .. 4793175000001
+shard #57 : (0,b200000000000000,4167737):C191FB6F0257B169ABD8032262C987251CD87DDE743A2F3FF7809EE0D39BB6C4:6C5DD53C681893C085250491D35E6E76A030047023E1A103019E2D5A90F04F9E @ 1586140190 lt 4793568000000 .. 4793568000001
+shard #58 : (0,b500000000000000,4167765):9186F6680A6242FBFD8F016F57000D1C7339EBA4E5299E4DBCDB28DFBA6E59E8:D2D45008578EFB4DE8CFF18654CA806EB51D44150B80254FAB191359316A996C @ 1586132504 lt 4793484000000 .. 4793484000001
+shard #59 : (0,b640000000000000,4167734):710EDC6903D927239F904234152D909886220C40C61D553EE511A7FDC548B786:AB727FB538C1927670A4DE9320448876C6FE950DB73A121EE6CC3F05A81BADF3 @ 1586140188 lt 4793568000000 .. 4793568000001
+shard #60 : (0,b688000000000000,4167661):A9008975C4A262480AC2850884415B58DDC9DF8DA3FDB1653324B492F50E69AD:927A53CB47817B3A407FE070EA9C08D0BF9EEE73A9DB2E7FDD2A7956979C545C @ 1586116662 lt 4792904000000 .. 4792904000208
+shard #61 : (0,b698000000000000,4167795):EFF432906D74AC58A50F9A440EEF99EE561CC84CF2F533B1EBAE37947D969D94:3D75FFA6C822D0D51EE7B09227A218A713CDE82FC75097536A4502A5262D9DDA @ 1586126264 lt 4793273000000 .. 4793273000001
+shard #62 : (0,b6b0000000000000,4167741):A030E03510C00F61F665C29E0B980F36D8934CE45217085A9B26682CD73A9292:443620CAD3BCBBE309899042D9C8A68AE79CCB59E65FDF14105CE4F2D43C513E @ 1586133535 lt 4793502000000 .. 4793502000001
+shard #63 : (0,b6e0000000000000,4167757):047843554E17D099B988297FB0EF47DC725981905C6288A34CD0DFEF7997CFBE:984DB6C653515E331DDA21C24311C76D0FF7A54AAFE1B37D565798409F71C4EE @ 1586132663 lt 4793489000000 .. 4793489000001
+shard #64 : (0,b780000000000000,4167718):A04E3771B670631DBF86CC12C06E352013208F284AA3D5D307DF9BE83E2D2A05:165DB8FC92AD6A6434F4EE3DE781178468722302992E2B2C72F4A17E1CCA6F71 @ 1586137757 lt 4793558000000 .. 4793558000001
+shard #65 : (0,bc00000000000000,4167781):9AC581BF442944947D7F7EF4626070F36811FB1ACFCAF28E0C8BE2BB626ABFF9:2AD99D4D3F01484F3817C5B7FE159B85FA0496649FD881A95D80303EA5487279 @ 1586134716 lt 4793524000000 .. 4793524000001
+shard #66 : (0,c100000000000000,4166651):6597D2B0CE2075D29FD46070A1C15B6730C8A43D2C1F6A68F7189BE4DD3D8D98:1B383DADA1668039B948C9D2EE06683E2F27318BBCA59BC152C64A742E9B987E @ 1586127011 lt 4793295000000 .. 4793295000001
+shard #67 : (0,c220000000000000,4166623):91604CB89D3DE25E746FE6CF159C82370C7419EBA947D463F837954A3B48B925:E21161880EA424ADD7500EA829313549BC2DF7E73788F78CCA536B588DA1B47C @ 1586133208 lt 4793494000000 .. 4793494000001
+shard #68 : (0,c260000000000000,4166635):07080B783EFB2ED09E8B14056B250FCD1A8E7A1023A832C6C63E663551227595:1C2FEAD9C31CBCAF957EEBF7F194A902F3F9A68B5C15BFB264993A54E610F5AE @ 1586140199 lt 4793569000000 .. 4793569000208
+shard #69 : (0,c2c0000000000000,4166604):753E6C232886DAB6EFB186CC4E68A112C356392F37AAFD55AB257BD7AA53591D:0C0240EDCD346BE936D4EB6CCE288CDA1DF7741483FA8DA35807AC00FFDA7EBA @ 1586134433 lt 4793510000000 .. 4793510000001
+shard #70 : (0,c380000000000000,4166700):247F2DA65D66987CBB87787A710FDC513A29656FDE54A25D3590947F73A5BCA3:3978F7876F6B5C7AF4C2D3A8DB3CC695482437C3B6200A36CFB8EFDA6F645B60 @ 1586140201 lt 4793569000000 .. 4793569000001
+shard #71 : (0,c600000000000000,4166672):108B844A5F64D9E3F4124861945C948709D5081167A6F1BE37C1793CCF140750:4ABA7968784E199B5B09AB30D72952CEAEC08B0AD979DFD10BD8AAD3368EC797 @ 1586134462 lt 4793513000000 .. 4793513000001
+shard #72 : (0,cc00000000000000,4166646):ECF4CA31786A03FDC054CBFF1FEBC8173517A4F7E21BEDC1462E22B746B0C686:CDA480A75534779AEE4AC5ACBF975389FC686A86F5BFEAD0D9C81A40A89AD7AF @ 1586064139 lt 4792703000000 .. 4792703000001
+shard #73 : (0,d800000000000000,4166757):7B804325D3684C03098835BA8CD97CBB4DEB1866830BA61FE718892B614FB194:576207C4F3BA4AE490DE4CF46E098A2A45F83B818DCAB2F75DF52EB371B6449A @ 1586137761 lt 4793558000000 .. 4793558000001
+shard #74 : (0,e200000000000000,4166643):3C975FDF099DB8BC5FAEA449D67C81A86287CF62FEEF4708A381DFE8BD646BB4:A63702E79706E80268DA407A8829AF42032AE5206953FDE39F9BBA1A4D6A6EC4 @ 1586140201 lt 4793569000000 .. 4793569000001
+shard #75 : (0,e500000000000000,4166679):E48BEC509097269DA6AC6A747B3FE781C9443BEB812E4D8C7EAD1F0E1880D51A:A4E3F2FFCAA00482A7271DB54CFB2D28F646201D177DD0673C8859E34F34FDE1 @ 1586137786 lt 4793557000000 .. 4793557000001
+shard #76 : (0,e680000000000000,4166579):C94D97C7B4432B2CEF2C02BC22D649DEDAE4657FD8AE0FF43FEDC7A9F11CF4C4:9C73C0F9251403CF8A6F7FAD14F05C63F20F13E4A784F250735A4127ECEFB7BE @ 1586132151 lt 4793458000000 .. 4793458000001
+shard #77 : (0,e780000000000000,4166564):7895C671550CD79E6DE29236BC9DAF15968139C9CA18124F44A02A3BB44B4FAA:F33651BF221FF35E0511F7B9C9CF3AC053D83C47907F865A7252BB70F9F4F634 @ 1586063047 lt 4792701000000 .. 4792701000208
+shard #78 : (0,ec00000000000000,4166639):9D984EFDD4F30A788FB13F25820A195EED528ED9069525F823812DA9CC5986F7:C7E37E566BC6B72BFE93250F281398C669F54660153F06D72D2A15EB857078B0 @ 1586132658 lt 4793489000000 .. 4793489000001
+shard #79 : (0,f400000000000000,4166786):5F75832206167CFFD3B22DE89CAE65E7E162FB0B00D9588887E7B7590BED6A30:681F25DB222343253632DEDF780948F4B3E23A81FFFD30E4374C116E65C76C4E @ 1586130112 lt 4793373000000 .. 4793373000001
+shard #80 : (0,f880000000000000,4166698):9409F081147DE5079DDC3775638F9C123C5CF45CA5E9848B4D0D672AFFE5FA98:2E2620B132D70E0A3EDE108337183F944E46267E05E2FB6BE6853AC7E76D5480 @ 1586117093 lt 4792975000000 .. 4792975000208
+shard #81 : (0,f980000000000000,4166752):6C97C09B8C9953AFECE00DAC54461F0677EEA6B098653DB4782439377D96B0DF:BC4E719FD103D863B4112AE4A42A2492587CC89C798F693B99AB3F410B68A55E @ 1586132143 lt 4793462000000 .. 4793462000001
+shard #82 : (0,fb00000000000000,4166858):849002D1B112FC3FCE1F8E2554BA8ADB9140C4BC385E39F3D56960D7E4A950F0:089BF0A5851D87EB88CBE6C58D4C713842890F9869A84D291ECB50E9228C45B5 @ 1586140199 lt 4793568000000 .. 4793568000001
+shard #83 : (0,fe00000000000000,4166761):61B12D0A2E18F1DFD37B8AA1F02E0C251DFA8890488BA7141037707026C1F74A:5FBF703A7FDE0E143DB0D956CC92A17CDE9DF543223E38F91C8D53992D2144B9 @ 1586140201 lt 4793569000000 .. 4793569000001
+BLK#6 = (0,0200000000000000,4168295):A84C52CF750AFF5C33619F4A71453638BBCB0D308F5FA96306B2187C4FED4D19:1DDE42C69EBA0DEEA93B1374F864F2334B59DAC3ED24D49DD6D5DCBAF0E7B42B
+BLK#7 = (0,0500000000000000,4168403):09733597116F1CE4385E80878F9CCF229CD8C593759B60823E7B6D6E7AE8A3E1:2821B659BFE4512A742E8795D3EF4067C83404200402F3FF90EE0A8E6E7E954C
+BLK#8 = (0,0680000000000000,4168225):8B5C542B9FD99A75034553E4119C7747E373A40AC71CADC1EFC55FDD47383EA4:B2BC3D0DF2F079D4A2E4C20A0C4ACD89DC504044DCEE3A3D1442C026CB765014
+BLK#9 = (0,0720000000000000,4168311):04169126A8DA3D2691F886D5EC792F985F62D0398197D93B8044AA7F18A41E46:A68AC292395E67A21C3C5ED7BF88EE0625CAD5B27DFCAEFCA9BDA2761B503506
+BLK#10 = (0,0760000000000000,4168306):8C15F5A6CB434378EC53924E4E638FE43A37739EFD680AE2303A3BD8CD378999:694D3909FF1EDDA34D2B13C4E068D71B936607009556023490F44235B5C1AE8C
+BLK#11 = (0,07c0000000000000,4168232):FE769842989A2EA94BACE5AECE314DE721715EB0AA3D142E139211B32A095BE3:7024F989872C41D4573E0EBC35770F55A54AFD21F3BEEF03C8617E5A5409696C
+BLK#12 = (0,0a00000000000000,4168261):F32FBC184A706BB9FD38573857C2AE3294E661A3F06725503202B61486E0E442:A469DEF3651FE75507509F5DFF20390C72BBCC91F89AFEE0B69CC87AD821C0FA
+BLK#13 = (0,0c80000000000000,4168253):FD184D9E53A2538EDB85E1594572D0B51E5356A8AB4FAA620E6CBF21448E1F96:54EAD0EAA1F17E40BE505962025A5A7DDC46EB5AF9F8733A76CB8145BCE4DD5A
+BLK#14 = (0,0d40000000000000,4168227):9F27907138BC3D7C324887D277ADC372BC26A72B95B5D7020242F17DD354F28A:F6EFC7067867E23198413E6A96D434071C8A487FABE458C05658D285CBDEBDB7
+BLK#15 = (0,0dc0000000000000,4168245):D9FA8FAEA6DAB1770AFF3A73679950086E9C901187168C211630EA268DFDD942:4FF405ADFD6A5BD4F53470A37A58072C6923A9A1CF91B0B32F8C7814E87FAA3C
+BLK#16 = (0,0f00000000000000,4168265):D8D614AC2194F011F16E0F750988157805685CB47C9BEEDD8CDA02ABFC1452AA:7B2E44E955EFF97CB1DEE658E483D27702D66F111FD6FF8285DA4A24545C5866
+BLK#17 = (0,1800000000000000,4168312):DF81A67D72487A368433C47099BB5F497CDD703AB9390B4E3BE718D420B2A465:28EE4A868EECE21514BF88BD302E9567B5B2510510AE35F332FB4225FC93C8F3
+BLK#18 = (0,2400000000000000,4168222):7B169CE920EADE5E058766CB20D1288F5B69BEA761691A9C53044D36E4B21635:413B454CFE660FCFFF082AB0B806D289788DA20751AD8B551EF7924BB0D8C911
+BLK#19 = (0,2900000000000000,4168281):0483E87F989A25246F7BA066DC71DAB36F15242DECF8A7D5B84B5A958816BA09:749AD787C72FC73BC9CECD3333C53DF33679633AC1FFA8EF4D6CA8A2AB9C042C
+BLK#20 = (0,2a80000000000000,4168337):8A38BFDAC449265B6D44EBCF6CDCD39B934D9F1BEB596DF3FF47F3D9DC13108F:5A95A353EFAE06B7CEE05A2B0FFE1A0104D30370F68A785DE9BED61A060F28FB
+BLK#21 = (0,2b40000000000000,4168194):AA08AF763F07648B0E2F6C1A79BE197D977BAD0275EEB144A634FC6568353EC4:23C2504112F1E9797DD2EDFF83787A7ED2B359B4B1C1F2267E8F03D9DE526169
+BLK#22 = (0,2bc0000000000000,4168188):A7D5E7E0C689E0FDF8624FFE631DD4B39D058161F25AE68ED94BBAF3445C2D69:26F52477CB4FCAD22CCB378554CC03799FB2672F5F451FEE98A8DC270CBD8F82
+BLK#23 = (0,2e00000000000000,4168229):2014B518ABD3AFE8C9E54A5BE9C2E82AA7DC56724930C90F7C25121763F6CCDB:41653A8460F97C0A53D3BB69EB4599B2F32688178F413850266C648B1833ADCD
+BLK#24 = (0,3800000000000000,4168245):55E0AC783CF13A02C73BB8C6EC2171D0CDF9A88FF43D6F5FDC17D9DAAF950FFB:42CE0829226E43DFC35873051832DF71EEBFA037FE88553A65D9B5A49AE44E39
+BLK#25 = (0,4200000000000000,4164117):5E2681D06624D42BC4019FA82B732F7FF1062CED6A9C639A508277037B5B56B8:E6F04B6BAABF4AACEA0ACAFE3414333D7CD9E850DE0434AFCEAD982718CAC6DD
+BLK#26 = (0,4500000000000000,4164163):48A2AFCF63ECA784E9BBB1E93D2897ED9819A942A1365812271647410D670192:1459D716270B3C8423CD51144A293A965536C10DE5EEDBB204F40E3CDE4D23EE
+BLK#27 = (0,4640000000000000,4164088):6287736D70482DBBE3F459C502A32E8DE11BA028B44E334864667F32508B29D9:61425527AD0B3A5B87D5198A83D68BF86666190FD1814CD36551BC567BCE2047
+BLK#28 = (0,46a0000000000000,4164109):3F79CAF6DDD7D0A7378EEE66B10A5052774EC19134658431AD80505578FCC787:A545D612F17CADDD48D420188CB97B42C52215530D35E087BD6D1D7C2FE26C83
+BLK#29 = (0,46e0000000000000,4164110):499862571896666D2E2FDDDEAA7FD14F010B212566B1552DC248AE305EF66F8E:059049281A147B8E4016B19AD3CBA0644280277E2DEC6560EF6F77C6568DBE59
+BLK#30 = (0,4780000000000000,4164139):18D7124ABD22DE10F1C1C024907A056858AA3A2FE91A6F5A52253B7323D2B567:FCCCD30A46416D302F6B71ED03567DA0FED0AA61E6C7AF6F6FE676C10845B2FA
+BLK#31 = (0,4c00000000000000,4164248):86DCF20A91C6BF9CB854CDB7A2AF6A93BB50CEB5D239CADFAB6740550AEDB693:85B80A75F5A9285C8D307C3965B3DDDFB7993E9FD326D2871CD759D96B1B42E1
+BLK#32 = (0,5800000000000000,4164341):553424AD5E426B5D5E8A6668FB1730415559A5DC0AF9EDBB5CA3A1163FE5DCF1:4872704D35242F00CEDDFDAF50817AFC891AEA9FA06AD89C11569F370A5FCBD0
+BLK#33 = (0,6400000000000000,4164261):D0D48ED2FE1196A53776B9345B3D095975FEDA88268944596C9120C2B6EDC3FF:7BE0FBB6E43DC20A67B749CCEAE146E636660358724615DD5AF092EFE204B5EF
+BLK#34 = (0,6a00000000000000,4164273):A05D04D684C38C10812629221D8032C44E3A90B8874F57D0CDCB31F91A344ED8:E9E75A325F681260494682F4997960690E116C5B8631FFA51328773A42EC4C05
+BLK#35 = (0,6d00000000000000,4164194):5F4CC0B9E7D0683ED97142BB2E40D8A6172F8AF2E00A370C3B05396EDF53A0C6:0BEBDCCE11DF68271B3FFE774CD9BEC9E93E37EF08C8ABE471E6EC8205D1E656
+BLK#36 = (0,6e40000000000000,4164115):900A8ADB6023695C912C4D64101CDD0A9CEF476F2DD3170EF8FAF7CE59B1D7B9:6D12620525DDB64DBBDCFC5A103342957F51EB5532F911C417FEB11EF23ADB70
+BLK#37 = (0,6e90000000000000,4164202):68A82F6DF6FA4C19A8FE8C127F669BFA4747560CCD73D77AB39B77754B676242:F19BD78B92AC10799857DB906C304137BEE47CFB322BC60DF43C2DB50CD7341F
+BLK#38 = (0,6ea8000000000000,4164151):212100FA9B50A10F8787351AFB498282607C7F0890735C81E66160340F252BE0:3FF71621D5A0B8391B7396D460E26299D5C05FA29760DA7885FC83AE8630A924
+BLK#39 = (0,6eb8000000000000,4164149):D80D4AE1A6B336BAE2AF9059CCF586DE9F684B0CCC6E87A6C9C093FE8A78CE4E:9958DDF3E3FF54B185F30D9D77B9869CCE28BB47971943DB351DA99C49170160
+BLK#40 = (0,6ee0000000000000,4164247):0DF49FB7851E421C9974032F72CF57EAE552EA64582483568399B4D77327D7F9:88ED1712E2C375F9817A549EB889F3D2D91A90C659224141BC448E0109D96967
+BLK#41 = (0,6f80000000000000,4164250):A6ACE7D26ACA87939175C4AEFD6A4F2D058258F8A382593760ED6E77ACA89C94:6CD5CDAA18DD25DA1F1CDA19CF6DECEEA590E2C648F42B49FFBD7E346FF409C4
+BLK#42 = (0,7200000000000000,4164245):83B3EED952A245D9764D4BB2221DB503AF21046AEBF9874E719E607830D44EB8:D86C651A30E46189E99C38A04311C0209D09E80A88AB49C7F40EA39A22C13C6E
+BLK#43 = (0,7500000000000000,4164198):3D6D5A598D54A6C3749E3B70B85B8CFC3FC8064F9E3E76465F0D2AA6BC31F63E:D3BAE97C45EEEA2A153F3B2CD0BB36AF4FAF1F1601B4C8CFAE63157C8BBE2171
+BLK#44 = (0,7640000000000000,4164202):3A992512DE7DA23AEE34949FC0725111D19AE6274424F48E04799E669C519EFA:4938B1ECECE742FB2EF7546C8482DE56A768A1B42836D83AD80412ED81B9A5FA
+BLK#45 = (0,76c0000000000000,4164202):F7863EC686205984271D6DB8D7A3A424783C75DE823F7569F9BEB41E2DBCC100:6160899016BE959AC8156AE1A757B4AE4FB2290287C78B30CCFF59252416A12F
+BLK#46 = (0,7a00000000000000,4164181):97703A433645A50F0C6EA216C219B6683523A49FBB2505327C7E44B4BF3DDE4F:DBF33CB44EDBF79027E3F7A972005577CD4B2418246D2CBB78665FB43650BC3C
+BLK#47 = (0,7d00000000000000,4164178):D3E8B99162B2D9287E3D609EF30D684E3C875785AB5CC5CC1D0B8D982F67D6D2:F813BE938F9FD76A77FC840460233D462B6FE8D4B282A3B61683C260137564EC
+BLK#48 = (0,7e80000000000000,4164266):D5287BD4E64300183028402F7504EC8E9813F2520C95C9C470E6B405C2BB2060:DDF70CB2E84368A0B50D532174F742898CF4F4B482813DA6BCBA5AA8D9E1AF7D
+BLK#49 = (0,7f20000000000000,4164191):5F184C9B64E5EC8B42040DC17B0089EFF067C637278BCA10EAEDF898C4A2C756:62C16B5FA8E8FAACFDCDCA2EC20B4E7F90E159FA80F83ECF22DF95B3B97D105A
+BLK#50 = (0,7f60000000000000,4164177):F6D28B5BE7B4C0BFA0755CEC98650478C3441845F0BCE670218B2966EF4DA694:4C070CD11B34D6EB6C2EE25C3EFEFAAF20BC614202935D537D24C67D69DB1129
+BLK#51 = (0,7fc0000000000000,4164188):CFDE6DDCD80D212E2BDB5B02DC485E114E3E1F17086CE576E70A4847B7726A4B:1807EA294894F2250C9AB2B2DB89C302FDD15FC453A364E708E0EC1C14D70D27
+BLK#52 = (0,9000000000000000,4167830):1BD02E881CE3C90235996377ECFBB25FEE72992018643D4F0508B978450B68DA:6464DFEEE5A4D4E29DFC0812465D643A0F2C1BC96942F53F0ABAFD7900478694
+BLK#53 = (0,a100000000000000,4167801):38EEDEF4CA3570A73DE827C00E471D60192939216C42791E23A3C2B98231B426:1033786320365928049101133308B91692CD413391C06912A3F0DB0FCFC7B106
+BLK#54 = (0,a280000000000000,4167875):F81F007F3999FE3AF5B7AD74499AEECB6653B65DEA206211CB46A544516ACC80:8649211478DCD972A8A770990E6C8EB4D3E5B982BEB859AE9CF30ECAAAAE867B
+BLK#55 = (0,a340000000000000,4167729):650A4703C957F266888E62EAB7BD287CF79984E0B522134552CE7BDED46DD879:8C82A253D4880EBF066693F8269991AE12A278D257930D0D57DE78500D361ECF
+BLK#56 = (0,a3a0000000000000,4167731):C6AAB49C46762E5B2180001A3A39D64E00B4E3767FF676D3AE97BDE0445B90FA:3BD70DC7840EB757EF74221FF356FD1AADAFFF73A977386F420D119EEBEA5131
+BLK#57 = (0,a3d0000000000000,4167788):FF1F0316C40515E98596421759C6BABC1DB984CB4F0CEE84C45EEF0D8E9302C2:40166D98D6D0196B9AEE1ED282B367C69B024E507FE1EB73CEC5518529709EE1
+BLK#58 = (0,a3f0000000000000,4167691):FDA9CE849777881ECE1EA55D2E8E10EB7067634B4C2538DCA0F693C5729CAB21:F584CDCEE320561018F55B8F9A19CBF933507CC55CF2DC9C2DEF971755E3CDBA
+BLK#59 = (0,a600000000000000,4167708):586FF3259023B5D5AE73409EA14257DBD68A8C8B4FADF4D9A6BA5FA31243A4EB:E1C7DFD9F0499E5AF5D774AF7DB10D3E1BE9747F631403C3D7D60EA207116D85
+BLK#60 = (0,ac00000000000000,4167831):66D6C470376D6DD0AA4060BD5D0F89BD57ADA06F4D0FC79448E0B2A4B351E6C9:F21117F7108FC4C05506D6862EBCEB8C9E68D0C84955D3E1B8CBB81982CCD186
+BLK#61 = (0,b200000000000000,4167737):C191FB6F0257B169ABD8032262C987251CD87DDE743A2F3FF7809EE0D39BB6C4:6C5DD53C681893C085250491D35E6E76A030047023E1A103019E2D5A90F04F9E
+BLK#62 = (0,b500000000000000,4167765):9186F6680A6242FBFD8F016F57000D1C7339EBA4E5299E4DBCDB28DFBA6E59E8:D2D45008578EFB4DE8CFF18654CA806EB51D44150B80254FAB191359316A996C
+BLK#63 = (0,b640000000000000,4167734):710EDC6903D927239F904234152D909886220C40C61D553EE511A7FDC548B786:AB727FB538C1927670A4DE9320448876C6FE950DB73A121EE6CC3F05A81BADF3
+BLK#64 = (0,b688000000000000,4167661):A9008975C4A262480AC2850884415B58DDC9DF8DA3FDB1653324B492F50E69AD:927A53CB47817B3A407FE070EA9C08D0BF9EEE73A9DB2E7FDD2A7956979C545C
+BLK#65 = (0,b698000000000000,4167795):EFF432906D74AC58A50F9A440EEF99EE561CC84CF2F533B1EBAE37947D969D94:3D75FFA6C822D0D51EE7B09227A218A713CDE82FC75097536A4502A5262D9DDA
+BLK#66 = (0,b6b0000000000000,4167741):A030E03510C00F61F665C29E0B980F36D8934CE45217085A9B26682CD73A9292:443620CAD3BCBBE309899042D9C8A68AE79CCB59E65FDF14105CE4F2D43C513E
+BLK#67 = (0,b6e0000000000000,4167757):047843554E17D099B988297FB0EF47DC725981905C6288A34CD0DFEF7997CFBE:984DB6C653515E331DDA21C24311C76D0FF7A54AAFE1B37D565798409F71C4EE
+BLK#68 = (0,b780000000000000,4167718):A04E3771B670631DBF86CC12C06E352013208F284AA3D5D307DF9BE83E2D2A05:165DB8FC92AD6A6434F4EE3DE781178468722302992E2B2C72F4A17E1CCA6F71
+BLK#69 = (0,bc00000000000000,4167781):9AC581BF442944947D7F7EF4626070F36811FB1ACFCAF28E0C8BE2BB626ABFF9:2AD99D4D3F01484F3817C5B7FE159B85FA0496649FD881A95D80303EA5487279
+BLK#70 = (0,c100000000000000,4166651):6597D2B0CE2075D29FD46070A1C15B6730C8A43D2C1F6A68F7189BE4DD3D8D98:1B383DADA1668039B948C9D2EE06683E2F27318BBCA59BC152C64A742E9B987E
+BLK#71 = (0,c220000000000000,4166623):91604CB89D3DE25E746FE6CF159C82370C7419EBA947D463F837954A3B48B925:E21161880EA424ADD7500EA829313549BC2DF7E73788F78CCA536B588DA1B47C
+BLK#72 = (0,c260000000000000,4166635):07080B783EFB2ED09E8B14056B250FCD1A8E7A1023A832C6C63E663551227595:1C2FEAD9C31CBCAF957EEBF7F194A902F3F9A68B5C15BFB264993A54E610F5AE
+BLK#73 = (0,c2c0000000000000,4166604):753E6C232886DAB6EFB186CC4E68A112C356392F37AAFD55AB257BD7AA53591D:0C0240EDCD346BE936D4EB6CCE288CDA1DF7741483FA8DA35807AC00FFDA7EBA
+BLK#74 = (0,c380000000000000,4166700):247F2DA65D66987CBB87787A710FDC513A29656FDE54A25D3590947F73A5BCA3:3978F7876F6B5C7AF4C2D3A8DB3CC695482437C3B6200A36CFB8EFDA6F645B60
+BLK#75 = (0,c600000000000000,4166672):108B844A5F64D9E3F4124861945C948709D5081167A6F1BE37C1793CCF140750:4ABA7968784E199B5B09AB30D72952CEAEC08B0AD979DFD10BD8AAD3368EC797
+BLK#76 = (0,cc00000000000000,4166646):ECF4CA31786A03FDC054CBFF1FEBC8173517A4F7E21BEDC1462E22B746B0C686:CDA480A75534779AEE4AC5ACBF975389FC686A86F5BFEAD0D9C81A40A89AD7AF
+BLK#77 = (0,d800000000000000,4166757):7B804325D3684C03098835BA8CD97CBB4DEB1866830BA61FE718892B614FB194:576207C4F3BA4AE490DE4CF46E098A2A45F83B818DCAB2F75DF52EB371B6449A
+BLK#78 = (0,e200000000000000,4166643):3C975FDF099DB8BC5FAEA449D67C81A86287CF62FEEF4708A381DFE8BD646BB4:A63702E79706E80268DA407A8829AF42032AE5206953FDE39F9BBA1A4D6A6EC4
+BLK#79 = (0,e500000000000000,4166679):E48BEC509097269DA6AC6A747B3FE781C9443BEB812E4D8C7EAD1F0E1880D51A:A4E3F2FFCAA00482A7271DB54CFB2D28F646201D177DD0673C8859E34F34FDE1
+BLK#80 = (0,e680000000000000,4166579):C94D97C7B4432B2CEF2C02BC22D649DEDAE4657FD8AE0FF43FEDC7A9F11CF4C4:9C73C0F9251403CF8A6F7FAD14F05C63F20F13E4A784F250735A4127ECEFB7BE
+BLK#81 = (0,e780000000000000,4166564):7895C671550CD79E6DE29236BC9DAF15968139C9CA18124F44A02A3BB44B4FAA:F33651BF221FF35E0511F7B9C9CF3AC053D83C47907F865A7252BB70F9F4F634
+BLK#82 = (0,ec00000000000000,4166639):9D984EFDD4F30A788FB13F25820A195EED528ED9069525F823812DA9CC5986F7:C7E37E566BC6B72BFE93250F281398C669F54660153F06D72D2A15EB857078B0
+BLK#83 = (0,f400000000000000,4166786):5F75832206167CFFD3B22DE89CAE65E7E162FB0B00D9588887E7B7590BED6A30:681F25DB222343253632DEDF780948F4B3E23A81FFFD30E4374C116E65C76C4E
+BLK#84 = (0,f880000000000000,4166698):9409F081147DE5079DDC3775638F9C123C5CF45CA5E9848B4D0D672AFFE5FA98:2E2620B132D70E0A3EDE108337183F944E46267E05E2FB6BE6853AC7E76D5480
+BLK#85 = (0,f980000000000000,4166752):6C97C09B8C9953AFECE00DAC54461F0677EEA6B098653DB4782439377D96B0DF:BC4E719FD103D863B4112AE4A42A2492587CC89C798F693B99AB3F410B68A55E
+BLK#86 = (0,fb00000000000000,4166858):849002D1B112FC3FCE1F8E2554BA8ADB9140C4BC385E39F3D56960D7E4A950F0:089BF0A5851D87EB88CBE6C58D4C713842890F9869A84D291ECB50E9228C45B5
+BLK#87 = (0,fe00000000000000,4166761):61B12D0A2E18F1DFD37B8AA1F02E0C251DFA8890488BA7141037707026C1F74A:5FBF703A7FDE0E143DB0D956CC92A17CDE9DF543223E38F91C8D53992D2144B9

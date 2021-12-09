@@ -1,0 +1,11 @@
+ConfigParam(34) = (
+  cur_validators:(validators_ext utime_since:1619175079 utime_until:1619177079 total:1 main:1 total_weight:100
+    list:(hme_root
+      root:(hm_edge
+        label:(hml_same v:0 n:16)
+        node:(hmn_leaf
+          value:(validator
+            public_key:(ed25519_pubkey pubkey:x8374D2AD5FF8E09E69916E807720557F842D3956DA38708478A5AB1B6185C989) weight:100))))))
+
+x{126082A6A76082AE77000100010000000000000064C_}
+ x{D0538E81278A8374D2AD5FF8E09E69916E807720557F842D3956DA38708478A5AB1B6185C9890000000000000064}

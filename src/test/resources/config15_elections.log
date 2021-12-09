@@ -1,0 +1,2 @@
+ConfigParam(15) = ( validators_elected_for:4000 elections_start_before:2000 elections_end_before:500 stake_held_for:1000)
+x{00000FA0000007D0000001F4000003E8}

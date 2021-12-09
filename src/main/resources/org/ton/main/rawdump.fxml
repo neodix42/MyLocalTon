@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.embed.swing.SwingNode?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.paint.*?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/11.0.2" fx:controller="org.ton.ui.controllers.RawDumpController">
+    <center>
+        <SwingNode fx:id="swingid">
+
+        </SwingNode>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER">
+            <JFXButton fx:id="showDumpBtn" onAction="#showRawDump" style="-fx-alignment: bottom-right; -fx-padding: 2 10 2 10; -fx-background-color: grey;" text="Show raw dump" textFill="WHITE"
+                       userData="block">
+                <ripplerFill>
+                    <LinearGradient>
+                        <stops>
+                            <Stop>
+                                <color>
+                                    <Color red="0.055921051651239395" green="0.3886513113975525" blue="0.44736841320991516"/>
+                                </color>
+                            </Stop>
+                            <Stop offset="1.0">
+                                <color>
+                                    <Color red="1.0" green="1.0" blue="1.0"/>
+                                </color>
+                            </Stop>
+                        </stops>
+                    </LinearGradient>
+                </ripplerFill>
+            </JFXButton>
+        </HBox>
+    </bottom>
+</BorderPane>

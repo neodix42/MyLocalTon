@@ -1,0 +1,44 @@
+[ 3][t 1][1581949487.463485003][lite-client.cpp:1146][!testnode]        requesting transaction 3349866000001 of -1:34517C7BDF5187C55AF4F8B61FDC321588C7AB768DEE24B006DF29106458D7CF from blocks (-1,8000000000000000,2268700):DD340334D51C6B31A455C91AE1781EC3C14FBB109E13632419FA407E8B8F0051:A84BC49A749593AFDC898585E650C30B544D4EA4F7071C36C2EEE3ECAC9DEAA6
+[ 3][t 1][1581949487.469438076][lite-client.cpp:1376][!testnode]        got transaction 3349866000001 for -1:34517C7BDF5187C55AF4F8B61FDC321588C7AB768DEE24B006DF29106458D7CF with respect to blocks (-1,8000000000000000,2268700):DD340334D51C6B31A455C91AE1781EC3C14FBB109E13632419FA407E8B8F0051:A84BC49A749593AFDC898585E650C30B544D4EA4F7071C36C2EEE3ECAC9DEAA6
+transaction is (transaction account_addr:x34517C7BDF5187C55AF4F8B61FDC321588C7AB768DEE24B006DF29106458D7CF lt:3349866000001 prev_trans_hash:x10085E419E2D7875B7AABFE19972F124275E617502F2E972CB33F089E9165891 prev_trans_lt:3349865000003 now:1581949173 outmsg_cnt:0
+  orig_status:acc_state_active
+  end_status:acc_state_active
+  (
+    in_msg:nothing
+    out_msgs:hme_empty)
+  total_fees:(currencies
+    grams:(nanograms
+      amount:(var_uint len:0 value:0))
+    other:(extra_currencies
+      dict:hme_empty))
+  state_update:(update_hashes old_hash:xDF3735BC739F2D5D53F1BA2C06A04266874ABFD2A1B882A4CE659AAB764994D3 new_hash:xDCCE16DD98818912036E66681B98F80DE90A0466714276E68144EF9DB6F39258)
+  description:(trans_tick_tock is_tock:0
+    storage_ph:(tr_phase_storage
+      storage_fees_collected:(nanograms
+        amount:(var_uint len:0 value:0))
+      storage_fees_due:nothing
+      status_change:acst_unchanged)
+    compute_ph:(tr_phase_compute_vm success:1 msg_state_used:0 account_activated:0
+      gas_fees:(nanograms
+        amount:(var_uint len:0 value:0))
+      (
+        gas_used:(var_uint len:2 value:4909)
+        gas_limit:(var_uint len:3 value:10000000)
+        gas_credit:nothing mode:0 exit_code:0
+        exit_arg:nothing vm_steps:48 vm_init_state_hash:x0000000000000000000000000000000000000000000000000000000000000000 vm_final_state_hash:x0000000000000000000000000000000000000000000000000000000000000000))
+    action:(just
+      value:^(tr_phase_action success:0 valid:1 no_funds:1
+        status_change:acst_unchanged
+        total_fwd_fees:nothing
+        total_action_fees:nothing result_code:37
+        result_arg:(just
+          value:2) tot_actions:3 spec_actions:0 skipped_actions:0 msgs_created:2 action_list_hash:x8CD74278BDC7C59101354BAFFAAF8D58CFEF253B43A2690BC6FD31DDA99F083D
+        tot_msg_size:(storage_used_short
+          cells:(var_uint len:1 value:2)
+          bits:(var_uint len:2 value:1239)))) aborted:1 destroyed:0))
+x{734517C7BDF5187C55AF4F8B61FDC321588C7AB768DEE24B006DF29106458D7CF0000030BF392AE8110085E419E2D7875B7AABFE19972F124275E617502F2E972CB33F089E91658910000030BF3836C435E4AA0F5000140}
+ x{2_}
+ x{72DF3735BC739F2D5D53F1BA2C06A04266874ABFD2A1B882A4CE659AAB764994D3DCCE16DD98818912036E66681B98F80DE90A0466714276E68144EF9DB6F39258}
+ x{203034_}
+  x{4265AE625A0000000000000000003000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000}
+  x{600000009600000004000600000000000519AE84F17B8F8B22026A975FF55F1AB19FDE4A768744D2178DFA63BB533E107A409026BC_}

@@ -1,0 +1,708 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.URL?>
+<StackPane fx:id="superWindow" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.MainController">
+    <BorderPane id="main" fx:id="mainWindow" maxHeight="720.0" prefHeight="722.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1">
+        <stylesheets>
+            <URL value="@../css/global-font.css"/>
+        </stylesheets>
+        <top>
+            <HBox fx:id="topbar" prefHeight="58.0" prefWidth="600.0" style="-fx-background-color: #303757;" BorderPane.alignment="CENTER">
+                <HBox prefHeight="60.0" prefWidth="222.0" style="-fx-padding: 12 0 10 15;">
+                    <ImageView fitHeight="33.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+                        <Image url="@../images/logo.png"/>
+                    </ImageView>
+                    <VBox prefHeight="60.0" prefWidth="174.0" style="-fx-padding: 0 0 0 5;">
+                        <Label alignment="TOP_LEFT" prefHeight="28.0" prefWidth="191.0" style="-fx-text-fill: white; -fx-font-size: 18; -fx-padding: 0 0 0 10; -fx-text-alignment: center;"
+                               text="MyLocalTon"/>
+                        <Label alignment="TOP_LEFT" prefHeight="15.0" prefWidth="223.0" style="-fx-text-fill: white; -fx-font-size: 10; -fx-padding: 0 0 0 10; -fx-text-alignment: center;"
+                               text="The Open Network"/>
+                    </VBox>
+                </HBox>
+                <VBox prefHeight="58.0" prefWidth="208.0">
+                    <Label alignment="CENTER" prefHeight="28.0" prefWidth="208.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="CURRENT BLOCK" textAlignment="CENTER"/>
+                    <Label fx:id="currentBlockNum" alignment="CENTER" prefHeight="27.0" prefWidth="208.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="-" textAlignment="CENTER"/>
+                </VBox>
+                <VBox prefHeight="58.0" prefWidth="83.0">
+
+                    <Label alignment="CENTER" prefHeight="28.0" prefWidth="83.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="SHARDS" textAlignment="CENTER"/>
+                    <Label fx:id="shardsNum" alignment="CENTER" prefHeight="27.0" prefWidth="83.0" style="-fx-text-fill: white;-fx-font-size: 18;" text="-" textAlignment="CENTER"/>
+                </VBox>
+                <VBox onMouseClicked="#liteServerClicked" prefHeight="58.0" prefWidth="200.0">
+                    <Label alignment="CENTER" prefHeight="28.0" prefWidth="259.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="LITE SERVER" textAlignment="CENTER"/>
+                    <Label fx:id="liteClientInfo" alignment="CENTER" prefHeight="27.0" prefWidth="242.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="-"/>
+                    <cursor>
+                        <Cursor fx:constant="HAND"/>
+                    </cursor>
+                </VBox>
+                <VBox prefHeight="58.0" prefWidth="160.0">
+                    <Label alignment="CENTER" prefHeight="28.0" prefWidth="100.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="SIZE" textAlignment="CENTER"/>
+                    <Label fx:id="dbSizeId" alignment="CENTER" prefHeight="27.0" prefWidth="100.0" style="-fx-text-fill: white; -fx-font-size: 14;" text="-"/>
+                </VBox>
+                <BorderPane prefHeight="58.0" prefWidth="364.0">
+                    <center>
+                        <JFXTextField fx:id="searchField" focusColor="#ebeae0" focusTraversable="false" labelFloat="true" prefHeight="18.0" prefWidth="340.0"
+                                      promptText="SEARCH BLOCKS, ACCOUNTS, TXs..." style="-fx-border-color: white; -fx-prompt-text-fill: white; -fx-text-inner-color: white;" unFocusColor="#393535"
+                                      BorderPane.alignment="CENTER">
+                            <padding>
+                                <Insets left="5.0"/>
+                            </padding>
+                        </JFXTextField>
+                    </center>
+                </BorderPane>
+                <VBox prefHeight="58.0" style="-fx-alignment: center-right; -fx-padding: 0 0 0 15;">
+                    <JFXButton fx:id="scrollBtn" focusTraversable="false" onAction="#scrollBtnAction" prefHeight="15.0" prefWidth="15.0">
+                        <graphic>
+                            <ImageView fx:id="scrollBtnImageView" fitHeight="18.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                <Image url="@../images/scroll.png"/>
+                            </ImageView>
+                        </graphic>
+                    </JFXButton>
+                </VBox>
+            </HBox>
+        </top>
+        <center>
+            <JFXTabPane fx:id="mainMenuTabs" rotateGraphic="true" side="LEFT" style="-fx-background-color: white;" stylesheets="@../css/font.css" xmlns:fx="http://javafx.com/fxml/1">
+                <Tab fx:id="blocksTab">
+                    <graphic>
+                        <Group>
+                            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="209.0" rotate="90.0">
+                                <!--
+                               <ImageView fitHeight="48.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true">
+                                   <HBox.margin>
+                                       <Insets left="5.0"/>
+                                   </HBox.margin>
+                                   <Image url="@../images/blocks.png"/>
+                               </ImageView>
+                               -->
+                                <Label text="BLOCKS" textFill="WHITE">
+                                    <font>
+                                        <Font size="19.0"/>
+                                    </font>
+                                    <HBox.margin>
+                                        <Insets left="10.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                        </Group>
+                    </graphic>
+                    <BorderPane prefHeight="616.0" prefWidth="1079.0" style="-fx-background-color: dbedff;" xmlns:fx="http://javafx.com/fxml/1">
+                        <top>
+                            <VBox prefHeight="620.0" prefWidth="1079.0">
+                                <HBox prefHeight="44.0" BorderPane.alignment="CENTER">
+                                    <VBox prefHeight="55.0" prefWidth="99.0">
+                                        <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SEQNO"/>
+                                    </VBox>
+                                    <VBox prefHeight="55.0" prefWidth="99.0">
+                                        <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center; -fx-font-size: 16;" text="WORKCHAIN"/>
+                                    </VBox>
+                                    <VBox prefHeight="55.0" prefWidth="183.0">
+                                        <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="183.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SHARD"/>
+                                    </VBox>
+                                    <VBox prefHeight="55.0" prefWidth="160.0">
+                                        <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="MINED ON"/>
+                                    </VBox>
+                                    <VBox prefHeight="55.0" prefWidth="430.0">
+                                        <Label prefHeight="48.0" prefWidth="430.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FILE AND ROOT HASHES"/>
+                                    </VBox>
+                                    <Label prefHeight="45.0" prefWidth="101.0" style="-fx-alignment: center-right;-fx-padding: 0 15 0 0; -fx-font-size: 16;" text="DETAILS"/>
+                                </HBox>
+                                <JFXListView fx:id="blockslistviewid" focusTraversable="false" maxHeight="-Infinity" onScroll="#blocksOnScroll" prefHeight="583.0" prefWidth="1079.0"
+                                             style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
+                                    <!-- add dynamic content here -->
+                                </JFXListView>
+                            </VBox>
+                        </top>
+                    </BorderPane>
+                </Tab>
+                <Tab fx:id="transactionsTab">
+                    <graphic>
+                        <Group>
+                            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="209.0" rotate="90.0">
+                                <!--
+                                <ImageView fitHeight="48.0" fitWidth="73.0" pickOnBounds="true" preserveRatio="true">
+                                    <HBox.margin>
+                                        <Insets left="5.0"/>
+                                    </HBox.margin>
+
+                                    <Image url="@../images/transaction.png"/>
+                                </ImageView>
+                                -->
+                                <Label text="TRANSACTIONS" textFill="WHITE">
+                                    <font>
+                                        <Font size="19.0"/>
+                                    </font>
+                                    <HBox.margin>
+                                        <Insets left="10.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                        </Group>
+                    </graphic>
+                    <BorderPane prefHeight="22.0" prefWidth="921.0" style="-fx-background-color: dbedff;" xmlns:fx="http://javafx.com/fxml/1">
+                        <top>
+                            <VBox prefHeight="624.0" prefWidth="1079.0">
+                                <HBox prefHeight="44.0" prefWidth="978.0" BorderPane.alignment="CENTER">
+                                    <VBox minWidth="205.0" prefHeight="55.0" prefWidth="205.0">
+                                        <Label minWidth="205.0" prefHeight="48.0" prefWidth="205.0" style="-fx-alignment: center;-fx-font-size: 16;" text="BLOCK/STATUS"/>
+                                    </VBox>
+                                    <VBox prefHeight="55.0" prefWidth="127.0">
+                                        <Label prefHeight="48.0" prefWidth="127.0" style="-fx-alignment: center; -fx-font-size: 16;" text="HASH/TIME"/>
+                                    </VBox>
+                                    <VBox prefHeight="44.0" prefWidth="128.0">
+                                        <Label contentDisplay="CENTER" prefHeight="44.0" prefWidth="101.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TYPE"/>
+                                    </VBox>
+                                    <VBox prefHeight="55.0" prefWidth="350.0">
+                                        <Label prefHeight="44.0" prefWidth="361.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FROM/TO"/>
+                                    </VBox>
+                                    <VBox prefHeight="55.0" prefWidth="160.0">
+                                        <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TONCOINS/FEES"/>
+                                    </VBox>
+                                    <Label prefHeight="45.0" prefWidth="101.0" style="-fx-alignment: center-right;-fx-padding: 0 15 0 0; -fx-font-size: 16;" text="DETAILS"/>
+                                </HBox>
+                                <JFXListView fx:id="transactionsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#txsOnScroll" prefHeight="582.0" prefWidth="1079.0"
+                                             style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
+                                    <!-- add dynamic content here -->
+                                </JFXListView>
+                            </VBox>
+                        </top>
+                    </BorderPane>
+
+                </Tab>
+                <Tab fx:id="accountsTab">
+                    <graphic>
+                        <Group>
+                            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="209.0" rotate="90.0">
+                                <!--
+                               <ImageView fitHeight="48.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true">
+                                   <HBox.margin>
+                                       <Insets left="5.0"/>
+                                   </HBox.margin>
+
+                                   <Image url="@../images/accounts.png"/>
+
+                                </ImageView>
+                                -->
+                                <Label text="ACCOUNTS" textFill="WHITE">
+                                    <font>
+                                        <Font size="19.0"/>
+                                    </font>
+                                    <HBox.margin>
+                                        <Insets left="10.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                        </Group>
+                    </graphic>
+                    <Pane prefHeight="22.0" prefWidth="921.0" style="-fx-background-color: dbedff;" xmlns:fx="http://javafx.com/fxml/1">
+                        <VBox prefHeight="620.0" prefWidth="1077.0">
+                            <HBox prefHeight="44.0" prefWidth="924.0" BorderPane.alignment="CENTER">
+                                <VBox prefHeight="44.0" prefWidth="740.0">
+                                    <Label prefHeight="44.0" prefWidth="740.0" style="-fx-alignment: center;-fx-font-size: 16;" text="ACCOUNT"/>
+                                </VBox>
+                                <VBox prefHeight="55.0" prefWidth="188.0">
+                                    <Label prefHeight="48.0" prefWidth="188.0" style="-fx-alignment: center; -fx-font-size: 16;" text="BALANCE"/>
+                                </VBox>
+
+                                <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0" BorderPane.alignment="CENTER">
+                                    <Label prefHeight="48.0" prefWidth="199.0" style="-fx-alignment: center-right;-fx-padding: 0 20 0 0; -fx-font-size: 16;"/>
+                                </HBox>
+                            </HBox>
+                            <JFXListView fx:id="accountsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#accountsOnScroll" prefHeight="579.0" prefWidth="1077.0"
+                                         style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
+                                <!-- add dynamic content here
+                                <fx:include fx:id="accs" source="accountrow.fxml"/>
+                                -->
+                            </JFXListView>
+                        </VBox>
+                        <JFXButton layoutX="1000" layoutY="550" onAction="#createNewAccountBtn" prefHeight="40.0" prefWidth="40.0">
+                            <graphic>
+                                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                    <Image url="@../images/addaccount.png"/>
+                                </ImageView>
+                            </graphic>
+                        </JFXButton>
+                    </Pane>
+                </Tab>
+                <Tab fx:id="logsTab">
+                    <graphic>
+                        <Group>
+                            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="209.0" rotate="90.0">
+                                <!--
+                               <ImageView fitHeight="48.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true">
+                                   <HBox.margin>
+                                       <Insets left="5.0"/>
+                                   </HBox.margin>
+
+                                   <Image url="@../images/logs.png"/>
+
+                               </ImageView>
+                               -->
+                                <Label text="LOGS" textFill="WHITE">
+                                    <font>
+                                        <Font size="19.0"/>
+                                    </font>
+                                    <HBox.margin>
+                                        <Insets left="10.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                        </Group>
+                    </graphic>
+
+                    <JFXTabPane>
+                        <Tab text="Logs">
+                            <GridPane hgap="10" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
+                                <padding>
+                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                </padding>
+                                <columnConstraints>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                </rowConstraints>
+
+                                <Label text="Genesis node logs directory" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <JFXTextField fx:id="valLogDir" editable="false" text="/home/alex/validator/" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <JFXButton onAction="#valLogDirBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                            <Image url="@../images/folder.png"/>
+                                        </ImageView>
+                                    </graphic>
+                                </JFXButton>
+
+                                <Label text="DHT server log directory" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <JFXTextField fx:id="dhtLogDir" editable="false" text="/home/alex/dht-server.log" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                <JFXButton onAction="#dhtLogDirBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                            <Image url="@../images/folder.png"/>
+                                        </ImageView>
+                                    </graphic>
+                                </JFXButton>
+
+                                <Label text="MyLocalTon log file" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                <JFXTextField fx:id="myLocalTonLog" editable="false" minWidth="600.0" text="/home/alex/myLocalTon.log" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <JFXButton onAction="#myLocalTonFileBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                            <Image url="@../images/folder.png"/>
+                                        </ImageView>
+                                    </graphic>
+                                </JFXButton>
+
+                                <Label text="MyLocalTon DB log directory" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                <JFXTextField fx:id="myLocalTonDbLogDir" editable="false" minWidth="600.0" text="/home/alex/myLocalTonDB/" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                <JFXButton fx:id="myLocalTonDbDirBtn" onAction="#myLocalTonDbDirBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                    <graphic>
+                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                            <Image url="@../images/folder.png"/>
+                                        </ImageView>
+                                    </graphic>
+                                </JFXButton>
+
+                                <Label prefHeight="28.0" text="MyLocalTon log level" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                                <JFXComboBox fx:id="myLogLevel" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                <Label prefHeight="28.0" text="Genesis node log level" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                <JFXComboBox fx:id="tonLogLevel" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                            </GridPane>
+                        </Tab>
+                    </JFXTabPane>
+                </Tab>
+                <Tab fx:id="settingsTab">
+                    <graphic>
+                        <Group>
+                            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="209.0" rotate="90.0">
+                                <!--
+                                <ImageView fitHeight="48.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true">
+                                    <HBox.margin>
+                                        <Insets left="5.0" />
+                                    </HBox.margin>
+
+                                    <Image url="@../images/settings.png"/>
+
+                                </ImageView>
+                                -->
+                                <Label text="SETTINGS" textFill="WHITE">
+                                    <font>
+                                        <Font size="19.0"/>
+                                    </font>
+                                    <HBox.margin>
+                                        <Insets left="10.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                        </Group>
+                    </graphic>
+                    <JFXTabPane fx:id="settingTabs" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <Tab text="Account &amp; Keys">
+                            <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                <padding>
+                                    <Insets bottom="25.0" left="25.0" right="25.0" top="50.0"/>
+                                </padding>
+                                <columnConstraints>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                </rowConstraints>
+
+                                <Label prefHeight="35" text="Number of preinstalled wallets" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <JFXSlider fx:id="walletsNumber" blockIncrement="1.0" majorTickUnit="1.0" max="30" min="2" minorTickCount="0" snapToTicks="true" value="5" GridPane.columnIndex="1"
+                                           GridPane.rowIndex="0"/>
+
+                                <Label prefHeight="35" text="Toncoins per wallet" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <JFXTextField fx:id="coinsPerWallet" text="30000" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                                <Label prefHeight="35" text="Wallet type" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                <JFXComboBox fx:id="walletVersion" minWidth="100.0" promptText="Wallet V1" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                            </GridPane>
+                        </Tab>
+                        <Tab text="Network">
+                            <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                <padding>
+                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                </padding>
+                                <columnConstraints>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                </rowConstraints>
+
+                                <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <JFXTextField fx:id="nodePublicPort" maxWidth="50" text="4442" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <JFXTextField fx:id="nodeConsolePort" maxWidth="50" text="4441" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                <JFXTextField fx:id="litesServerPort" maxWidth="50" text="4443" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <Label text="DHT server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                <JFXTextField fx:id="dhtServerPort" maxWidth="50" text="6302" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset" GridPane.columnSpan="3" GridPane.rowIndex="4"/>
+                            </GridPane>
+                        </Tab>
+                        <Tab text="UI">
+                            <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                <padding>
+                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                </padding>
+                                <columnConstraints>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                </rowConstraints>
+
+                                <Label text="Show Tick/Tock transactions" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <JFXCheckBox fx:id="tickTockCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <Label text="Show activities between main and config contracts" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <JFXCheckBox fx:id="mainConfigTxCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                <Label text="Show in/out messages" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                <JFXCheckBox fx:id="inOutMsgsCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <Label text="Show shard state in block dump" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                <JFXCheckBox fx:id="shardStateCheckbox" checkedColor="#0088CC" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                <Label text="Show body in messages" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                                <JFXCheckBox fx:id="showMsgBodyCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                            </GridPane>
+                        </Tab>
+                        <Tab text="Blockchain">
+                            <BorderPane>
+                                <center>
+                                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints prefWidth="160.0"/>
+                                            <ColumnConstraints prefWidth="120.0"/>
+                                            <ColumnConstraints prefWidth="160.0"/>
+                                            <ColumnConstraints prefWidth="120.0"/>
+                                            <ColumnConstraints prefWidth="420.0"/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Global ID" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                            <tooltip>
+                                                <Tooltip text="Negative value means a test instance of the blockchain"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="globalId" text="-239" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                                        <Label text="Initial balance" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXTextField fx:id="initialBalance" text="4999990000" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                                        <Label text="max-validators" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="maxValidators" disable="true" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+                                        <Label text="max-main-validators" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                        <JFXTextField fx:id="maxMainValidators" disable="true" text="100" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                                        <Label text="min-validators" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                                        <JFXTextField fx:id="minValidators" disable="true" text="1" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+                                        <Label text="elected-for" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="electedFor" disable="true" text="1080" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                        <Label text="min-stake" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="minStake" disable="true" text="10000" GridPane.columnIndex="3" GridPane.rowIndex="5"/>
+
+                                        <Label text="elect-start-before" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="electionStartBefore" disable="true" text="300" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                        <Label text="max-stake" GridPane.columnIndex="2" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="maxStake" disable="true" text="10000000" GridPane.columnIndex="3" GridPane.rowIndex="6"/>
+
+                                        <Label text="elect-end-before" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                        <JFXTextField fx:id="electionEndBefore" disable="true" text="60" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                                        <Label text="min-total-stake" GridPane.columnIndex="2" GridPane.rowIndex="7"/>
+                                        <JFXTextField fx:id="minTotalStake" disable="true" text="500000" GridPane.columnIndex="3" GridPane.rowIndex="7"/>
+
+                                        <Label text="stakes-frozen-for" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                                        <JFXTextField fx:id="stakesFrozenFor" disable="true" text="120" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                                        <Label text="max-factor" GridPane.columnIndex="2" GridPane.rowIndex="8"/>
+                                        <JFXTextField fx:id="maxFactor" disable="true" text="3" GridPane.columnIndex="3" GridPane.rowIndex="8"/>
+
+                                        <Label text="gas-price-wc" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+                                        <JFXTextField fx:id="gasPrice" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                                        <Label text="gas-price-mc" GridPane.columnIndex="2" GridPane.rowIndex="9"/>
+                                        <JFXTextField fx:id="gasPriceMc" text="10000" GridPane.columnIndex="3" GridPane.rowIndex="9"/>
+
+                                        <Label text="cell-price-wc" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
+                                        <JFXTextField fx:id="cellPrice" text="100000" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                                        <Label text="cell-price-mc" GridPane.columnIndex="2" GridPane.rowIndex="10"/>
+                                        <JFXTextField fx:id="cellPriceMc" text="1000000" GridPane.columnIndex="3" GridPane.rowIndex="10"/>
+
+                                        <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="11">
+                                            <tooltip>
+                                                <Tooltip text="State will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeStateTtl" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="11"/>
+
+                                        <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="12">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeBlockTtl" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+
+                                        <Label text="Node archive TTL" GridPane.columnIndex="0" GridPane.rowIndex="13">
+                                            <tooltip>
+                                                <Tooltip text="Archived blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeArchiveTtl" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="13"/>
+
+                                        <Label text="Node key proof TTL" GridPane.columnIndex="0" GridPane.rowIndex="14">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeKeyProofTtl" text="315360000" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+
+                                        <Label text="Node sync before" GridPane.columnIndex="0" GridPane.rowIndex="15">
+                                            <tooltip>
+                                                <Tooltip text="In initial sync download all blocks for last given seconds"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeSyncBefore" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
+                                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset" GridPane.columnSpan="3"
+                                               GridPane.rowIndex="16"/>
+                                        <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="4" GridPane.rowIndex="16">
+                                            <BorderPane.margin>
+                                                <Insets right="20.0"/>
+                                            </BorderPane.margin>
+                                            <JFXButton alignment="CENTER" onAction="#transformAction" prefHeight="31.0" prefWidth="100.0" text="Transform" textAlignment="CENTER"/>
+                                            <JFXButton alignment="CENTER" onAction="#resetAction" prefHeight="31.0" prefWidth="100.0" text="Reset" textAlignment="CENTER"/>
+                                        </HBox>
+                                    </GridPane>
+                                </center>
+                            </BorderPane>
+                        </Tab>
+                        <Tab text="About">
+                            <BorderPane>
+                                <center>
+                                    <VBox alignment="CENTER">
+                                        <ImageView fx:id="aboutLogo" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                                            <Image url="@../images/logo2.png"/>
+                                        </ImageView>
+                                        <Label style="-fx-alignment: center; -fx-font-size: 16;" text="v1.0.4-alpha"/>
+                                        <Label style="-fx-alignment: center; -fx-font-size: 16;" text="The Open Network"/>
+                                        <Label style="-fx-alignment: center; -fx-font-size: 16;" text="Telegram @neodix"/>
+                                        <BorderPane.margin>
+                                            <Insets bottom="150.0"/>
+                                        </BorderPane.margin>
+                                    </VBox>
+                                </center>
+                            </BorderPane>
+                        </Tab>
+                    </JFXTabPane>
+
+                </Tab>
+                <Tab fx:id="searchTab">
+                    <graphic>
+                        <Group>
+                            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="209.0" rotate="90.0">
+                                <!--
+                                <ImageView fitHeight="48.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true">
+                                    <HBox.margin>
+                                        <Insets left="5.0"/>
+                                    </HBox.margin>
+                                    <Image url="@../images/search.png"/>
+                                </ImageView>
+                                -->
+                                <Label fx:id="searchTabText" text="SEARCH RESULTS" textFill="WHITE">
+                                    <font>
+                                        <Font size="19.0"/>
+                                    </font>
+                                    <HBox.margin>
+                                        <Insets left="10.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                        </Group>
+                    </graphic>
+                    <JFXTabPane fx:id="foundTabs">
+                        <Tab fx:id="foundBlocks" text="Blocks">
+                            <BorderPane prefHeight="563.0" prefWidth="1079.0" style="-fx-background-color: dbedff;-fx-padding: 0 0 0 0;" xmlns:fx="http://javafx.com/fxml/1">
+                                <top>
+                                    <VBox prefHeight="593.0" prefWidth="1079.0">
+                                        <HBox prefHeight="55.0" BorderPane.alignment="CENTER">
+                                            <VBox prefHeight="55.0" prefWidth="99.0">
+                                                <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SEQNO"/>
+                                            </VBox>
+                                            <VBox prefHeight="55.0" prefWidth="99.0">
+                                                <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center; -fx-font-size: 16;" text="WORKCHAIN"/>
+                                            </VBox>
+                                            <VBox prefHeight="55.0" prefWidth="183.0">
+                                                <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="183.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SHARD"/>
+                                            </VBox>
+                                            <VBox prefHeight="55.0" prefWidth="160.0">
+                                                <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="MINED ON"/>
+                                            </VBox>
+                                            <VBox prefHeight="55.0" prefWidth="430.0">
+                                                <Label prefHeight="48.0" prefWidth="430.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FILE AND ROOT HASHES"/>
+                                            </VBox>
+                                            <Label prefHeight="55.0" prefWidth="101.0" style="-fx-alignment: center-right;-fx-padding: 0 15 0 0; -fx-font-size: 16;" text="DETAILS"/>
+                                        </HBox>
+                                        <JFXListView fx:id="foundBlockslistviewid" focusTraversable="false" onScroll="#foundBlocksOnScroll" prefHeight="537.0" prefWidth="1079.0"
+                                                     style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
+                                            <!-- add dynamic content here -->
+                                        </JFXListView>
+                                    </VBox>
+                                </top>
+                            </BorderPane>
+                        </Tab>
+                        <Tab fx:id="foundAccounts" text="Accounts">
+                            <BorderPane prefHeight="569.0" prefWidth="1079.0" style="-fx-background-color: dbedff;-fx-padding: 0 0 0 0;" xmlns:fx="http://javafx.com/fxml/1">
+                                <top>
+                                    <VBox prefHeight="587.0" prefWidth="1079.0">
+                                        <HBox prefHeight="55.0" prefWidth="924.0" BorderPane.alignment="CENTER">
+                                            <VBox prefHeight="55.0" prefWidth="740.0">
+                                                <Label prefHeight="48.0" prefWidth="740.0" style="-fx-alignment: center;-fx-font-size: 16;" text="ACCOUNT"/>
+                                            </VBox>
+                                            <VBox prefHeight="55.0" prefWidth="168.0">
+                                                <Label prefHeight="48.0" prefWidth="168.0" style="-fx-alignment: center;-fx-font-size: 16;" text="BALANCE"/>
+                                            </VBox>
+
+                                            <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0" BorderPane.alignment="CENTER">
+                                                <Label prefHeight="48.0" prefWidth="199.0" style="-fx-alignment: center-right;-fx-padding: 0 20 0 0; -fx-font-size: 16;"/>
+                                            </HBox>
+                                        </HBox>
+                                        <JFXListView fx:id="foundAccountsvboxid" focusTraversable="false" onScroll="#accountsOnScroll" prefHeight="555.0" prefWidth="1079.0"
+                                                     style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
+                                            <!-- add dynamic content here
+                                            <fx:include fx:id="accs" source="accountrow.fxml"/>
+                                            -->
+                                        </JFXListView>
+                                    </VBox>
+                                </top>
+                            </BorderPane>
+                        </Tab>
+                        <Tab fx:id="foundTxs" text="TXs/Messages">
+                            <BorderPane prefHeight="592.0" prefWidth="1079.0" style="-fx-background-color: dbedff;-fx-padding: 0 0 0 0;" xmlns:fx="http://javafx.com/fxml/1">
+                                <top>
+                                    <VBox prefHeight="595.0" prefWidth="1079.0">
+                                        <HBox prefHeight="44.0" prefWidth="978.0" BorderPane.alignment="CENTER">
+                                            <VBox minWidth="205.0" prefHeight="55.0" prefWidth="205.0">
+                                                <Label minWidth="205.0" prefHeight="48.0" prefWidth="205.0" style="-fx-alignment: center;-fx-font-size: 16;" text="BLOCK/STATUS"/>
+                                            </VBox>
+                                            <VBox prefHeight="55.0" prefWidth="127.0">
+                                                <Label prefHeight="48.0" prefWidth="127.0" style="-fx-alignment: center; -fx-font-size: 16;" text="HASH/TIME"/>
+                                            </VBox>
+                                            <VBox prefHeight="55.0" prefWidth="127.0">
+                                                <Label contentDisplay="CENTER" prefHeight="48.0" prefWidth="105.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TYPE"/>
+                                            </VBox>
+                                            <VBox prefHeight="55.0" prefWidth="350.0">
+                                                <Label prefHeight="48.0" prefWidth="350.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FROM/TO"/>
+                                            </VBox>
+                                            <VBox prefHeight="55.0" prefWidth="160.0">
+                                                <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TONCOINS/FEES"/>
+                                            </VBox>
+                                            <Label prefHeight="45.0" prefWidth="101.0" style="-fx-alignment: center-right;-fx-padding: 0 15 0 0; -fx-font-size: 16;" text="DETAILS"/>
+                                        </HBox>
+                                        <JFXListView fx:id="foundTxsvboxid" focusTraversable="false" onScroll="#foundTxsOnScroll" prefHeight="554.0" prefWidth="1079.0"
+                                                     style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
+                                            <!-- add dynamic content here -->
+                                        </JFXListView>
+                                    </VBox>
+                                </top>
+                            </BorderPane>
+                        </Tab>
+                    </JFXTabPane>
+                </Tab>
+            </JFXTabPane>
+        </center>
+        <bottom>
+            <Label fx:id="statusBar" alignment="CENTER" prefHeight="39.0" prefWidth="1298.0" style="-fx-background-color: #dbedff;" BorderPane.alignment="CENTER"/>
+        </bottom>
+    </BorderPane>
+</StackPane>

@@ -1,0 +1,17 @@
+.button {
+    -fx-text-fill: #0088CC;
+}
+
+.root {
+}
+
+.jfx-tab-pane .headers-region {
+    -fx-background-color: #0088CC;
+}
+.jfx-tab-pane .tab-header-background {
+    -fx-background-color: #0088CC;
+}
+.jfx-tab-pane .tab-selected-line {
+    -fx-stroke: #0088CC;
+    -fx-stroke-width: 3pt;
+}

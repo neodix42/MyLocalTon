@@ -1,0 +1,116 @@
+←[1;32m[ 3][t 1][2021-10-21 15:23:42.0438686][lite-client.cpp:2791][!testnode]  got block download request for (0,8000000000000000,1):B09CDEA1BF299E87004BEF9E75052277C0D28161228648DBDAF1ABE046425CEF:58F5E0D92CCEC48491EA0B111CBA42098F7B0A78F75BCD69CDAC3D1A9A01C3AA
+←[0m←[1;32m[ 3][t 2][2021-10-21 15:23:42.0472772][lite-client.cpp:2807][!testnode]      obtained block (0,8000000000000000,1):B09CDEA1BF299E87004BEF9E75052277C0D28161228648DBDAF1ABE046425CEF:58F5E0D92CCEC48491EA0B111CBA42098F7B0A78F75BCD69CDAC3D1A9A01C3AA from server
+←[0m←[1;32m[ 3][t 2][2021-10-21 15:23:42.0479528][lite-client.cpp:2850][!testnode]      obtained 746 data bytes for block (0,8000000000000000,1):B09CDEA1BF299E87004BEF9E75052277C0D28161228648DBDAF1ABE046425CEF:58F5E0D92CCEC48491EA0B111CBA42098F7B0A78F75BCD69CDAC3D1A9A01C3AA
+←[0mblock header of (0,8000000000000000,1):B09CDEA1BF299E87004BEF9E75052277C0D28161228648DBDAF1ABE046425CEF:58F5E0D92CCEC48491EA0B111CBA42098F7B0A78F75BCD69CDAC3D1A9A01C3AA @ 1634828587 lt 2000000 .. 2000001
+global_id=-239 version=0 not_master=true after_merge=false after_split=false before_split=false want_merge=false want_split=false validator_list_hash_short=2550907968 catchain_seqno=1 min_ref_mc_seqno=1
+previous block #1 : (0,8000000000000000,0):EBFD412D8372C94D3C6450C26D1AB3DA6ACE7EC41E23031C863383837021ACC7:AB5E5A279E5785F7CE945FCC97786877DD0970421B337F6334DA949D80EE8A7F
+reference masterchain block : (-1,8000000000000000,1):F56D063025913CDEFE3B390FF41EC8ED41520C80F642EEE25B0C856F5E2C6374:5D175AA35DB46E6038E6FE3F7F044A597B14AC4167B84E75D36FFCEB4A76BC58
+block contents is (block global_id:-239
+  info:(block_info version:0 not_master:1 after_merge:0 before_split:0 after_split:0 want_split:0 want_merge:0 key_block:0 vert_seqno_incr:0 flags:1 seq_no:1 vert_seq_no:0
+    shard:(shard_ident shard_pfx_bits:0 workchain_id:0 shard_prefix:0) gen_utime:1634828587 start_lt:2000000 end_lt:2000001 gen_validator_list_hash_short:2550907968 gen_catchain_seqno:1 min_ref_mc_seqno:1 prev_key_block_seqno:0
+    gen_software:(capabilities version:3 capabilities:46)
+    master_ref:(master_info
+      master:(ext_blk_ref end_lt:1000012 seq_no:1 root_hash:xF56D063025913CDEFE3B390FF41EC8ED41520C80F642EEE25B0C856F5E2C6374 file_hash:x5D175AA35DB46E6038E6FE3F7F044A597B14AC4167B84E75D36FFCEB4A76BC58))
+    prev_ref:(prev_blk_info
+      prev:(ext_blk_ref end_lt:0 seq_no:0 root_hash:xEBFD412D8372C94D3C6450C26D1AB3DA6ACE7EC41E23031C863383837021ACC7 file_hash:xAB5E5A279E5785F7CE945FCC97786877DD0970421B337F6334DA949D80EE8A7F)))
+  value_flow:(value_flow
+    (
+      from_prev_blk:(currencies
+        grams:(nanograms
+          amount:(var_uint len:0 value:0))
+        other:(extra_currencies
+          dict:hme_empty))
+      to_next_blk:(currencies
+        grams:(nanograms
+          amount:(var_uint len:0 value:0))
+        other:(extra_currencies
+          dict:hme_empty))
+      imported:(currencies
+        grams:(nanograms
+          amount:(var_uint len:0 value:0))
+        other:(extra_currencies
+          dict:hme_empty))
+      exported:(currencies
+        grams:(nanograms
+          amount:(var_uint len:0 value:0))
+        other:(extra_currencies
+          dict:hme_empty)))
+    fees_collected:(currencies
+      grams:(nanograms
+        amount:(var_uint len:4 value:1000000000))
+      other:(extra_currencies
+        dict:hme_empty))
+    (
+      fees_imported:(currencies
+        grams:(nanograms
+          amount:(var_uint len:0 value:0))
+        other:(extra_currencies
+          dict:hme_empty))
+      recovered:(currencies
+        grams:(nanograms
+          amount:(var_uint len:0 value:0))
+        other:(extra_currencies
+          dict:hme_empty))
+      created:(currencies
+        grams:(nanograms
+          amount:(var_uint len:4 value:1000000000))
+        other:(extra_currencies
+          dict:hme_empty))
+      minted:(currencies
+        grams:(nanograms
+          amount:(var_uint len:0 value:0))
+        other:(extra_currencies
+          dict:hme_empty))))
+  state_update:(raw@(MERKLE_UPDATE ShardState)
+    SPECIAL x{04EBFD412D8372C94D3C6450C26D1AB3DA6ACE7EC41E23031C863383837021ACC708A86EB883AC85B635F3655F67A2AC03E72B9171F27D61D0A6D0B39B7F2F614400010002}
+     SPECIAL x{0101EBFD412D8372C94D3C6450C26D1AB3DA6ACE7EC41E23031C863383837021ACC70001}
+     x{9023AFE2FFFFFF110000000000000000000000000000000001000000006171812B00000000001E8481000000012_}
+      x{00000000000000005_}
+       x{B0400000000000000000000000800000000007A125FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC_}
+      x{001_}
+      x{00000000000000000000000000000001021DCD6500100000000000F424C00000001F56D063025913CDEFE3B390FF41EC8ED41520C80F642EEE25B0C856F5E2C63745D175AA35DB46E6038E6FE3F7F044A597B14AC4167B84E75D36FFCEB4A76BC58}
+    )
+  extra:(block_extra
+    in_msg_descr:(
+      (ahme_empty
+        extra:(import_fees
+          fees_collected:(nanograms
+            amount:(var_uint len:0 value:0))
+          value_imported:(currencies
+            grams:(nanograms
+              amount:(var_uint len:0 value:0))
+            other:(extra_currencies
+              dict:hme_empty)))))
+    out_msg_descr:(
+      (ahme_empty
+        extra:(currencies
+          grams:(nanograms
+            amount:(var_uint len:0 value:0))
+          other:(extra_currencies
+            dict:hme_empty))))
+    account_blocks:(
+      (ahme_empty
+        extra:(currencies
+          grams:(nanograms
+            amount:(var_uint len:0 value:0))
+          other:(extra_currencies
+            dict:hme_empty)))) rand_seed:xFDDF91D012D854917B168B3CDCA01F1054C585E6D9F5E301F20591624F991ACF created_by:x7B98BD8B8F1DF7389E3C76200BF36014A44EB68F3775E3AB5B2895D21BFF4037
+    custom:nothing))
+x{11EF55AAFFFFFF11}
+ x{9BC7A9870000000080010000000100000000000000000000000000000000006171812B00000000001E848000000000001E8481980BC440000000010000000100000000C400000003000000000000002E}
+  x{00000000000F424C00000001F56D063025913CDEFE3B390FF41EC8ED41520C80F642EEE25B0C856F5E2C63745D175AA35DB46E6038E6FE3F7F044A597B14AC4167B84E75D36FFCEB4A76BC58}
+  x{000000000000000000000000EBFD412D8372C94D3C6450C26D1AB3DA6ACE7EC41E23031C863383837021ACC7AB5E5A279E5785F7CE945FCC97786877DD0970421B337F6334DA949D80EE8A7F}
+ x{B8E48DFB43B9ACA004_}
+  x{00000}
+  x{0010EE6B28000}
+ SPECIAL x{04EBFD412D8372C94D3C6450C26D1AB3DA6ACE7EC41E23031C863383837021ACC708A86EB883AC85B635F3655F67A2AC03E72B9171F27D61D0A6D0B39B7F2F614400010002}
+  SPECIAL x{0101EBFD412D8372C94D3C6450C26D1AB3DA6ACE7EC41E23031C863383837021ACC70001}
+  x{9023AFE2FFFFFF110000000000000000000000000000000001000000006171812B00000000001E8481000000012_}
+   x{00000000000000005_}
+    x{B0400000000000000000000000800000000007A125FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC_}
+   x{001_}
+   x{00000000000000000000000000000001021DCD6500100000000000F424C00000001F56D063025913CDEFE3B390FF41EC8ED41520C80F642EEE25B0C856F5E2C63745D175AA35DB46E6038E6FE3F7F044A597B14AC4167B84E75D36FFCEB4A76BC58}
+ x{4A33F6FDFDDF91D012D854917B168B3CDCA01F1054C585E6D9F5E301F20591624F991ACF7B98BD8B8F1DF7389E3C76200BF36014A44EB68F3775E3AB5B2895D21BFF40374_}
+  x{002_}
+  x{02_}
+  x{02_}

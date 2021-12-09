@@ -1,0 +1,74 @@
+[ 3][t 1][1581949563.064485073][lite-client.cpp:1146][!testnode]        requesting transaction 3349866000002 of -1:3333333333333333333333333333333333333333333333333333333333333333 from blocks (-1,8000000000000000,2268700):DD340334D51C6B31A455C91AE1781EC3C14FBB109E13632419FA407E8B8F0051:A84BC49A749593AFDC898585E650C30B544D4EA4F7071C36C2EEE3ECAC9DEAA6
+[ 3][t 1][1581949563.069531202][lite-client.cpp:1376][!testnode]        got transaction 3349866000002 for -1:3333333333333333333333333333333333333333333333333333333333333333 with respect to blocks (-1,8000000000000000,2268700):DD340334D51C6B31A455C91AE1781EC3C14FBB109E13632419FA407E8B8F0051:A84BC49A749593AFDC898585E650C30B544D4EA4F7071C36C2EEE3ECAC9DEAA6
+transaction is (transaction account_addr:x3333333333333333333333333333333333333333333333333333333333333333 lt:3349866000002 prev_trans_hash:x54F3DD0F0566EAA267DEA17DD2D174D96DB0A9F7A53F7C551A5241A953CCAFBF prev_trans_lt:3349866000001 now:1581949173 outmsg_cnt:0
+  orig_status:acc_state_active
+  end_status:acc_state_active
+  (
+    in_msg:(just
+      value:^(message
+        info:(int_msg_info ihr_disabled:1 bounce:1 bounced:0
+          src:(addr_std
+            anycast:nothing workchain_id:-1 address:x0000000000000000000000000000000000000000000000000000000000000000)
+          dest:(addr_std
+            anycast:nothing workchain_id:-1 address:x3333333333333333333333333333333333333333333333333333333333333333)
+          value:(currencies
+            grams:(nanograms
+              amount:(var_uint len:4 value:2700000000))
+            other:(extra_currencies
+              dict:hme_empty))
+          ihr_fee:(nanograms
+            amount:(var_uint len:0 value:0))
+          fwd_fee:(nanograms
+            amount:(var_uint len:0 value:0)) created_lt:3349866000000 created_at:1581949173)
+        init:nothing
+        body:(left
+          value:(raw@Any
+            x{}
+            ))))
+    out_msgs:hme_empty)
+  total_fees:(currencies
+    grams:(nanograms
+      amount:(var_uint len:0 value:0))
+    other:(extra_currencies
+      dict:hme_empty))
+  state_update:(update_hashes old_hash:x33732DBB6B362F59F4C6941E6919E0302B9A359B7F9DC861AE21B184D098C2DD new_hash:xDB8145C75A66FCE35230391022CA51F34F0F0FBE841EB97472FB1CC751131DD3)
+  description:(trans_ord credit_first:0
+    storage_ph:(just
+      value:(tr_phase_storage
+        storage_fees_collected:(nanograms
+          amount:(var_uint len:0 value:0))
+        storage_fees_due:nothing
+        status_change:acst_unchanged))
+    credit_ph:(just
+      value:(tr_phase_credit
+        due_fees_collected:nothing
+        credit:(currencies
+          grams:(nanograms
+            amount:(var_uint len:4 value:2700000000))
+          other:(extra_currencies
+            dict:hme_empty))))
+    compute_ph:(tr_phase_compute_vm success:1 msg_state_used:0 account_activated:0
+      gas_fees:(nanograms
+        amount:(var_uint len:0 value:0))
+      (
+        gas_used:(var_uint len:2 value:5798)
+        gas_limit:(var_uint len:3 value:270000)
+        gas_credit:nothing mode:0 exit_code:0
+        exit_arg:nothing vm_steps:101 vm_init_state_hash:x0000000000000000000000000000000000000000000000000000000000000000 vm_final_state_hash:x0000000000000000000000000000000000000000000000000000000000000000))
+    action:(just
+      value:^(tr_phase_action success:1 valid:1 no_funds:0
+        status_change:acst_unchanged
+        total_fwd_fees:nothing
+        total_action_fees:nothing result_code:0
+        result_arg:nothing tot_actions:0 spec_actions:0 skipped_actions:0 msgs_created:0 action_list_hash:x96A296D224F285C67BEE93C30F8A309157F0DAA35DC5B87E410B78630A09CFC7
+        tot_msg_size:(storage_used_short
+          cells:(var_uint len:0 value:0)
+          bits:(var_uint len:0 value:0)))) aborted:0
+    bounce:nothing destroyed:0))
+x{733333333333333333333333333333333333333333333333333333333333333330000030BF392AE8254F3DD0F0566EAA267DEA17DD2D174D96DB0A9F7A53F7C551A5241A953CCAFBF0000030BF392AE815E4AA0F5000140}
+ x{A_}
+  x{69FE00000000000000000000000000000000000000000000000000000000000000013FCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCD283BAEC000000000617E7255D00BC9541EA4_}
+ x{7233732DBB6B362F59F4C6941E6919E0302B9A359B7F9DC861AE21B184D098C2DDDB8145C75A66FCE35230391022CA51F34F0F0FBE841EB97472FB1CC751131DD3}
+ x{0409283BAEC01811_}
+  x{42D4CC107AC000000000000000006500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000}
+  x{C00000000000000000000000012D452DA449E50B8CF7DD27861F146122AFE1B546BB8B70FC8216F0C614139F8E04_}

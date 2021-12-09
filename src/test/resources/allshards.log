@@ -1,0 +1,80 @@
+
+[ 3][t 2][1581949620.320427895][lite-client.cpp:1677][!testnode]        requesting recent shard configuration
+[ 3][t 1][1581949620.327232838][lite-client.cpp:1694][!testnode]        got shard configuration with respect to blocks (-1,8000000000000000,2268700):DD340334D51C6B31A455C91AE1781EC3C14FBB109E13632419FA407E8B8F0051:A84BC49A749593AFDC898585E650C30B544D4EA4F7071C36C2EEE3ECAC9DEAA6
+shard configuration is (
+  (hme_root
+    root:(hm_edge
+      label:(hml_same v:0 n:32)
+      node:(hmn_leaf
+        value:^(bt_fork
+          left:(bt_fork
+            left:(bt_leaf
+              leaf:(shard_descr seq_no:2995064 reg_mc_seqno:2268700 start_lt:3349864000000 end_lt:3349864000001 root_hash:x8AEF0C8E23A0E4C0A7E69A88ED87A33002DE90A4CDE5A92DB56A932B4802CEE2 file_hash:x8CB57D3C513DB6EE118F86E1BC136E30D666468BFC37B46387418A3E3800DAC4 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:32747 next_validator_shard:2305843009213693952 min_ref_mc_seqno:2268697 gen_utime:1581949169
+                split_merge_at:fsm_none
+                fees_collected:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:250000000))
+                  other:(extra_currencies
+                    dict:hme_empty))
+                funds_created:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:250000000))
+                  other:(extra_currencies
+                    dict:hme_empty))))
+            right:(bt_leaf
+              leaf:(shard_descr seq_no:2993642 reg_mc_seqno:2268700 start_lt:3349863000000 end_lt:3349863000001 root_hash:xC2F8AB8342DD1A4171A317E20EDD12D0BA2A6B9FAAAD7582B0DEE4FE82FFDA13 file_hash:xAF9A8CC36C227E5678C9FFB43F6301172F087B93CA68672ACE5271286A3B7F41 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:32747 next_validator_shard:6917529027641081856 min_ref_mc_seqno:2268697 gen_utime:1581949168
+                split_merge_at:fsm_none
+                fees_collected:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:250000000))
+                  other:(extra_currencies
+                    dict:hme_empty))
+                funds_created:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:250000000))
+                  other:(extra_currencies
+                    dict:hme_empty)))))
+          right:(bt_fork
+            left:(bt_leaf
+              leaf:(shard_descr seq_no:2992378 reg_mc_seqno:2268700 start_lt:3349865000000 end_lt:3349865000001 root_hash:xB609E0B0A2FFBAF380F788A92543E625EE17C1832C331905562B4B6060D12D6B file_hash:x06FBB59C382278DAABE5E1DFAEC3BAC1CB3E7B5048D154696EBE690D365F4B2C before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:32747 next_validator_shard:11529215046068469760 min_ref_mc_seqno:2268697 gen_utime:1581949168
+                split_merge_at:fsm_none
+                fees_collected:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:250000000))
+                  other:(extra_currencies
+                    dict:hme_empty))
+                funds_created:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:250000000))
+                  other:(extra_currencies
+                    dict:hme_empty))))
+            right:(bt_leaf
+              leaf:(shard_descr seq_no:2993255 reg_mc_seqno:2268700 start_lt:3349864000000 end_lt:3349864000001 root_hash:xA0DDF8270FF9B807D47F3F6FA43E71D3BB31A03440BA4ACE6180B98A5F657063 file_hash:x769546AE708CBD2FC6AEF0C08BC3E8E0306A7B6D301BE075BB3702E9CBAB3746 before_split:0 before_merge:0 want_split:0 want_merge:1 nx_cc_updated:0 flags:0 next_catchain_seqno:32747 next_validator_shard:16140901064495857664 min_ref_mc_seqno:2268697 gen_utime:1581949169
+                split_merge_at:fsm_none
+                fees_collected:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:250000000))
+                  other:(extra_currencies
+                    dict:hme_empty))
+                funds_created:(currencies
+                  grams:(nanograms
+                    amount:(var_uint len:4 value:250000000))
+                  other:(extra_currencies
+                    dict:hme_empty))))))))))
+x{C_}
+ x{D04_}
+  x{C_}
+   x{C_}
+    x{58016D9BC00114F0E00000185F9BA150000000185F9BA1500C577864711D0726053F34D4476C3D198016F485266F2D496DAB54995A4016771465ABE9E289EDB7708C7C370DE09B7186B332345FE1BDA31C3A0C51F1C006D620800003FF5900000000000000000114F0CAF255078903B9ACA0081DCD6500}
+    x{58016D6F500114F0E00000185F9B273E000000185F9B273E0E17C55C1A16E8D20B8D18BF1076E89685D1535CFD556BAC1586F727F417FED09D7CD4661B6113F2B3C64FFDA1FB1808B97843DC9E534339567293894351DBFA08800003FF5B00000000000000000114F0CAF255078103B9ACA0081DCD6500}
+   x{C_}
+    x{58016D47D00114F0E00000185F9C1B62000000185F9C1B620DB04F058517FDD79C07BC45492A1F312F70BE0C196198C82AB15A5B0306896B5837DDACE1C113C6D55F2F0EFD761DD60E59F3DA82468AA34B75F34869B2FA5960800003FF5D00000000000000000114F0CAF255078103B9ACA0081DCD6500}
+    x{58016D63380114F0E00000185F9BA150000000185F9BA1500D06EFC1387FCDC03EA3F9FB7D21F38E9DD98D01A205D256730C05CC52FB2B831BB4AA35738465E97E357786045E1F47018353DB6980DF03ADD9B8174E5D59BA30800003FF5F00000000000000000114F0CAF255078903B9ACA0081DCD6500}
+shard #1 : (0,2000000000000000,2995064):8AEF0C8E23A0E4C0A7E69A88ED87A33002DE90A4CDE5A92DB56A932B4802CEE2:8CB57D3C513DB6EE118F86E1BC136E30D666468BFC37B46387418A3E3800DAC4 @ 1581949169 lt 3349864000000 .. 3349864000001
+shard #2 : (0,6000000000000000,2993642):C2F8AB8342DD1A4171A317E20EDD12D0BA2A6B9FAAAD7582B0DEE4FE82FFDA13:AF9A8CC36C227E5678C9FFB43F6301172F087B93CA68672ACE5271286A3B7F41 @ 1581949168 lt 3349863000000 .. 3349863000001
+shard #3 : (0,a000000000000000,2992378):B609E0B0A2FFBAF380F788A92543E625EE17C1832C331905562B4B6060D12D6B:06FBB59C382278DAABE5E1DFAEC3BAC1CB3E7B5048D154696EBE690D365F4B2C @ 1581949168 lt 3349865000000 .. 3349865000001
+shard #4 : (0,e000000000000000,2993255):A0DDF8270FF9B807D47F3F6FA43E71D3BB31A03440BA4ACE6180B98A5F657063:769546AE708CBD2FC6AEF0C08BC3E8E0306A7B6D301BE075BB3702E9CBAB3746 @ 1581949169 lt 3349864000000 .. 3349864000001
+BLK#16 = (0,2000000000000000,2995064):8AEF0C8E23A0E4C0A7E69A88ED87A33002DE90A4CDE5A92DB56A932B4802CEE2:8CB57D3C513DB6EE118F86E1BC136E30D666468BFC37B46387418A3E3800DAC4
+BLK#17 = (0,6000000000000000,2993642):C2F8AB8342DD1A4171A317E20EDD12D0BA2A6B9FAAAD7582B0DEE4FE82FFDA13:AF9A8CC36C227E5678C9FFB43F6301172F087B93CA68672ACE5271286A3B7F41
+BLK#18 = (0,a000000000000000,2992378):B609E0B0A2FFBAF380F788A92543E625EE17C1832C331905562B4B6060D12D6B:06FBB59C382278DAABE5E1DFAEC3BAC1CB3E7B5048D154696EBE690D365F4B2C
+BLK#19 = (0,e000000000000000,2993255):A0DDF8270FF9B807D47F3F6FA43E71D3BB31A03440BA4ACE6180B98A5F657063:769546AE708CBD2FC6AEF0C08BC3E8E0306A7B6D301BE075BB3702E9CBAB3746

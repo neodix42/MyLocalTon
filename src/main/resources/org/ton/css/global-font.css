@@ -1,0 +1,60 @@
+@font-face{
+    src: url("../fonts/RobotoMono-Medium.ttf");
+}
+
+.label, .text, .tab {
+    -fx-font-family: "Roboto Mono Medium";
+}
+
+.list-cell {
+    -fx-padding: 0px;
+}
+
+<!--
+#subWalletId:focused {
+    -fx-prompt-text-fill: red;
+}
+-->
+
+
+.jfx-snackbar-content:info-toast {
+    -fx-background-color: dbedff;
+}
+
+.jfx-snackbar-content:success-toast{
+    -fx-background-color: limegreen;
+}
+.jfx-snackbar-content:warning-toast{
+    -fx-background-color: ORANGE;
+}
+.jfx-snackbar-content:error-toast{
+    -fx-background-color: lightcoral;
+}
+.jfx-snackbar-content:fatal-toast{
+    -fx-background-color: BLACK;
+}
+
+<!--
+.label:hover {
+    -fx-background-color: #9ACD32;
+}
+-->
+
+/* Styling the filled track */
+.jfx-slider>.colored-track {
+    -fx-background-color: #0088CC;
+}
+
+.jfx-slider>.track {
+    -fx-background-color: #0088CC;
+}
+
+.jfx-slider>.animated-thumb {
+    -fx-background-color: #0088CC;
+}
+
+/* Styling the slider thumb */
+.jfx-slider>.thumb {
+    -fx-background-color: #0088CC;
+}
+

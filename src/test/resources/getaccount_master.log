@@ -1,0 +1,78 @@
+←[0m←[1;32m[ 3][t 1][2021-11-05 13:19:30.6694744][lite-client.cpp:1900][!testnode]      got account state for -1:0000000000000000000000000000000000000000000000000000000000000000 with respect to blocks (-1,8000000000000000,150):15B8B3CEF9CBE6BFB81EA495EF8D79BBFC2181EBAF7A69AB57C21B3D58663FDA:09BB9D5BCFC966AF1B2AD235E802A550FCADB27CC7D86AE13F67996E40937D12
+←[0maccount state is (account
+  addr:(addr_std
+    anycast:nothing workchain_id:-1 address:x0000000000000000000000000000000000000000000000000000000000000000)
+  storage_stat:(storage_info
+    used:(storage_used
+      cells:(var_uint len:1 value:12)
+      bits:(var_uint len:2 value:1829)
+      public_cells:(var_uint len:0 value:0)) last_paid:0
+    due_payment:nothing)
+  storage:(account_storage last_trans_lt:10000003
+    balance:(currencies
+      grams:(nanograms
+        amount:(var_uint len:8 value:4999959997800000000))
+      other:(extra_currencies
+        dict:(hme_root
+          root:(hm_edge
+            label:(hml_short
+              len:unary_zero s:x)
+            node:(hmn_fork
+              left:(hm_edge
+                label:(hml_long n:31 s:x000001DF_)
+                node:(hmn_leaf
+                  value:(var_uint len:5 value:666666666666)))
+              right:(hm_edge
+                label:(hml_long n:31 s:xFFFFFFDF_)
+                node:(hmn_leaf
+                  value:(var_uint len:5 value:1000000000000))))))))
+    state:(account_active
+      (
+        split_depth:nothing
+        special:nothing
+        code:(just
+          value:(raw@^Cell
+            x{}
+             x{FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F31D307D4D101FB00A4C8CB1FCBFFC9ED54}
+            ))
+        data:(just
+          value:(raw@^Cell
+            x{}
+             x{0000000109EC3F69D9089BD495E3B395FE024126D76CEAF0D929F8F55978BB9085E2BAB3}
+            ))
+        library:(hme_root
+          root:(hm_edge
+            label:(hml_short
+              len:(unary_succ
+                x:(unary_succ
+                  x:unary_zero)) s:x2_)
+            node:(hmn_fork
+              left:(hm_edge
+                label:(hml_long n:253 s:x68BBBD4159DD7D6E55CBFCEB58F74A9C747ECA07285DE97871D1CC3B32CB944C_)
+                node:(hmn_leaf
+                  value:(simple_lib public:1
+                    root:(raw@Any
+                      x{ABACABADABACABA}
+                      ))))
+              right:(hm_edge
+                label:(hml_long n:253 s:x0490A4817A99B5BC8013B7E95C3DBD5ACFA17966EA86FBEF1CEDF697556F7184_)
+                node:(hmn_leaf
+                  value:(simple_lib public:0
+                    root:(raw@Any
+                      x{1234}
+                       x{5678}
+                      )))))))))))
+x{CFF000000000000000000000000000000000000000000000000000000000000000021881C940000000000000000002625A0E1158DB4822020A8033C_}
+ x{2_}
+  x{BE000003BCB3670DC1555_}
+  x{BFFFFFFFBCBD1A94A2001_}
+ x{FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F31D307D4D101FB00A4C8CB1FCBFFC9ED54}
+ x{0000000109EC3F69D9089BD495E3B395FE024126D76CEAF0D929F8F55978BB9085E2BAB3}
+ x{62_}
+  x{BF5A2EEF5056775F5B9572FF3AD63DD2A71D1FB281CA177A5E1C74730ECCB2E513}
+   x{ABACABADABACABA}
+  x{BF412429205EA66D6F2004EDFA570F6F56B3E85E59BAA1BEFBC73B7DA5D55BDC60}
+   x{1234}
+    x{5678}
+last transaction lt = 10000001 hash = A277FB32396640EBB9189D2BC8FE84C9ECF520E5F3931A59A02AC61CE1CFCAA2
+account balance is (4999959997800000000ng+666666666666.$239+1000000000000.$-17)
