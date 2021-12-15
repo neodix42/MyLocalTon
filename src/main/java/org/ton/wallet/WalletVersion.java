@@ -1,6 +1,11 @@
 package org.ton.wallet;
 
-public enum WalletVersion {
+import org.ton.actions.MyLocalTon;
+
+import java.io.Serializable;
+import java.util.Map;
+
+public enum WalletVersion implements Serializable {
 
     V1("Simple Wallet V1"),
     V2("Simple Wallet V2"),
@@ -20,6 +25,15 @@ public enum WalletVersion {
         for (WalletVersion v : WalletVersion.values()) {
             if (v.getValue().equals(value)) {
                 return v;
+            }
+        }
+        return null;
+    }
+
+    public static String getKeyByValueInMap(String value) {
+        for (Map.Entry<String, String> entry : MyLocalTon.walletVersions.entrySet()) {
+            if (value.equals(entry.getValue())) {
+                return entry.getKey();
             }
         }
         return null;

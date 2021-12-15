@@ -7,8 +7,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.ton.executors.liteclient.api.ResultLastBlock;
 
-import java.math.BigInteger;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
@@ -16,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class BlockIdTest {
 
     private static final String SHARD = "80000000";
-    private static final BigInteger BLOCK_SEQNO = new BigInteger("100000000");
+    private static final String BLOCK_SEQNO = "100000000";
     private static final Long WC = -1L;
     private static ResultLastBlock resultLastBlock;
 

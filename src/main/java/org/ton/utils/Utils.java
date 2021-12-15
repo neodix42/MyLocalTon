@@ -19,12 +19,10 @@ import org.ton.actions.MyLocalTon;
 import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.main.Main;
-import org.ton.wallet.WalletVersion;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -134,38 +132,38 @@ public class Utils {
         }
     }
 
-    public static Pair<WalletVersion, Long> detectWalledVersionAndId(AccountState accountState) {
+    public static Pair<String, Long> detectWalledVersionAndId(AccountState accountState) {
         List<String> accountData = accountState.getStateData();
         List<String> accountCode = accountState.getStateCode();
-        WalletVersion walletVersion = null;
+        String walletVersion = null;
         long walletId;
 
         if (nonNull(accountCode)) {
             for (String codeLine : accountCode) {
                 if (codeLine.contains(WALLET_V3_CODE)) {
-                    walletVersion = WalletVersion.V3;
+                    walletVersion = "V3";
                     break;
                 }
                 if (codeLine.contains(WALLET_V2_CODE)) {
-                    walletVersion = WalletVersion.V2;
+                    walletVersion = "V2";
                     break;
                 }
                 if (codeLine.contains(WALLET_V1_CODE)) {
-                    walletVersion = WalletVersion.V1;
+                    walletVersion = "V1";
                     break;
                 }
                 if (codeLine.contains(WALLET_MASTER)) {
-                    walletVersion = WalletVersion.MASTER;
+                    walletVersion = "MASTER";
                     break;
                 }
                 if (codeLine.contains(WALLET_CONFIG)) {
-                    walletVersion = WalletVersion.CONFIG;
+                    walletVersion = "CONFIG";
                     break;
                 }
             }
         }
 
-        if (nonNull(walletVersion) && walletVersion.equals(WalletVersion.V3)) { // TODO might be more wallets with walletId, e.g. highload-wallet
+        if (nonNull(walletVersion) && walletVersion.equals("V3")) { // TODO might be more wallets with walletId, e.g. highload-wallet
             try {
                 walletId = Long.parseLong(accountData.get(0).substring(8, 16));
             } catch (Exception e) {
@@ -334,7 +332,7 @@ public class Utils {
         String rootHashId = sb(fullBlockSeqno, ":", ":");
         String fileHashId = fullBlockSeqno.substring(fullBlockSeqno.lastIndexOf(':') + 1);
         String shard = sb(shortBlockSeqno, ",", ",");
-        BigInteger pureBlockSeqno = new BigInteger(sb(shortBlockSeqno, shard + ",", CLOSE));
+        String pureBlockSeqno = sb(shortBlockSeqno, shard + ",", CLOSE);
         Long wc = Long.parseLong(sb(shortBlockSeqno, OPEN, ","));
 
         return ResultLastBlock.builder()
@@ -386,8 +384,8 @@ public class Utils {
         return "";
     }
 
-    public static String constructFullBlockSeq(Long wc, String shard, BigInteger seqno, String rootHash, String fileHash) {
-        return String.format("(%d,%s,%d):%s:%s", wc, shard, seqno, rootHash, fileHash);
+    public static String constructFullBlockSeq(Long wc, String shard, String seqno, String rootHash, String fileHash) {
+        return String.format("(%d,%s,%s):%s:%s", wc, shard, seqno, rootHash, fileHash);
     }
 
     /**

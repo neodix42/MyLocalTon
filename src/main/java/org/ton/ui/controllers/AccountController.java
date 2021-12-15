@@ -32,7 +32,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.ton.db.DB;
+import org.ton.db.OrientDB;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.main.App;
@@ -134,7 +134,10 @@ public class AccountController {
                 .wc(Long.parseLong(wcAddr[0]))
                 .hexAddress(wcAddr[1])
                 .build();
-        WalletEntity walletEntity = DB.findWallet(walletPk);
+
+        OrientDB.getDB().activateOnCurrentThread();
+        
+        WalletEntity walletEntity = OrientDB.findWallet(walletPk);
         showAccountDump(walletEntity);
     }
 
@@ -293,8 +296,8 @@ public class AccountController {
                 .hexAddress(wcAddr[1])
                 .build();
 
-        WalletEntity walletEntity = DB.findWallet(walletPk);
-        DB.deleteWallet(walletPk);
+        WalletEntity walletEntity = OrientDB.findWallet(walletPk);
+        OrientDB.deleteWallet(walletPk);
 
         MainController c = fxmlLoader.getController();
         Node found = null;

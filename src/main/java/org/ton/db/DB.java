@@ -7,7 +7,6 @@ import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.liteclient.api.block.Block;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.utils.Utils;
-import org.ton.wallet.WalletVersion;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -36,7 +35,7 @@ public class DB {
 
     static {
         emf = Persistence.createEntityManagerFactory("objectdb:" + MyLocalTonSettings.DB_DIR + File.separator + "myLocalTon.odb");
-        log.info("DB initialized.");
+        log.info("OrientDB initialized.");
     }
 
     // find
@@ -112,7 +111,7 @@ public class DB {
     public static void insertBlock(BlockEntity block) {
         EntityManager em = emf.createEntityManager();
         try {
-            if (isNull(findBlock(block.getPrimaryKey()))) {
+            if (isNull(findBlock(null))) {
                 em.getTransaction().begin();
                 em.persist(block);
                 em.getTransaction().commit();
@@ -160,7 +159,7 @@ public class DB {
                 em.getTransaction().begin();
                 walletFound.setAccountState(accountState);
                 if ((!accountState.getStateCode().isEmpty()) && (!accountState.getStateData().isEmpty())) {
-                    Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(accountState);
+                    Pair<String, Long> walletVersionAndId = Utils.detectWalledVersionAndId(accountState);
                     walletFound.setWalletVersion(walletVersionAndId.getLeft());
                     walletFound.getWallet().setSubWalletId(walletVersionAndId.getRight());
                 }
@@ -242,7 +241,7 @@ public class DB {
         try {
             BlockEntity blockFound = em.find(BlockEntity.class, blockPk);
             em.getTransaction().begin();
-            blockFound.setBlock(blockDump);
+//            blockFound.setBlock(blockDump);
             em.getTransaction().commit();
         } finally {
             if (em.isOpen())

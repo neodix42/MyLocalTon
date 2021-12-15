@@ -1,16 +1,16 @@
 package org.ton.executors.liteclient.api.block;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.List;
 
 @Builder
 @ToString
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Transaction implements Serializable {
 
     String origStatus;
@@ -28,8 +28,8 @@ public class Transaction implements Serializable {
     private List<Message> outMsgs;
 
     String prevTxHash;
-    BigInteger lt;
-    BigInteger prevTxLt;
+    String lt;
+    String prevTxLt;
     Long now;
     Value totalFees;
     String oldHash;

@@ -6,6 +6,7 @@ import com.jfoenix.controls.JFXButton;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -28,7 +29,7 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.ton.actions.MyLocalTon;
-import org.ton.db.DB;
+import org.ton.db.OrientDB;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.BlockPk;
 import org.ton.executors.liteclient.LiteClientExecutor;
@@ -40,17 +41,17 @@ import org.ton.settings.Node;
 import org.ton.utils.Utils;
 
 import java.io.IOException;
-import java.math.BigInteger;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 
 import static com.sun.javafx.PlatformUtil.isMac;
 import static org.ton.utils.Utils.PATTERN;
 
 @Slf4j
-public class BlockController {
+public class BlockController implements Initializable {
 
     @FXML
     public Label seqno;
@@ -97,17 +98,31 @@ public class BlockController {
         BlockPk blockPk = BlockPk.builder()
                 .wc(Long.parseLong(wc.getText()))
                 .shard(shard.getText())
-                .seqno(new BigInteger(seqno.getText()))
+                .seqno(seqno.getText())
                 .createdAt(createdAt)
                 .build();
 
-        BlockEntity blockEntity = DB.findBlock(blockPk);
-        Block block = blockEntity.getBlock();
+//        ODatabaseObject db = OrientDB.getOrientDB().open(DB_NAME, "admin", "admin");
+//        db.getEntityManager().registerEntityClasses("org.ton.db.entities");
+//        db.getEntityManager().registerEntityClasses("org.ton.wallet");
+//        db.getEntityManager().registerEntityClasses("org.ton.executors.liteclient.api");
+//        db.getEntityManager().registerEntityClasses("org.ton.executors.liteclient.api.block");
+//
+//        for (BlockEntity o : db.browseClass(BlockEntity.class)) {
+//            log.info(o.getSeqno());
+//        }
+//        List<BlockEntity> blocks = db.objectQuery("SELECT FROM BlockEntity ORDER BY createdAt desc");
+//        blocks.forEach(s -> log.info("block {}", s.getSeqno()));
+//        log.info("count {}", blocks.size());
+//
+//        db.close();
 
-        if (Objects.isNull(block)) {
-            log.debug("get block dump from server");
-            block = getBlockFromServerAndUpdateDb(liteClient, node, blockPk);
-        }
+        OrientDB.getDB().activateOnCurrentThread();
+        //ODatabaseRecordThreadLocal.instance().set(OrientDB.getDB())
+
+        BlockEntity blockEntity = OrientDB.findBlock(blockPk);
+
+        Block block = getBlockFromServerAndUpdateDb(liteClient, node, blockPk);
 
         showBlockDump(blockEntity, block);
     }
@@ -118,10 +133,10 @@ public class BlockController {
         ResultLastBlock lightBlock = LiteClientParser.parseBySeqno(liteClient.executeBySeqno(node,
                 Long.parseLong(wc.getText()),
                 shard.getText(),
-                new BigInteger(seqno.getText())));
+                seqno.getText()));
 
         block = LiteClientParser.parseDumpblock(liteClient.executeDumpblock(node, lightBlock), MyLocalTon.getInstance().getSettings().getUiSettings().isShowShardStateInBlockDump(), MyLocalTon.getInstance().getSettings().getUiSettings().isShowBodyInMessage());
-        DB.updateBlockDump(blockPk, block);
+        OrientDB.updateBlockDump(blockPk, block);
         return block;
     }
 
@@ -240,5 +255,10 @@ public class BlockController {
         log.info("{} copied", fullBlock);
         App.mainController.showInfoMsg(fullBlock + " copied to clipboard", 0.5);
         mouseEvent.consume();
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        // OrientDB.getDB().activateOnCurrentThread();
     }
 }

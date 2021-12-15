@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.settings.Node;
 import org.ton.wallet.WalletAddress;
-import org.ton.wallet.WalletVersion;
 
 import java.math.BigDecimal;
 
@@ -17,7 +16,7 @@ import java.math.BigDecimal;
 public class SendToncoinsParam {
     Node executionNode;
     WalletAddress fromWallet;
-    WalletVersion fromWalletVersion;
+    String fromWalletVersion;
     Long fromSubWalletId;
     String destAddr;
     BigDecimal amount;

@@ -32,7 +32,7 @@ import static org.junit.Assert.*;
 @RunWith(JUnit4.class)
 public class LiteClientParserTest {
 
-    private static final BigInteger BLOCK_SEQNO = new BigInteger("2268701");
+    private static final String BLOCK_SEQNO = "2268701";
     private static final BigDecimal ZERO_LONG = BigDecimal.ZERO;
 
     @Test
@@ -261,12 +261,12 @@ public class LiteClientParserTest {
         log.info("{}", block);
 
         // block info
-        assertEquals(2259597L, block.getInfo().getPrevKeyBlockSeqno().longValue());
-        assertEquals(32746L, block.getInfo().getGetCatchainSeqno().longValue());
+        assertEquals("2259597", block.getInfo().getPrevKeyBlockSeqno());
+        assertEquals("32746", block.getInfo().getGetCatchainSeqno());
         assertEquals(1, block.getInfo().getWantMerge().byteValue());
         assertEquals(-1, block.getInfo().getWc().longValue());
         assertEquals(1581948886L, block.getInfo().getGenUtime().longValue());
-        assertEquals(3349752000000L, block.getInfo().getStartLt().longValue());
+        assertEquals("3349752000000", block.getInfo().getStartLt());
         assertEquals(-239L, block.getGlobalId().longValue());
         assertEquals("6708901E4C92A869EADA75AB3589B00ED41B5FEA5EBD8DE4C51A8F6DAFEA75E6", block.getInfo().getPrevRootHash());
         assertEquals("60C056A5E6A0BD33D617F9EA4CF88253DF3F1A94A6EFBE32E5B48E4CB8AC4498", block.getInfo().getPrevFileHash());
@@ -385,7 +385,7 @@ public class LiteClientParserTest {
         assertEquals("34517C7BDF5187C55AF4F8B61FDC321588C7AB768DEE24B006DF29106458D7CF", block.getExtra().getAccountBlock().getTransactions().get(3).getAccountAddr());
         assertEquals("5555555555555555555555555555555555555555555555555555555555555555", block.getExtra().getAccountBlock().getTransactions().get(4).getAccountAddr());
 
-        assertEquals(3349752000001L, block.getExtra().getAccountBlock().getTransactions().get(0).getLt().longValue());
+        assertEquals("3349752000001", block.getExtra().getAccountBlock().getTransactions().get(0).getLt());
         assertEquals("Active", block.getExtra().getAccountBlock().getTransactions().get(0).getOrigStatus());
         assertEquals(8145L, block.getExtra().getAccountBlock().getTransactions().get(0).getDescription().getCompute().getGasUsed().longValue());
         assertEquals(10000000L, block.getExtra().getAccountBlock().getTransactions().get(0).getDescription().getCompute().getGasLimit().longValue());

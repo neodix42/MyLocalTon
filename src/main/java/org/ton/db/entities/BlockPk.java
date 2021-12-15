@@ -1,15 +1,16 @@
 package org.ton.db.entities;
 
-import lombok.Builder;
-import lombok.ToString;
-
-import java.math.BigInteger;
+import lombok.*;
 
 @Builder
 @ToString
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class BlockPk {
     Long createdAt;
-    BigInteger seqno;
+    String seqno;
     Long wc;
     String shard;
 }

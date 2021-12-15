@@ -79,7 +79,7 @@ public class Wallet {
     public String getSeqNoAndSendTonCoins(SendToncoinsParam sendToncoinsParam) throws Exception {
         long seqno = liteClient.executeGetSeqno(sendToncoinsParam.getExecutionNode(), sendToncoinsParam.getFromWallet().getFullWalletAddress());
         log.debug("getSeqNoAndSendTonCoins(), source wallet {}, version {}, seqno {}, amount {}, dest {}",
-                sendToncoinsParam.getFromWallet().getFullWalletAddress(), sendToncoinsParam.getFromWalletVersion().getValue(), seqno, sendToncoinsParam.getAmount(), sendToncoinsParam.getDestAddr());
+                sendToncoinsParam.getFromWallet().getFullWalletAddress(), sendToncoinsParam.getFromWalletVersion(), seqno, sendToncoinsParam.getAmount(), sendToncoinsParam.getDestAddr());
 
         String externalMsgLocation = new FiftExecutor().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
 
@@ -92,14 +92,14 @@ public class Wallet {
         return externalMsgLocation;
     }
 
-    public WalletAddress createWallet(Node node, WalletVersion version, long workchain, long subWalletId) throws Exception {
+    public WalletAddress createWallet(Node node, String version, long workchain, long subWalletId) throws Exception {
         WalletAddress walletAddress;
         switch (version) {
-            case V1:
+            case "V1":
                 walletAddress = new FiftExecutor().createWalletV1QueryBoc(node, workchain);
                 log.debug("wallet created {}", walletAddress);
                 return walletAddress;
-            case V2:
+            case "V2":
                 walletAddress = new FiftExecutor().createWalletV2QueryBoc(node, workchain);
                 log.debug("wallet created {}", walletAddress);
                 return walletAddress;

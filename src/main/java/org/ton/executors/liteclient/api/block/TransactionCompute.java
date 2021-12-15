@@ -1,16 +1,16 @@
 package org.ton.executors.liteclient.api.block;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 @Builder
 @ToString
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class TransactionCompute implements Serializable {
     BigDecimal gasFees;
     BigDecimal gasUsed;
@@ -24,7 +24,7 @@ public class TransactionCompute implements Serializable {
     Byte msgStateUsed;
     Byte success;
     String exitArg;
-    BigInteger exitCode;
-    BigInteger vmSteps;
-    BigInteger mode;
+    Long exitCode;
+    Long vmSteps;
+    Long mode;
 }

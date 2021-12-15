@@ -29,7 +29,7 @@ import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.actions.MyLocalTon;
-import org.ton.db.DB;
+import org.ton.db.OrientDB;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
@@ -474,13 +474,14 @@ public class MainController implements Initializable {
 
             if (event.getDeltaY() < 0 && bar.getValue() > 0) { // bottom reached
                 Platform.runLater(() -> {
+
                     BorderPane bp = (BorderPane) blockslistviewid.getItems().get(blockslistviewid.getItems().size() - 1);
                     long lastSeqno = Long.parseLong(((Label) ((Node) bp).lookup("#seqno")).getText());
                     long wc = Long.parseLong(((Label) ((Node) bp).lookup("#wc")).getText());
 
                     long createdAt = Utils.datetimeToTimestamp(((Label) ((Node) bp).lookup("#createdat")).getText());
 
-                    log.debug("bottom reached, seqno {}, time {}, hwm {} ", lastSeqno, Utils.toUtcNoSpace(createdAt), MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get());
+                    log.info("bottom reached, seqno {}, time {}, hwm {} ", lastSeqno, Utils.toUtcNoSpace(createdAt), MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get());
 
                     if (lastSeqno == 1L && wc == -1L) {
                         return;
@@ -491,7 +492,8 @@ public class MainController implements Initializable {
                         return;
                     }
 
-                    List<BlockEntity> blocks = DB.loadBlocksBefore(createdAt);
+                    OrientDB.getDB().activateOnCurrentThread();
+                    List<BlockEntity> blocks = OrientDB.loadBlocksBefore(createdAt);
                     MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().addAndGet(blocks.size());
 
                     ObservableList<Node> blockRows = FXCollections.observableArrayList();
@@ -532,7 +534,7 @@ public class MainController implements Initializable {
 
                         LongStream.range(1, lastSeqno).forEach(i -> { // TODO for loop big integer
                             try {
-                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClientExecutor().executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
+                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClientExecutor().executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", String.valueOf(i)));
                                 log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
                                 MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), new LiteClientExecutor(), block, false);
                             } catch (Exception e) {
@@ -571,12 +573,12 @@ public class MainController implements Initializable {
                     BlockShortSeqno blockShortSeqno = BlockShortSeqno.builder()
                             .wc(Long.valueOf(StringUtils.substringBetween(shortseqno, "(", ",")))
                             .shard(StringUtils.substringBetween(shortseqno, ",", ","))
-                            .seqno(new BigInteger(StringUtils.substring(StringUtils.substringAfterLast(shortseqno, ","), 0, -1)))
+                            .seqno(StringUtils.substring(StringUtils.substringAfterLast(shortseqno, ","), 0, -1))
                             .build();
 
                     log.debug("bottom reached, seqno {}, hwm {}, createdAt {}, utc {}", blockShortSeqno.getSeqno(), MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get(), createdAt, Utils.toUtcNoSpace(createdAt));
 
-                    if (blockShortSeqno.getSeqno().compareTo(BigInteger.ONE) == 0) {
+                    if (new BigInteger(blockShortSeqno.getSeqno()).compareTo(BigInteger.ZERO) == 0L) {
                         return;
                     }
 
@@ -585,7 +587,8 @@ public class MainController implements Initializable {
                         return;
                     }
 
-                    List<TxEntity> txs = DB.loadTxsBefore(createdAt);
+                    OrientDB.getDB().activateOnCurrentThread();
+                    List<TxEntity> txs = OrientDB.loadTxsBefore(createdAt);
 
                     MyLocalTon.getInstance().applyTxGuiFilters(txs);
 
@@ -598,10 +601,10 @@ public class MainController implements Initializable {
                             FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("txrow.fxml"));
                             javafx.scene.Node txRow = fxmlLoader.load();
 
-                            String shortBlock = String.format("(%d,%s,%d)", txEntity.getWc(), txEntity.getShard(), txEntity.getSeqno());
+                            String shortBlock = String.format("(%d,%s,%s)", txEntity.getWc(), txEntity.getShard(), txEntity.getSeqno());
 
                             ResultListBlockTransactions resultListBlockTransactions = ResultListBlockTransactions.builder()
-                                    .txSeqno(new BigInteger(txEntity.getSeqno().toString()))
+                                    .txSeqno(txEntity.getSeqno())
                                     .hash(txEntity.getTxHash())
                                     .accountAddress(txEntity.getTx().getAccountAddr())
                                     .lt(txEntity.getTx().getLt())
@@ -614,7 +617,7 @@ public class MainController implements Initializable {
                                     .endStatus(txEntity.getTx().getEndStatus())
                                     .now(txEntity.getTx().getNow())
                                     .totalFees(txEntity.getTx().getTotalFees())
-                                    .lt(new BigInteger(txEntity.getTxLt().toString()))
+                                    .lt(txEntity.getTxLt())
                                     .build();
 
                             MyLocalTon.getInstance().populateTxRowWithData(shortBlock, resultListBlockTransactions, txDetails, txRow, txEntity);
@@ -634,12 +637,12 @@ public class MainController implements Initializable {
                     }
                     log.debug("txRows.size  {}", txRows.size());
 
-                    if ((txRows.isEmpty()) && (blockShortSeqno.getSeqno().compareTo(BigInteger.TEN) < 0)) {
+                    if ((txRows.isEmpty()) && (new BigInteger(blockShortSeqno.getSeqno()).compareTo(BigInteger.TEN) < 0)) {
                         log.debug("on start some blocks were skipped and thus some transactions get lost, load them from blocks 1");
 
-                        LongStream.range(1, blockShortSeqno.getSeqno().longValue()).forEach(i -> {
+                        LongStream.range(1, Long.parseLong(blockShortSeqno.getSeqno())).forEach(i -> {
                             try {
-                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClientExecutor().executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
+                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClientExecutor().executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", String.valueOf(i)));
                                 log.debug("load missing block {}: {}", i, block.getFullBlockSeqno());
                                 MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), new LiteClientExecutor(), block, false);
                             } catch (Exception e) {
@@ -758,13 +761,14 @@ public class MainController implements Initializable {
 
                 String searchFor = searchField.getText();
 
-                List<BlockEntity> foundBlocks = DB.searchBlocks(searchFor);
+                OrientDB.getDB().activateOnCurrentThread();
+                List<BlockEntity> foundBlocks = OrientDB.searchBlocks(searchFor);
                 MyLocalTon.getInstance().showFoundBlocksInGui(foundBlocks, searchFor);
 
-                List<TxEntity> foundTxs = DB.searchTxs(searchFor);
+                List<TxEntity> foundTxs = OrientDB.searchTxs(searchFor);
                 MyLocalTon.getInstance().showFoundTxsInGui(foundTxs, searchFor);
 
-                List<WalletEntity> foundAccs = DB.searchAccounts(searchFor);
+                List<WalletEntity> foundAccs = OrientDB.searchAccounts(searchFor);
                 MyLocalTon.getInstance().showFoundAccountsInGui(foundAccs, searchFor);
             }
         });
@@ -785,10 +789,10 @@ public class MainController implements Initializable {
 
         walletsNumber.setValue(settings.getWalletSettings().getNumberOfPreinstalledWallets());
         coinsPerWallet.setText(settings.getWalletSettings().getInitialAmount().toString());
-        walletVersion.getItems().add(WalletVersion.V1.getValue());
-        walletVersion.getItems().add(WalletVersion.V2.getValue());
-        walletVersion.getItems().add(WalletVersion.V3.getValue());
-        walletVersion.getSelectionModel().select(settings.getWalletSettings().getWalletVersion().getValue());
+        walletVersion.getItems().add(MyLocalTon.walletVersions.get("V1"));
+        walletVersion.getItems().add(MyLocalTon.walletVersions.get("V2"));
+        walletVersion.getItems().add(MyLocalTon.walletVersions.get("V3"));
+        walletVersion.getSelectionModel().select(MyLocalTon.walletVersions.get(settings.getWalletSettings().getWalletVersion()));
 
         valLogDir.setText(settings.getGenesisNode().getTonDbDir());
         myLocalTonLog.setText(settings.LOG_FILE);
@@ -850,7 +854,7 @@ public class MainController implements Initializable {
 
         settings.getWalletSettings().setNumberOfPreinstalledWallets((long) walletsNumber.getValue());
         settings.getWalletSettings().setInitialAmount(Long.valueOf(coinsPerWallet.getText()));
-        settings.getWalletSettings().setWalletVersion(WalletVersion.getKeyByValue(walletVersion.getValue()));
+        settings.getWalletSettings().setWalletVersion(WalletVersion.getKeyByValueInMap(walletVersion.getValue()));
 
         settings.getBlockchainSettings().setMinValidators(Long.valueOf(minValidators.getText()));
         settings.getBlockchainSettings().setMaxValidators(Long.valueOf(maxValidators.getText()));
@@ -995,7 +999,7 @@ public class MainController implements Initializable {
         ((Label) parent.lookup("#header")).setText("Create " + settings.getWalletSettings().getWalletVersion());
         parent.lookup("#body").setVisible(false);
         parent.lookup("#inputFields").setVisible(true);
-        if (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3)) {
+        if (settings.getWalletSettings().getWalletVersion().equals("V3")) {
             parent.lookup("#workchain").setVisible(true);
             parent.lookup("#subWalletId").setVisible(true);
         } else {

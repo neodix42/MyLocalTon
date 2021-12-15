@@ -1,20 +1,21 @@
 package org.ton.db.entities;
 
-import lombok.Builder;
-import lombok.ToString;
-
-import java.math.BigInteger;
+import lombok.*;
 
 @Builder
 @ToString
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class TxPk {
     Long createdAt;
-    BigInteger seqno;
+    String seqno;
     Long wc;
     String shard;
     String txHash;
     String typeTx;
     String typeMsg;
     String accountAddress;
-    BigInteger txLt;
+    String txLt;
 }

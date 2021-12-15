@@ -11,7 +11,6 @@ import org.ton.settings.Node;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -117,8 +116,8 @@ public class LiteClientExecutor {
      * @param seqno - is the pureBlockSeqno
      * @return string result of lite-client output
      */
-    public String executeBySeqno(Node node, long wc, String shard, BigInteger seqno) throws Exception {
-        final String command = String.format("byseqno %d:%s %d", wc, shard, seqno);
+    public String executeBySeqno(Node node, long wc, String shard, String seqno) throws Exception {
+        final String command = String.format("byseqno %d:%s %s", wc, shard, seqno);
         Pair<Process, Future<String>> result = execute(node, command);
         if (nonNull(result)) {
             return result.getRight().get();
@@ -149,7 +148,7 @@ public class LiteClientExecutor {
     }
 
     public String executeDumptrans(Node node, final ResultLastBlock resultLastBlock, final ResultListBlockTransactions tx) {
-        final String command = String.format("dumptrans %s %d:%s %d", resultLastBlock.getFullBlockSeqno(), resultLastBlock.getWc(), tx.getAccountAddress(), tx.getLt());
+        final String command = String.format("dumptrans %s %d:%s %s", resultLastBlock.getFullBlockSeqno(), resultLastBlock.getWc(), tx.getAccountAddress(), tx.getLt());
         Pair<Process, Future<String>> result = execute(node, command);
         if (nonNull(result)) {
             try {

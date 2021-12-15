@@ -8,7 +8,6 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.ton.wallet.WalletVersion;
 
 import java.io.File;
 import java.io.FileReader;
@@ -123,9 +122,9 @@ public class MyLocalTonSettings implements Serializable {
     public static class WalletSettings implements Serializable {
         Long numberOfPreinstalledWallets = 5L;
         Long initialAmount = 777L;
-        WalletVersion walletVersion = WalletVersion.V3;
+        String walletVersion = "V3";
         Long defaultWorkChain = 0L;
-        long defaultSubWalletId = 1L;
+        Long defaultSubWalletId = 1L;
     }
 
     //options - UI

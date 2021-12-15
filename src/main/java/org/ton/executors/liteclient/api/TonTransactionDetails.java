@@ -1,14 +1,15 @@
 package org.ton.executors.liteclient.api;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
 @Builder
-@Getter
 @ToString
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class TonTransactionDetails implements Serializable {
 
     private boolean parsedOk;
@@ -19,7 +20,7 @@ public class TonTransactionDetails implements Serializable {
     private byte msgBounced;
     private String src;
     private String dest;
-    
+
     private long amount; // TODO BigDecimal
     private long gasUsed;
     private long gasLimit;

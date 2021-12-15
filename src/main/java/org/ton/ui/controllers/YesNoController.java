@@ -9,6 +9,7 @@ import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.actions.MyLocalTon;
+import org.ton.db.OrientDB;
 import org.ton.db.entities.WalletEntity;
 import org.ton.main.App;
 import org.ton.utils.Utils;
@@ -93,6 +94,7 @@ public class YesNoController implements Initializable {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
             Thread.currentThread().setName("Create new wallet");
+            OrientDB.getDB().activateOnCurrentThread();
             try {
                 long chain = Long.parseLong(StringUtils.isEmpty(workchain.getText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultWorkChain()) : workchain.getText());
                 long walletId = Long.parseLong(StringUtils.isEmpty(subWalletId.getText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultSubWalletId()) : subWalletId.getText());

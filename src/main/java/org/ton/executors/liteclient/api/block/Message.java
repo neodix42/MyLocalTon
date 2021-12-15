@@ -1,12 +1,9 @@
 package org.ton.executors.liteclient.api.block;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * located in block under in_msg_descr:value:in_msg
@@ -14,13 +11,16 @@ import java.math.BigInteger;
 @Builder
 @ToString
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Message implements Serializable {
     Address srcAddr;
     Address destAddr;
     String type;
     Value value;
-    BigInteger createdAt;
-    BigInteger createdLt;
+    Long createdAt;
+    String createdLt;
     Byte ihrDisabled;
     Byte bounce;
     Byte bounced;

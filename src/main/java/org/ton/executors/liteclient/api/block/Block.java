@@ -1,15 +1,16 @@
 package org.ton.executors.liteclient.api.block;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
 
 @Builder
-@Getter
 @ToString
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Block implements Serializable {
     Long globalId;
     Info info;

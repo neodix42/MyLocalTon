@@ -1,8 +1,6 @@
 package org.ton.executors.liteclient.api.block;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,6 +14,9 @@ import java.util.List;
 @Builder
 @ToString
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class InMsgDescr implements Serializable { //right:(ahm_edge  .. left:(ahm_edge
-    List<Leaf> leaf;
+    private List<Leaf> leaf;
 }

@@ -133,7 +133,7 @@ public class LiteClientExecutorTest {
         // then
         assertEquals(-1L, blockId.getWc().longValue());
         assertNotEquals(0L, blockId.getShard());
-        assertNotEquals(0L, blockId.getSeqno().longValue());
+        assertNotEquals("0", blockId.getSeqno());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class LiteClientExecutorTest {
         assertNotNull(blockId.getRootHash());
         assertEquals(-1L, blockId.getWc().longValue());
         assertNotEquals(0L, blockId.getShard());
-        assertNotEquals(0L, blockId.getSeqno().longValue());
+        assertNotEquals("0", blockId.getSeqno());
     }
 
     @Test
@@ -207,7 +207,7 @@ public class LiteClientExecutorTest {
         List<ResultLastBlock> shards = LiteClientParser.parseAllShards(stdoutAllShards);
 
         shards.forEach(System.out::println);
-        assertTrue(shards.get(0).getSeqno().longValue() > 0);
+        assertTrue(new BigInteger(shards.get(0).getSeqno()).compareTo(BigInteger.ZERO) > 0);
     }
 
     @Test
@@ -228,7 +228,7 @@ public class LiteClientExecutorTest {
             Transaction txdetails = LiteClientParser.parseDumpTrans(stdoutDumptrans, true);
             if (!isNull(txdetails)) {
                 log.info(txdetails.toString());
-                assertNotEquals(0, txdetails.getLt().longValue());
+                assertNotEquals("0", txdetails.getLt());
             }
         }
     }
@@ -264,7 +264,7 @@ public class LiteClientExecutorTest {
             assertNotNull(stdoutDumptrans);
             Transaction txdetails = LiteClientParser.parseDumpTrans(stdoutDumptrans, true);
             if (!isNull(txdetails)) {
-                assertNotEquals(0, txdetails.getLt().longValue());
+                assertNotEquals("0", txdetails.getLt());
             }
         }
     }
@@ -281,7 +281,7 @@ public class LiteClientExecutorTest {
         assertNotNull(block);
 
         assertNotEquals(0L, block.getGlobalId().longValue());
-        assertNotEquals(0L, block.getInfo().getSeqNo().longValue());
+        assertNotEquals("0", block.getInfo().getSeqNo());
         assertNotNull(block.getInfo().getPrevFileHash());
         block.listBlockTrans().forEach(x -> log.info("account: {} lt: {} hash: {}", x.getAccountAddr(), x.getLt(), x.getNewHash()));
 

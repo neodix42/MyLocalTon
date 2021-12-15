@@ -8,14 +8,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.ton.db.DB;
+import org.ton.db.OrientDB;
 import org.ton.db.entities.WalletEntity;
 import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.validatorengineconsole.ValidatorEngineConsoleExecutor;
 import org.ton.parameters.SendToncoinsParam;
 import org.ton.settings.Node;
 import org.ton.wallet.WalletAddress;
-import org.ton.wallet.WalletVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,11 +98,11 @@ public class FiftExecutor {
         String resultBocFileLocation = "wallets" + File.separator + resultBocFile;
         Pair<Process, Future<String>> result;
         String walletScript;
-        if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1) || sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.MASTER)) {
+        if (sendToncoinsParam.getFromWalletVersion().equals("V1") || sendToncoinsParam.getFromWalletVersion().equals("MASTER")) {
             walletScript = "wallet.fif";
-        } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V2)) {
+        } else if (sendToncoinsParam.getFromWalletVersion().equals("V2")) {
             walletScript = "wallet-v2.fif";
-        } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V3)) {
+        } else if (sendToncoinsParam.getFromWalletVersion().equals("V3")) {
             walletScript = "wallet-v3.fif";
         } else {
             walletScript = "wallet.fif";
@@ -173,9 +172,9 @@ public class FiftExecutor {
                 .walletQueryFileBocLocation(null)
                 .build();
 
-        WalletVersion walletVersion;
+        String walletVersion;
         if (fileBaseName.contains("main-wallet")) {
-            walletVersion = WalletVersion.V1;
+            walletVersion = "V1";
         } else {
             walletVersion = null;
         }
@@ -198,7 +197,7 @@ public class FiftExecutor {
             walletEntity.setConfigWalletInstalled(true);
         }
 
-        DB.insertWallet(walletEntity);
+        OrientDB.insertWallet(walletEntity);
         return walletEntity;
     }
 

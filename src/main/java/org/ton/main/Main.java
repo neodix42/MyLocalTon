@@ -34,8 +34,8 @@ public class Main {
 
             log.info("Starting application at path {}", Utils.getMyPath());
 
-            System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
-            System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
+            // System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
+            // System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
 
             App.main(args);
 

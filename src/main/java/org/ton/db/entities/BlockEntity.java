@@ -1,35 +1,30 @@
 package org.ton.db.entities;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.ton.executors.liteclient.api.block.Block;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import java.math.BigInteger;
+import javax.persistence.Version;
+import java.io.Serializable;
 
 @Entity
 @Builder
 @ToString
 @Setter
 @Getter
-@IdClass(BlockPk.class)
-public class BlockEntity {
-    @Id
+@AllArgsConstructor
+@NoArgsConstructor
+public class BlockEntity implements Serializable {
     Long createdAt;
-    @Id
-    BigInteger seqno;
-    @Id
+    String seqno;
     Long wc;
-    @Id
     String shard;
-
     String roothash;
     String filehash;
     Block block;
+
+    @Version
+    Integer version;
 
     public BlockPk getPrimaryKey() {
         return BlockPk.builder()

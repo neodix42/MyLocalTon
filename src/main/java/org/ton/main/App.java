@@ -9,6 +9,7 @@ import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.ton.actions.MyLocalTon;
+import org.ton.db.OrientDB;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
@@ -82,6 +83,11 @@ public class App extends Application {
         log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
         Utils.setMyLocalTonLogLevel(myLocalTon.getSettings().getLogSettings().getMyLocalTonLogLevel());
 
+        Executors.newSingleThreadExecutor().execute(() -> {
+            log.info("OrientDB loading {}", OrientDB.getDB().activateOnCurrentThread());
+            OrientDB.getDB().activateOnCurrentThread();
+        });
+
         // start GUI
         Executors.newSingleThreadExecutor().execute(Application::launch);
 
@@ -104,6 +110,8 @@ public class App extends Application {
         myLocalTon.setGenesisValidatorProcess(myLocalTon.startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation()));
 
         myLocalTon.waitForBlockchainReady(genesisNode);
+
+        OrientDB.getDB().activateOnCurrentThread();
 
         myLocalTon.runBlockchainMonitor(genesisNode);
 

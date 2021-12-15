@@ -1,8 +1,6 @@
 package org.ton.executors.liteclient.api.block;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -15,6 +13,9 @@ import java.math.BigDecimal;
 @Builder
 @ToString
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class TransactionDescription implements Serializable {
     /*
     Tick transactions — Automatically invoked for certain special accounts

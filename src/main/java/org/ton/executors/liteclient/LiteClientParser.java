@@ -61,7 +61,7 @@ public class LiteClientParser {
             String rootHashId = sb(fullBlockSeqno, ":", ":");
             String fileHashId = fullBlockSeqno.substring(fullBlockSeqno.lastIndexOf(':') + 1);
             String shard = sb(shortBlockSeqno, ",", ",");
-            BigInteger pureBlockSeqno = new BigInteger(sb(shortBlockSeqno, shard + ",", CLOSE));
+            String pureBlockSeqno = sb(shortBlockSeqno, shard + ",", CLOSE);
             Long wc = Long.parseLong(sb(shortBlockSeqno, OPEN, ","));
 
             return ResultLastBlock.builder()
@@ -95,7 +95,7 @@ public class LiteClientParser {
             String rootHashId = sb(fullBlockSeqno, ":", ":");
             String fileHashId = fullBlockSeqno.substring(fullBlockSeqno.lastIndexOf(':') + 1);
             String shard = sb(shortBlockSeqno, ",", ",");
-            BigInteger pureBlockSeqno = new BigInteger(sb(shortBlockSeqno, shard + ",", CLOSE));
+            String pureBlockSeqno = sb(shortBlockSeqno, shard + ",", CLOSE);
             Long wc = Long.parseLong(sb(shortBlockSeqno, OPEN, ","));
 
             return ResultLastBlock.builder()
@@ -131,7 +131,7 @@ public class LiteClientParser {
             String createdAt = sb(last, "@", "lt").trim();
 
             String shard = sb(shortBlockSeqno, ",", ",");
-            BigInteger pureBlockSeqno = new BigInteger(sb(shortBlockSeqno, shard + ",", CLOSE));
+            String pureBlockSeqno = sb(shortBlockSeqno, shard + ",", CLOSE);
             Long wc = Long.parseLong(sb(shortBlockSeqno, OPEN, ","));
 
             return ResultLastBlock.builder()
@@ -161,9 +161,9 @@ public class LiteClientParser {
 
         for (String line : lines) {
             if (line.contains(TRANSACTION_TAG)) {
-                BigInteger txSeqno = new BigInteger(sb(line, TRANSACTION_TAG, ":"));
+                String txSeqno = sb(line, TRANSACTION_TAG, ":");
                 String txAccountAddress = sb(line, "account ", " lt").toUpperCase();
-                BigInteger txLogicalTime = new BigInteger(sb(line, "lt ", " hash"));
+                String txLogicalTime = sb(line, "lt ", " hash");
                 String txHash = line.substring(line.indexOf("hash ") + 5);
                 txs.add(ResultListBlockTransactions.builder()
                         .txSeqno(txSeqno)
@@ -211,7 +211,7 @@ public class LiteClientParser {
                     String rootHash = sb(fullBlockSeqno, ":", ":");
                     String fileHash = fullBlockSeqno.substring(fullBlockSeqno.lastIndexOf(':') + 1);
                     String shard = sb(shortBlockSeqno, ",", ",");
-                    BigInteger pureBlockSeqno = new BigInteger(sb(shortBlockSeqno, shard + ",", CLOSE));
+                    String pureBlockSeqno = sb(shortBlockSeqno, shard + ",", CLOSE);
                     Long wc = Long.parseLong(sb(shortBlockSeqno, OPEN, ","));
 
                     Long timestamp = Long.parseLong(sb(line, "@", "lt").trim());
@@ -353,10 +353,10 @@ public class LiteClientParser {
 
         for (String shard : shards) {
 
-            BigInteger seqno = parseBigIntegerSpace(shard, SEQ_NO_COLON);
-            BigInteger regMcSeqno = parseBigIntegerSpace(shard, "reg_mc_seqno:");
-            BigInteger startLt = parseBigIntegerSpace(shard, START_LT_COLON);
-            BigInteger endLt = parseBigIntegerSpace(shard, END_LT_COLON);
+            String seqno = sb(shard, SEQ_NO_COLON, SPACE);
+            String regMcSeqno = sb(shard, "reg_mc_seqno", SPACE);
+            String startLt = sb(shard, START_LT_COLON, SPACE);
+            String endLt = sb(shard, END_LT_COLON, SPACE);
             String rootHash = sb(shard, "root_hash:", SPACE);
             String fileHash = sb(shard, "file_hash:", SPACE);
             Byte beforeSplit = parseByteSpace(shard, "before_split:");
@@ -365,9 +365,9 @@ public class LiteClientParser {
             Byte wantMerge = parseByteSpace(shard, "want_merge:");
             Byte nxCcUpdated = parseByteSpace(shard, "nx_cc_updated:");
             Byte flags = parseByteSpace(shard, "flags:");
-            BigInteger nextCatchainSeqno = parseBigIntegerSpace(shard, "next_catchain_seqno:");
+            String nextCatchainSeqno = sb(shard, "next_catchain_seqno", SPACE);
             String nextValidatorShard = sb(shard, "next_validator_shard:", SPACE);
-            BigInteger minRefMcSeqno = parseBigIntegerSpace(shard, "min_ref_mc_seqno:");
+            String minRefMcSeqno = sb(shard, "min_ref_mc_seqno", SPACE);
             Long getUtime = parseLongSpace(shard, "gen_utime:");
             Value feesCollected = readValue(sbb(shard, "fees_collected:(currencies"));
             Value fundsCreated = readValue(sbb(shard, "funds_created:(currencies"));
@@ -483,8 +483,8 @@ public class LiteClientParser {
             Byte ihrDisabled = parseByteSpace(message, "ihr_disabled:");
             Byte bounce = parseByteSpace(message, BOUNCE_COLON);
             Byte bounced = parseByteSpace(message, "bounced:");
-            BigInteger createdLt = parseBigIntegerSpace(message, "created_lt:");
-            BigInteger createdAt = parseBigIntegerBracket(message, "created_at:");
+            String createdLt = sb(message, "created_lt:", CLOSE);
+            Long createdAt = parseLongBracket(message, "created_at:");
 
             String src = sbb(message, "src:(");
             Long srcWc = parseLongSpace(src, WORKCHAIN_ID_COLON);
@@ -610,8 +610,8 @@ public class LiteClientParser {
                 Byte ihrDisabled = parseByteSpace(message, "ihr_disabled:");
                 Byte bounce = parseByteSpace(message, BOUNCE_COLON);
                 Byte bounced = parseByteSpace(message, "bounced:");
-                BigInteger createdLt = parseBigIntegerSpace(message, "created_lt:");
-                BigInteger createdAt = parseBigIntegerBracket(message, "created_at:");
+                String createdLt = sb(message, "created_lt:", SPACE);
+                Long createdAt = parseLongBracket(message, "created_at:");
 
                 String src = sbb(message, "src:(");
                 Long srcWc = parseLongSpace(src, WORKCHAIN_ID_COLON);
@@ -690,9 +690,9 @@ public class LiteClientParser {
             if (Strings.isNotEmpty(accountAddr)) {
                 accountAddr = accountAddr.substring(1);
             }
-            BigInteger lt = parseBigIntegerSpace(transaction, "lt:");
+            String lt = sb(transaction, "lt:", SPACE);
             Long now = parseLongSpace(transaction, "now:");
-            BigInteger prevTxLt = parseBigIntegerSpace(transaction, "prev_trans_lt:");
+            String prevTxLt = sb(transaction, "prev_trans_lt:", SPACE);
             String prevTxHash = sb(transaction, "prev_trans_hash:", SPACE).trim();
             if (Strings.isNotEmpty(prevTxHash)) {
                 prevTxHash = prevTxHash.substring(1);
@@ -820,18 +820,18 @@ public class LiteClientParser {
             String statusChanged = sb(actionStr, "status_change:", SPACE);
             BigDecimal totalFwdFees = parseBigDecimalBracket(sbb(actionStr, "total_fwd_fees:("), VALUE_COLON);
             BigDecimal totalActionFees = parseBigDecimalBracket(sbb(actionStr, "total_action_fees:("), VALUE_COLON);
-            BigInteger resultCode = parseBigIntegerSpace(actionStr, "result_code:");
-            BigInteger resultArg = parseBigIntegerBracket(sbb(actionStr, "result_arg:("), VALUE_COLON);
-            BigInteger totalActions = parseBigIntegerSpace(actionStr, "tot_actions:");
-            BigInteger specActions = parseBigIntegerSpace(actionStr, "spec_actions:");
-            BigInteger skippedActions = parseBigIntegerSpace(actionStr, "skipped_actions:");
-            BigInteger msgsCreated = parseBigIntegerSpace(actionStr, "msgs_created:");
+            Long resultCode = parseLongSpace(actionStr, "result_code:");
+            Long resultArg = parseLongBracket(sbb(actionStr, "result_arg:("), VALUE_COLON);
+            Long totalActions = parseLongSpace(actionStr, "tot_actions:");
+            Long specActions = parseLongSpace(actionStr, "spec_actions:");
+            Long skippedActions = parseLongSpace(actionStr, "skipped_actions:");
+            Long msgsCreated = parseLongSpace(actionStr, "msgs_created:");
             String actionListHash = sb(actionStr, "action_list_hash:", SPACE);
             if (Strings.isNotEmpty(actionListHash)) {
                 actionListHash = actionListHash.substring(1);
             }
-            BigInteger totalMsgSizeCells = parseBigIntegerBracket(sbb(sbb(actionStr, "tot_msg_size:("), "cells:("), VALUE_COLON);
-            BigInteger totalMsgSizeBits = parseBigIntegerBracket(sbb(sbb(actionStr, "tot_msg_size:("), "bits:("), VALUE_COLON);
+            String totalMsgSizeCells = parseStringBracket(sbb(sbb(actionStr, "tot_msg_size:("), "cells:("), VALUE_COLON);
+            String totalMsgSizeBits = parseStringBracket(sbb(sbb(actionStr, "tot_msg_size:("), "bits:("), VALUE_COLON);
 
             return TransactionAction.builder()
                     .success(actionSuccess)
@@ -893,9 +893,9 @@ public class LiteClientParser {
             BigDecimal gasLimit = parseBigDecimalBracket(sbb(computeStr, "gas_limit:("), VALUE_COLON);
             BigDecimal gasCredit = parseBigDecimalBracket(sbb(computeStr, "gas_credit:("), VALUE_COLON); // TODO parse gas_credit:(just           value:(var_uint len:2 value:10000))
             String exitArgs = sb(computeStr, "exit_arg:", SPACE);
-            BigInteger exitCode = parseBigIntegerSpace(computeStr, "exit_code:");
-            BigInteger mode = parseBigIntegerSpace(computeStr, "mode:");
-            BigInteger vmsSteps = parseBigIntegerSpace(computeStr, "vm_steps:");
+            Long exitCode = parseLongSpace(computeStr, "exit_code:");
+            Long mode = parseLongSpace(computeStr, "mode:");
+            Long vmsSteps = parseLongSpace(computeStr, "vm_steps:");
             String vmInitStateHash = sb(computeStr, "vm_init_state_hash:", SPACE);
             if (Strings.isNotEmpty(vmInitStateHash)) {
                 vmInitStateHash = vmInitStateHash.substring(1);
@@ -1035,28 +1035,28 @@ public class LiteClientParser {
 
     private static Info parseBlockInfo(String blockInf) {
 
-        BigInteger version = parseBigIntegerSpace(blockInf, "version:");
+        String version = sb(blockInf, "version:", SPACE);
         Byte notMaster = parseByteSpace(blockInf, "not_master:");
-        BigInteger keyBlock = parseBigIntegerSpace(blockInf, "key_block:");
-        BigInteger vertSeqnoIncr = parseBigIntegerSpace(blockInf, "vert_seqno_incr:");
-        BigInteger vertSeqno = parseBigIntegerSpace(blockInf, "vert_seq_no:");
-        BigInteger genValidatorListHashShort = parseBigIntegerSpace(blockInf, "gen_validator_list_hash_short:");
-        BigInteger genCatchainSeqno = parseBigIntegerSpace(blockInf, "gen_catchain_seqno:");
-        BigInteger minRefMcSeqno = parseBigIntegerSpace(blockInf, "min_ref_mc_seqno:");
-        BigInteger prevKeyBlockSeqno = parseBigIntegerSpace(blockInf, "prev_key_block_seqno:");
+        String keyBlock = sb(blockInf, "key_block:", SPACE);
+        String vertSeqnoIncr = sb(blockInf, "vert_seqno_incr:", SPACE);
+        String vertSeqno = sb(blockInf, "vert_seq_no:", SPACE);
+        String genValidatorListHashShort = sb(blockInf, "gen_validator_list_hash_short:", SPACE);
+        String genCatchainSeqno = sb(blockInf, "gen_catchain_seqno:", SPACE);
+        String minRefMcSeqno = sb(blockInf, "min_ref_mc_seqno:", SPACE);
+        String prevKeyBlockSeqno = sb(blockInf, "prev_key_block_seqno:", SPACE);
         Byte wantSplit = parseByteSpace(blockInf, "want_split:");
         Byte afterSplit = parseByteSpace(blockInf, "after_split:");
         Byte beforeSplit = parseByteSpace(blockInf, "before_split:");
         Byte afterMerge = parseByteSpace(blockInf, "after_merge:");
         Byte wantMerge = parseByteSpace(blockInf, "want_merge:");
-        BigInteger seqno = parseBigIntegerSpace(blockInf, SEQ_NO_COLON);
+        String seqno = sb(blockInf, SEQ_NO_COLON, SPACE);
         Long wc = parseLongSpace(blockInf, WORKCHAIN_ID_COLON);
-        BigInteger startLt = parseBigIntegerSpace(blockInf, START_LT_COLON);
-        BigInteger endLt = parseBigIntegerSpace(blockInf, END_LT_COLON);
+        String startLt = sb(blockInf, START_LT_COLON, SPACE);
+        String endLt = sb(blockInf, END_LT_COLON, SPACE);
         Long genUtime = parseLongSpace(blockInf, "gen_utime:");
         String prev = sbb(blockInf, "prev:(");
         Long prevSeqno = parseLongSpace(prev, SEQ_NO_COLON);
-        BigInteger prevEndLt = parseBigIntegerSpace(prev, END_LT_COLON);
+        String prevEndLt = sb(prev, END_LT_COLON, SPACE);
         String prevRootHash = sb(prev, "root_hash:", SPACE);
         if (Strings.isNotEmpty(prevRootHash)) {
             prevRootHash = prevRootHash.substring(1);
@@ -1165,6 +1165,21 @@ public class LiteClientParser {
             return isNull(result) ? null : new BigInteger(result);
         } catch (Exception e) {
             return BigInteger.ZERO;
+        }
+    }
+
+    private static String parseStringBracket(String str, String from) {
+        if (isNull(str)) {
+            return "0";
+        }
+        try {
+            String result = sb(str, from, CLOSE);
+            if (StringUtils.isNotEmpty(result)) {
+                result = result.trim();
+            }
+            return isNull(result) ? null : result;
+        } catch (Exception e) {
+            return "0";
         }
     }
 
@@ -1308,7 +1323,7 @@ public class LiteClientParser {
             BigDecimal lastPaid = parseBigDecimalSpace(storageStat, "last_paid:");
 
             String storage = sbb(accountState, "storage:(");
-            BigDecimal storageLastTxLt = parseBigDecimalSpace(storage, "last_trans_lt:");
+            String storageLastTxLt = sb(storage, "last_trans_lt", SPACE);
             Value storageBalanceValue = readValue(storage);
 
             String state = sbb(accountState, "state:(");
@@ -1339,7 +1354,7 @@ public class LiteClientParser {
             String stateAccountLibrary = sbb(state, "library:(");
             List<Library> libraries = readLibraries(stateAccountLibrary);
 
-            BigInteger lastTxLt = parseBigIntegerSpace(accountState, "last transaction lt = ");
+            String lastTxLt = sb(accountState, "last transaction lt = ", SPACE);
             String lastTxHash = sb(accountState, "hash = ", SPACE);
             StorageInfo storageInfo = StorageInfo.builder()
                     .usedCells(usedCells)

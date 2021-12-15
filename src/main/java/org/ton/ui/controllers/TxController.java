@@ -6,6 +6,7 @@ import com.jfoenix.controls.JFXButton;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -28,7 +29,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.ton.db.DB;
+import org.ton.db.OrientDB;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.TxPk;
 import org.ton.executors.liteclient.api.BlockShortSeqno;
@@ -37,16 +38,17 @@ import org.ton.main.App;
 import org.ton.utils.Utils;
 
 import java.io.IOException;
-import java.math.BigInteger;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 
 import static com.sun.javafx.PlatformUtil.isMac;
 import static org.ton.utils.Utils.PATTERN;
 
 @Slf4j
-public class TxController {
+public class TxController implements Initializable {
 
     @FXML
     Label block;
@@ -111,7 +113,7 @@ public class TxController {
         BlockShortSeqno blockShortSeqno = BlockShortSeqno.builder()
                 .wc(Long.valueOf(StringUtils.substringBetween(shortseqno, "(", ",")))
                 .shard(StringUtils.substringBetween(shortseqno, ",", ","))
-                .seqno(new BigInteger(StringUtils.substring(StringUtils.substringAfterLast(shortseqno, ","), 0, -1)))
+                .seqno(StringUtils.substring(StringUtils.substringAfterLast(shortseqno, ","), 0, -1))
                 .build();
 
         TxPk txPk = TxPk.builder()
@@ -120,7 +122,7 @@ public class TxController {
                 .wc(blockShortSeqno.getWc())
                 .shard(blockShortSeqno.getShard())
                 .accountAddress(txAccAddrHidden.getText())
-                .txLt(new BigInteger(txLt.getText()))
+                .txLt(txLt.getText())
                 .txHash(txidHidden.getText())
                 .typeTx(typeTx.getText())
                 .typeMsg(typeMsg.getText())
@@ -128,7 +130,9 @@ public class TxController {
 
         log.debug("tx infobtn,  block {}, txPk {}, createdAt {}, seconds {}", blockShortSeqno, txPk, time.getText(), Utils.datetimeToTimestamp(time.getText()));
 
-        TxEntity txEntity = DB.findTx(txPk);
+        OrientDB.getDB().activateOnCurrentThread();
+
+        TxEntity txEntity = OrientDB.findTx(txPk);
         Transaction tx = txEntity.getTx();
 
         showTxDump(txEntity, tx);
@@ -280,5 +284,10 @@ public class TxController {
         log.info(src + " copied");
         App.mainController.showInfoMsg(src + " copied to clipboard", 0.5);
         mouseEvent.consume();
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        //OrientDB.getDB().activateOnCurrentThread();
     }
 }

@@ -1,42 +1,29 @@
 package org.ton.db.entities;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import org.ton.executors.liteclient.api.block.Address;
 import org.ton.executors.liteclient.api.block.Message;
 import org.ton.executors.liteclient.api.block.Transaction;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 @Entity
 @Builder
 @ToString
 @Getter
-@IdClass(TxPk.class)
+@AllArgsConstructor
+@NoArgsConstructor
 public class TxEntity {
-    @Id
     Long createdAt;
-    @Id
-    BigInteger seqno;
-    @Id
+    String seqno;
     Long wc;
-    @Id
     String shard;
-    @Id
     String txHash;
-    @Id
     String typeTx;
-    @Id
     String typeMsg;
-    @Id
     String accountAddress;
-    @Id
-    BigInteger txLt;
+    String txLt;
 
     String status;
     Address from;
@@ -65,10 +52,10 @@ public class TxEntity {
     }
 
     public String getShortBlock() {
-        return "(" + wc + "," + shard + "," + seqno + ")";
+        return String.format("(%d,%s,%s)", wc, shard, seqno);
     }
 
     public String getFullBlock() {
-        return "(" + wc + "," + shard + "," + seqno + "):" + blockRootHash + ":" + blockFileHash;
+        return String.format("(%d,%s,%s):%s:%s", wc, shard, seqno, blockRootHash, blockFileHash);
     }
 }

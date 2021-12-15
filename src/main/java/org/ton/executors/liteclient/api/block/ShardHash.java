@@ -1,21 +1,21 @@
 package org.ton.executors.liteclient.api.block;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 @Builder
 @ToString
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ShardHash implements Serializable {
     Long wc;
-    BigInteger seqno;
-    BigInteger regMcSeqno;
-    BigInteger startLt;
-    BigInteger endLt;
+    String seqno;
+    String regMcSeqno;
+    String startLt;
+    String endLt;
     String rootHash;
     String fileHash;
     Byte beforeSplit;
@@ -24,9 +24,9 @@ public class ShardHash implements Serializable {
     Byte wantMerge;
     Byte nxCcUpdate;
     Byte flags;
-    BigInteger nextCatchainSeqno;
+    String nextCatchainSeqno;
     String nextValidatorShard;
-    BigInteger minRefMcSeqno;
+    String minRefMcSeqno;
     Long genUtime;
     Value feesCollected;
     Value fundsCreated;

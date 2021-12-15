@@ -1,18 +1,16 @@
 package org.ton.wallet;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 @Builder
 @Getter
 @Setter
 @ToString
-public class WalletAddress implements Serializable {
+@AllArgsConstructor
+@NoArgsConstructor
+public class WalletAddress {
     String bounceableAddressBase64url;
     String nonBounceableAddressBase64Url;
     String bounceableAddressBase64;

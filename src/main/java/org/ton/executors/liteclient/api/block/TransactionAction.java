@@ -1,12 +1,9 @@
 package org.ton.executors.liteclient.api.block;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * The action phase occurs after a valid computation phase.
@@ -14,6 +11,9 @@ import java.math.BigInteger;
 @Builder
 @ToString
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class TransactionAction implements Serializable {
     Byte success;
     Byte valid;
@@ -21,14 +21,14 @@ public class TransactionAction implements Serializable {
     String statusChange;
     BigDecimal totalFwdFee;
     BigDecimal totalActionFee;
-    BigInteger resultArg;
-    BigInteger resultCode;
-    BigInteger totActions;
-    BigInteger specActions;
-    BigInteger skippedActions;
-    BigInteger msgsCreated;
-    BigInteger totalMsgSizeCells;
-    BigInteger totalMsgSizeBits;
+    Long resultArg;
+    Long resultCode;
+    Long totActions;
+    Long specActions;
+    Long skippedActions;
+    Long msgsCreated;
+    String totalMsgSizeCells;
+    String totalMsgSizeBits;
     String actionListHash;
 
 }

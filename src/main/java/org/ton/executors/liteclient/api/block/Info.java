@@ -1,11 +1,8 @@
 package org.ton.executors.liteclient.api.block;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 /**
  * Block header. Another non-split component of a shardchain block
@@ -23,18 +20,21 @@ import java.math.BigInteger;
 @Builder
 @ToString
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Info implements Serializable {
     Long wc;
-    BigInteger seqNo;
-    BigInteger prevKeyBlockSeqno;
-    BigInteger version;
+    String seqNo;
+    String prevKeyBlockSeqno;
+    String version;
     Byte notMaster;
-    BigInteger keyBlock;
-    BigInteger vertSeqnoIncr;
-    BigInteger vertSeqno;
-    BigInteger getValidatorListHashShort;
-    BigInteger getCatchainSeqno;
-    BigInteger minRefMcSeqno;
+    String keyBlock;
+    String vertSeqnoIncr;
+    String vertSeqno;
+    String getValidatorListHashShort;
+    String getCatchainSeqno;
+    String minRefMcSeqno;
     Byte wantSplit;
     Byte wantMerge;
     Byte afterMerge;
@@ -42,10 +42,10 @@ public class Info implements Serializable {
     Byte beforeSplit;
     Long genUtime;
     Integer flags;
-    BigInteger startLt;
-    BigInteger endLt;
+    String startLt;
+    String endLt;
     Long prevBlockSeqno;
-    BigInteger prevEndLt;
+    String prevEndLt;
     String prevRootHash;
     String prevFileHash;
 }

@@ -16,7 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Strings;
-import org.ton.db.DB;
+import org.ton.db.OrientDB;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
@@ -46,7 +46,6 @@ import org.ton.utils.Extractor;
 import org.ton.utils.Utils;
 import org.ton.wallet.Wallet;
 import org.ton.wallet.WalletAddress;
-import org.ton.wallet.WalletVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -103,7 +102,16 @@ public class MyLocalTon {
     public static final String EXAMPLE_GLOBAL_CONFIG = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + TEMPLATES + File.separator + "example.config.json";
     public static final int YEAR = 31556952;
 
-    AtomicBigInteger prevBlockSeqno;
+    public static Map<String, String> walletVersions = Map.of(
+            "V1", "Simple Wallet V1",
+            "V2", "Simple Wallet V2",
+            "V3", "Simple Wallet V3",
+            "MASTER", "WalletMaster",
+            "CONFIG", "ConfigSmc",
+            "RESTRICTED_WALLET_V3", "Highload Wallet V2",
+            "HIGHLOAD_WALLET_V2", "Restricted Wallet V3");
+
+    AtomicString prevBlockSeqno;
     ConcurrentHashMap<String, Long> concurrentBlocksHashMap = new ConcurrentHashMap<>();
     ConcurrentHashMap<String, Long> concurrentTxsHashMap = new ConcurrentHashMap<>();
     ConcurrentHashMap<String, Long> concurrentAccountsHashMap = new ConcurrentHashMap<>();
@@ -121,7 +129,7 @@ public class MyLocalTon {
     private MyLocalTonSettings settings;
 
     private MyLocalTon() {
-        prevBlockSeqno = new AtomicBigInteger(new BigInteger("0"));
+        prevBlockSeqno = new AtomicString("0");
         autoScroll = true;
     }
 
@@ -155,6 +163,25 @@ public class MyLocalTon {
         }
 
         public BigInteger get() {
+            return valueHolder.get();
+        }
+    }
+
+    public static final class AtomicString {
+
+        private final AtomicReference<String> valueHolder = new AtomicReference<>();
+
+        public AtomicString(String bigInteger) {
+            valueHolder.set(bigInteger);
+        }
+
+        public void set(String value) {
+            String current = valueHolder.get();
+            String next = value;
+            valueHolder.compareAndSet(current, next);
+        }
+
+        public String get() {
             return valueHolder.get();
         }
     }
@@ -722,14 +749,13 @@ public class MyLocalTon {
         do {
             Thread.sleep(5000);
             lastBlock = LiteClientParser.parseLast(new LiteClientExecutor().executeLast(node));
-        } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
+        } while (isNull(lastBlock) || (new BigInteger(lastBlock.getSeqno()).compareTo(BigInteger.ONE) < 0));
     }
 
     public WalletEntity createWalletWithFundsAndSmartContract(Node fromNode, Node toNode, long workchain, long subWalletId, long amount) throws Exception {
         Wallet wallet = new Wallet();
-        WalletVersion walletVersion;
 
-        walletVersion = settings.getWalletSettings().getWalletVersion();
+        String walletVersion = settings.getWalletSettings().getWalletVersion();
         WalletAddress walletAddress = wallet.createWallet(toNode, walletVersion, workchain, subWalletId);
 
         WalletEntity walletEntity = WalletEntity.builder()
@@ -743,7 +769,7 @@ public class MyLocalTon {
                 .createdAt(Instant.now().getEpochSecond())
                 .build();
 
-        DB.insertWallet(walletEntity);
+        OrientDB.insertWallet(walletEntity);
 
         WalletAddress fromMasterWalletAddress = WalletAddress.builder()
                 .fullWalletAddress(settings.getMainWalletAddrFull())
@@ -756,7 +782,7 @@ public class MyLocalTon {
         SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                 .executionNode(fromNode)
                 .fromWallet(fromMasterWalletAddress)
-                .fromWalletVersion(WalletVersion.V1)
+                .fromWalletVersion("V1")
                 .fromSubWalletId(-1L)
                 .destAddr(walletAddress.getNonBounceableAddressBase64Url())
                 .amount(BigDecimal.valueOf(amount))
@@ -775,7 +801,7 @@ public class MyLocalTon {
 
         long toInstall = settings.getWalletSettings().getNumberOfPreinstalledWallets();
 
-        long installed = DB.getNumberOfPreinstalledWallets();
+        long installed = OrientDB.getNumberOfPreinstalledWallets();
         log.info("Creating {} pre-installed wallets, created {}", toInstall, installed);
 
         if (installed < toInstall) {
@@ -784,22 +810,22 @@ public class MyLocalTon {
         }
 
         while (installed < toInstall) {
-            if (!DB.existsMainWallet()) {
+            if (!OrientDB.existsMainWallet()) {
                 createWalletEntity(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "main-wallet", -1L, -1L); //WC -1
                 Thread.sleep(500);
             }
-            if (!DB.existsConfigWallet()) {
+            if (!OrientDB.existsConfigWallet()) {
                 createWalletEntity(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "config-master", -1L, -1L); //WC -1
                 Thread.sleep(500);
             }
 
             createWalletEntity(genesisNode, null, getSettings().getWalletSettings().getDefaultWorkChain(), getSettings().getWalletSettings().getDefaultSubWalletId());
 
-            installed = DB.getNumberOfPreinstalledWallets();
+            installed = OrientDB.getNumberOfPreinstalledWallets();
             log.info("created {}", installed);
         }
 
-        List<WalletEntity> wallets = DB.getAllWallets();
+        List<WalletEntity> wallets = OrientDB.getAllWallets();
 
         for (WalletEntity wallet : wallets) {
             log.info("preinstalled wallet {}", wallet.getFullAddress());
@@ -807,7 +833,7 @@ public class MyLocalTon {
             // always update account state on start
             AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress()));
 
-            DB.updateWalletState(wallet, accountState);
+            OrientDB.updateWalletState(wallet, accountState);
 
             wallet.setAccountState(accountState);
             updateAccountsTabGui(wallet);
@@ -830,7 +856,7 @@ public class MyLocalTon {
         log.debug("manually added wallet wc:addr {}:{}, balance {}, state {}", accountState.getWc(), accountState.getAddress(), accountState.getBalance().getToncoins(), accountState.getStatus());
 
         //update account state
-        DB.updateWalletState(walletEntity, accountState);
+        OrientDB.updateWalletState(walletEntity, accountState);
 
         walletEntity.setAccountState(accountState);
         updateAccountsTabGui(walletEntity);
@@ -851,7 +877,7 @@ public class MyLocalTon {
                 double sizePrecise = size / 1024 / 1024;
                 double newSizePrecise = (sizePrecise >= 1000) ? (sizePrecise / 1024) : sizePrecise;
                 String unitOfMeasurement = (sizePrecise >= 1000) ? "GB" : "MB";
-                log.debug("DB size {}", String.format("%.1f%s", newSizePrecise, unitOfMeasurement));
+                log.debug("OrientDB size {}", String.format("%.1f%s", newSizePrecise, unitOfMeasurement));
                 c.dbSizeId.setText(String.format("%.1f%s", newSizePrecise, unitOfMeasurement));
             });
         }, 0L, 15L, TimeUnit.SECONDS);
@@ -872,6 +898,7 @@ public class MyLocalTon {
 
                     executorService.execute(() -> {
                         Thread.currentThread().setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
+                        OrientDB.getDB().activateOnCurrentThread();
                         log.debug("Get last block");
                         ResultLastBlock lastBlock;
 
@@ -879,7 +906,7 @@ public class MyLocalTon {
 
                         if (nonNull(lastBlock)) {
 
-                            if ((!Objects.equals(prevBlockSeqno.get(), lastBlock.getSeqno())) && (lastBlock.getSeqno().compareTo(BigInteger.ZERO) != 0)) {
+                            if ((!Objects.equals(prevBlockSeqno.get(), lastBlock.getSeqno())) && (new BigInteger(lastBlock.getSeqno()).compareTo(BigInteger.ZERO) != 0)) {
 
                                 prevBlockSeqno.set(lastBlock.getSeqno());
                                 log.info(lastBlock.getShortBlockSeqno());
@@ -919,7 +946,7 @@ public class MyLocalTon {
 
         for (ResultLastBlock shard : shardsInBlock) {
             log.info(shard.getShortBlockSeqno());
-            if (shard.getSeqno().compareTo(BigInteger.ZERO) != 0) {
+            if (new BigInteger(shard.getSeqno()).compareTo(BigInteger.ZERO) != 0) {
                 insertBlockEntity(shard);
                 if (updateGuiNow) {
                     updateBlocksTabGui(shard);
@@ -929,7 +956,7 @@ public class MyLocalTon {
 
         dumpBlockTransactions(node, liteClient, lastBlock, updateGuiNow); // txs from masterchain block
 
-        shardsInBlock.stream().filter(b -> (b.getSeqno().compareTo(BigInteger.ZERO) != 0)).forEach(shard -> dumpBlockTransactions(node, liteClient, shard, updateGuiNow)); // txs from shards
+        shardsInBlock.stream().filter(b -> (new BigInteger(b.getSeqno()).compareTo(BigInteger.ZERO) != 0)).forEach(shard -> dumpBlockTransactions(node, liteClient, shard, updateGuiNow)); // txs from shards
 
         return shardsInBlock;
     }
@@ -956,7 +983,7 @@ public class MyLocalTon {
 
                 List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, tx, txDetails);
 
-                txEntities.forEach(DB::insertTx);
+                txEntities.forEach(OrientDB::insertTx);
 
                 if (updateGuiNow) {
                     updateTxTabGui(lastBlock, tx, txDetails, txEntities);
@@ -994,7 +1021,7 @@ public class MyLocalTon {
             MainController c = fxmlLoader.getController();
 
             Platform.runLater(() -> {
-
+                OrientDB.getDB().activateOnCurrentThread();
                 FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("accountrow.fxml"));
                 javafx.scene.Node accountRow;
                 try {
@@ -1061,7 +1088,7 @@ public class MyLocalTon {
         if (isNull(walletEntity.getWalletVersion())) {
             ((Label) accountRow.lookup("#type")).setText("Unknown");
         } else {
-            ((Label) accountRow.lookup("#type")).setText(walletEntity.getWalletVersion().getValue());
+            ((Label) accountRow.lookup("#type")).setText(MyLocalTon.walletVersions.get(walletEntity.getWalletVersion()));
         }
 
         if (walletEntity.getSubWalletId() >= 0) {
@@ -1160,7 +1187,8 @@ public class MyLocalTon {
 
     public void populateTxRowWithData(javafx.scene.Node txRow, TxEntity txEntity, String searchFor) {
 
-        ((Label) txRow.lookup("#block")).setText(txEntity.getShortBlock());
+        //((Label) txRow.lookup("#block")).setText(txEntity.getShortBlock());
+        ((Label) txRow.lookup("#block")).setText(String.format("(%d,%s,%s)", txEntity.getWc(), txEntity.getShard(), txEntity.getSeqno())); // orientDB proxy obj does not understand non-getters
         if (((Label) txRow.lookup("#block")).getText().equals(searchFor)) {
             ((Label) txRow.lookup("#block")).setTextFill(Color.GREEN);
         }
@@ -1399,9 +1427,9 @@ public class MyLocalTon {
         AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr()));
         log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", accountState.getWc(), accountState.getAddress(), accountState.getBalance(), accountState.getStatus());
 
-        Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(accountState);
+        Pair<String, Long> walletVersionAndId = Utils.detectWalledVersionAndId(accountState);
 
-        WalletEntity foundWallet = DB.findWallet(WalletPk.builder()
+        WalletEntity foundWallet = OrientDB.findWallet(WalletPk.builder()
                 .wc(lastBlock.getWc())
                 .hexAddress(txDetails.getAccountAddr())
                 .build());
@@ -1431,13 +1459,13 @@ public class MyLocalTon {
                     .createdAt(txDetails.getNow())
                     .build();
 
-            DB.insertWallet(walletEntity);
+            OrientDB.insertWallet(walletEntity);
 
             return walletEntity;
         } else {
             foundWallet.setAccountState(accountState);
             log.debug("Wallet found! Update state {}", foundWallet.getFullAddress()); // update state
-            DB.updateWalletState(foundWallet, accountState);
+            OrientDB.updateWalletState(foundWallet, accountState);
 
             return foundWallet;
         }
@@ -1583,7 +1611,8 @@ public class MyLocalTon {
                 if (tx.getWc() == -1L) {
                     blockRow.setStyle("-fx-background-color: e9f4ff;");
                 }
-                log.debug("adding tx to found gui {} roothash {}", tx.getShortBlock(), tx.getTxHash());
+                //log.info("adding tx to found gui {} roothash {}", tx.getShortBlock(), tx.getTxHash());
+                log.info("adding tx to found gui {} roothash {}", String.format("(%d,%s,%s)", tx.getWc(), tx.getShard(), tx.getSeqno()), tx.getTxHash());
 
                 txRows.add(blockRow);
 
@@ -1593,7 +1622,7 @@ public class MyLocalTon {
             }
         }
 
-        log.debug("txRows.size  {}", txRows.size());
+        log.info("txRows.size  {}", txRows.size());
         c.foundTxs.setText("TXs (" + txRows.size() + ")");
 
         c.foundTxsvboxid.getItems().addAll(txRows);
@@ -1670,21 +1699,22 @@ public class MyLocalTon {
                 .roothash(lastBlock.getRootHash())
                 .build();
 
-        DB.insertBlock(block);
+        OrientDB.insertBlock(block);
     }
 
     public void runAccountsMonitor() {
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Accounts Monitor");
+            OrientDB.getDB().activateOnCurrentThread();
             try {
-                for (WalletEntity wallet : DB.getAllWallets()) {
+                for (WalletEntity wallet : OrientDB.getAllWallets()) {
                     if (Main.appActive.get()) {
                         AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress()));
                         if (nonNull(accountState.getBalance())) {
                             wallet.setAccountState(accountState);
 
                             updateAccountsTabGui(wallet);
-                            DB.updateWalletState(wallet, accountState);
+                            OrientDB.updateWalletState(wallet, accountState);
                         }
                     }
                 }
