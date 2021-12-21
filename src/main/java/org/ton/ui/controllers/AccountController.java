@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXToggleButton;
 import javafx.embed.swing.SwingNode;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -32,7 +31,6 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.ton.db.DB;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.main.App;
@@ -127,14 +125,14 @@ public class AccountController {
     }
 
     @FXML
-    void accInfoBtn(ActionEvent event) throws IOException {
+    void accInfoBtn() throws IOException {
         log.debug("clicked acc btn {}", hexAddr.getText());
         String[] wcAddr = hexAddr.getText().split(":");
         WalletPk walletPk = WalletPk.builder()
                 .wc(Long.parseLong(wcAddr[0]))
                 .hexAddress(wcAddr[1])
                 .build();
-        WalletEntity walletEntity = DB.findWallet(walletPk);
+        WalletEntity walletEntity = App.dbPool.findWallet(walletPk);
         showAccountDump(walletEntity);
     }
 
@@ -293,8 +291,8 @@ public class AccountController {
                 .hexAddress(wcAddr[1])
                 .build();
 
-        WalletEntity walletEntity = DB.findWallet(walletPk);
-        DB.deleteWallet(walletPk);
+        WalletEntity walletEntity = App.dbPool.findWallet(walletPk);
+        App.dbPool.deleteWallet(walletPk);
 
         MainController c = fxmlLoader.getController();
         Node found = null;

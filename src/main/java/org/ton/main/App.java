@@ -9,6 +9,7 @@ import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.ton.actions.MyLocalTon;
+import org.ton.db.DbPool;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
@@ -30,6 +31,7 @@ public class App extends Application {
     public static StackPane root;
     public static FXMLLoader fxmlLoader;
     public static MainController mainController;
+    public static DbPool dbPool;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -82,11 +84,17 @@ public class App extends Application {
         log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
         Utils.setMyLocalTonLogLevel(myLocalTon.getSettings().getLogSettings().getMyLocalTonLogLevel());
 
+        System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
+        System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
+
         // start GUI
         Executors.newSingleThreadExecutor().execute(Application::launch);
 
         Node genesisNode = myLocalTon.getSettings().getGenesisNode();
         genesisNode.extractBinaries();
+
+        // initialize DB
+        dbPool = new DbPool(myLocalTon.getSettings());
 
         Process validatorGenesisProcess = myLocalTon.initGenesis(genesisNode);
 
@@ -94,7 +102,7 @@ public class App extends Application {
         if (nonNull(validatorGenesisProcess)) {
             validatorGenesisProcess.destroy();
         } else {
-            mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60);
+            mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L);
         }
 
         //create hardfork

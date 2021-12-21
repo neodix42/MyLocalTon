@@ -92,7 +92,7 @@ public class DB {
 
     // insert
     // Transactions
-    public static synchronized void insertTx(TxEntity tx) {
+    public static void insertTx(TxEntity tx) {
         EntityManager em = emf.createEntityManager();
         try {
             if (isNull(findTx(tx.getPrimaryKey()))) {
@@ -126,7 +126,7 @@ public class DB {
     }
 
     // Wallets
-    public static synchronized void insertWallet(WalletEntity walletEntity) {
+    public static void insertWallet(WalletEntity walletEntity) {
         EntityManager em = emf.createEntityManager();
         try {
             if (isNull(findWallet(walletEntity.getPrimaryKey()))) {
@@ -146,7 +146,7 @@ public class DB {
         }
     }
 
-    public static synchronized void updateWalletState(WalletEntity walletEntity, AccountState accountState) {
+    public static void updateWalletState(WalletEntity walletEntity, AccountState accountState) {
         log.debug("updating account state, {},  {}", walletEntity.getFullAddress(), accountState);
         EntityManager em = emf.createEntityManager();
         try {
@@ -250,7 +250,6 @@ public class DB {
         }
     }
 
-    // find multiple
     // blocks
     public static List<BlockEntity> loadBlocksBefore(long datetimeFrom) {
         EntityManager em = emf.createEntityManager();

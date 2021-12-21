@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -36,7 +38,7 @@ public class MyLocalTonSettings implements Serializable {
     public static final String SETTINGS_FILE = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + SETTINGS_JSON;
     public static final String GENESIS_BIN_DIR = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + "genesis" + File.separator + "bin" + File.separator;
     public static final String LOG_FILE = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + "myLocalTon.log";
-    public static final String DB_DIR = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + "MyLocalTonDB";
+    public static String DB_DIR = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + "MyLocalTonDB";
     public static final String DB_SETTINGS_FILE = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + "MyLocalTonDB" + File.separator + DB_SETTINGS_CONF;
 
     public MyLocalTonSettings() {
@@ -53,6 +55,8 @@ public class MyLocalTonSettings implements Serializable {
         uiSettings = new UiSettings();
         blockchainSettings = new BlockchainSettings();
         logSettings = new LogSettings();
+
+        dbPool = new ConcurrentHashMap<>();
     }
 
     /*
@@ -63,6 +67,9 @@ public class MyLocalTonSettings implements Serializable {
     constexpr int VERBOSITY_NAME(INFO) = 3;
     constexpr int VERBOSITY_NAME(DEBUG) = 4;
     */
+
+    //name- status (active, filled)
+    Map<String, String> dbPool;
 
     GenesisNode genesisNode;
     Node2 node2;

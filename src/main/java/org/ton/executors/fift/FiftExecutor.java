@@ -8,10 +8,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.ton.db.DB;
 import org.ton.db.entities.WalletEntity;
 import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.validatorengineconsole.ValidatorEngineConsoleExecutor;
+import org.ton.main.App;
 import org.ton.parameters.SendToncoinsParam;
 import org.ton.settings.Node;
 import org.ton.wallet.WalletAddress;
@@ -198,7 +198,7 @@ public class FiftExecutor {
             walletEntity.setConfigWalletInstalled(true);
         }
 
-        DB.insertWallet(walletEntity);
+        App.dbPool.insertWallet(walletEntity);
         return walletEntity;
     }
 

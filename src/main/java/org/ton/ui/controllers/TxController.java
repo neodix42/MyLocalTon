@@ -28,7 +28,6 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.ton.db.DB;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.TxPk;
 import org.ton.executors.liteclient.api.BlockShortSeqno;
@@ -128,7 +127,7 @@ public class TxController {
 
         log.debug("tx infobtn,  block {}, txPk {}, createdAt {}, seconds {}", blockShortSeqno, txPk, time.getText(), Utils.datetimeToTimestamp(time.getText()));
 
-        TxEntity txEntity = DB.findTx(txPk);
+        TxEntity txEntity = App.dbPool.findTx(txPk);
         Transaction tx = txEntity.getTx();
 
         showTxDump(txEntity, tx);

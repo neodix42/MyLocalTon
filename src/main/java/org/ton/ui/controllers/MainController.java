@@ -29,7 +29,6 @@ import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.actions.MyLocalTon;
-import org.ton.db.DB;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
@@ -491,7 +490,7 @@ public class MainController implements Initializable {
                         return;
                     }
 
-                    List<BlockEntity> blocks = DB.loadBlocksBefore(createdAt);
+                    List<BlockEntity> blocks = App.dbPool.loadBlocksBefore(createdAt);
                     MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().addAndGet(blocks.size());
 
                     ObservableList<Node> blockRows = FXCollections.observableArrayList();
@@ -585,7 +584,7 @@ public class MainController implements Initializable {
                         return;
                     }
 
-                    List<TxEntity> txs = DB.loadTxsBefore(createdAt);
+                    List<TxEntity> txs = App.dbPool.loadTxsBefore(createdAt);
 
                     MyLocalTon.getInstance().applyTxGuiFilters(txs);
 
@@ -758,14 +757,14 @@ public class MainController implements Initializable {
 
                 String searchFor = searchField.getText();
 
-                List<BlockEntity> foundBlocks = DB.searchBlocks(searchFor);
-                MyLocalTon.getInstance().showFoundBlocksInGui(foundBlocks, searchFor);
+                List<BlockEntity> foundBlocksEntities = App.dbPool.searchBlocks(searchFor);
+                MyLocalTon.getInstance().showFoundBlocksInGui(foundBlocksEntities, searchFor);
 
-                List<TxEntity> foundTxs = DB.searchTxs(searchFor);
-                MyLocalTon.getInstance().showFoundTxsInGui(foundTxs, searchFor);
+                List<TxEntity> foundTxsEntities = App.dbPool.searchTxs(searchFor);
+                MyLocalTon.getInstance().showFoundTxsInGui(foundTxsEntities, searchFor);
 
-                List<WalletEntity> foundAccs = DB.searchAccounts(searchFor);
-                MyLocalTon.getInstance().showFoundAccountsInGui(foundAccs, searchFor);
+                List<WalletEntity> foundAccountsEntities = App.dbPool.searchAccounts(searchFor);
+                MyLocalTon.getInstance().showFoundAccountsInGui(foundAccountsEntities, searchFor);
             }
         });
 

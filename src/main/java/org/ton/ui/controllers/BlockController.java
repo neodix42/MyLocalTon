@@ -28,7 +28,6 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.ton.actions.MyLocalTon;
-import org.ton.db.DB;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.BlockPk;
 import org.ton.executors.liteclient.LiteClientExecutor;
@@ -43,7 +42,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.regex.Matcher;
 
 import static com.sun.javafx.PlatformUtil.isMac;
@@ -101,27 +99,28 @@ public class BlockController {
                 .createdAt(createdAt)
                 .build();
 
-        BlockEntity blockEntity = DB.findBlock(blockPk);
+        BlockEntity blockEntity = App.dbPool.findBlock(blockPk);
+        Block block = getBlockFromServerAndUpdateDb(liteClient, node, blockPk);
+        /*
         Block block = blockEntity.getBlock();
 
         if (Objects.isNull(block)) {
             log.debug("get block dump from server");
             block = getBlockFromServerAndUpdateDb(liteClient, node, blockPk);
         }
-
+        */
         showBlockDump(blockEntity, block);
     }
 
     private Block getBlockFromServerAndUpdateDb(LiteClientExecutor liteClient, Node node, BlockPk blockPk) throws Exception {
         Block block;
-        log.debug("get from server");
         ResultLastBlock lightBlock = LiteClientParser.parseBySeqno(liteClient.executeBySeqno(node,
                 Long.parseLong(wc.getText()),
                 shard.getText(),
                 new BigInteger(seqno.getText())));
 
         block = LiteClientParser.parseDumpblock(liteClient.executeDumpblock(node, lightBlock), MyLocalTon.getInstance().getSettings().getUiSettings().isShowShardStateInBlockDump(), MyLocalTon.getInstance().getSettings().getUiSettings().isShowBodyInMessage());
-        DB.updateBlockDump(blockPk, block);
+        // DB.updateBlockDump(blockPk, block);
         return block;
     }
 

@@ -260,7 +260,8 @@ public class MyLocalTon {
         try {
             String abJson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(settings);
             FileUtils.writeStringToFile(new File(SETTINGS_FILE), abJson, StandardCharsets.UTF_8);
-        } catch (IOException e) {
+        } catch (Throwable e) {
+            log.error("Error saving {} file: {}", SETTINGS_JSON, e.getMessage());
             e.printStackTrace();
         }
     }
@@ -743,7 +744,7 @@ public class MyLocalTon {
                 .createdAt(Instant.now().getEpochSecond())
                 .build();
 
-        DB.insertWallet(walletEntity);
+        App.dbPool.insertWallet(walletEntity);
 
         WalletAddress fromMasterWalletAddress = WalletAddress.builder()
                 .fullWalletAddress(settings.getMainWalletAddrFull())
@@ -775,7 +776,7 @@ public class MyLocalTon {
 
         long toInstall = settings.getWalletSettings().getNumberOfPreinstalledWallets();
 
-        long installed = DB.getNumberOfPreinstalledWallets();
+        long installed = App.dbPool.getNumberOfPreinstalledWallets();
         log.info("Creating {} pre-installed wallets, created {}", toInstall, installed);
 
         if (installed < toInstall) {
@@ -784,22 +785,22 @@ public class MyLocalTon {
         }
 
         while (installed < toInstall) {
-            if (!DB.existsMainWallet()) {
+            if (App.dbPool.existsMainWallet() == 0) {
                 createWalletEntity(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "main-wallet", -1L, -1L); //WC -1
                 Thread.sleep(500);
             }
-            if (!DB.existsConfigWallet()) {
+            if (App.dbPool.existsConfigWallet() == 0) {
                 createWalletEntity(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "config-master", -1L, -1L); //WC -1
                 Thread.sleep(500);
             }
 
             createWalletEntity(genesisNode, null, getSettings().getWalletSettings().getDefaultWorkChain(), getSettings().getWalletSettings().getDefaultSubWalletId());
 
-            installed = DB.getNumberOfPreinstalledWallets();
+            installed = App.dbPool.getNumberOfPreinstalledWallets();
             log.info("created {}", installed);
         }
 
-        List<WalletEntity> wallets = DB.getAllWallets();
+        List<WalletEntity> wallets = App.dbPool.getAllWallets();
 
         for (WalletEntity wallet : wallets) {
             log.info("preinstalled wallet {}", wallet.getFullAddress());
@@ -807,7 +808,7 @@ public class MyLocalTon {
             // always update account state on start
             AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress()));
 
-            DB.updateWalletState(wallet, accountState);
+            App.dbPool.updateWalletState(wallet, accountState);
 
             wallet.setAccountState(accountState);
             updateAccountsTabGui(wallet);
@@ -830,7 +831,7 @@ public class MyLocalTon {
         log.debug("manually added wallet wc:addr {}:{}, balance {}, state {}", accountState.getWc(), accountState.getAddress(), accountState.getBalance().getToncoins(), accountState.getStatus());
 
         //update account state
-        DB.updateWalletState(walletEntity, accountState);
+        App.dbPool.updateWalletState(walletEntity, accountState);
 
         walletEntity.setAccountState(accountState);
         updateAccountsTabGui(walletEntity);
@@ -956,7 +957,7 @@ public class MyLocalTon {
 
                 List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, tx, txDetails);
 
-                txEntities.forEach(DB::insertTx);
+                txEntities.forEach(App.dbPool::insertTx);
 
                 if (updateGuiNow) {
                     updateTxTabGui(lastBlock, tx, txDetails, txEntities);
@@ -1431,13 +1432,13 @@ public class MyLocalTon {
                     .createdAt(txDetails.getNow())
                     .build();
 
-            DB.insertWallet(walletEntity);
+            App.dbPool.insertWallet(walletEntity);
 
             return walletEntity;
         } else {
             foundWallet.setAccountState(accountState);
             log.debug("Wallet found! Update state {}", foundWallet.getFullAddress()); // update state
-            DB.updateWalletState(foundWallet, accountState);
+            App.dbPool.updateWalletState(foundWallet, accountState);
 
             return foundWallet;
         }
@@ -1670,26 +1671,27 @@ public class MyLocalTon {
                 .roothash(lastBlock.getRootHash())
                 .build();
 
-        DB.insertBlock(block);
+        //DB.insertBlock(block);
+        App.dbPool.insertBlock(block);
     }
 
     public void runAccountsMonitor() {
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Accounts Monitor");
             try {
-                for (WalletEntity wallet : DB.getAllWallets()) {
+                for (WalletEntity wallet : App.dbPool.getAllWallets()) {
                     if (Main.appActive.get()) {
                         AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress()));
                         if (nonNull(accountState.getBalance())) {
                             wallet.setAccountState(accountState);
 
                             updateAccountsTabGui(wallet);
-                            DB.updateWalletState(wallet, accountState);
+                            App.dbPool.updateWalletState(wallet, accountState);
                         }
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("Error in runAccountsMonitor(), " + e.getMessage());
             }
         }, 0L, 5L, TimeUnit.SECONDS);
     }
