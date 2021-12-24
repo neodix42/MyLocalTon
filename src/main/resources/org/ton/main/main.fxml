@@ -574,7 +574,7 @@
                                         <ImageView fx:id="aboutLogo" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
                                             <Image url="@../images/logo2.png"/>
                                         </ImageView>
-                                        <Label style="-fx-alignment: center; -fx-font-size: 16;" text="v1.0.4-alpha"/>
+                                        <Label style="-fx-alignment: center; -fx-font-size: 16;" text="v1.0.5-alpha"/>
                                         <Label style="-fx-alignment: center; -fx-font-size: 16;" text="The Open Network"/>
                                         <Label style="-fx-alignment: center; -fx-font-size: 16;" text="Telegram @neodix"/>
                                         <BorderPane.margin>

@@ -8,7 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.actions.MyLocalTon;
-import org.ton.db.DB;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.main.App;
@@ -74,7 +73,7 @@ public class SendController implements Initializable {
                         .wc(Long.parseLong(wcAddr[0]))
                         .hexAddress(wcAddr[1])
                         .build();
-                WalletEntity fromWallet = DB.findWallet(walletPk);
+                WalletEntity fromWallet = App.dbPool.findWallet(walletPk);
                 WalletAddress fromWalletAddress = fromWallet.getWallet();
 
                 BigDecimal amount = new BigDecimal(sendAmount.getText());
