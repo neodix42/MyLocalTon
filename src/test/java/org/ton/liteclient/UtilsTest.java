@@ -3,7 +3,6 @@ package org.ton.liteclient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -25,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Slf4j
 @RunWith(JUnit4.class)
@@ -66,7 +66,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void testFindClosingBracket() {
+    public void TestFindClosingBracket() {
         int index = LiteClientParser.findPosOfClosingBracket("Hello ( my world ). Bye (bye).", "llo ( my");
         assertEquals(17, index);
 
@@ -75,7 +75,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void testSbb() {
+    public void TestSbb() {
         String result = LiteClientParser.sbb("Hello ( my world ). Bye (bye).", " (bye");
         assertEquals("(bye)", result);
 
@@ -84,7 +84,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void testFindClosingBracketNegative() {
+    public void TestFindClosingBracketNegative() {
         int index = LiteClientParser.findPosOfClosingBracket("Hello ( my world (). Bye (bye).", "llo ( my");
         // unbalanced brackets
         assertEquals(-1, index);
@@ -94,15 +94,14 @@ public class UtilsTest {
     }
 
     @Test
-    public void testStringBlocks() {
+    public void TestStringBlocks() {
         List<String> result = LiteClientParser.findStringBlocks("Hello f1:(world=true) nevermind f1:(world=false) dich ( otomy", "f1:(");
         result.forEach(log::info);
         assertEquals(2, result.size());
     }
 
-    @Ignore
     @Test
-    public void testHexConversion() throws IOException, DecoderException {
+    public void TestHexConversion() throws IOException, DecoderException {
         Node testNode = new GenesisNode();
         testNode.extractBinaries();
         byte[] validatorPubKey = Files.readAllBytes(Paths.get(testNode.getTonDbKeyringDir() + "validator.pub"));
@@ -110,32 +109,11 @@ public class UtilsTest {
         log.info("validatorPubKey {}", validatorPubKey);
         log.info("validatorPubKey {}", Hex.encodeHexString(validatorPubKey));
         log.info("validatorPubKey {}", Hex.decodeHex(Hex.encodeHexString(validatorPubKey)));
+        assertTrue(true);
     }
 
     @Test
-    public void testOsDetection() {
-        String os = "Distributor ID:	Ubuntu\n" +
-                "Description:	Ubuntu 20.04.3 LTS\n" +
-                "Release:	20.04\n" +
-                "Codename:	focal";
-
-        String s;
-        if (os.contains("20.04")) {
-            log.info("a");
-            s = "20.04";
-        } else if (os.contains("18.04")) {
-            log.info("b");
-            s = "18.04";
-        } else {
-            s = "";
-        }
-        if (s.equals("20.04")) {
-            log.info("ok");
-        }
-    }
-
-    @Test
-    public void testToUtcNospace() {
+    public void TestToUtcNospace() {
         long millis = System.currentTimeMillis();
         log.info("file with datetime {}", Utils.toUtcNoSpace(millis / 1000));
         log.info("file with datetime {}", Utils.toUtcNoSpace(Instant.now().getEpochSecond()));
@@ -144,5 +122,6 @@ public class UtilsTest {
         log.info("file with datetime {}", Utils.toLocal(Instant.now().getEpochSecond()));
         log.info("{}", LocalDateTime.ofEpochSecond(millis / 1000, 0, ZoneOffset.UTC));
         log.info("{}", LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()));
+        assertTrue(true);
     }
 }

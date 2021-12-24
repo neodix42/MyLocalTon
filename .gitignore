@@ -1,5 +1,6 @@
 target/
 myLocalTon/
+testDB/
 **/resources/**/*.zip
 .idea/
 !/src/main/resources/org/ton/binaries/patches/readme.txt

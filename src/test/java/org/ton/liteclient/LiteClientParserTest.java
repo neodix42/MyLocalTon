@@ -36,7 +36,7 @@ public class LiteClientParserTest {
     private static final BigDecimal ZERO_LONG = BigDecimal.ZERO;
 
     @Test
-    public void testParseCreateHardFork() throws IOException {
+    public void TestParseCreateHardFork() throws IOException {
         String newBlockOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/create-hardfork.log")), StandardCharsets.UTF_8);
         ResultLastBlock newBlock = LiteClientParser.parseCreateHardFork(newBlockOutput);
         assertThat(newBlock).isNotNull();
@@ -44,13 +44,13 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseGetSeqno() {
+    public void TestParseGetSeqno() {
         Long seqno = LiteClientParser.parseRunMethodSeqno("result:  [ 21234120 ]");
         assertThat(seqno).isEqualTo(21234120L);
     }
 
     @Test
-    public void testParseGetAccountOnlyTonCoins() throws IOException {
+    public void TestParseGetAccountOnlyTonCoins() throws IOException {
         // given
         String getAccountCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/getaccount_only_grams.log")), StandardCharsets.UTF_8);
 
@@ -66,7 +66,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseGetAccount() throws IOException {
+    public void TestParseGetAccount() throws IOException {
         // given
         String getAccountCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/getaccount.log")), StandardCharsets.UTF_8);
 
@@ -81,7 +81,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseGetAccountMaster() throws IOException {
+    public void TestParseGetAccountMaster() throws IOException {
         // given
         String getAccountCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/getaccount_master.log")), StandardCharsets.UTF_8);
 
@@ -96,7 +96,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseLastCommand() throws IOException {
+    public void TestParseLastCommand() throws IOException {
         // given
         String lastCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/last.log")), StandardCharsets.UTF_8);
 
@@ -112,7 +112,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseBySeqCommand() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseBySeqCommand() throws IOException, IncompleteDump, ParsingError {
         // given
         String bySeqCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/byseqno.log")), StandardCharsets.UTF_8);
         // when
@@ -128,7 +128,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseListTransCommand() throws IOException {
+    public void TestParseListTransCommand() throws IOException {
         // given
         String parseListblocktransCommand = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/listblocktrans.log")), StandardCharsets.UTF_8);
         // when
@@ -139,7 +139,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testNegativeParseListTransCommand() {
+    public void TestNegativeParseListTransCommand() {
         // given
         String parseListblocktransCommand = "";
         // when
@@ -150,7 +150,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseDumptransNoTxCommand() throws IOException {
+    public void TestParseDumptransNoTxCommand() throws IOException {
         // given
         String dumptransNoTxsCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumptrans_nothing.log")), StandardCharsets.UTF_8);
         // when
@@ -161,7 +161,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseDumptransTxCommand() throws IOException {
+    public void TestParseDumptransTxCommand() throws IOException {
         // given
         String dumptransTxsCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumptrans.log")), StandardCharsets.UTF_8);
         // when
@@ -174,7 +174,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseDumptransTxSrcNoneCommand() throws IOException {
+    public void TestParseDumptransTxSrcNoneCommand() throws IOException {
         // given
         String dumptransTxsCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumptrans_src_addr_none_ext_msg.log")), StandardCharsets.UTF_8);
         // when
@@ -188,7 +188,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseDumptransTxOutMsgs() throws IOException {
+    public void TestParseDumptransTxOutMsgs() throws IOException {
         // given
         String dumptransTxsCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumptrans_outmsgs.log")), StandardCharsets.UTF_8);
         // when
@@ -203,7 +203,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseAllShardsCommand2() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseAllShardsCommand2() throws IOException, IncompleteDump, ParsingError {
         // given
         String allShardsCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/allshards_1.log")), StandardCharsets.UTF_8);
         // when
@@ -214,7 +214,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseAllShardsCommand() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseAllShardsCommand() throws IOException, IncompleteDump, ParsingError {
         // given
         String allShardsCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/allshards.log")), StandardCharsets.UTF_8);
         // when
@@ -225,7 +225,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseBlock3() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseBlock3() throws IOException, IncompleteDump, ParsingError {
         // given
         String blockDump = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumpblock_3.log")), StandardCharsets.UTF_8);
         // when
@@ -236,7 +236,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseBlock2() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseBlock2() throws IOException, IncompleteDump, ParsingError {
         // given
         String blockDump = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumpblock_2.log")), StandardCharsets.UTF_8);
         // when
@@ -247,7 +247,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseBlock() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseBlock() throws IOException, IncompleteDump, ParsingError {
         // given
         String blockDump = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumpblock.log")), StandardCharsets.UTF_8);
         // when
@@ -406,7 +406,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseShardBlock4() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseShardBlock4() throws IOException, IncompleteDump, ParsingError {
         // given
         String blockDump = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumpblock_shard_4.log")), StandardCharsets.UTF_8);
         // when
@@ -417,7 +417,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseGenesisBlock() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseGenesisBlock() throws IOException, IncompleteDump, ParsingError {
         // given
         String blockDump = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumpblock_genesis.log")), StandardCharsets.UTF_8);
         // when
@@ -457,7 +457,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseBasechainBlock() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseBasechainBlock() throws IOException, IncompleteDump, ParsingError {
         // given
         String blockDump = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumpblock_basechain.log")), StandardCharsets.UTF_8);
         // when
@@ -468,7 +468,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseShardBlock3() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseShardBlock3() throws IOException, IncompleteDump, ParsingError {
         // given
         String blockDump = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumpblock_shard_3.log")), StandardCharsets.UTF_8);
         // when
@@ -479,7 +479,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseShardBlock() throws IOException, IncompleteDump, ParsingError {
+    public void TestParseShardBlock() throws IOException, IncompleteDump, ParsingError {
         // given
         String blockDump = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/dumpblock_shard_2.log")), StandardCharsets.UTF_8);
         // when
@@ -490,7 +490,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testTonConstants() {
+    public void TestTonConstants() {
         assertEquals(1, TonConstants.InMsgType.IHR.getMsgType());
         assertEquals(1, TonConstants.TonAccountStatusChange.FROZEN.getAccStatusChange());
         assertEquals(2, TonConstants.TonBlockProcessingStatus.FINALIZED.getBlockProcessingStatus());
@@ -502,7 +502,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseParticipantList() throws IOException {
+    public void TestParseParticipantList() throws IOException {
         // given
         String participantListOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/participant_list.log")), StandardCharsets.UTF_8);
         // when
@@ -514,7 +514,7 @@ public class LiteClientParserTest {
     }
 
     @Test
-    public void testParseParticipantListEmpty() throws IOException {
+    public void TestParseParticipantListEmpty() throws IOException {
         // given
         String participantListOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/participant_list_empty.log")), StandardCharsets.UTF_8);
         // when
