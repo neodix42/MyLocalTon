@@ -17,7 +17,8 @@ jobs:
         run: mvn test -Dtest=LiteClientParserTest,UtilsTest
       - name: Build with Maven
         run: mvn package -DskipTests
-      - run: mkdir MyLocalTon && cp target/MyLocalTon.jar MyLocalTon
+      - name: Upload artifact
+        run: mkdir MyLocalTon && cp target/MyLocalTon.jar MyLocalTon
       - uses: actions/upload-artifact@v2
         with:
           name: Package

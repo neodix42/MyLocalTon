@@ -3,6 +3,7 @@ package org.ton.liteclient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -100,6 +101,7 @@ public class UtilsTest {
         assertEquals(2, result.size());
     }
 
+    @Ignore
     @Test
     public void TestHexConversion() throws IOException, DecoderException {
         Node testNode = new GenesisNode();
