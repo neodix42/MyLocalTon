@@ -21,5 +21,5 @@ jobs:
         run: mkdir MyLocalTon && cp target/MyLocalTon.jar MyLocalTon
       - uses: actions/upload-artifact@v2
         with:
-          name: Package
+          name: MyLocalTon
           path: MyLocalTon
