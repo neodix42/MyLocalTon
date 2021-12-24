@@ -1,6 +1,6 @@
 name: Java 11 Ubuntu-18.04
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:
@@ -13,10 +13,12 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+      - name: Run tests
+        run: mvn test -Dtest=LiteClientParserTest,UtilsTest
       - name: Build with Maven
         run: mvn package -DskipTests
-      - run: mkdir staging && cp target/MyLocalTon.jar staging
+      - run: mkdir MyLocalTon && cp target/MyLocalTon.jar MyLocalTon
       - uses: actions/upload-artifact@v2
         with:
           name: Package
-          path: staging 
+          path: MyLocalTon
