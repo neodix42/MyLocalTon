@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.ton.actions.MyLocalTon;
 import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.liteclient.api.ResultLastBlock;
+import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.wallet.WalletVersion;
 
@@ -274,8 +275,9 @@ public class Utils {
     public static boolean doShutdown() {
         try {
             if (Main.appActive.get()) {
-                log.debug("do shutdown");
+                log.debug("Do shutdown");
                 Main.appActive.set(false);
+                App.dbPool.closeDbs();
                 Main.fileLock.release();
                 Main.randomAccessFile.close();
                 Main.file.delete();

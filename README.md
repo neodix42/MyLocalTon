@@ -45,7 +45,8 @@ https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msv
 
 ## Installation and usage
 
-Download MyLocalTon.jar, open console, go to the location where you have placed the executable and execute the following command.
+Download MyLocalTon.jar from https://github.com/neodiX42/MyLocalTon/actions. Click the latest successful build and find MyLocalTon under Artifacts section. Open console, go to location where you have
+just placed the executable and execute the following command.
 
 `java -jar MyLocalTon.jar`
 

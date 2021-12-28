@@ -21,11 +21,13 @@ public class UpdateAccountStateCallable implements Callable<WalletCallbackParam>
     DB2 db;
     WalletPk walletPk;
     AccountState accountState;
+    Long seqno;
 
     public UpdateAccountStateCallable(WalletCallbackParam walletCallbackParam) {
         this.db = walletCallbackParam.getDb();
         this.walletPk = walletCallbackParam.getWalletPk();
         this.accountState = walletCallbackParam.getAccountState();
+        this.seqno = walletCallbackParam.getSeqno();
     }
 
     public WalletCallbackParam call() {
@@ -39,6 +41,7 @@ public class UpdateAccountStateCallable implements Callable<WalletCallbackParam>
                 if (nonNull(walletFound)) {
                     em.getTransaction().begin();
                     walletFound.setAccountState(accountState);
+                    walletFound.setSeqno(seqno);
                     if ((!accountState.getStateCode().isEmpty()) && (!accountState.getStateData().isEmpty())) {
                         Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(accountState);
                         walletFound.setWalletVersion(walletVersionAndId.getLeft());

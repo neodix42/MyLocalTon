@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static org.ton.db.DB.HEX_ADDR;
-import static org.ton.db.DB.WC;
+import static org.ton.db.DbPool.HEX_ADDR;
+import static org.ton.db.DbPool.WC;
 
 @Slf4j
 public class SearchWalletsCallable implements Callable<WalletCallbackParam> {

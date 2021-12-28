@@ -19,5 +19,6 @@ public class WalletCallbackParam {
     WalletEntity foundWallet;
     List<WalletEntity> foundWallets;
     AccountState accountState;
+    Long seqno;
     String searchText;
 }

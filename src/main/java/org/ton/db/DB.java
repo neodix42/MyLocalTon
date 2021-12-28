@@ -1,28 +1,10 @@
 package org.ton.db;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
-import org.ton.db.entities.*;
-import org.ton.executors.liteclient.api.AccountState;
-import org.ton.executors.liteclient.api.block.Block;
-import org.ton.settings.MyLocalTonSettings;
-import org.ton.utils.Utils;
-import org.ton.wallet.WalletVersion;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.ton.actions.MyLocalTon.SCROLL_BAR_DELTA;
 
 @Slf4j
 public class DB {
+    /*
     public static final String SEQNO = "seqno";
     public static final String SHARD = "shard";
     public static final String WC = "wc";
@@ -472,4 +454,5 @@ public class DB {
                 em.close();
         }
     }
+    */
 }

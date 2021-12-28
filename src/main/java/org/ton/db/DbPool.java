@@ -30,6 +30,12 @@ import static java.util.Objects.nonNull;
  */
 @Slf4j
 public class DbPool {
+    public static final String SEQNO = "seqno";
+    public static final String SHARD = "shard";
+    public static final String WC = "wc";
+    public static final String HEX_ADDR = "hexAddr";
+    public static final String HASH = "hash";
+
     public static final String TOO_MANY_PERSISTENT_OBJECTS_1000000 = "Too many persistent objects (>1000000)";
     AtomicBoolean spawned = new AtomicBoolean(false);
     MyLocalTonSettings settings;
@@ -111,7 +117,7 @@ public class DbPool {
             threadPoolService.shutdown();
             return result;
         } catch (Exception e) {
-            log.error("Error findWallet(), {}" + e.getMessage());
+            //log.error("Error findWallet(), {}" + e.getMessage());
             return result;
         }
     }
@@ -359,7 +365,7 @@ public class DbPool {
         }
     }
 
-    public void updateWalletState(WalletEntity walletEntity, AccountState accountState) {
+    public void updateWalletStateAndSeqno(WalletEntity walletEntity, AccountState accountState, long seqno) {
         log.debug("updating account state, {},  {}", walletEntity.getFullAddress(), accountState);
         try {
 
@@ -369,7 +375,9 @@ public class DbPool {
                 UpdateAccountStateCallable callable = new UpdateAccountStateCallable(WalletCallbackParam.builder()
                         .db(db)
                         .walletPk(walletEntity.getPrimaryKey())
-                        .accountState(accountState).build());
+                        .accountState(accountState)
+                        .seqno(seqno)
+                        .build());
                 callablesList.add(callable);
             }
 
@@ -427,7 +435,7 @@ public class DbPool {
             threadPoolService.shutdown();
             return result;
         } catch (Exception e) {
-            log.error("Error findWallet(), {}" + e.getMessage());
+            //log.error("Error getAllWallets(), {}" + e.getMessage());
             return result;
         }
     }
@@ -591,6 +599,13 @@ public class DbPool {
         } catch (Exception e) {
             log.error("Error searchTxs(), {}" + e.getMessage());
             return result;
+        }
+    }
+
+    public void closeDbs() {
+        log.info("Closing database...");
+        for (DB2 db : allDBs) {
+            db.getEmf().close();
         }
     }
 }

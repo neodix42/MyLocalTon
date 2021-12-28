@@ -109,8 +109,12 @@ public class LiteClientExecutor {
         }
     }
 
-    public long executeGetSeqno(Node node, String contractAddress) throws Exception {
-        return LiteClientParser.parseRunMethodSeqno(executeRunMethod(node, contractAddress, "seqno", ""));
+    public long executeGetSeqno(Node node, String contractAddress) {
+        try {
+            return LiteClientParser.parseRunMethodSeqno(executeRunMethod(node, contractAddress, "seqno", ""));
+        } catch (Exception e) {
+            return -1L;
+        }
     }
 
     /**
@@ -235,7 +239,7 @@ public class LiteClientExecutor {
 
     public String executeRunMethod(Node node, String address, String methodId, String params) throws Exception {
         final String command = String.format("runmethod %s %s %s", address, methodId, params);
-        return execute(node, command).getRight().get().toString();
+        return execute(node, command).getRight().get();
     }
 
     public String executeSendfile(Node node, String absolutePathFile) throws Exception {

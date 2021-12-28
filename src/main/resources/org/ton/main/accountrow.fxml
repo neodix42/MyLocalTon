@@ -5,43 +5,37 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane fx:id="accRowBorderPane" prefHeight="110.0" prefWidth="921.0" onMouseEntered="#handleMouseEnter" onMouseExited="#handleMouseExit"
-            style="-fx-background-color: dbedff; -fx-padding: 10 0 0 5;"
-            stylesheets="@../css/global-font.css" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.AccountController">
+<BorderPane fx:id="accRowBorderPane" onMouseEntered="#handleMouseEnter" onMouseExited="#handleMouseExit" prefHeight="120.0" prefWidth="921.0"
+            style="-fx-background-color: dbedff; -fx-padding: 10 0 0 5;" stylesheets="@../css/global-font.css" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.ton.ui.controllers.AccountController">
     <center>
-        <HBox prefHeight="110.0" prefWidth="863.0" BorderPane.alignment="CENTER">
+        <HBox prefHeight="120.0" prefWidth="863.0" BorderPane.alignment="CENTER">
             <VBox prefHeight="22.0" prefWidth="550.0">
                 <GridPane fx:id="grid" alignment="center" hgap="10" vgap="5">
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0"/>
                     </padding>
 
-                    <Label fx:id="hexAddrLabel" minWidth="190.0" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Hex:" GridPane.columnIndex="0"
-                           GridPane.rowIndex="0"/>
+                    <Label fx:id="hexAddrLabel" minWidth="190.0" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Hex:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
-                    <Label fx:id="hexAddr" onMouseClicked="#accRowHexAddrClick" minWidth="500.0" style="-fx-alignment: center-left; -fx-font-size: 12;"
-                           text="0:e50738dd6363b5e91d738e21d8eff5da3194ec1a34bccaa7a2d32e8136f8620c"
-                           GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                    <Label fx:id="hexAddr" minWidth="500.0" onMouseClicked="#accRowHexAddrClick" style="-fx-alignment: center-left; -fx-font-size: 12;"
+                           text="0:e50738dd6363b5e91d738e21d8eff5da3194ec1a34bccaa7a2d32e8136f8620c" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
                     <Label fx:id="b64AddrLabel" prefHeight="15.0" prefWidth="201.0" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Bounceable, base64:" GridPane.columnIndex="0"
                            GridPane.rowIndex="1"/>
                     <Label fx:id="b64Addr" onMouseClicked="#accRowB64AddrClick" style="-fx-alignment: center-left; -fx-font-size: 12;" text="EQDlBzjdY2O16R1zjiHY7/XaMZTsGjS8yqei0y6BNvhiDB9Q"
-                           GridPane.columnIndex="1"
-                           GridPane.rowIndex="1"/>
+                           GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                     <Label fx:id="b64urlAddrLabel" prefHeight="15.0" prefWidth="205.0" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Bounceable, base64url:" GridPane.columnIndex="0"
                            GridPane.rowIndex="2"/>
                     <Label fx:id="b64urlAddr" onMouseClicked="#accRowB64UrlAddrClick" style="-fx-alignment: center-left; -fx-font-size: 12;" text="EQDlBzjdY2O16R1zjiHY7_XaMZTsGjS8yqei0y6BNvhiDB9Q"
-                           GridPane.columnIndex="1"
-                           GridPane.rowIndex="2"/>
+                           GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                     <Label fx:id="nb64AddrLabel" prefHeight="15.0" prefWidth="213.0" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Non-Bounceable, base64:" GridPane.columnIndex="0"
                            GridPane.rowIndex="3"/>
                     <Label fx:id="nb64Addr" onMouseClicked="#accRowNb64AddrClick" style="-fx-alignment: center-left; -fx-font-size: 12;" text="UQDlBzjdY2O16R1zjiHY7/XaMZTsGjS8yqei0y6BNvhiDEKV"
-                           textAlignment="CENTER"
-                           GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                           textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                     <Label fx:id="nb64urlAddrLabel" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Non-Bounceable, base64url:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                     <Label fx:id="nb64urlAddr" onMouseClicked="#accRowNb64UrlAddrClick" style="-fx-alignment: center-left; -fx-font-size: 12;" text="UQDlBzjdY2O16R1zjiHY7_XaMZTsGjS8yqei0y6BNvhiDEKV"
-                           GridPane.columnIndex="1"
-                           GridPane.rowIndex="4"/>
+                           GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                     <columnConstraints>
                         <ColumnConstraints/>
                         <ColumnConstraints/>
@@ -56,12 +50,13 @@
                     </rowConstraints>
                 </GridPane>
             </VBox>
-            <VBox prefHeight="22.0" prefWidth="188.0">
-                <Label fx:id="balance" onMouseClicked="#accRowBalanceClick" prefHeight="20.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 12;" text="9,5623.20"/>
-                <Label fx:id="createdat" prefHeight="20.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 12;" text="2021.03.26 15:55:32"/>
-                <Label fx:id="status" prefHeight="20.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 12;" text="Active"/>
-                <Label fx:id="type" prefHeight="20.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 12;" text="Wallet V1"/>
-                <Label fx:id="walledId" prefHeight="20.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 12;" text="Wallet ID 1"/>
+            <VBox prefHeight="20.0" prefWidth="188.0">
+                <Label fx:id="balance" onMouseClicked="#accRowBalanceClick" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 11;" text="9,5623.20"/>
+                <Label fx:id="createdat" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 11;" text="2021.03.26 15:55:32"/>
+                <Label fx:id="status" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center; -fx-font-size: 11;" text="Active"/>
+                <Label fx:id="type" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 11;" text="Wallet V1"/>
+                <Label fx:id="seqno" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center; -fx-font-size: 11; -fx-padding: 0 0 0 0;" text="Seqno 2563"/>
+                <Label fx:id="walledId" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center; -fx-font-size: 11;" text="Wallet ID 1"/>
             </VBox>
         </HBox>
     </center>

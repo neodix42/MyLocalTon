@@ -25,6 +25,7 @@ public class WalletEntity {
     String hexAddress;
 
     Long subWalletId;
+    long seqno;
 
     WalletVersion walletVersion; //walletV1, walletV2, walletV3
     WalletAddress wallet;

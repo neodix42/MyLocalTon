@@ -89,6 +89,12 @@ public class AccountController {
     public Label type;
 
     @FXML
+    public Label seqno;
+
+    @FXML
+    public Label createdat;
+
+    @FXML
     Label status;
 
     @FXML

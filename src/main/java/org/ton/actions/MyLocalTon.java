@@ -16,7 +16,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Strings;
-import org.ton.db.DB;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
@@ -806,37 +805,36 @@ public class MyLocalTon {
             log.info("preinstalled wallet {}", wallet.getFullAddress());
 
             // always update account state on start
-            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress()));
+            //AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress()));
+            Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress());
+            App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
 
-            App.dbPool.updateWalletState(wallet, accountState);
-
-            wallet.setAccountState(accountState);
+            wallet.setAccountState(stateAndSeqno.getLeft());
+            wallet.setSeqno(stateAndSeqno.getRight());
             updateAccountsTabGui(wallet);
         }
     }
 
     public WalletEntity createWalletEntity(Node genesisNode, String fileBaseName, long workchain, long subWalletid) throws Exception {
 
-        WalletEntity walletEntity;
+        WalletEntity wallet;
 
         if (isNull(fileBaseName)) { //generate and read address of just generated wallet
-            walletEntity = createWalletWithFundsAndSmartContract(genesisNode, genesisNode, workchain, subWalletid, settings.getWalletSettings().getInitialAmount());
-            log.debug("create wallet address {}", walletEntity.getHexAddress());
+            wallet = createWalletWithFundsAndSmartContract(genesisNode, genesisNode, workchain, subWalletid, settings.getWalletSettings().getInitialAmount());
+            log.debug("create wallet address {}", wallet.getHexAddress());
         } else { //read address of initially created wallet (main-wallet and config-master)
-            walletEntity = new FiftExecutor().getWalletByBasename(genesisNode, fileBaseName);
-            log.info("read wallet address: {}", walletEntity.getHexAddress());
+            wallet = new FiftExecutor().getWalletByBasename(genesisNode, fileBaseName);
+            log.info("read wallet address: {}", wallet.getHexAddress());
         }
 
-        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(genesisNode, walletEntity.getWc() + ":" + walletEntity.getHexAddress()));
-        log.debug("manually added wallet wc:addr {}:{}, balance {}, state {}", accountState.getWc(), accountState.getAddress(), accountState.getBalance().getToncoins(), accountState.getStatus());
+        Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress());
+        App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
 
-        //update account state
-        App.dbPool.updateWalletState(walletEntity, accountState);
+        wallet.setAccountState(stateAndSeqno.getLeft());
+        wallet.setSeqno(stateAndSeqno.getRight());
+        updateAccountsTabGui(wallet);
 
-        walletEntity.setAccountState(accountState);
-        updateAccountsTabGui(walletEntity);
-
-        return walletEntity;
+        return wallet;
     }
 
     public void runBlockchainSizeMonitor() {
@@ -1071,6 +1069,14 @@ public class MyLocalTon {
         } else { //wallets V1 and V2
             ((Label) accountRow.lookup("#walledId")).setVisible(false);
             ((Label) accountRow.lookup("#walledId")).setText("-1");
+        }
+
+        if (walletEntity.getSeqno() > 0) {
+            ((Label) accountRow.lookup("#seqno")).setVisible(true);
+            ((Label) accountRow.lookup("#seqno")).setText("Seqno " + walletEntity.getSeqno());
+        } else {
+            ((Label) accountRow.lookup("#seqno")).setVisible(false);
+            ((Label) accountRow.lookup("#seqno")).setText("Seqno -1");
         }
 
         Value value = walletEntity.getAccountState().getBalance();
@@ -1397,12 +1403,13 @@ public class MyLocalTon {
 
     public WalletEntity insertNewAccountEntity(ResultLastBlock lastBlock, Transaction txDetails) {
 
-        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr()));
-        log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", accountState.getWc(), accountState.getAddress(), accountState.getBalance(), accountState.getStatus());
+        //AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr()));
+        Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
+        log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
 
-        Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(accountState);
+        Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(stateAndSeqno.getLeft());
 
-        WalletEntity foundWallet = DB.findWallet(WalletPk.builder()
+        WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
                 .wc(lastBlock.getWc())
                 .hexAddress(txDetails.getAccountAddr())
                 .build());
@@ -1428,7 +1435,7 @@ public class MyLocalTon {
                     .subWalletId(walletAddress.getSubWalletId())
                     .walletVersion(walletVersionAndId.getLeft())
                     .wallet(walletAddress)
-                    .accountState(accountState)
+                    .accountState(stateAndSeqno.getLeft())
                     .createdAt(txDetails.getNow())
                     .build();
 
@@ -1436,9 +1443,10 @@ public class MyLocalTon {
 
             return walletEntity;
         } else {
-            foundWallet.setAccountState(accountState);
+            foundWallet.setAccountState(stateAndSeqno.getLeft());
+            foundWallet.setSeqno(stateAndSeqno.getRight());
             log.debug("Wallet found! Update state {}", foundWallet.getFullAddress()); // update state
-            App.dbPool.updateWalletState(foundWallet, accountState);
+            App.dbPool.updateWalletStateAndSeqno(foundWallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
 
             return foundWallet;
         }
@@ -1683,17 +1691,31 @@ public class MyLocalTon {
                     if (Main.appActive.get()) {
                         AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress()));
                         if (nonNull(accountState.getBalance())) {
-                            wallet.setAccountState(accountState);
 
+                            Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress());
+                            App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
+
+                            wallet.setAccountState(stateAndSeqno.getLeft());
+                            wallet.setSeqno(stateAndSeqno.getRight());
                             updateAccountsTabGui(wallet);
-                            App.dbPool.updateWalletState(wallet, accountState);
                         }
+
+
                     }
                 }
             } catch (Exception e) {
                 log.error("Error in runAccountsMonitor(), " + e.getMessage());
             }
         }, 0L, 5L, TimeUnit.SECONDS);
+    }
+
+    Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) {
+        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(node, address));
+        if (nonNull(accountState.getBalance())) {
+            long seqno = new LiteClientExecutor().executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
+            return Pair.of(accountState, seqno);
+        }
+        return Pair.of(null, -1L);
     }
 
 

@@ -1368,7 +1368,11 @@ public class LiteClientParser {
     }
 
     public static long parseRunMethodSeqno(String stdout) {
-        return Long.parseLong(StringUtils.substringBetween(stdout, "result:  [", "]").trim());
+        try {
+            return Long.parseLong(StringUtils.substringBetween(stdout, "result:  [", "]").trim());
+        } catch (Exception e) {
+            return -1L;
+        }
     }
 
     public static List<ResultListParticipants> parseRunMethodParticipantList(String stdout) {

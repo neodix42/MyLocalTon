@@ -12,7 +12,7 @@ import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import static org.ton.db.DB.*;
+import static org.ton.db.DbPool.*;
 
 @Slf4j
 public class SearchBlocksCallable implements Callable<BlockCallbackParam> {
