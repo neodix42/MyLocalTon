@@ -366,9 +366,14 @@ public class MainController implements Initializable {
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
             service.schedule(() -> {
                 log.info("final closing");
+                saveSettings();
                 Platform.exit(); // closes main form
-                System.exit(0); // initiating shutdown hook
-            }, 2, TimeUnit.SECONDS);
+
+                if (Utils.doShutdown()) {
+                    log.info("system exit 0");
+                    System.exit(0);
+                }
+            }, 3, TimeUnit.SECONDS);
         });
     }
 
