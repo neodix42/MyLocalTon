@@ -957,7 +957,7 @@ public class MainController implements Initializable {
         yesNoDialog.show();
     }
 
-    public void transformAction(ActionEvent actionEvent) throws IOException {
+    public void transformAction() throws IOException {
         log.info("transform");
 
         Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();

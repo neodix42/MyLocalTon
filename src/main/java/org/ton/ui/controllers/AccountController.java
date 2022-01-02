@@ -3,8 +3,11 @@ package org.ton.ui.controllers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXToggleButton;
 import javafx.embed.swing.SwingNode;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -111,6 +114,8 @@ public class AccountController {
 
     @FXML
     JFXButton walletDeleteBtn;
+
+    public static JFXDialog yesNoDialog;
 
     public void accSendBtnAction() throws IOException {
         log.info("acc send {}", hexAddr.getText());
@@ -316,5 +321,47 @@ public class AccountController {
         FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".pk"));
         FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".addr"));
         FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + "-query.boc"));
+    }
+
+    public void runMethodBtn() throws IOException {
+        log.info("runMethodBtn");
+
+        Parent dialog = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
+        dialog.lookup("#header").setVisible(true);
+        dialog.lookup("#body").setVisible(false);
+        ((Label) dialog.lookup("#action")).setText("runmethod");
+        ((Label) dialog.lookup("#address")).setText(hexAddr.getText());
+        ((Label) dialog.lookup("#header")).setText("Execute runmethod");
+        ((Label) dialog.lookup("#body")).setText("For example, enter seqno or get_public_key against wallet contract");
+
+        dialog.lookup("#inputFields").setVisible(true);
+        dialog.lookup("#seqno").setVisible(true);
+        dialog.lookup("#workchain").setVisible(false);
+        dialog.lookup("#subWalletId").setVisible(false);
+
+        dialog.lookup("#okBtn").setDisable(false);
+
+        JFXDialogLayout content = new JFXDialogLayout();
+        content.setBody(dialog);
+
+        yesNoDialog = new JFXDialog(App.root, content, JFXDialog.DialogTransition.CENTER);
+        yesNoDialog.setOnKeyPressed(keyEvent -> {
+                    if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                        yesNoDialog.close();
+                    }
+                }
+        );
+        yesNoDialog.setOnDialogOpened(jfxDialogEvent -> {
+            dialog.lookup("#seqno").requestFocus();
+        });
+        yesNoDialog.show();
+    }
+
+    public void showSrcBtn(ActionEvent actionEvent) {
+        // TODO
+    }
+
+    public void reservedBtn(ActionEvent actionEvent) {
+        // TODO
     }
 }

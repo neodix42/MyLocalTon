@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -61,30 +61,75 @@
         </HBox>
     </center>
     <right>
-        <HBox alignment="CENTER_RIGHT" prefHeight="46.0" prefWidth="67.0" style="-fx-padding: 0 25 0 0;" BorderPane.alignment="CENTER">
+        <VBox>
+            <HBox alignment="CENTER_RIGHT" prefHeight="46.0" prefWidth="67.0" style="-fx-padding: 0 25 0 0;" BorderPane.alignment="CENTER">
 
-            <JFXButton fx:id="walletDeleteBtn" onAction="#walletDeleteBtnAction" prefHeight="30.0" prefWidth="30.0">
-                <graphic>
-                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../images/delete.png"/>
-                    </ImageView>
-                </graphic>
-            </JFXButton>
+                <JFXButton fx:id="walletDeleteBtn" onAction="#walletDeleteBtnAction" prefHeight="30.0" prefWidth="30.0">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/delete.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Delete account. All toncoins and private key will be lost."/>
+                    </tooltip>
+                </JFXButton>
 
-            <JFXButton fx:id="accSendBtn" onAction="#accSendBtnAction" prefHeight="30.0" prefWidth="30.0">
-                <graphic>
-                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../images/send.png"/>
-                    </ImageView>
-                </graphic>
-            </JFXButton>
-            <JFXButton onAction="#accInfoBtn" prefHeight="30.0" prefWidth="30.0">
-                <graphic>
-                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../images/info.png"/>
-                    </ImageView>
-                </graphic>
-            </JFXButton>
-        </HBox>
+                <JFXButton fx:id="accSendBtn" onAction="#accSendBtnAction" prefHeight="30.0" prefWidth="30.0">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/send.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Send toncoins to other wallet"/>
+                    </tooltip>
+                </JFXButton>
+                <JFXButton onAction="#accInfoBtn" prefHeight="30.0" prefWidth="30.0">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/info.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Get account information"/>
+                    </tooltip>
+                </JFXButton>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" prefHeight="46.0" prefWidth="67.0" style="-fx-padding: 0 25 0 0;" BorderPane.alignment="CENTER">
+
+                <JFXButton onAction="#reservedBtn" prefHeight="30.0" prefWidth="30.0" visible="false">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/delete.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Delete account. All toncoins and private key will be lost."/>
+                    </tooltip>
+                </JFXButton>
+                <JFXButton onAction="#runMethodBtn" prefHeight="30.0" prefWidth="30.0">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/run.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Execute runmethod with parameters"/>
+                    </tooltip>
+                </JFXButton>
+                <JFXButton onAction="#showSrcBtn" prefHeight="30.0" prefWidth="30.0" visible="false">
+                    <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                            <Image url="@../images/src.png"/>
+                        </ImageView>
+                    </graphic>
+                    <tooltip>
+                        <Tooltip text="Show smart-contract source code"/>
+                    </tooltip>
+                </JFXButton>
+
+            </HBox>
+        </VBox>
     </right>
 </BorderPane>

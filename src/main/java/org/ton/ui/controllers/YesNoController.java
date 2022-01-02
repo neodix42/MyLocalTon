@@ -1,15 +1,18 @@
 package org.ton.ui.controllers;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
+import org.ton.executors.liteclient.LiteClientExecutor;
 import org.ton.main.App;
 import org.ton.utils.Utils;
 
@@ -38,10 +41,19 @@ public class YesNoController implements Initializable {
     Label action;
 
     @FXML
+    Label address;
+
+    @FXML
     JFXTextField subWalletId;
 
     @FXML
     JFXTextField workchain;
+
+    @FXML
+    JFXTextField seqno;
+
+    @FXML
+    JFXTextArea txtArea;
 
     @FXML
     VBox inputFields;
@@ -57,6 +69,12 @@ public class YesNoController implements Initializable {
         subWalletId.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("[\\d\\.]+")) {
                 subWalletId.setText(newValue.replaceAll("[^\\d\\.]", ""));
+            }
+        });
+
+        seqno.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                doRunMethod();
             }
         });
     }
@@ -81,10 +99,41 @@ public class YesNoController implements Initializable {
                 mainController.yesNoDialog.close();
                 doCreateAccount();
                 break;
+            case "runmethod":
+                log.debug("runmethod");
+                doRunMethod();
+                break;
             default:
                 log.debug("no action");
                 mainController.yesNoDialog.close();
         }
+    }
+
+    private void doRunMethod() {
+        String smcAddress = address.getText();
+        String methodId = seqno.getText();
+        if (StringUtils.isEmpty(methodId)) {
+            return;
+        }
+        String stdout = "";
+        String parameters = "";
+        if (methodId.contains(" ")) {
+            parameters = methodId.substring(methodId.indexOf(" "));
+        }
+
+        txtArea.setVisible(true);
+
+        log.info("run method {} against {} with parameters {}", methodId, smcAddress, parameters);
+        try {
+            stdout = new LiteClientExecutor().executeRunMethod(MyLocalTon.getInstance().getSettings().getGenesisNode(), smcAddress, methodId, parameters);
+            if (stdout.contains("arguments")) {
+                stdout = stdout.substring(stdout.indexOf("arguments")).trim();
+            }
+        } catch (Exception e) {
+            stdout = e.getMessage();
+        }
+        txtArea.setText(stdout);
+        txtArea.setVisible(true);
     }
 
     private void doCreateAccount() {

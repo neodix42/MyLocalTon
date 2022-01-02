@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
@@ -9,8 +8,8 @@
            xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.YesNoController">
     <GridPane>
         <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="394.0" minWidth="10.0" prefWidth="394.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="211.0" minWidth="10.0" prefWidth="130.0"/>
         </columnConstraints>
         <rowConstraints>
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
@@ -18,16 +17,14 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         </rowConstraints>
         <Label fx:id="action" visible="false"/>
-        <Label fx:id="header" prefHeight="39.0" visible="true" prefWidth="532.0" style="-fx-background-color: #dbedff; -fx-padding: 0 0 0 20;" text="Header" GridPane.columnSpan="2"
-               GridPane.rowIndex="0"
-               GridPane.valignment="TOP"/>
+        <Label fx:id="address" visible="false"/>
+        <Label fx:id="header" prefHeight="39.0" prefWidth="532.0" style="-fx-background-color: #dbedff; -fx-padding: 0 0 0 20;" text="Header" visible="true" GridPane.columnSpan="2"
+               GridPane.rowIndex="0" GridPane.valignment="TOP"/>
 
-        <Label fx:id="body" prefHeight="76.0" visible="true" prefWidth="524.0" style="-fx-font-size: 12; -fx-padding: 0 0 0 40;" text="body text"
-               GridPane.columnSpan="2"
-               GridPane.rowIndex="1"
+        <Label fx:id="body" prefHeight="76.0" prefWidth="524.0" style="-fx-font-size: 12; -fx-padding: 0 0 0 40;" text="body text" visible="true" GridPane.columnSpan="2" GridPane.rowIndex="1"
                GridPane.valignment="TOP"/>
         <VBox fx:id="inputFields" spacing="20.0" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="1">
-            <JFXTextField fx:id="workchain" prefHeight="34.0" prefWidth="313.0" promptText="Workchain" GridPane.columnSpan="1" GridPane.rowIndex="1" alignment="BOTTOM_LEFT">
+            <JFXTextField fx:id="seqno" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="E.g. seqno or get_public_key" GridPane.columnSpan="1" GridPane.rowIndex="1">
                 <padding>
                     <Insets left="10.0"/>
                 </padding>
@@ -35,7 +32,15 @@
                     <Insets left="20.0"/>
                 </GridPane.margin>
             </JFXTextField>
-            <JFXTextField fx:id="subWalletId" prefHeight="34.0" prefWidth="313.0" promptText="Sub-wallet ID" GridPane.columnSpan="1" GridPane.rowIndex="1" alignment="BOTTOM_LEFT">
+            <JFXTextField fx:id="workchain" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="Workchain" GridPane.columnSpan="1" GridPane.rowIndex="1">
+                <padding>
+                    <Insets left="10.0"/>
+                </padding>
+                <GridPane.margin>
+                    <Insets left="20.0"/>
+                </GridPane.margin>
+            </JFXTextField>
+            <JFXTextField fx:id="subWalletId" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="Sub-wallet ID" GridPane.columnSpan="1" GridPane.rowIndex="1">
                 <padding>
                     <Insets left="10.0"/>
                 </padding>
@@ -50,10 +55,10 @@
                 <Insets left="30.0"/>
             </padding>
         </VBox>
-        <JFXButton fx:id="okBtn" onAction="#okBtnAction" prefHeight="37.0" prefWidth="79.0" ripplerFill="white" style="-fx-background-color: dbedff;" text="OK"
-                   GridPane.columnIndex="1"
-                   GridPane.halignment="RIGHT" GridPane.rowIndex="2"
-                   GridPane.valignment="BOTTOM">
+        <JFXTextArea fx:id="txtArea" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" visible="false">
+        </JFXTextArea>
+        <JFXButton fx:id="okBtn" onAction="#okBtnAction" prefHeight="37.0" prefWidth="79.0" ripplerFill="white" style="-fx-background-color: dbedff;" text="OK" GridPane.columnIndex="1"
+                   GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
             <GridPane.margin>
                 <Insets bottom="20.0" right="20.0"/>
             </GridPane.margin>
