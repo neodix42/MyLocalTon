@@ -1229,7 +1229,8 @@ public class MyLocalTon {
 
     private void showButtonWithMessage(javafx.scene.Node txRow, TxEntity txEntity) {
         if (txEntity.getTypeTx().contains("Message") && !txEntity.getTypeMsg().contains("External In")) {
-            if (!(txEntity.getTx().getInMsg().getBody().getCells().isEmpty()) && (txEntity.getTx().getInMsg().getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0)) {
+            if (!(txEntity.getTx().getInMsg().getBody().getCells().isEmpty()) && (txEntity.getTx().getInMsg().getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0) &&
+                    !txEntity.getTx().getInMsg().getBody().getCells().get(0).equals("FFFFFFFF")) {
                 txRow.lookup("#txMsgBtn").setVisible(true);
                 txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
 
@@ -1242,12 +1243,12 @@ public class MyLocalTon {
                         }
                     }).collect(Collectors.joining());
 
-                    log.debug("in msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg.substring(5));
+                    log.info("in msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg);
                     mainController.showMessage(msg.substring(5));
                 });
 
             } else if ((!txEntity.getTx().getOutMsgs().isEmpty() && !txEntity.getTx().getOutMsgs().get(0).getBody().getCells().isEmpty())) {
-                if (txEntity.getTx().getOutMsgs().get(0).getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0) {
+                if (txEntity.getTx().getOutMsgs().get(0).getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0 && !txEntity.getTx().getOutMsgs().get(0).getBody().getCells().get(0).equals("FFFFFFFF")) {
 
                     txRow.lookup("#txMsgBtn").setVisible(true);
                     txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
@@ -1260,7 +1261,7 @@ public class MyLocalTon {
                             }
                         }).collect(Collectors.joining());
 
-                        log.debug("out msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg.substring(5));
+                        log.info("out msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg);
                         mainController.showMessage(msg.substring(5));
                     });
                 }
