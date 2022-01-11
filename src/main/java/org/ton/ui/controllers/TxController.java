@@ -48,6 +48,9 @@ import static org.ton.utils.Utils.PATTERN;
 public class TxController {
 
     @FXML
+    JFXButton txMsgBtn;
+
+    @FXML
     Label block;
 
     @FXML

@@ -58,8 +58,9 @@ public class Extractor {
                     } else if (Utils.getUbuntuVersion().equals("18.04")) {
                         extractUbuntuBinaries("ubuntu18");
                     } else {
-                        log.error("This Unix system is not supported.");
-                        System.exit(0); // initiating shutdown hook
+                        log.error("This Linux system officially is not supported, but let's try to run TON binaries compiled on Ubuntu 20.04");
+                        extractUbuntuBinaries("ubuntu20");
+                        //System.exit(0); // initiating shutdown hook
                     }
                 } else if (isMac()) {
                     if (Utils.isMacOsArm()) {

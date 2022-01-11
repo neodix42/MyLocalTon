@@ -10,6 +10,7 @@ import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
@@ -65,11 +66,12 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
 
@@ -926,7 +928,7 @@ public class MyLocalTon {
             }
         }
 
-        dumpBlockTransactions(node, liteClient, lastBlock, updateGuiNow); // txs from masterchain block
+        dumpBlockTransactions(node, liteClient, lastBlock, updateGuiNow); // txs from master-chain
 
         shardsInBlock.stream().filter(b -> (b.getSeqno().compareTo(BigInteger.ZERO) != 0)).forEach(shard -> dumpBlockTransactions(node, liteClient, shard, updateGuiNow)); // txs from shards
 
@@ -1130,12 +1132,16 @@ public class MyLocalTon {
     }
 
     private void showInGuiOnlyUniqueTxs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails, MainController c, TxEntity txE, javafx.scene.Node txRow) {
-        if (isNull(concurrentTxsHashMap.get(lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg()))) {
+        String uniqueKey = lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg() + txE.getTxHash();
+        log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
+        if (isNull(concurrentTxsHashMap.get(uniqueKey))) {
             if (concurrentTxsHashMap.size() > 800) {
                 concurrentTxsHashMap.keySet().removeAll(Arrays.asList(concurrentTxsHashMap.keySet().toArray()).subList(concurrentTxsHashMap.size() / 2, concurrentTxsHashMap.size())); // truncate
             }
 
-            concurrentTxsHashMap.put(lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg(), lastBlock.getCreatedAt());
+            concurrentTxsHashMap.put(uniqueKey, lastBlock.getCreatedAt());
+
+            log.debug("showInGuiOnlyUniquShow {}", uniqueKey);
 
             populateTxRowWithData(lastBlock.getShortBlockSeqno(), tx, txDetails, txRow, txE);
 
@@ -1195,6 +1201,8 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#fees")).setText(txEntity.getTx().getTotalFees().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
         ((Label) txRow.lookup("#time")).setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(new Timestamp(txEntity.getTx().getNow() * 1000).getTime())));
+
+        showButtonWithMessage(txRow, txEntity);
     }
 
     public void populateTxRowWithData(String shortBlockSeqno, ResultListBlockTransactions tx, Transaction txDetails, javafx.scene.Node txRow, TxEntity txEntity) {
@@ -1215,6 +1223,49 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#fees")).setText(txDetails.getTotalFees().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
         ((Label) txRow.lookup("#time")).setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(new Timestamp(txDetails.getNow() * 1000).getTime())));
+
+        showButtonWithMessage(txRow, txEntity);
+    }
+
+    private void showButtonWithMessage(javafx.scene.Node txRow, TxEntity txEntity) {
+        if (txEntity.getTypeTx().contains("Message") && !txEntity.getTypeMsg().contains("External In")) {
+            if (!(txEntity.getTx().getInMsg().getBody().getCells().isEmpty()) && (txEntity.getTx().getInMsg().getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0)) {
+                txRow.lookup("#txMsgBtn").setVisible(true);
+                txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
+
+                    String msg = txEntity.getTx().getInMsg().getBody().getCells().stream().map(c -> {
+                        try {
+                            return new String(Hex.decodeHex(c.toCharArray()));
+                        } catch (DecoderException e) {
+                            log.error("Cannot convert hex msg to string");
+                            return "      Cannot convert hex msg to string";
+                        }
+                    }).collect(Collectors.joining());
+
+                    log.debug("in msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg.substring(5));
+                    mainController.showMessage(msg.substring(5));
+                });
+
+            } else if ((!txEntity.getTx().getOutMsgs().isEmpty() && !txEntity.getTx().getOutMsgs().get(0).getBody().getCells().isEmpty())) {
+                if (txEntity.getTx().getOutMsgs().get(0).getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0) {
+
+                    txRow.lookup("#txMsgBtn").setVisible(true);
+                    txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
+                        String msg = txEntity.getTx().getOutMsgs().get(0).getBody().getCells().stream().map(c -> {
+                            try {
+                                return new String(Hex.decodeHex(c.toCharArray()));
+                            } catch (DecoderException e) {
+                                log.error("Cannot convert hex msg to string");
+                                return "     Cannot convert hex msg to string";
+                            }
+                        }).collect(Collectors.joining());
+
+                        log.debug("out msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg.substring(5));
+                        mainController.showMessage(msg.substring(5));
+                    });
+                }
+            }
+        }
     }
 
     public List<TxEntity> extractTxsAndMsgs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails) {
@@ -1606,7 +1657,6 @@ public class MyLocalTon {
         c.foundTxs.setText("TXs (" + txRows.size() + ")");
 
         c.foundTxsvboxid.getItems().addAll(txRows);
-
     }
 
     public void showFoundAccountsInGui(List<WalletEntity> foundAccounts, String searchFor) {
@@ -1699,7 +1749,6 @@ public class MyLocalTon {
                             wallet.setSeqno(stateAndSeqno.getRight());
                             updateAccountsTabGui(wallet);
                         }
-
 
                     }
                 }

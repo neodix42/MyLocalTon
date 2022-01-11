@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane fx:id="accRowBorderPane" onMouseEntered="#handleMouseEnter" onMouseExited="#handleMouseExit" prefHeight="120.0" prefWidth="921.0"
+<BorderPane fx:id="accRowBorderPane" onMouseEntered="#handleMouseEnter" onMouseExited="#handleMouseExit" prefHeight="120.0" prefWidth="1045.0"
             style="-fx-background-color: dbedff; -fx-padding: 10 0 0 5;" stylesheets="@../css/global-font.css" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.ton.ui.controllers.AccountController">
     <center>

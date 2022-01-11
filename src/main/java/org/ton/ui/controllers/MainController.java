@@ -935,7 +935,6 @@ public class MainController implements Initializable {
     }
 
     public void resetAction() throws IOException {
-        log.info("reset");
 
         Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
         parent.lookup("#inputFields").setVisible(false);
@@ -956,14 +955,11 @@ public class MainController implements Initializable {
                     }
                 }
         );
-        yesNoDialog.setOnDialogOpened(jfxDialogEvent -> {
-            //parent.lookup("#destAddr").requestFocus();
-        });
+
         yesNoDialog.show();
     }
 
     public void transformAction() throws IOException {
-        log.info("transform");
 
         Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
         parent.lookup("#inputFields").setVisible(false);
@@ -985,10 +981,39 @@ public class MainController implements Initializable {
                     }
                 }
         );
-        yesNoDialog.setOnDialogOpened(jfxDialogEvent -> {
-            //parent.lookup("#destAddr").requestFocus();
-        });
+
         yesNoDialog.show();
+    }
+
+    public void showMessage(String msg) {
+
+        try {
+
+            Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
+            parent.lookup("#inputFields").setVisible(false);
+            parent.lookup("#body").setVisible(true);
+            parent.lookup("#header").setVisible(true);
+            ((Label) parent.lookup("#action")).setText("showmsg");
+            ((Label) parent.lookup("#header")).setText("Message");
+            ((Label) parent.lookup("#body")).setText(msg);
+            parent.lookup("#okBtn").setDisable(false);
+            ((JFXButton) parent.lookup("#okBtn")).setText("Close");
+
+            JFXDialogLayout content = new JFXDialogLayout();
+            content.setBody(parent);
+
+            yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
+            yesNoDialog.setOnKeyPressed(keyEvent -> {
+                        if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                            yesNoDialog.close();
+                        }
+                    }
+            );
+
+            yesNoDialog.show();
+        } catch (Exception e) {
+            log.error("Cannot show message, error {}", e.getMessage());
+        }
     }
 
     public void createNewAccountBtn() throws IOException {
@@ -1018,10 +1043,7 @@ public class MainController implements Initializable {
                     }
                 }
         );
-        yesNoDialog.setOnDialogOpened(jfxDialogEvent -> {
-            //parent.lookup("#destAddr").requestFocus();
-        });
-        yesNoDialog.show();
 
+        yesNoDialog.show();
     }
 }

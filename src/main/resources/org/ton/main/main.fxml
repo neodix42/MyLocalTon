@@ -9,7 +9,7 @@
 <?import javafx.scene.text.*?>
 <?import java.net.URL?>
 <StackPane fx:id="superWindow" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.MainController">
-    <BorderPane id="main" fx:id="mainWindow" maxHeight="720.0" prefHeight="722.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1">
+    <BorderPane id="main" fx:id="mainWindow" maxHeight="720.0" prefHeight="722.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1">
         <stylesheets>
             <URL value="@../css/global-font.css"/>
         </stylesheets>
@@ -46,9 +46,9 @@
                     <Label alignment="CENTER" prefHeight="28.0" prefWidth="100.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="SIZE" textAlignment="CENTER"/>
                     <Label fx:id="dbSizeId" alignment="CENTER" prefHeight="27.0" prefWidth="100.0" style="-fx-text-fill: white; -fx-font-size: 14;" text="-"/>
                 </VBox>
-                <BorderPane prefHeight="58.0" prefWidth="364.0">
+                <BorderPane prefHeight="58.0" prefWidth="390.0">
                     <center>
-                        <JFXTextField fx:id="searchField" focusColor="#ebeae0" focusTraversable="false" labelFloat="true" prefHeight="18.0" prefWidth="340.0"
+                        <JFXTextField fx:id="searchField" focusColor="#ebeae0" focusTraversable="false" labelFloat="true" prefHeight="18.0" prefWidth="390.0"
                                       promptText="SEARCH BLOCKS, ACCOUNTS, TXs..." style="-fx-border-color: white; -fx-prompt-text-fill: white; -fx-text-inner-color: white;" unFocusColor="#393535"
                                       BorderPane.alignment="CENTER">
                             <padding>
@@ -60,7 +60,7 @@
                 <VBox prefHeight="58.0" style="-fx-alignment: center-right; -fx-padding: 0 0 0 15;">
                     <JFXButton fx:id="scrollBtn" focusTraversable="false" onAction="#scrollBtnAction" prefHeight="15.0" prefWidth="15.0">
                         <graphic>
-                            <ImageView fx:id="scrollBtnImageView" fitHeight="18.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                            <ImageView fx:id="scrollBtnImageView" fitHeight="18.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                                 <Image url="@../images/scroll.png"/>
                             </ImageView>
                         </graphic>
@@ -112,7 +112,6 @@
                                     <VBox prefHeight="55.0" prefWidth="430.0">
                                         <Label prefHeight="48.0" prefWidth="430.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FILE AND ROOT HASHES"/>
                                     </VBox>
-                                    <Label prefHeight="45.0" prefWidth="101.0" style="-fx-alignment: center-right;-fx-padding: 0 15 0 0; -fx-font-size: 16;" text="DETAILS"/>
                                 </HBox>
                                 <JFXListView fx:id="blockslistviewid" focusTraversable="false" maxHeight="-Infinity" onScroll="#blocksOnScroll" prefHeight="583.0" prefWidth="1079.0"
                                              style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
@@ -162,10 +161,9 @@
                                     <VBox prefHeight="55.0" prefWidth="350.0">
                                         <Label prefHeight="44.0" prefWidth="361.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FROM/TO"/>
                                     </VBox>
-                                    <VBox prefHeight="55.0" prefWidth="160.0">
-                                        <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TONCOINS/FEES"/>
+                                    <VBox prefHeight="43.0" prefWidth="226.0">
+                                        <Label prefHeight="43.0" prefWidth="233.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TONCOINS/FEES"/>
                                     </VBox>
-                                    <Label prefHeight="45.0" prefWidth="101.0" style="-fx-alignment: center-right;-fx-padding: 0 15 0 0; -fx-font-size: 16;" text="DETAILS"/>
                                 </HBox>
                                 <JFXListView fx:id="transactionsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#txsOnScroll" prefHeight="582.0" prefWidth="1079.0"
                                              style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
@@ -202,13 +200,13 @@
                         </Group>
                     </graphic>
                     <Pane prefHeight="22.0" prefWidth="921.0" style="-fx-background-color: dbedff;" xmlns:fx="http://javafx.com/fxml/1">
-                        <VBox prefHeight="620.0" prefWidth="1077.0">
+                        <VBox prefHeight="620.0" prefWidth="1116.0">
                             <HBox prefHeight="44.0" prefWidth="924.0" BorderPane.alignment="CENTER">
                                 <VBox prefHeight="44.0" prefWidth="740.0">
                                     <Label prefHeight="44.0" prefWidth="740.0" style="-fx-alignment: center;-fx-font-size: 16;" text="ACCOUNT"/>
                                 </VBox>
-                                <VBox prefHeight="55.0" prefWidth="188.0">
-                                    <Label prefHeight="48.0" prefWidth="188.0" style="-fx-alignment: center; -fx-font-size: 16;" text="BALANCE"/>
+                                <VBox prefHeight="43.0" prefWidth="144.0">
+                                    <Label prefHeight="43.0" prefWidth="143.0" style="-fx-alignment: center; -fx-font-size: 16;" text="BALANCE"/>
                                 </VBox>
 
                                 <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0" BorderPane.alignment="CENTER">
@@ -222,9 +220,9 @@
                                 -->
                             </JFXListView>
                         </VBox>
-                        <JFXButton layoutX="1000" layoutY="550" onAction="#createNewAccountBtn" prefHeight="40.0" prefWidth="40.0">
+                        <JFXButton layoutX="1030.0" layoutY="550" onAction="#createNewAccountBtn" prefHeight="48.0" prefWidth="73.0">
                             <graphic>
-                                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
                                     <Image url="@../images/addaccount.png"/>
                                 </ImageView>
                             </graphic>
@@ -558,7 +556,7 @@
                                                GridPane.rowIndex="16"/>
                                         <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="4" GridPane.rowIndex="16">
                                             <BorderPane.margin>
-                                                <Insets right="20.0"/>
+                                                <Insets right="10.0"/>
                                             </BorderPane.margin>
                                             <JFXButton alignment="CENTER" onAction="#transformAction" prefHeight="31.0" prefWidth="100.0" text="Transform" textAlignment="CENTER"/>
                                             <JFXButton alignment="CENTER" onAction="#resetAction" prefHeight="31.0" prefWidth="100.0" text="Reset" textAlignment="CENTER"/>
@@ -631,7 +629,6 @@
                                             <VBox prefHeight="55.0" prefWidth="430.0">
                                                 <Label prefHeight="48.0" prefWidth="430.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FILE AND ROOT HASHES"/>
                                             </VBox>
-                                            <Label prefHeight="55.0" prefWidth="101.0" style="-fx-alignment: center-right;-fx-padding: 0 15 0 0; -fx-font-size: 16;" text="DETAILS"/>
                                         </HBox>
                                         <JFXListView fx:id="foundBlockslistviewid" focusTraversable="false" onScroll="#foundBlocksOnScroll" prefHeight="537.0" prefWidth="1079.0"
                                                      style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
@@ -687,7 +684,6 @@
                                             <VBox prefHeight="55.0" prefWidth="160.0">
                                                 <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TONCOINS/FEES"/>
                                             </VBox>
-                                            <Label prefHeight="45.0" prefWidth="101.0" style="-fx-alignment: center-right;-fx-padding: 0 15 0 0; -fx-font-size: 16;" text="DETAILS"/>
                                         </HBox>
                                         <JFXListView fx:id="foundTxsvboxid" focusTraversable="false" onScroll="#foundTxsOnScroll" prefHeight="554.0" prefWidth="1079.0"
                                                      style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
@@ -702,7 +698,7 @@
             </JFXTabPane>
         </center>
         <bottom>
-            <Label fx:id="statusBar" alignment="CENTER" prefHeight="39.0" prefWidth="1298.0" style="-fx-background-color: #dbedff;" BorderPane.alignment="CENTER"/>
+            <Label fx:id="statusBar" alignment="CENTER" prefHeight="39.0" prefWidth="1335.0" style="-fx-background-color: #dbedff;" BorderPane.alignment="CENTER"/>
         </bottom>
     </BorderPane>
 </StackPane>

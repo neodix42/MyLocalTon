@@ -13,6 +13,7 @@ alpha version and cannot be treated as production ready.
 |---|---|---|---|---|
 | Ubuntu 18.04  | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |
 | Ubuntu 20.04  | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:    |  |
+| Debian 11.2  | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
 | MacOS 12.01  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
 | MacOS 11.6  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
 | Windows 10  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:   |  |

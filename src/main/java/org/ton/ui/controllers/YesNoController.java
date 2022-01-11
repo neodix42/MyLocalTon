@@ -103,6 +103,10 @@ public class YesNoController implements Initializable {
                 log.debug("runmethod");
                 doRunMethod();
                 break;
+            case "showmsg":
+                log.debug("showmsg");
+                mainController.yesNoDialog.close();
+                break;
             default:
                 log.debug("no action");
                 mainController.yesNoDialog.close();
