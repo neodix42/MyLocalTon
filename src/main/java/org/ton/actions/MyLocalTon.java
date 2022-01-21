@@ -1,11 +1,13 @@
 package org.ton.actions;
 
 import com.google.gson.GsonBuilder;
+import com.jfoenix.controls.JFXListView;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.Setter;
@@ -1190,10 +1192,21 @@ public class MyLocalTon {
             ((Label) txRow.lookup("#txid")).setTextFill(Color.GREEN);
         }
         ((Label) txRow.lookup("#from")).setText(txEntity.getFrom().getAddr());
+        if (searchFor.length() >= 64) {
+            if (((Label) txRow.lookup("#from")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
+                ((Label) txRow.lookup("#from")).setTextFill(Color.GREEN);
+            }
+        }
         if (((Label) txRow.lookup("#from")).getText().equals(searchFor)) {
             ((Label) txRow.lookup("#from")).setTextFill(Color.GREEN);
         }
+
         ((Label) txRow.lookup("#to")).setText(txEntity.getTo().getAddr());
+        if (searchFor.length() >= 64) {
+            if (((Label) txRow.lookup("#to")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
+                ((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
+            }
+        }
         if (((Label) txRow.lookup("#to")).getText().equals(searchFor)) {
             ((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
         }
@@ -1620,12 +1633,24 @@ public class MyLocalTon {
 
     }
 
-    public void showFoundTxsInGui(List<TxEntity> foundTxs, String searchFor) {
+    public void showFoundTxsInGui(Tab tab, List<TxEntity> foundTxs, String searchFor, String accountAddr) {
 
         MainController c = fxmlLoader.getController();
 
+        tab.setOnClosed(e -> {
+            log.info("cls");
+            if (c.foundTabs.getTabs().isEmpty()) {
+                c.mainMenuTabs.getTabs().remove(c.searchTab);
+                c.mainMenuTabs.getSelectionModel().selectFirst();
+            }
+        });
+
         if (foundTxs.isEmpty()) {
-            c.foundTxs.setText("TXs (0)");
+            if (StringUtils.isNotEmpty(accountAddr)) {
+                tab.setText("Account " + Utils.getLightAddress(accountAddr) + " TXs (0)");
+            } else {
+                tab.setText("TXs (0)");
+            }
             return;
         }
 
@@ -1633,10 +1658,10 @@ public class MyLocalTon {
 
         for (TxEntity tx : foundTxs) {
             try {
-                FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("txrow.fxml"));
+                FXMLLoader fxmlLoaderRow = new FXMLLoader(App.class.getResource("txrow.fxml"));
                 javafx.scene.Node blockRow;
 
-                blockRow = fxmlLoader.load();
+                blockRow = fxmlLoaderRow.load();
 
                 populateTxRowWithData(blockRow, tx, searchFor);
 
@@ -1653,10 +1678,16 @@ public class MyLocalTon {
             }
         }
 
-        log.debug("txRows.size  {}", txRows.size());
-        c.foundTxs.setText("TXs (" + txRows.size() + ")");
+        log.debug("txRows.size {}", txRows.size());
 
-        c.foundTxsvboxid.getItems().addAll(txRows);
+        if (StringUtils.isNotEmpty(accountAddr)) {
+            tab.setText("Account " + Utils.getLightAddress(accountAddr) + " TXs (" + txRows.size() + ")");
+        } else {
+            tab.setText("TXs (" + txRows.size() + ")");
+        }
+
+        ((JFXListView<javafx.scene.Node>) tab.getContent().lookup("#foundTxsvboxid")).getItems().clear();
+        ((JFXListView<javafx.scene.Node>) tab.getContent().lookup("#foundTxsvboxid")).getItems().addAll(txRows);
     }
 
     public void showFoundAccountsInGui(List<WalletEntity> foundAccounts, String searchFor) {

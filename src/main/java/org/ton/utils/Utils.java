@@ -429,4 +429,7 @@ public class Utils {
         return Base64.encodeBase64String(removed4bytes);
     }
 
+    public static String getLightAddress(String addr) {
+        return StringUtils.substring(addr, 0, 6) + ".." + StringUtils.substring(addr, -4);
+    }
 }

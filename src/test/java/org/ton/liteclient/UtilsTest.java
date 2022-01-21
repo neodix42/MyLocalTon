@@ -126,4 +126,10 @@ public class UtilsTest {
         log.info("{}", LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()));
         assertTrue(true);
     }
+
+    @Test
+    public void TestLightAddr() {
+        String a = Utils.getLightAddress("EC16395E9CFE922017787CCCC4A100BB907148E0879E9ECE1BDF17E7B0896A89");
+        assertEquals("EC1639..6A89", a);
+    }
 }

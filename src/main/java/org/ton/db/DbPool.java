@@ -178,71 +178,77 @@ public class DbPool {
     }
 
     public void insertBlock(BlockEntity block) {
-        EntityManager em = activeDB.getEmf().createEntityManager();
-        try {
-            if (isNull(findBlock(block.getPrimaryKey()))) {
-                em.getTransaction().begin();
-                em.persist(block);
-                em.getTransaction().commit();
+        if (activeDB.getEmf().isOpen()) {
+            EntityManager em = activeDB.getEmf().createEntityManager();
+            try {
+                if (isNull(findBlock(block.getPrimaryKey()))) {
+                    em.getTransaction().begin();
+                    em.persist(block);
+                    em.getTransaction().commit();
+                }
+            } catch (PersistenceException e) {
+                if (e.getMessage().contains(TOO_MANY_PERSISTENT_OBJECTS_1000000)) {
+                    spawnNewDb();
+                    insertBlock(block); //repeat failed insert into newly spawned db
+                }
+            } finally {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                if (em.isOpen())
+                    em.close();
             }
-        } catch (PersistenceException e) {
-            if (e.getMessage().contains(TOO_MANY_PERSISTENT_OBJECTS_1000000)) {
-                spawnNewDb();
-                insertBlock(block); //repeat failed insert into newly spawned db
-            }
-        } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            if (em.isOpen())
-                em.close();
         }
     }
 
     public void insertTx(TxEntity tx) {
-        EntityManager em = activeDB.getEmf().createEntityManager();
-        try {
-            if (isNull(findTx(tx.getPrimaryKey()))) {
-                em.getTransaction().begin();
-                em.persist(tx);
-                em.getTransaction().commit();
+        if (activeDB.getEmf().isOpen()) {
+            EntityManager em = activeDB.getEmf().createEntityManager();
+            try {
+                if (isNull(findTx(tx.getPrimaryKey()))) {
+                    em.getTransaction().begin();
+                    em.persist(tx);
+                    em.getTransaction().commit();
+                }
+            } catch (PersistenceException e) {
+                if (e.getMessage().contains(TOO_MANY_PERSISTENT_OBJECTS_1000000)) {
+                    spawnNewDb();
+                    insertTx(tx); //repeat failed insert into newly spawned db
+                }
+            } finally {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                if (em.isOpen())
+                    em.close();
             }
-        } catch (PersistenceException e) {
-            if (e.getMessage().contains(TOO_MANY_PERSISTENT_OBJECTS_1000000)) {
-                spawnNewDb();
-                insertTx(tx); //repeat failed insert into newly spawned db
-            }
-        } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            if (em.isOpen())
-                em.close();
         }
     }
 
     public void insertWallet(WalletEntity walletEntity) {
-        EntityManager em = activeDB.getEmf().createEntityManager();
-        try {
-            if (isNull(findWallet(walletEntity.getPrimaryKey()))) {
-                log.debug("Inserting into db wallet {}", walletEntity.getHexAddress());
-                em.getTransaction().begin();
-                em.persist(walletEntity);
-                em.getTransaction().commit();
-                log.debug("Wallet inserted into db, {}", walletEntity);
-            } else {
-                log.debug("Wallet {} already exists.", walletEntity.getWallet().getFullWalletAddress());
+        if (activeDB.getEmf().isOpen()) {
+            EntityManager em = activeDB.getEmf().createEntityManager();
+            try {
+                if (isNull(findWallet(walletEntity.getPrimaryKey()))) {
+                    log.debug("Inserting into db wallet {}", walletEntity.getHexAddress());
+                    em.getTransaction().begin();
+                    em.persist(walletEntity);
+                    em.getTransaction().commit();
+                    log.debug("Wallet inserted into db, {}", walletEntity);
+                } else {
+                    log.debug("Wallet {} already exists.", walletEntity.getWallet().getFullWalletAddress());
+                }
+            } catch (PersistenceException e) {
+                if (e.getMessage().contains(TOO_MANY_PERSISTENT_OBJECTS_1000000)) {
+                    spawnNewDb();
+                    insertWallet(walletEntity); //repeat failed insert into newly spawned db
+                }
+            } catch (Exception e) {
+                log.error("insertWallet error {}", e.getMessage());
+            } finally {
+                if (em.getTransaction().isActive())
+                    em.getTransaction().rollback();
+                if (em.isOpen())
+                    em.close();
             }
-        } catch (PersistenceException e) {
-            if (e.getMessage().contains(TOO_MANY_PERSISTENT_OBJECTS_1000000)) {
-                spawnNewDb();
-                insertWallet(walletEntity); //repeat failed insert into newly spawned db
-            }
-        } catch (Exception e) {
-            log.error("insertWallet error {}", e.getMessage());
-        } finally {
-            if (em.getTransaction().isActive())
-                em.getTransaction().rollback();
-            if (em.isOpen())
-                em.close();
         }
     }
 

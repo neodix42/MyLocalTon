@@ -132,7 +132,7 @@ public class Extractor {
     }
 
     private void extractWindowsBinaries() throws IOException {
-        log.debug("extracting windows.zip on windows");
+        log.info("extracting windows.zip on windows");
 
         InputStream windowsBinaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/windows.zip");
         Files.copy(windowsBinaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "windows.zip"), StandardCopyOption.REPLACE_EXISTING);
@@ -154,7 +154,7 @@ public class Extractor {
     }
 
     private void extractUbuntuBinaries(String platform) throws IOException {
-        log.debug("extracting " + platform + " on linux");
+        log.info("extracting " + platform + " on linux");
 
         InputStream windowsBinaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/" + platform + ".zip");
         Files.copy(windowsBinaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform + ".zip"), StandardCopyOption.REPLACE_EXISTING);
@@ -182,7 +182,7 @@ public class Extractor {
     }
 
     private void extractMacBinaries(String platform) throws IOException {
-        log.debug("extracting " + platform + " on macos");
+        log.info("extracting " + platform + " on macos");
 
         InputStream windowsBinaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/" + platform);
         Files.copy(windowsBinaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform), StandardCopyOption.REPLACE_EXISTING);

@@ -608,7 +608,7 @@
                             </HBox>
                         </Group>
                     </graphic>
-                    <JFXTabPane fx:id="foundTabs">
+                    <JFXTabPane fx:id="foundTabs" tabClosingPolicy="ALL_TABS">
                         <Tab fx:id="foundBlocks" text="Blocks">
                             <BorderPane prefHeight="563.0" prefWidth="1079.0" style="-fx-background-color: dbedff;-fx-padding: 0 0 0 0;" xmlns:fx="http://javafx.com/fxml/1">
                                 <top>

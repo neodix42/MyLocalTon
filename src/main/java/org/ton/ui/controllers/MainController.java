@@ -59,6 +59,7 @@ import static com.sun.javafx.PlatformUtil.isLinux;
 import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.requireNonNull;
 import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
+import static org.ton.main.App.fxmlLoader;
 
 @Slf4j
 public class MainController implements Initializable {
@@ -162,7 +163,7 @@ public class MainController implements Initializable {
     JFXCheckBox showMsgBodyCheckBox;
 
     @FXML
-    Tab searchTab;
+    public Tab searchTab;
 
     @FXML
     Label searchTabText;
@@ -766,7 +767,7 @@ public class MainController implements Initializable {
                 MyLocalTon.getInstance().showFoundBlocksInGui(foundBlocksEntities, searchFor);
 
                 List<TxEntity> foundTxsEntities = App.dbPool.searchTxs(searchFor);
-                MyLocalTon.getInstance().showFoundTxsInGui(foundTxsEntities, searchFor);
+                MyLocalTon.getInstance().showFoundTxsInGui(((MainController) fxmlLoader.getController()).foundTxs, foundTxsEntities, searchFor, "");
 
                 List<WalletEntity> foundAccountsEntities = App.dbPool.searchAccounts(searchFor);
                 MyLocalTon.getInstance().showFoundAccountsInGui(foundAccountsEntities, searchFor);
@@ -842,6 +843,33 @@ public class MainController implements Initializable {
         myLogLevel.getItems().add("DEBUG");
         myLogLevel.getItems().add("ERROR");
         myLogLevel.getSelectionModel().select(settings.getLogSettings().getMyLocalTonLogLevel());
+    }
+
+    public void showAccTxs(String hexAddr) throws IOException {
+
+        mainMenuTabs.getTabs().remove(searchTab);
+        mainMenuTabs.getTabs().add(searchTab);
+        mainMenuTabs.getSelectionModel().selectLast();
+
+        if (!foundTabs.getTabs().filtered(t -> t.getText().contains(Utils.getLightAddress(hexAddr))).isEmpty()) {
+            return;
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("foundtxstab.fxml"));
+        Tab newTab = fxmlLoader.load();
+
+        newTab.setOnClosed(event -> {
+            if (foundTabs.getTabs().isEmpty()) {
+                mainMenuTabs.getTabs().remove(searchTab);
+                mainMenuTabs.getSelectionModel().selectFirst();
+            }
+        });
+
+        foundTabs.getTabs().add(newTab);
+
+        List<TxEntity> foundTxsEntities = App.dbPool.searchTxs(hexAddr);
+        MyLocalTon.getInstance().showFoundTxsInGui(newTab, foundTxsEntities, hexAddr, hexAddr);
+        foundTabs.getSelectionModel().selectLast();
     }
 
     void saveSettings() {

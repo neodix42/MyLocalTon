@@ -98,14 +98,14 @@
             </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="46.0" prefWidth="67.0" style="-fx-padding: 0 25 0 0;" BorderPane.alignment="CENTER">
 
-                <JFXButton onAction="#reservedBtn" prefHeight="30.0" prefWidth="30.0" visible="false">
+                <JFXButton onAction="#showaAccTxsBtn" prefHeight="30.0" prefWidth="30.0">
                     <graphic>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/delete.png"/>
+                            <Image url="@../images/tx.png"/>
                         </ImageView>
                     </graphic>
                     <tooltip>
-                        <Tooltip text="Delete account. All toncoins and private key will be lost."/>
+                        <Tooltip text="Show account's transactions"/>
                     </tooltip>
                 </JFXButton>
                 <JFXButton onAction="#runMethodBtn" prefHeight="30.0" prefWidth="30.0">
@@ -125,7 +125,7 @@
                         </ImageView>
                     </graphic>
                     <tooltip>
-                        <Tooltip text="Show smart-contract source code"/>
+                        <Tooltip text="Show smart-contract's source code"/>
                     </tooltip>
                 </JFXButton>
 

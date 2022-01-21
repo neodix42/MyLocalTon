@@ -48,6 +48,7 @@ import java.util.regex.Matcher;
 import static com.sun.javafx.PlatformUtil.isMac;
 import static java.util.Objects.nonNull;
 import static org.ton.main.App.fxmlLoader;
+import static org.ton.main.App.mainController;
 import static org.ton.utils.Utils.PATTERN;
 
 @Slf4j
@@ -358,10 +359,10 @@ public class AccountController {
     }
 
     public void showSrcBtn(ActionEvent actionEvent) {
-        // TODO
+
     }
 
-    public void reservedBtn(ActionEvent actionEvent) {
-        // TODO
+    public void showaAccTxsBtn(ActionEvent actionEvent) throws IOException {
+        mainController.showAccTxs(hexAddr.getText());
     }
 }
