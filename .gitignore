@@ -4,7 +4,7 @@ testDB/
 **/resources/**/*.zip
 .idea/
 !/src/main/resources/org/ton/binaries/patches/readme.txt
-
+mylocalton.iml
 
 # User-specific stuff
 .idea/**/workspace.xml
