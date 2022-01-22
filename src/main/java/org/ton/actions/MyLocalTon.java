@@ -30,6 +30,7 @@ import org.ton.executors.generaterandomid.RandomIdExecutor;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.AccountState;
+import org.ton.executors.liteclient.api.ResultConfig15;
 import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.executors.liteclient.api.ResultListBlockTransactions;
 import org.ton.executors.liteclient.api.block.Address;
@@ -87,6 +88,7 @@ public class MyLocalTon {
     public static final String EXTERNAL = "external";
     public static final String FROZEN = "Frozen";
     private static MyLocalTon singleInstance = null;
+
     private static final String CURRENT_DIR = System.getProperty("user.dir");
 
     private static final String DOUBLE_SPACE = "  ";
@@ -473,14 +475,6 @@ public class MyLocalTon {
         genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "ELECTION_STAKE_FROZEN", settings.getBlockchainSettings().getElectionStakesFrozenFor().toString());
         genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "ORIGINAL_VSET_VALID_FOR", settings.getBlockchainSettings().getOriginalValidatorSetValidFor().toString());
         FileUtils.writeStringToFile(new File(genZeroStateFifPath), genZeroStateFifNew, StandardCharsets.UTF_8);
-    }
-
-    public void waitForBlockchainReady(Node node) throws Exception {
-        ResultLastBlock lastBlock;
-        do {
-            Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
-        } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
     }
 
     public WalletEntity createWalletWithFundsAndSmartContract(Node fromNode, Node toNode, long workchain, long subWalletId, long amount) throws Exception {
@@ -1543,66 +1537,77 @@ public class MyLocalTon {
         return Pair.of(null, -1L);
     }
 
+    public void participate(Node node, long electionId) throws Exception {
 
-    /*
-        public void participate(Node node, long electionId) throws Exception {
+        //        WalletAddress walletAddress = createControllingSmartContract(genesisNode, node, -1L);
+        //        settings.getNode(node).setWalletAddress(walletAddress);
 
-    //        WalletAddress walletAddress = createControllingSmartContract(genesisNode, node, -1L);
-    //        settings.getNode(node).setWalletAddress(walletAddress);
+        String stdout = new LiteClient().executeGetElections(node);
+        log.debug(stdout);
+        ResultConfig15 config15 = LiteClientParser.parseConfig15(stdout);
+        log.info("elections {}", config15);
 
-            String stdout = new LiteClientExecutor().executeGetElections(node);
-            log.debug(stdout);
-            ResultConfig15 config15 = LiteClientParser.parseConfig15(stdout);
-            log.info("elections {}", config15);
+        convertFullNodeToValidator(node, electionId, config15.getValidatorsElectedFor());
+        String signature = new Fift().createValidatorElectionRequest(node, electionId, new BigDecimal("2.7"));
+        Pair<String, String> validatorPublicKey = new Fift().signValidatorElectionRequest(node, electionId, new BigDecimal("2.7"), signature);
+        settings.getNode(node).setValidatorMonitoringPubKeyHex(validatorPublicKey.getLeft());
+        settings.getNode(node).setValidatorMonitoringPubKeyInteger(validatorPublicKey.getRight());
 
-            convertFullNodeToValidator(node, electionId, config15.getValidatorsElectedFor());
-            String signature = new FiftExecutor().createValidatorElectionRequest(node, electionId, new BigDecimal("2.7"));
-            Pair<String, String> validatorPublicKey = new FiftExecutor().signValidatorElectionRequest(node, electionId, new BigDecimal("2.7"), signature);
-            settings.getNode(node).setValidatorMonitoringPubKeyHex(validatorPublicKey.getLeft());
-            settings.getNode(node).setValidatorMonitoringPubKeyInteger(validatorPublicKey.getRight());
+        saveSettingsToGson();
+
+        //        new Wallet().sendGrams(node,
+        //                node.getWalletAddress(),
+        //                settings.getElectorSmcAddrHex(),
+        //                BigDecimal.valueOf(10001L),
+        //                node.getTonBinDir() + "validator-query.boc");
+    }
+
+    public void convertFullNodeToValidator(Node node, long electionId, long electedForDuration) throws Exception {
+        if (Files.exists(Paths.get(node.getTonDbDir() + VALIDATOR))) {
+            log.info("Found non-empty state; Skip conversion to validator!");
+        } else {
+
+            ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
+            String newValKey = validatorEngineConsole.generateNewNodeKey(node);
+            log.info("newValKey {}", newValKey);
+            String newValPubKey = validatorEngineConsole.exportPubKey(node, newValKey);
+            log.info("newValPubKey {}", newValPubKey);
+            settings.getNode(node).setValidatorIdHex(newValKey);
+            settings.getNode(node).setValidatorIdBase64(newValPubKey);
+
+            String newValAdnl = validatorEngineConsole.generateNewNodeKey(node);
+            settings.getNode(node).setValidatorAdnlAddrHex(newValAdnl);
+            log.info("newValAdnl {}", newValAdnl);
+
+            long startWorkTime = Instant.now().getEpochSecond();
+            if (electionId == 0) {
+                electedForDuration = startWorkTime + electedForDuration;
+            }
+            validatorEngineConsole.addPermKey(node, newValKey, electionId, electedForDuration);
+            validatorEngineConsole.addTempKey(node, newValKey, electionId, electedForDuration);
+            validatorEngineConsole.addAdnl(node, newValAdnl);
+            validatorEngineConsole.addValidatorAddr(node, newValKey, newValAdnl, electionId, electedForDuration);
+
+            validatorEngineConsole.getStats(node);
+            settings.setCurrentValidatorSetSince(startWorkTime);
 
             saveSettingsToGson();
 
-    //        new Wallet().sendGrams(node,
-    //                node.getWalletAddress(),
-    //                settings.getElectorSmcAddrHex(),
-    //                BigDecimal.valueOf(10001L),
-    //                node.getTonBinDir() + "validator-query.boc");
         }
+    }
 
-        public void convertFullNodeToValidator(Node node, long electionId, long electedForDuration) throws Exception {
-            if (Files.exists(Paths.get(node.getTonDbDir() + VALIDATOR))) {
-                log.info("Found non-empty state; Skip conversion to validator!");
-            } else {
-
-                String newValKey = generateNewNodeKey(node);
-                log.info("newValKey {}", newValKey);
-                String newValPubKey = exportPubKey(node, newValKey);
-                log.info("newValPubKey {}", newValPubKey);
-                settings.getNode(node).setValidatorIdHex(newValKey);
-                settings.getNode(node).setValidatorIdBase64(newValPubKey);
-
-                String newValAdnl = generateNewNodeKey(node);
-                settings.getNode(node).setValidatorAdnlAddrHex(newValAdnl);
-                log.info("newValAdnl {}", newValAdnl);
-
-                long startWorkTime = Instant.now().getEpochSecond();
-                if (electionId == 0) {
-                    electedForDuration = startWorkTime + electedForDuration;
-                }
-                addPermKey(node, newValKey, electionId, electedForDuration);
-                addTempKey(node, newValKey, electionId, electedForDuration);
-                addAdnl(node, newValAdnl);
-                addValidatorAddr(node, newValKey, newValAdnl, electionId, electedForDuration);
-
-                getStats(node);
-                settings.setCurrentValidatorSetSince(startWorkTime);
-
-                saveSettingsToGson();
-
-            }
-        }
-
+    public void createFullnode(Node node) throws Exception {
+        log.info("creating new fullnode {}", node.getNodeName());
+        node.extractBinaries();
+        ValidatorEngine validatorEngine = new ValidatorEngine();
+        validatorEngine.initFullnode(node, settings.getGenesisNode().getNodeGlobalConfigLocation());
+        Thread.sleep(2000);
+        validatorEngine.startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
+        Thread.sleep(2000);
+        Utils.waitForBlockchainReady(node);
+        log.info("ready {}", node.getNodeName());
+    }
+/*
         public void elections(Node genesisNode, Node node2, Node node3, Node node4, Node node5, Node node6) throws Exception {
             if (settings.getInitiallyElected()) {
                 log.info("All four full nodes are validators, skipping elections.");
@@ -1789,37 +1794,12 @@ public class MyLocalTon {
             generateClientCertificate(node, serverIdBase64);
         }
 
-        private void recreateDhtServer(Node node, String myGlobalConfig) throws Exception {
-            log.info("recreate dht-server");
-            //re-create dht-server - maybe leave it?
-            FileUtils.deleteDirectory(new File(node.getDhtServerDir()));
-            initDhtServer(node, EXAMPLE_GLOBAL_CONFIG, myGlobalConfig);
-            startDhtServer(node, myGlobalConfig);
-        }
 
         private void recreateLiteServer(Node node) throws Exception {
             log.info("recreate lite-server");
             Files.deleteIfExists(Paths.get(node.getTonDbKeyringDir() + LITESERVER));
             Files.deleteIfExists(Paths.get(node.getTonDbKeyringDir() + "liteserver.pub"));
             installLiteServer(node, node.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON, true); //not needed actually?
-
-        }
-
-        public void addHardForkEntryIntoMyGlobalConfig(Node node, String globalConfig, ResultLastBlock newBlock) throws IOException, DecoderException {
-            //add forks 1. put "hardforks": [ into global config, filehash and roothash taken from new block
-            String myLocalTonConfig = FileUtils.readFileToString(new File(globalConfig), StandardCharsets.UTF_8);
-            String replacedMyLocalTonConfig = StringUtils.replace(myLocalTonConfig, "\"validator\": {", "\"validator\": {\n    \"hardforks\": [\n" +
-                    "\t    {\n" +
-                    "\t\t    \"file_hash\": \"" + Base64.encodeBase64String(Hex.decodeHex(newBlock.getFileHash())) + "\",\n" +
-                    "\t\t    \"seqno\": " + newBlock.getSeqno() + ",\n" +
-                    "\t\t    \"root_hash\": \"" + Base64.encodeBase64String(Hex.decodeHex(newBlock.getRootHash())) + "\",\n" +
-                    "\t\t    \"workchain\": " + newBlock.getWc() + ",\n" +
-                    "\t\t    \"shard\": " + new BigInteger(newBlock.getShard(), 16).longValue() + "\n" +
-                    "\t    }\n" +
-                    "    ],");
-
-            FileUtils.writeStringToFile(new File(node.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON), replacedMyLocalTonConfig, StandardCharsets.UTF_8);
-            log.debug("added hardforks to {}: {}", node.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON, replacedMyLocalTonConfig);
         }
 
         public ResultLastBlock getLastBlock(Node node) throws InterruptedException, java.util.concurrent.ExecutionException {
@@ -1836,30 +1816,6 @@ public class MyLocalTon {
             ResultLastBlock lastBlock = LiteClientParser.parseLast(stdout);
             log.debug("parsed last block {}", lastBlock);
             return lastBlock;
-        }
-
-        public ResultLastBlock generateNewBlock(Node node, ResultLastBlock lastBlock, String externalMsgLocation) throws Exception {
-
-            //run create-hardfork, creates new block and put state in static directory
-            Pair<Process, Future<String>> hardForkOutput = new HardforkExecutor().execute(node,
-                    "-D", node.getTonDbDir(),
-                    "-T", lastBlock.getFullBlockSeqno(),
-                    "-w", lastBlock.getWc() + ":" + lastBlock.getShard()
-                    //        ,"-m", externalMsgLocation
-            );
-
-            String newBlockOutput = hardForkOutput.getRight().get().toString();
-            log.info("create-hardfork output {}", newBlockOutput);
-
-            ResultLastBlock newBlock;
-            if (newBlockOutput.contains("created block") && newBlockOutput.contains("success, block")) {
-                newBlock = LiteClientParser.parseCreateHardFork(newBlockOutput);
-                log.info("parsed new block {}", newBlock);
-
-            } else {
-                throw new Exception("Can't create block using create-hardfork utility.");
-            }
-            return newBlock;
         }
     */
 

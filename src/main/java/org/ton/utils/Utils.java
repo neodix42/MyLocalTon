@@ -16,10 +16,13 @@ import org.jutils.jprocesses.JProcesses;
 import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
 import org.ton.actions.MyLocalTon;
+import org.ton.executors.liteclient.LiteClient;
+import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.main.App;
 import org.ton.main.Main;
+import org.ton.settings.Node;
 import org.ton.wallet.WalletVersion;
 
 import java.io.File;
@@ -447,5 +450,13 @@ public class Utils {
     public static int getIntegerIp(String publicIP) throws UnknownHostException {
         InetAddress addr = InetAddress.getByName(publicIP);
         return ByteBuffer.wrap(addr.getAddress()).getInt();
+    }
+
+    public static void waitForBlockchainReady(Node node) throws Exception {
+        ResultLastBlock lastBlock;
+        do {
+            Thread.sleep(5000);
+            lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
+        } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
     }
 }

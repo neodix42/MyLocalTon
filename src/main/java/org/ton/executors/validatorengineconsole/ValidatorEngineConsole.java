@@ -12,7 +12,7 @@ public class ValidatorEngineConsole {
     public void getStats(Node node) {
         ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
         Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "getstats");
-        log.debug(result.getLeft());
+        log.info(result.getLeft());
     }
 
     public void importF(Node node, String validatorIdHex) {

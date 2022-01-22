@@ -191,6 +191,7 @@ public class LiteClient {
     }
 
     public String executeGetElections(Node node) throws Exception {
+        //
         final String command = "getconfig 15";
         Pair<Process, Future<String>> result = new LiteClientExecutor().execute(node, command);
         if (nonNull(result)) {

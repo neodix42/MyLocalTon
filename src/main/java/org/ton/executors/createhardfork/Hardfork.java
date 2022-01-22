@@ -1,9 +1,27 @@
 package org.ton.executors.createhardfork;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.ton.executors.liteclient.LiteClientParser;
+import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.settings.Node;
 
+import java.io.File;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Future;
+
+@Slf4j
 public class Hardfork {
 
+    private static final String MY_TON_FORKED_CONFIG_JSON = "my-ton-forked.config.json";
+    
     //public void createHardFork(Node node, ResultLastBlock lastBlock, String externalMsgLocation) {
     public void createHardFork(Node forkedNode, Node toNode) {
         /*
@@ -231,5 +249,46 @@ public class Hardfork {
             // better to take synced node
 
          */
+    }
+
+    public ResultLastBlock generateNewBlock(Node node, ResultLastBlock lastBlock, String externalMsgLocation) throws Exception {
+
+        //run create-hardfork, creates new block and put state in static directory
+        Pair<Process, Future<String>> hardForkOutput = new HardforkExecutor().execute(node,
+                "-D", node.getTonDbDir(),
+                "-T", lastBlock.getFullBlockSeqno(),
+                "-w", lastBlock.getWc() + ":" + lastBlock.getShard()
+                //        ,"-m", externalMsgLocation
+        );
+
+        String newBlockOutput = hardForkOutput.getRight().get().toString();
+        log.info("create-hardfork output {}", newBlockOutput);
+
+        ResultLastBlock newBlock;
+        if (newBlockOutput.contains("created block") && newBlockOutput.contains("success, block")) {
+            newBlock = LiteClientParser.parseCreateHardFork(newBlockOutput);
+            log.info("parsed new block {}", newBlock);
+
+        } else {
+            throw new Exception("Can't create block using create-hardfork utility.");
+        }
+        return newBlock;
+    }
+
+    public void addHardForkEntryIntoMyGlobalConfig(Node node, String globalConfig, ResultLastBlock newBlock) throws IOException, DecoderException {
+        //add forks 1. put "hardforks": [ into global config, filehash and roothash taken from new block
+        String myLocalTonConfig = FileUtils.readFileToString(new File(globalConfig), StandardCharsets.UTF_8);
+        String replacedMyLocalTonConfig = StringUtils.replace(myLocalTonConfig, "\"validator\": {", "\"validator\": {\n    \"hardforks\": [\n" +
+                "\t    {\n" +
+                "\t\t    \"file_hash\": \"" + Base64.encodeBase64String(Hex.decodeHex(newBlock.getFileHash())) + "\",\n" +
+                "\t\t    \"seqno\": " + newBlock.getSeqno() + ",\n" +
+                "\t\t    \"root_hash\": \"" + Base64.encodeBase64String(Hex.decodeHex(newBlock.getRootHash())) + "\",\n" +
+                "\t\t    \"workchain\": " + newBlock.getWc() + ",\n" +
+                "\t\t    \"shard\": " + new BigInteger(newBlock.getShard(), 16).longValue() + "\n" +
+                "\t    }\n" +
+                "    ],");
+
+        FileUtils.writeStringToFile(new File(node.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON), replacedMyLocalTonConfig, StandardCharsets.UTF_8);
+        log.debug("added hardforks to {}: {}", node.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON, replacedMyLocalTonConfig);
     }
 }

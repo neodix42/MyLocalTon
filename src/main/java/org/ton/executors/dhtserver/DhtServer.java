@@ -22,6 +22,12 @@ import static java.util.Objects.isNull;
 
 @Slf4j
 public class DhtServer {
+
+    private static final String CURRENT_DIR = System.getProperty("user.dir");
+    public static final String MY_LOCAL_TON = "myLocalTon";
+    public static final String TEMPLATES = "templates";
+    public static final String EXAMPLE_GLOBAL_CONFIG = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + TEMPLATES + File.separator + "example.config.json";
+
     public Process startDhtServer(Node node, String globalConfigFile) {
         // start dht-server in background
         log.info("genesis dht-server started at {}", node.getPublicIp() + ":" + node.getDhtPort());
@@ -100,5 +106,13 @@ public class DhtServer {
         log.debug(String.join(",", dhtNodes));
 
         return dhtNodes;
+    }
+
+    public void recreateDhtServer(Node node, String myGlobalConfig) throws Exception {
+        log.info("recreate dht-server");
+        //re-create dht-server - maybe leave it?
+        FileUtils.deleteDirectory(new File(node.getDhtServerDir()));
+        initDhtServer(node, EXAMPLE_GLOBAL_CONFIG, myGlobalConfig);
+        startDhtServer(node, myGlobalConfig);
     }
 }

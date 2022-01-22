@@ -113,7 +113,7 @@ public class App extends Application {
         ValidatorEngine validatorEngine = new ValidatorEngine();
         myLocalTon.setGenesisValidatorProcess(validatorEngine.startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation()));
 
-        myLocalTon.waitForBlockchainReady(genesisNode);
+        Utils.waitForBlockchainReady(genesisNode);
 
         myLocalTon.runBlockchainMonitor(genesisNode);
 
