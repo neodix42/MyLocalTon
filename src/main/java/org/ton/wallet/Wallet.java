@@ -2,8 +2,8 @@ package org.ton.wallet;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.ton.executors.fift.FiftExecutor;
-import org.ton.executors.liteclient.LiteClientExecutor;
+import org.ton.executors.fift.Fift;
+import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.AccountState;
 import org.ton.parameters.SendToncoinsParam;
@@ -18,11 +18,10 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class Wallet {
 
-    private final LiteClientExecutor liteClient;
+    private final LiteClient liteClient;
 
     public Wallet() {
-        liteClient = new LiteClientExecutor();
-
+        liteClient = new LiteClient();
     }
 
     public static final BigDecimal BLN1 = BigDecimal.valueOf(1000000000);
@@ -45,7 +44,7 @@ public class Wallet {
 
         do {
             Thread.sleep(2000);
-            accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(fromNode, walletAddress.getFullWalletAddress()));
+            accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(fromNode, walletAddress.getFullWalletAddress()));
         } while (isNull(accountState) || (accountState.getStatus().equals("Uninitialized")));
 
         FileUtils.deleteQuietly(new File(fromNode.getTonDbDir() + contractQueryBocFile));
@@ -55,7 +54,7 @@ public class Wallet {
 
     boolean walletHasEnoughFunds(Node fromNode, WalletAddress walletAddress, BigDecimal amount) throws Exception {
         Thread.sleep(1000);
-        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(fromNode, walletAddress.getFullWalletAddress()));
+        AccountState accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(fromNode, walletAddress.getFullWalletAddress()));
         if (isNull(accountState.getBalance())) {
             return false;
         }
@@ -69,7 +68,7 @@ public class Wallet {
         while (!walletHasEnoughFunds(fromNode, walletAddress, BigDecimal.valueOf(MINIMUM_TONCOINS))) ;
 
         // installing state-init
-        String resultSendBoc = new LiteClientExecutor().executeSendfile(fromNode, walletAddress.getWalletQueryFileBocLocation());
+        String resultSendBoc = liteClient.executeSendfile(fromNode, walletAddress.getWalletQueryFileBocLocation());
         log.debug(resultSendBoc);
 
         while (!walletHasContractInstalled(fromNode, walletAddress, resultSendBoc)) ;
@@ -81,7 +80,7 @@ public class Wallet {
         log.debug("getSeqNoAndSendTonCoins(), source wallet {}, version {}, seqno {}, amount {}, dest {}",
                 sendToncoinsParam.getFromWallet().getFullWalletAddress(), sendToncoinsParam.getFromWalletVersion().getValue(), seqno, sendToncoinsParam.getAmount(), sendToncoinsParam.getDestAddr());
 
-        String externalMsgLocation = new FiftExecutor().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
+        String externalMsgLocation = new Fift().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
 
         log.debug(liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
 
@@ -96,15 +95,15 @@ public class Wallet {
         WalletAddress walletAddress;
         switch (version) {
             case V1:
-                walletAddress = new FiftExecutor().createWalletV1QueryBoc(node, workchain);
+                walletAddress = new Fift().createWalletV1QueryBoc(node, workchain);
                 log.debug("wallet created {}", walletAddress);
                 return walletAddress;
             case V2:
-                walletAddress = new FiftExecutor().createWalletV2QueryBoc(node, workchain);
+                walletAddress = new Fift().createWalletV2QueryBoc(node, workchain);
                 log.debug("wallet created {}", walletAddress);
                 return walletAddress;
             default:
-                walletAddress = new FiftExecutor().createWalletV3QueryBoc(node, workchain, subWalletId);
+                walletAddress = new Fift().createWalletV3QueryBoc(node, workchain, subWalletId);
                 log.debug("wallet created {}", walletAddress);
                 return walletAddress;
         }

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.DbPool;
+import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
@@ -109,7 +110,8 @@ public class App extends Application {
         //ResultLastBlock newBlock = myLocalTon.generateNewBlock(genesisNode, forkFromBlock, "");
         //myLocalTon.addHardForkEntryIntoMyGlobalConfig(genesisNode, genesisNode.getNodeGlobalConfigLocation(), newBlock);
 
-        myLocalTon.setGenesisValidatorProcess(myLocalTon.startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation()));
+        ValidatorEngine validatorEngine = new ValidatorEngine();
+        myLocalTon.setGenesisValidatorProcess(validatorEngine.startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation()));
 
         myLocalTon.waitForBlockchainReady(genesisNode);
 

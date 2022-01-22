@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.actions.MyLocalTon;
-import org.ton.executors.liteclient.LiteClientExecutor;
+import org.ton.executors.liteclient.LiteClient;
 
 @Slf4j
 public class RawDumpController {
@@ -33,21 +33,21 @@ public class RawDumpController {
         switch (action) {
             case "block":
                 log.debug("retrieving raw dump, command: dumpblock {}", data);
-                stdout = new LiteClientExecutor().executeDumpblock(MyLocalTon.getInstance().getSettings().getGenesisNode(), data);
+                stdout = new LiteClient().executeDumpblock(MyLocalTon.getInstance().getSettings().getGenesisNode(), data);
                 if (stdout.contains("block contents is (")) {
                     stdout = stdout.substring(stdout.indexOf("block contents is ("));
                 }
                 break;
             case "tx":
                 log.debug("retrieving raw dump, command: dumptrans {}", data);
-                stdout = new LiteClientExecutor().executeDumptrans(MyLocalTon.getInstance().getSettings().getGenesisNode(), data);
+                stdout = new LiteClient().executeDumptrans(MyLocalTon.getInstance().getSettings().getGenesisNode(), data);
                 if (stdout.contains("transaction is (")) {
                     stdout = stdout.substring(stdout.indexOf("transaction is ("));
                 }
                 break;
             case "account":
                 log.debug("retrieving raw dump, command: getaccount {}", data);
-                stdout = new LiteClientExecutor().executeGetAccount(MyLocalTon.getInstance().getSettings().getGenesisNode(), data);
+                stdout = new LiteClient().executeGetAccount(MyLocalTon.getInstance().getSettings().getGenesisNode(), data);
                 if (stdout.contains("account state is (")) {
                     stdout = stdout.substring(stdout.indexOf("account state is ("));
                 }

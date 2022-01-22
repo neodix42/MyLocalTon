@@ -229,6 +229,98 @@
                         </JFXButton>
                     </Pane>
                 </Tab>
+                <Tab fx:id="validationTab">
+                    <graphic>
+                        <Group>
+                            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="209.0" rotate="90.0">
+                                <!-- tab menu icon
+                                <ImageView fitHeight="48.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true">
+                                    <HBox.margin>
+                                        <Insets left="5.0" />
+                                    </HBox.margin>
+
+                                    <Image url="@../images/settings.png"/>
+
+                                </ImageView>
+                                -->
+                                <Label text="VALIDATION" textFill="WHITE">
+                                    <font>
+                                        <Font size="19.0"/>
+                                    </font>
+                                    <HBox.margin>
+                                        <Insets left="10.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                        </Group>
+                    </graphic>
+                    <JFXTabPane fx:id="validationTabs" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <Tab text="Info">
+                            <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                <padding>
+                                    <Insets bottom="25.0" left="25.0" right="25.0" top="50.0"/>
+                                </padding>
+                                <columnConstraints>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                </rowConstraints>
+
+                                <Label text="Currently you are running a single node TON blockchain. This configuration does not have active elections and validator never changes. If you want to switch to a three-node TON blockchain with active elections please click the button below."
+                                       wrapText="true" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="0"/>
+
+                                <JFXButton alignment="CENTER" onAction="#transformAction" prefHeight="31.0" prefWidth="100.0" text="Transform" textAlignment="CENTER" GridPane.columnIndex="0"
+                                           GridPane.rowIndex="1"/>
+                                <JFXButton alignment="CENTER" onAction="#validationTest" prefHeight="31.0" prefWidth="100.0" text="Test 1" textAlignment="CENTER" GridPane.columnIndex="0"
+                                           GridPane.rowIndex="2"/>
+                            </GridPane>
+                        </Tab>
+                        <Tab text="Node 1">
+                            <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                <padding>
+                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                </padding>
+                                <columnConstraints>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                </rowConstraints>
+                                <Label text="Show Tick/Tock transactions" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <JFXCheckBox fx:id="tickTockCheckBox2" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <Label text="Show activities between main and config contracts" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <JFXCheckBox fx:id="mainConfigTxCheckBox2" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                            </GridPane>
+                        </Tab>
+                        <Tab text="Node 2">
+                            <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                <padding>
+                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                </padding>
+                                <columnConstraints>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                </rowConstraints>
+                                <Label text="Show Tick/Tock transactions" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <JFXCheckBox fx:id="tickTockCheckBox3" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <Label text="Show activities between main and config contracts" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <JFXCheckBox fx:id="mainConfigTxCheckBox3" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                            </GridPane>
+                        </Tab>
+                    </JFXTabPane>
+                </Tab>
                 <Tab fx:id="logsTab">
                     <graphic>
                         <Group>
@@ -254,7 +346,6 @@
                             </HBox>
                         </Group>
                     </graphic>
-
                     <JFXTabPane>
                         <Tab text="Logs">
                             <GridPane hgap="10" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
@@ -583,7 +674,6 @@
                             </BorderPane>
                         </Tab>
                     </JFXTabPane>
-
                 </Tab>
                 <Tab fx:id="searchTab">
                     <graphic>

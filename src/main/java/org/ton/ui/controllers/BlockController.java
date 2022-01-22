@@ -30,7 +30,7 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.BlockPk;
-import org.ton.executors.liteclient.LiteClientExecutor;
+import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.executors.liteclient.api.block.Block;
@@ -89,7 +89,6 @@ public class BlockController {
         long createdAt = Utils.datetimeToTimestamp(createdat.getText());
         log.debug("click seqno {}, createdAt {}, formatted {}", seqno.getText(), createdAt, Utils.toUtcNoSpace(createdAt));
 
-        LiteClientExecutor liteClient = new LiteClientExecutor();
         Node node = MyLocalTon.getInstance().getSettings().getGenesisNode();
 
         BlockPk blockPk = BlockPk.builder()
@@ -100,7 +99,7 @@ public class BlockController {
                 .build();
 
         BlockEntity blockEntity = App.dbPool.findBlock(blockPk);
-        Block block = getBlockFromServerAndUpdateDb(liteClient, node, blockPk);
+        Block block = getBlockFromServerAndUpdateDb(node, blockPk);
         /*
         Block block = blockEntity.getBlock();
 
@@ -112,14 +111,14 @@ public class BlockController {
         showBlockDump(blockEntity, block);
     }
 
-    private Block getBlockFromServerAndUpdateDb(LiteClientExecutor liteClient, Node node, BlockPk blockPk) throws Exception {
+    private Block getBlockFromServerAndUpdateDb(Node node, BlockPk blockPk) throws Exception {
         Block block;
-        ResultLastBlock lightBlock = LiteClientParser.parseBySeqno(liteClient.executeBySeqno(node,
+        ResultLastBlock lightBlock = LiteClientParser.parseBySeqno(new LiteClient().executeBySeqno(node,
                 Long.parseLong(wc.getText()),
                 shard.getText(),
                 new BigInteger(seqno.getText())));
 
-        block = LiteClientParser.parseDumpblock(liteClient.executeDumpblock(node, lightBlock), MyLocalTon.getInstance().getSettings().getUiSettings().isShowShardStateInBlockDump(), MyLocalTon.getInstance().getSettings().getUiSettings().isShowBodyInMessage());
+        block = LiteClientParser.parseDumpblock(new LiteClient().executeDumpblock(node, lightBlock), MyLocalTon.getInstance().getSettings().getUiSettings().isShowShardStateInBlockDump(), MyLocalTon.getInstance().getSettings().getUiSettings().isShowBodyInMessage());
         // DB.updateBlockDump(blockPk, block);
         return block;
     }

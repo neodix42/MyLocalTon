@@ -5,7 +5,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.ton.executors.liteclient.LiteClientExecutor;
+import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.liteclient.api.ResultLastBlock;
@@ -37,7 +37,7 @@ public class LiteClientExecutorTest {
     private static final String CURRENT_DIR = System.getProperty("user.dir");
     private static final String TESTNET_CONFIG_LOCATION = CURRENT_DIR + File.separator + "testnet-global.config.json";
 
-    private LiteClientExecutor liteClientExecutor;
+    private LiteClient liteClient;
     private Node testNode;
 
     @Before
@@ -45,7 +45,7 @@ public class LiteClientExecutorTest {
         InputStream TESTNET_CONFIG = IOUtils.toBufferedInputStream(getClass().getResourceAsStream("/testnet-global.config.json"));
         Files.copy(TESTNET_CONFIG, Paths.get(TESTNET_CONFIG_LOCATION), StandardCopyOption.REPLACE_EXISTING);
 
-        liteClientExecutor = new LiteClientExecutor(); //new LiteClientExecutor(nodes.toArray(new String[0]));
+        liteClient = new LiteClient(); //new LiteClientExecutor(nodes.toArray(new String[0]));
 
         testNode = new GenesisNode();
         testNode.extractBinaries();
@@ -55,14 +55,14 @@ public class LiteClientExecutorTest {
     @Test
     public void testLastExecuted() {
         //given
-        String stdout = liteClientExecutor.executeLast(testNode);
+        String stdout = liteClient.executeLast(testNode);
         // then
         assertThat(stdout).isNotNull().contains("last masterchain block is").contains("server time is");
     }
 
     @Test
     public void testRunmethod() throws Exception {
-        final String result = liteClientExecutor.executeRunMethod(testNode, "EQBdFkus6WRkJ1PP6z24Fw5C6E1YKet_nSJ6K1H7HHuOdwMC", "seqno", "");
+        final String result = liteClient.executeRunMethod(testNode, "EQBdFkus6WRkJ1PP6z24Fw5C6E1YKet_nSJ6K1H7HHuOdwMC", "seqno", "");
         log.info(result);
         assertThat(result).contains("arguments").contains("result");
     }
@@ -72,14 +72,14 @@ public class LiteClientExecutorTest {
         final InputStream bocFile = IOUtils.toBufferedInputStream(getClass().getResourceAsStream("/new-wallet.boc"));
         final File targetFile = new File(CURRENT_DIR + File.separator + "new-wallet.boc");
         FileUtils.copyInputStreamToFile(bocFile, targetFile);
-        final String result = liteClientExecutor.executeSendfile(testNode, targetFile.getAbsolutePath());
+        final String result = liteClient.executeSendfile(testNode, targetFile.getAbsolutePath());
         log.info(result);
         assertThat(result).contains("sending query from file").contains("external message status is 1");
     }
 
     @Test
     public void testGetAccount() {
-        final String result = liteClientExecutor.executeGetAccount(testNode, "EQBdFkus6WRkJ1PP6z24Fw5C6E1YKet_nSJ6K1H7HHuOdwMC");
+        final String result = liteClient.executeGetAccount(testNode, "EQBdFkus6WRkJ1PP6z24Fw5C6E1YKet_nSJ6K1H7HHuOdwMC");
         log.info(result);
         AccountState accountState = LiteClientParser.parseGetAccount(result);
         log.info(accountState.toString());
@@ -89,12 +89,12 @@ public class LiteClientExecutorTest {
     @Test
     public void testListblocktransExecuted() {
         //given
-        String resultLast = liteClientExecutor.executeLast(testNode);
+        String resultLast = liteClient.executeLast(testNode);
         log.info("testListblocktransExecuted resultLast received");
         ResultLastBlock resultLastBlock = LiteClientParser.parseLast(resultLast);
         log.info("testListblocktransExecuted tonBlockId {}", resultLastBlock);
         // when
-        String stdout = liteClientExecutor.executeListblocktrans(testNode, resultLastBlock, 2000);
+        String stdout = liteClient.executeListblocktrans(testNode, resultLastBlock, 2000);
         System.out.println(stdout);
         // then
         assertThat(stdout).isNotNull().contains("last masterchain block is").contains("obtained block").contains("transaction #").contains("account").contains("hash");
@@ -103,12 +103,12 @@ public class LiteClientExecutorTest {
     @Test
     public void testAllShardsExecuted() throws Exception {
         //given
-        String resultLast = liteClientExecutor.executeLast(testNode);
+        String resultLast = liteClient.executeLast(testNode);
         log.info("testAllShardsExecuted resultLast received");
         assertThat(resultLast).isNotEmpty();
         ResultLastBlock resultLastBlock = LiteClientParser.parseLast(resultLast);
         // when
-        String stdout = liteClientExecutor.executeAllshards(testNode, resultLastBlock);
+        String stdout = liteClient.executeAllshards(testNode, resultLastBlock);
         // then
         assertThat(stdout).isNotNull()
                 .contains("last masterchain block is")
@@ -121,13 +121,13 @@ public class LiteClientExecutorTest {
     public void testParseBySeqno() throws Exception {
         // given
         // 9MB size block (0,f880000000000000,4166691):6101667C299D3DD8C9E4C68F0BCEBDBA5473D812953C291DBF6D69198C34011B:608F5FC6D6CFB8D01A3D4A2F9EA5C353D82B4A08D7D755D8267D0141358329F1
-        String resultLast = liteClientExecutor.executeLast(testNode);
+        String resultLast = liteClient.executeLast(testNode);
         assertThat(resultLast).isNotEmpty();
         ResultLastBlock blockIdLast = LiteClientParser.parseLast(resultLast);
         assertThatObject(blockIdLast).isNotNull();
         assertNotNull(blockIdLast.getRootHash());
         // when
-        String stdout = liteClientExecutor.executeBySeqno(testNode, blockIdLast.getWc(), blockIdLast.getShard(), blockIdLast.getSeqno());
+        String stdout = liteClient.executeBySeqno(testNode, blockIdLast.getWc(), blockIdLast.getShard(), blockIdLast.getSeqno());
         log.info(stdout);
         ResultLastBlock blockId = LiteClientParser.parseBySeqno(stdout);
         // then
@@ -140,14 +140,14 @@ public class LiteClientExecutorTest {
     public void testDumpBlockRealTimeExecuted() {
         log.info("testDumpBlockRealTimeExecuted test executes against the most recent state of TON blockchain, if it fails means the return format has changed - react asap.");
         //given
-        String resultLast = liteClientExecutor.executeLast(testNode);
+        String resultLast = liteClient.executeLast(testNode);
         log.info("testDumpBlockRealTimeExecuted resultLast received");
         assertThat(resultLast).isNotEmpty();
         ResultLastBlock resultLastBlock = LiteClientParser.parseLast(resultLast);
         log.info("testDumpBlockRealTimeExecuted tonBlockId {}", resultLastBlock);
 
         // when
-        String stdout = liteClientExecutor.executeDumpblock(testNode, resultLastBlock);
+        String stdout = liteClient.executeDumpblock(testNode, resultLastBlock);
         log.info(stdout);
         // then
         assertThat(stdout).isNotNull()
@@ -163,7 +163,7 @@ public class LiteClientExecutorTest {
     @Test
     public void testParseLastParsed() {
         // given
-        String stdout = liteClientExecutor.executeLast(testNode);
+        String stdout = liteClient.executeLast(testNode);
         assertNotNull(stdout);
         // when
         ResultLastBlock blockId = LiteClientParser.parseLast(stdout);
@@ -179,12 +179,12 @@ public class LiteClientExecutorTest {
     @Test
     public void testParseListBlockTrans() {
         //given
-        String stdoutLast = liteClientExecutor.executeLast(testNode);
+        String stdoutLast = liteClient.executeLast(testNode);
         // when
         assertNotNull(stdoutLast);
         ResultLastBlock blockIdLast = LiteClientParser.parseLast(stdoutLast);
 
-        String stdoutListblocktrans = liteClientExecutor.executeListblocktrans(testNode, blockIdLast, 0);
+        String stdoutListblocktrans = liteClient.executeListblocktrans(testNode, blockIdLast, 0);
         log.info(stdoutListblocktrans);
         //then
         assertNotNull(stdoutListblocktrans);
@@ -196,11 +196,11 @@ public class LiteClientExecutorTest {
     @Test
     public void testParseAllShards() throws Exception {
         //given
-        String stdoutLast = liteClientExecutor.executeLast(testNode);
+        String stdoutLast = liteClient.executeLast(testNode);
         // when
         assertNotNull(stdoutLast);
         ResultLastBlock blockIdLast = LiteClientParser.parseLast(stdoutLast);
-        String stdoutAllShards = liteClientExecutor.executeAllshards(testNode, blockIdLast);
+        String stdoutAllShards = liteClient.executeAllshards(testNode, blockIdLast);
         log.info(stdoutAllShards);
         //then
         assertNotNull(stdoutAllShards);
@@ -213,17 +213,17 @@ public class LiteClientExecutorTest {
     @Test
     public void testParseDumptransNew() {
         //given
-        String stdoutLast = liteClientExecutor.executeLast(testNode);
+        String stdoutLast = liteClient.executeLast(testNode);
         assertNotNull(stdoutLast);
         ResultLastBlock blockIdLast = LiteClientParser.parseLast(stdoutLast);
 
-        String stdoutListblocktrans = liteClientExecutor.executeListblocktrans(testNode, blockIdLast, 0);
+        String stdoutListblocktrans = liteClient.executeListblocktrans(testNode, blockIdLast, 0);
         assertNotNull(stdoutListblocktrans);
         log.info(stdoutListblocktrans);
         List<ResultListBlockTransactions> txs = LiteClientParser.parseListBlockTrans(stdoutListblocktrans);
 
         for (ResultListBlockTransactions tx : txs) {
-            String stdoutDumptrans = liteClientExecutor.executeDumptrans(testNode, blockIdLast, tx);
+            String stdoutDumptrans = liteClient.executeDumptrans(testNode, blockIdLast, tx);
             assertNotNull(stdoutDumptrans);
             Transaction txdetails = LiteClientParser.parseDumpTrans(stdoutDumptrans, true);
             if (!isNull(txdetails)) {
@@ -236,14 +236,14 @@ public class LiteClientExecutorTest {
     @Test
     public void testParseAllSteps() throws Exception {
         //given
-        String stdoutLast = liteClientExecutor.executeLast(testNode);
+        String stdoutLast = liteClient.executeLast(testNode);
         assertNotNull(stdoutLast);
         ResultLastBlock blockIdLast = LiteClientParser.parseLast(stdoutLast);
 
-        String stdoutAllShards = liteClientExecutor.executeAllshards(testNode, blockIdLast);
+        String stdoutAllShards = liteClient.executeAllshards(testNode, blockIdLast);
         //log.info(stdoutAllShards);
 
-        String stdoutListblocktrans = liteClientExecutor.executeListblocktrans(testNode, blockIdLast, 0);
+        String stdoutListblocktrans = liteClient.executeListblocktrans(testNode, blockIdLast, 0);
         assertNotNull(stdoutListblocktrans);
         log.info(stdoutListblocktrans);
         List<ResultListBlockTransactions> txs = LiteClientParser.parseListBlockTrans(stdoutListblocktrans);
@@ -252,7 +252,7 @@ public class LiteClientExecutorTest {
         assertNotNull(stdoutAllShards);
         List<ResultLastBlock> shards = LiteClientParser.parseAllShards(stdoutAllShards);
         for (ResultLastBlock shard : shards) {
-            String stdoutListblocktrans2 = liteClientExecutor.executeListblocktrans(testNode, shard, 0);
+            String stdoutListblocktrans2 = liteClient.executeListblocktrans(testNode, shard, 0);
             List<ResultListBlockTransactions> txs2 = LiteClientParser.parseListBlockTrans(stdoutListblocktrans2);
             txs.addAll(txs2);
         }
@@ -260,7 +260,7 @@ public class LiteClientExecutorTest {
         txs.forEach(System.out::println);
 
         for (ResultListBlockTransactions tx : txs) {
-            String stdoutDumptrans = liteClientExecutor.executeDumptrans(testNode, blockIdLast, tx);
+            String stdoutDumptrans = liteClient.executeDumptrans(testNode, blockIdLast, tx);
             assertNotNull(stdoutDumptrans);
             Transaction txdetails = LiteClientParser.parseDumpTrans(stdoutDumptrans, true);
             if (!isNull(txdetails)) {
@@ -272,10 +272,10 @@ public class LiteClientExecutorTest {
     @Test
     public void testParseDumpblock() throws Exception {
         //given
-        String stdoutLast = liteClientExecutor.executeLast(testNode);
+        String stdoutLast = liteClient.executeLast(testNode);
         assertNotNull(stdoutLast);
         ResultLastBlock blockIdLast = LiteClientParser.parseLast(stdoutLast);
-        String stdoutDumpblock = liteClientExecutor.executeDumpblock(testNode, blockIdLast);
+        String stdoutDumpblock = liteClient.executeDumpblock(testNode, blockIdLast);
 
         Block block = LiteClientParser.parseDumpblock(stdoutDumpblock, false, false);
         assertNotNull(block);

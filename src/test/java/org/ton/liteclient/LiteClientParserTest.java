@@ -6,10 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.AccountState;
-import org.ton.executors.liteclient.api.ResultLastBlock;
-import org.ton.executors.liteclient.api.ResultListBlockTransactions;
-import org.ton.executors.liteclient.api.ResultListParticipants;
+import org.ton.executors.liteclient.api.*;
 import org.ton.executors.liteclient.api.block.Block;
 import org.ton.executors.liteclient.api.block.MintMessage;
 import org.ton.executors.liteclient.api.block.RecoverCreateMessage;
@@ -521,5 +518,65 @@ public class LiteClientParserTest {
         List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(participantListOutput);
 
         assertEquals(0, participants.size());
+    }
+
+    @Test
+    public void TestParseConfig15() throws IOException {
+        // given
+        String getConfig15 = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/config15_elections.log")), StandardCharsets.UTF_8);
+
+        // when
+        ResultConfig15 result = LiteClientParser.parseConfig15(getConfig15);
+
+        // then
+        assertThat(result.getValidatorsElectedFor()).isEqualTo(4000L);
+        assertThat(result.getStakeHeldFor()).isEqualTo(1000L);
+        log.info(result.toString());
+    }
+
+    @Test
+    public void TestParseConfig32() throws IOException {
+        // given
+        String getConfig32 = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/config32_previousvalidators.log")), StandardCharsets.UTF_8);
+
+        // when
+        ResultConfig32 result = LiteClientParser.parseConfig32(getConfig32);
+        // then
+        assertThat(result.getValidators().getSince()).isEqualTo(1642862540L);
+        assertThat(result.getValidators().getUntil()).isEqualTo(1642866540);
+        assertThat(result.getValidators().getTotal()).isEqualTo(11L);
+        assertThat(result.getValidators().getMain()).isEqualTo(11L);
+        assertThat(result.getValidators().getTotalWeight()).isEqualTo(new BigInteger("3458764513820540919"));
+        log.info(result.getValidators().toString());
+    }
+
+    @Test
+    public void TestParseConfig34() throws IOException {
+        // given
+        String getConfig34 = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/config34_listcurrentvalidators.log")), StandardCharsets.UTF_8);
+
+        // when
+        ResultConfig34 result = LiteClientParser.parseConfig34(getConfig34);
+        // then
+        assertThat(result.getValidators().getUntil()).isEqualTo(1619177079L);
+        assertThat(result.getValidators().getTotal()).isEqualTo(1L);
+        assertThat(result.getValidators().getMain()).isEqualTo(1L);
+        assertThat(result.getValidators().getTotalWeight()).isEqualTo(100L);
+        log.info(result.getValidators().toString());
+    }
+
+    @Test
+    public void TestParseConfig36() throws IOException {
+        // given
+        String getConfig36 = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/config36_listnextvalidators.log")), StandardCharsets.UTF_8);
+
+        // when
+        ResultConfig36 result = LiteClientParser.parseConfig36(getConfig36);
+        // then
+        assertThat(result.getValidators().getUntil()).isEqualTo(1619649627L);
+        assertThat(result.getValidators().getTotal()).isEqualTo(4L);
+        assertThat(result.getValidators().getMain()).isEqualTo(4L);
+        assertThat(result.getValidators().getTotalWeight()).isEqualTo(new BigInteger("1152921504606846976"));
+        log.info(result.getValidators().toString());
     }
 }

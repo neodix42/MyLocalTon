@@ -6,6 +6,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.ton.executors.liteclient.api.*;
 import org.ton.executors.liteclient.api.block.Currency;
 import org.ton.executors.liteclient.api.block.*;
+import org.ton.executors.liteclient.api.config.Validator;
+import org.ton.executors.liteclient.api.config.Validators;
 import org.ton.executors.liteclient.exception.IncompleteDump;
 import org.ton.executors.liteclient.exception.ParsingError;
 
@@ -121,8 +123,7 @@ public class LiteClientParser {
             throw new IncompleteDump("parseBySeqno: incomplete dump or block missing");
         try {
 
-            String last = stdout.replace(EOLWIN, SPACE);
-            last = last.replace(EOL, SPACE);
+            String last = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
 
             String fullBlockSeqno = sb(last, "obtained block header for ", " from server");
             String shortBlockSeqno = OPEN + sb(fullBlockSeqno, OPEN, CLOSE) + CLOSE;
@@ -177,8 +178,7 @@ public class LiteClientParser {
     }
 
     public static Transaction parseDumpTrans(String stdout, boolean includeMessageBody) {
-        String blockdump = stdout.replace(EOLWIN, SPACE);
-        blockdump = blockdump.replace(EOL, SPACE);
+        String blockdump = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
         return parseTransaction(blockdump, includeMessageBody);
     }
 
@@ -189,6 +189,138 @@ public class LiteClientParser {
                 .electionsStartBefore(Long.parseLong(sb(stdout, "elections_start_before:", SPACE)))
                 .electionsEndBefore(Long.parseLong(sb(stdout, "elections_end_before:", SPACE)))
                 .stakeHeldFor(Long.parseLong(sb(stdout, "stake_held_for:", ")")))
+                .build();
+    }
+
+    /**
+     * current validators
+     */
+    public static ResultConfig34 parseConfig34(String stdout) {
+
+        stdout = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
+
+        List<Validator> validators = new ArrayList<>();
+
+        if (stdout.contains("ConfigParam(34) = (null)")) {
+            return ResultConfig34.builder()
+                    .validators(Validators.builder()
+                            .since(0L)
+                            .until(0L)
+                            .total(0L)
+                            .main(0L)
+                            .totalWeight(BigInteger.ZERO)
+                            .validators(validators)
+                            .build())
+                    .build();
+        }
+
+        List<String> unparsedLeafs = findStringBlocks(stdout, "node:(hmn_leaf");
+
+        for (String leaf : unparsedLeafs) {
+            validators.add(Validator.builder()
+                    .publicKey(sb(leaf, "pubkey:x", CLOSE))
+                    .adnlAddress(null)
+                    .weight(new BigInteger(sb(leaf, "weight:", CLOSE)))
+                    .build());
+        }
+
+        return ResultConfig34.builder()
+                .validators(Validators.builder()
+                        .since(Long.parseLong(sb(stdout, "utime_since:", SPACE)))
+                        .until(Long.parseLong(sb(stdout, "utime_until:", SPACE)))
+                        .total(Long.parseLong(sb(stdout, "total:", SPACE)))
+                        .main(Long.parseLong(sb(stdout, "main:", SPACE)))
+                        .totalWeight(new BigInteger(sb(stdout, "total_weight:", SPACE)))
+                        .validators(validators)
+                        .build())
+                .build();
+    }
+
+    /**
+     * next validators
+     */
+    public static ResultConfig36 parseConfig36(String stdout) {
+
+        stdout = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
+
+        List<Validator> validators = new ArrayList<>();
+
+        if (stdout.contains("ConfigParam(36) = (null)")) {
+            return ResultConfig36.builder()
+                    .validators(Validators.builder()
+                            .since(0L)
+                            .until(0L)
+                            .total(0L)
+                            .main(0L)
+                            .totalWeight(BigInteger.ZERO)
+                            .validators(validators)
+                            .build())
+                    .build();
+        }
+
+        List<String> unparsedLeafs = findStringBlocks(stdout, "node:(hmn_leaf");
+
+        for (String leaf : unparsedLeafs) {
+            validators.add(Validator.builder()
+                    .publicKey(sb(leaf, "pubkey:x", CLOSE))
+                    .adnlAddress(sb(leaf, "adnl_addr:x", CLOSE))
+                    .weight(new BigInteger(sb(leaf, "weight:", SPACE)))
+                    .build());
+        }
+
+        return ResultConfig36.builder()
+                .validators(Validators.builder()
+                        .since(Long.parseLong(sb(stdout, "utime_since:", SPACE)))
+                        .until(Long.parseLong(sb(stdout, "utime_until:", SPACE)))
+                        .total(Long.parseLong(sb(stdout, "total:", SPACE)))
+                        .main(Long.parseLong(sb(stdout, "main:", SPACE)))
+                        .totalWeight(new BigInteger(sb(stdout, "total_weight:", SPACE)))
+                        .validators(validators)
+                        .build())
+                .build();
+    }
+
+    /**
+     * previous validators
+     */
+    public static ResultConfig32 parseConfig32(String stdout) {
+
+        stdout = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
+
+        List<Validator> validators = new ArrayList<>();
+
+        if (stdout.contains("ConfigParam(32) = (null)")) {
+            return ResultConfig32.builder()
+                    .validators(Validators.builder()
+                            .since(0L)
+                            .until(0L)
+                            .total(0L)
+                            .main(0L)
+                            .totalWeight(BigInteger.ZERO)
+                            .validators(validators)
+                            .build())
+                    .build();
+        }
+
+        List<String> unparsedLeafs = findStringBlocks(stdout, "node:(hmn_leaf");
+        
+        for (String leaf : unparsedLeafs) {
+            validators.add(Validator.builder()
+                    .publicKey(sb(leaf, "pubkey:x", CLOSE))
+                    .adnlAddress(sb(leaf, "adnl_addr:x", CLOSE))
+                    .weight(new BigInteger(sb(leaf, "weight:", SPACE)))
+                    .build());
+        }
+
+        return ResultConfig32.builder()
+                .validators(Validators.builder()
+                        .since(Long.parseLong(sb(stdout, "utime_since:", SPACE)))
+                        .until(Long.parseLong(sb(stdout, "utime_until:", SPACE)))
+                        .total(Long.parseLong(sb(stdout, "total:", SPACE)))
+                        .main(Long.parseLong(sb(stdout, "main:", SPACE)))
+                        .totalWeight(new BigInteger(sb(stdout, "total_weight:", SPACE)))
+                        .validators(validators)
+                        .build())
                 .build();
     }
 
@@ -243,8 +375,7 @@ public class LiteClientParser {
             throw new IncompleteDump("parseDumpblock: incomplete dump");
 
         try {
-            String blockdump = stdout.replace(EOLWIN, SPACE);
-            blockdump = blockdump.replace(EOL, SPACE);
+            String blockdump = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
 
             Long globalBlockId = Long.parseLong(sb(blockdump, "block global_id:", SPACE));
 
@@ -421,7 +552,7 @@ public class LiteClientParser {
     }
 
     private static OutMsgDescr parseOutMsgDescr(String outMsgDescr, Boolean includeMessageBody) {
-        List<String> unparsedLeafs = findLeafsWithLabel(outMsgDescr, "node:(ahmn_leaf"); // plus one row above
+        List<String> unparsedLeafs = findLeafsWithLabel(outMsgDescr, "node:(ahmn_leaf");
 
         List<Leaf> parsedLeafs = parseLeafs(unparsedLeafs, includeMessageBody);
 
@@ -432,7 +563,7 @@ public class LiteClientParser {
 
     private static InMsgDescr parseInMsgDescr(String inMsgDesc, boolean includeMessageBody) {
 
-        List<String> unparsedLeafs = findLeafsWithLabel(inMsgDesc, "node:(ahmn_leaf"); // plus one row above
+        List<String> unparsedLeafs = findLeafsWithLabel(inMsgDesc, "node:(ahmn_leaf");
 
         List<Leaf> parsedLeafs = parseLeafs(unparsedLeafs, includeMessageBody);
 
@@ -1287,8 +1418,7 @@ public class LiteClientParser {
         }
 
         try {
-            String accountState = stdout.replace(EOLWIN, SPACE);
-            accountState = accountState.replace(EOL, SPACE);
+            String accountState = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
 
             String addr = sbb(accountState, "addr:(");
             String address = sb(addr, ADDRESS_COLON, CLOSE);

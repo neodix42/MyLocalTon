@@ -24,10 +24,10 @@ import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.executors.createstate.CreateStateExecutor;
-import org.ton.executors.dhtserver.DhtServerExecutor;
-import org.ton.executors.fift.FiftExecutor;
+import org.ton.executors.dhtserver.DhtServer;
+import org.ton.executors.fift.Fift;
 import org.ton.executors.generaterandomid.RandomIdExecutor;
-import org.ton.executors.liteclient.LiteClientExecutor;
+import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.liteclient.api.ResultLastBlock;
@@ -36,8 +36,8 @@ import org.ton.executors.liteclient.api.block.Address;
 import org.ton.executors.liteclient.api.block.Message;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.executors.liteclient.api.block.Value;
-import org.ton.executors.validatorengine.ValidatorEngineExecutor;
-import org.ton.executors.validatorengineconsole.ValidatorEngineConsoleExecutor;
+import org.ton.executors.validatorengine.ValidatorEngine;
+import org.ton.executors.validatorengineconsole.ValidatorEngineConsole;
 import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
@@ -55,9 +55,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.sql.Timestamp;
@@ -70,7 +67,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -174,11 +170,12 @@ public class MyLocalTon {
             createZeroState(node);
             //result: created tonDbDir + File.separator + MY_TON_GLOBAL_CONFIG_JSON with replace FILE_HASH and ROOT_HASH, still to fill [NODES]
 
-            initDhtServer(node, EXAMPLE_GLOBAL_CONFIG, node.getNodeGlobalConfigLocation());  // result: generated dht-server/config.json
-            dhtServerProcess = startDhtServer(node, node.getNodeGlobalConfigLocation());
+            DhtServer dhtServer = new DhtServer();
+            dhtServer.initDhtServer(node, EXAMPLE_GLOBAL_CONFIG, node.getNodeGlobalConfigLocation());  // result: generated dht-server/config.json
+            dhtServerProcess = dhtServer.startDhtServer(node, node.getNodeGlobalConfigLocation());
 
             //run nodeInit.sh, run validator very first time
-            initFullnode(node, node.getNodeGlobalConfigLocation());
+            new ValidatorEngine().initFullnode(node, node.getNodeGlobalConfigLocation());
 
             Process validatorGenesisProcess = createGenesisValidator(node, node.getNodeGlobalConfigLocation());
 
@@ -187,7 +184,7 @@ public class MyLocalTon {
             return validatorGenesisProcess;
         } else {
             log.info("Found non-empty state; Skip genesis initialization.");
-            dhtServerProcess = startDhtServer(node, node.getNodeGlobalConfigLocation());
+            dhtServerProcess = new DhtServer().startDhtServer(node, node.getNodeGlobalConfigLocation());
             Thread.sleep(100);
             return null;
         }
@@ -205,7 +202,7 @@ public class MyLocalTon {
 
             //convert pub key to key
             String liteserverPubkeyBase64 = Utils.convertPubKeyToBase64(node.getTonDbKeyringDir() + "liteserver.pub");
-            int publicIpNum = getIntegerIp(node.getPublicIp());
+            int publicIpNum = Utils.getIntegerIp(node.getPublicIp());
 
             // replace liteservers array in config.json
             String configJson = FileUtils.readFileToString(new File(node.getTonDbDir() + CONFIG_JSON), StandardCharsets.UTF_8);
@@ -230,26 +227,6 @@ public class MyLocalTon {
             }
             log.info("lite-server installed");
         }
-    }
-
-    public Process startValidator(Node node, String myGlobalConfig) {
-        log.info("starting validator-engine {}", node.getNodeName());
-
-        Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(settings.getLogSettings().getTonLogLevel()),
-                "-t", "1",
-                "-C", myGlobalConfig,
-                "--db", node.getTonDbDir(),
-                "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
-                "--ip", node.getPublicIp() + ":" + node.getPublicPort(),
-                "-S", settings.getBlockchainSettings().getValidatorSyncBefore().toString(), // 1 year, in initial sync download all blocks for last given seconds
-                "-s", settings.getBlockchainSettings().getValidatorStateTtl().toString(), // state will be gc'd after this time (in seconds), default 3600
-                "-b", settings.getBlockchainSettings().getValidatorBlockTtl().toString(), // blocks will be gc'd after this time (in seconds), default=7*86400
-                "-A", settings.getBlockchainSettings().getValidatorArchiveTtl().toString(), // archived blocks will be deleted after this time (in seconds), default 365*86400
-                "-K", settings.getBlockchainSettings().getValidatorKeyProofTtl().toString() // 10 years key blocks will be deleted after this time (in seconds), default 365*86400*10
-        );
-        node.setNodeProcess(validator.getLeft());
-        return validator.getLeft();
     }
 
     public void saveSettingsToGson() throws InterruptedException {
@@ -278,21 +255,15 @@ public class MyLocalTon {
             String validatorIdHex = node.getValidatorIdHex();
             //shortly start validator
             log.info("Starting temporary full-node...");
-            ValidatorEngineExecutor validatorGenesis = new ValidatorEngineExecutor();
-            Pair<Process, Future<String>> validatorProcess = validatorGenesis.execute(node,
-                    "-v", Utils.getTonLogLevel(settings.getLogSettings().getTonLogLevel()),
-                    "-t", "1",
-                    "-l", node.getTonDbDir() + "validatorGenesis",
-                    "-C", myGlobalConfig,
-                    "--db", node.getTonDbDir(),
-                    "--ip", node.getPublicIp() + ":" + node.getPublicPort());
+            Pair<Process, Future<String>> validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig);
 
             log.debug("sleep 5sec");
             Thread.sleep(5000);
+            ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
 
-            String newNodeKey = generateNewNodeKey(node);
+            String newNodeKey = validatorEngineConsole.generateNewNodeKey(node);
             log.info("newNodeKey {}", newNodeKey);
-            String newValAdnl = generateNewNodeKey(node);
+            String newValAdnl = validatorEngineConsole.generateNewNodeKey(node);
             settings.getNode(node).setValidatorAdnlAddrHex(newValAdnl);
             log.info("newValAdnl {}", newValAdnl);
 
@@ -300,111 +271,20 @@ public class MyLocalTon {
             long electionId = 0L;
             long electedForDuration = startWorkTime + YEAR;
 
-            addPermKey(node, validatorIdHex, electionId, electedForDuration);
-            addTempKey(node, validatorIdHex, electionId, electedForDuration);
-            addAdnl(node, newValAdnl);
-            addAdnl(node, validatorIdHex);
-            addValidatorAddr(node, validatorIdHex, newValAdnl, electionId, electedForDuration);
+            validatorEngineConsole.addPermKey(node, validatorIdHex, electionId, electedForDuration);
+            validatorEngineConsole.addTempKey(node, validatorIdHex, electionId, electedForDuration);
+            validatorEngineConsole.addAdnl(node, newValAdnl);
+            validatorEngineConsole.addAdnl(node, validatorIdHex);
+            validatorEngineConsole.addValidatorAddr(node, validatorIdHex, newValAdnl, electionId, electedForDuration);
 
-            addAdnl(node, newNodeKey);
-            changeFullNodeAddr(node, newNodeKey);
-            importF(node, validatorIdHex);
+            validatorEngineConsole.addAdnl(node, newNodeKey);
+            validatorEngineConsole.changeFullNodeAddr(node, newNodeKey);
+            validatorEngineConsole.importF(node, validatorIdHex);
 
             saveSettingsToGson();
 
             return isNull(validatorProcess) ? null : validatorProcess.getLeft();
         }
-    }
-
-    private Process startDhtServer(Node node, String globalConfigFile) {
-        // start dht-server in background
-        log.info("genesis dht-server started at {}", node.getPublicIp() + ":" + node.getDhtPort());
-        Pair<Process, Future<String>> dhtServer = new DhtServerExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(settings.getLogSettings().getTonLogLevel()),
-                "-t", "1",
-                "-C", globalConfigFile,
-                "-l", node.getDhtServerDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
-                "-D", node.getDhtServerDir(),
-                "-I", node.getPublicIp() + ":" + node.getDhtPort());
-        node.setDhtServerProcess(dhtServer.getLeft());
-        return dhtServer.getLeft();
-    }
-
-    /**
-     * creates dht-server/keyring directory with a key inside and generate config.json based on example.config.json.
-     * Also replaces [NODES] in my-ton-global.config.json
-     */
-    private void initDhtServer(Node node, String exampleConfigJson, String myGlobalConfig) throws Exception {
-        int publicIpNum = getIntegerIp(node.getPublicIp());
-        log.debug("publicIpNum {}", publicIpNum);
-        Files.createDirectories(Paths.get(node.getDhtServerDir()));
-
-        log.info("Initializing dht-server, creating key in dht-server/keyring/hex and config.json...");
-        Pair<Process, Future<String>> dhtServerInit = new DhtServerExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(settings.getLogSettings().getTonLogLevel()),
-                "-t", "1",
-                "-C", exampleConfigJson,
-                "-D", node.getDhtServerDir(),
-                "-I", node.getPublicIp() + ":" + node.getDhtPort());
-        log.debug("dht-server result: {}", dhtServerInit.getRight().get());
-
-        replaceOutPortInConfigJson(node.getDhtServerDir(), node.getDhtOutPort()); // no need - FYI - config.json update?
-
-        List<String> dhtNodes = generateDhtKeys(node, publicIpNum);
-
-        String content = FileUtils.readFileToString(new File(myGlobalConfig), StandardCharsets.UTF_8);
-        if (content.contains("NODES")) { //very first creation
-            log.debug("Replace NODES placeholder with dht-server entry");
-            String replaced = StringUtils.replace(content, "NODES", String.join(",", dhtNodes));
-            FileUtils.writeStringToFile(new File(myGlobalConfig), replaced, StandardCharsets.UTF_8);
-            log.debug("dht-nodes added: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
-        } else { // modify existing
-            log.debug("Replace current list of dht nodes with a new one");
-            String existingNodes = Utils.sbb(content, "\"nodes\": [");
-            String backToTemlate = StringUtils.replace(content, existingNodes, "[NODES]");
-            String replacedLocalConfig = StringUtils.replace(backToTemlate, "NODES", String.join(",", dhtNodes));
-            FileUtils.writeStringToFile(new File(myGlobalConfig), replacedLocalConfig, StandardCharsets.UTF_8);
-            log.debug("dht-nodes updated: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
-        }
-    }
-
-    private void replaceOutPortInConfigJson(String path, Integer port) throws IOException {
-        String contentConfigJson = Files.readString(Paths.get(path + CONFIG_JSON), StandardCharsets.UTF_8);
-        String replacedConfigJson = StringUtils.replace(contentConfigJson, "3278", String.valueOf(port));
-        Files.writeString(Paths.get(path + CONFIG_JSON), replacedConfigJson, StandardOpenOption.CREATE);
-    }
-
-    private int getIntegerIp(String publicIP) throws UnknownHostException {
-        InetAddress addr = InetAddress.getByName(publicIP);
-        return ByteBuffer.wrap(addr.getAddress()).getInt();
-    }
-
-    private List<String> generateDhtKeys(Node node, long publicIpNum) throws Exception {
-
-        List<String> dhtNodes = new ArrayList<>();
-
-        String[] keyFiles = new File(node.getDhtServerKeyringDir()).list();
-
-        if (!isNull(keyFiles) && keyFiles.length == 0) {
-            throw new Exception("No keyrings found in " + node.getTonDbKeyringDir());
-        }
-        for (String file : keyFiles) {
-            if (file.length() == 64) { //take only hash files
-                log.debug("found keyring file {}", file);
-
-                if (isWindows()) {
-                    dhtNodes.add(new RandomIdExecutor().execute(node, "-m", "dht", "-k", node.getDhtServerKeyringDir() + file,
-                            "-a", "\"{\\\"@type\\\": \\\"adnl.addressList\\\",  \\\"addrs\\\":[{\\\"@type\\\": \\\"adnl.address.udp\\\", \\\"ip\\\": " + publicIpNum + ", \\\"port\\\": " + node.getDhtPort() + " } ], \\\"version\\\": 0, \\\"reinit_date\\\": 0, \\\"priority\\\": 0, \\\"expire_at\\\": 0}\""));
-                } else {
-                    dhtNodes.add(new RandomIdExecutor().execute(node, "-m", "dht", "-k", node.getDhtServerKeyringDir() + file,
-                            "-a", "{\"@type\": \"adnl.addressList\", \"addrs\":[{\"@type\": \"adnl.address.udp\", \"ip\": " + publicIpNum + ", \"port\": " + node.getDhtPort() + " } ], \"version\": 0, \"reinit_date\": 0, \"priority\": 0, \"expire_at\": 0}"));
-                }
-            }
-        }
-
-        log.debug(String.join(",", dhtNodes));
-
-        return dhtNodes;
     }
 
     private void createZeroState(Node node) throws Exception {
@@ -435,8 +315,7 @@ public class MyLocalTon {
     }
 
     private boolean generateZeroState(Node node) throws IOException {
-        CreateStateExecutor createState = new CreateStateExecutor();
-        String createStateResult = createState.execute(node, node.getTonBinDir() + "smartcont" + File.separator + "gen-zerostate.fif");
+        String createStateResult = new CreateStateExecutor().execute(node, node.getTonBinDir() + "smartcont" + File.separator + "gen-zerostate.fif");
         log.debug("create zerostate output: {}", createStateResult);
         String mainWalletAddrBoth = sb(createStateResult, "wallet address = ", "(Saving address to file");
         String electroSmcAddrBoth = sb(createStateResult, "elector smart contract address = ", "(Saving address to file");
@@ -558,131 +437,6 @@ public class MyLocalTon {
         }
     }
 
-    private void getStats(Node node) {
-        ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "getstats");
-        log.debug(result.getLeft());
-    }
-
-    private void importF(Node node, String validatorIdHex) {
-        ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "importf " + node.getTonDbKeyringDir() + validatorIdHex);
-        log.debug(result.getLeft());
-    }
-
-    private void changeFullNodeAddr(Node node, String newNodeKey) {
-        ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "changefullnodeaddr " + newNodeKey);
-        log.debug(result.getLeft());
-    }
-
-    private void addValidatorAddr(Node node, String validatorIdHex, String newValAdnl, long electionId, long electedForDuration) {
-        ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addvalidatoraddr  " + validatorIdHex + " " + newValAdnl + " " + (electionId + electedForDuration + 1)); // TODO some bug here
-        log.debug(result.getLeft());
-    }
-
-    private void addPermKey(Node node, String validatorIdHex, long electionId, long electedForDuration) {
-        ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addpermkey " + validatorIdHex + " " + electionId + " " + (electionId + electedForDuration + 1));
-        log.debug(result.getLeft());
-    }
-
-    private void addTempKey(Node node, String validatorIdHex, long electionId, long electedForDuration) {
-        ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addtempkey " + validatorIdHex + " " + validatorIdHex + " " + (electionId + electedForDuration + 1));
-        log.debug(result.getLeft());
-    }
-
-    private void addAdnl(Node node, String newValAdnl) {
-        Pair<String, Process> result = new ValidatorEngineConsoleExecutor().execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addadnl " + newValAdnl + " 0");
-        log.debug(result.getLeft());
-    }
-
-    private String generateNewNodeKey(Node node) {
-        ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "newkey");
-        log.debug(result.getLeft());
-
-        return result.getLeft().substring(result.getLeft().length() - 65).trim();
-    }
-
-    private String exportPubKey(Node node, String newkey) {
-        ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "exportpub " + newkey);
-        log.debug(result.getLeft());
-
-        return result.getLeft().substring(result.getLeft().indexOf("got public key:") + 15).trim();
-    }
-
-    public void initFullnode(Node node, String sharedGlobalConfig) throws Exception {
-        //run full node very first time
-        if (Files.exists(Paths.get(node.getTonDbDir() + "state"))) {
-            log.info("Found non-empty state; Skip initialization!");
-        } else {
-            log.info("Initializing node validator, create keyrings and config.json...");
-            Files.copy(Paths.get(sharedGlobalConfig), Paths.get(node.getNodeGlobalConfigLocation()), StandardCopyOption.REPLACE_EXISTING);
-            ValidatorEngineExecutor validator = new ValidatorEngineExecutor();
-            Pair<Process, Future<String>> validatorGenesisInit = validator.execute(node, "-C", node.getNodeGlobalConfigLocation(), "--db", node.getTonDbDir(), "--ip", node.getPublicIp() + ":" + node.getPublicPort());
-            log.debug("Initialized {} validator, result {}", node.getNodeName(), validatorGenesisInit.getRight().get());
-
-            replaceOutPortInConfigJson(node.getTonDbDir(), node.getOutPort());
-
-            //enable access to full node from validator-engine-console - required if you want to become validator later
-            String serverIdBase64 = generateServerCertificate(node);
-            generateClientCertificate(node, serverIdBase64);
-        }
-    }
-
-    /**
-     * Creates server key in db/ and puts into db/keyring/hex.
-     * Replaces CONSOLE-PORT, SERVER-ID, CLIENT-ID in control.template and puts them into db/config.json
-     */
-    private void generateClientCertificate(Node node, String serverIdHuman) throws Exception {
-        // Generating server certificate
-        if (Files.exists(Paths.get(node.getTonBinDir() + "certs" + File.separator + "client"))) {
-            log.info("Found existing client certificate, skipping");
-        } else {
-            log.info("Generating client certificate for remote control");
-            String clientIds = new RandomIdExecutor().execute(node, "-m", "keys", "-n", node.getTonBinDir() + "certs" + File.separator + "client");
-            String[] clientIdsBoth = clientIds.split(SPACE);
-            String clientIdHex = clientIdsBoth[0].trim();
-            String clientIdBase64 = clientIdsBoth[1].trim();
-            log.info("Generated client private certificate for {}: {} {}", node.getNodeName(), clientIdHex, clientIdBase64);
-
-            //Adding client permissions
-            String content = Files.readString(Paths.get(Extractor.MY_LOCAL_TON_ROOT_DIR + TEMPLATES + File.separator + "control.template"), StandardCharsets.UTF_8);
-            String replacedTemplate = StringUtils.replace(content, "CONSOLE-PORT", String.valueOf(node.getConsolePort()));
-            replacedTemplate = StringUtils.replace(replacedTemplate, "SERVER-ID", "\"" + serverIdHuman + "\"");
-            replacedTemplate = StringUtils.replace(replacedTemplate, "CLIENT-ID", "\"" + clientIdBase64 + "\"");
-
-            String configFile = Files.readString(Paths.get(node.getTonDbDir() + CONFIG_JSON), StandardCharsets.UTF_8);
-            String configNew = StringUtils.replace(configFile, "\"control\" : [", replacedTemplate);
-            Files.writeString(Paths.get(node.getTonDbDir() + CONFIG_JSON), configNew, StandardOpenOption.CREATE);
-        }
-    }
-
-    /**
-     * Creates server key in db and puts into directory db/keyring/hex.
-     */
-    private String generateServerCertificate(Node node) throws Exception {
-        // Generating server certificate
-        if (Files.exists(Paths.get(node.getTonBinDir() + "certs" + File.separator + "server"))) {
-            log.info("Found existing server certificate, skipping!");
-            return null;
-        } else {
-            log.info("Generating and installing server certificate for remote control");
-            String serverIds = new RandomIdExecutor().execute(node, "-m", "keys", "-n", node.getTonBinDir() + "certs" + File.separator + "server");
-            String[] serverIdsBoth = serverIds.split(SPACE);
-            String serverIdHex = serverIdsBoth[0].trim();
-            String serverIdBase64 = serverIdsBoth[1].trim();
-            log.info("Server IDs for {}: {} {}", node.getNodeName(), serverIdHex, serverIdBase64);
-            Files.copy(Paths.get(node.getTonBinDir() + "certs" + File.separator + "server"), Paths.get(node.getTonDbKeyringDir() + serverIdHex), StandardCopyOption.REPLACE_EXISTING);
-
-            return serverIdBase64;
-        }
-    }
-
     private static String sb(String str, String from, String to) {
         return StringUtils.substringBetween(str, from, to);
     }
@@ -725,7 +479,7 @@ public class MyLocalTon {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(new LiteClientExecutor().executeLast(node));
+            lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
     }
 
@@ -827,7 +581,7 @@ public class MyLocalTon {
             wallet = createWalletWithFundsAndSmartContract(genesisNode, genesisNode, workchain, subWalletid, settings.getWalletSettings().getInitialAmount());
             log.debug("create wallet address {}", wallet.getHexAddress());
         } else { //read address of initially created wallet (main-wallet and config-master)
-            wallet = new FiftExecutor().getWalletByBasename(genesisNode, fileBaseName);
+            wallet = new Fift().getWalletByBasename(genesisNode, fileBaseName);
             log.info("read wallet address: {}", wallet.getHexAddress());
         }
 
@@ -871,7 +625,7 @@ public class MyLocalTon {
             while (Main.appActive.get()) {
                 try {
                     executorService = Executors.newSingleThreadExecutor(); // smells
-                    LiteClientExecutor liteClient = new LiteClientExecutor();
+                    LiteClient liteClient = new LiteClient();
 
                     executorService.execute(() -> {
                         Thread.currentThread().setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
@@ -887,7 +641,7 @@ public class MyLocalTon {
                                 prevBlockSeqno.set(lastBlock.getSeqno());
                                 log.info(lastBlock.getShortBlockSeqno());
 
-                                List<ResultLastBlock> shardsInBlock = insertBlocksAndTransactions(node, liteClient, lastBlock, true);
+                                List<ResultLastBlock> shardsInBlock = insertBlocksAndTransactions(node, lastBlock, true);
 
                                 updateTopInfoBarGui(shardsInBlock.size());
                             }
@@ -910,7 +664,7 @@ public class MyLocalTon {
         });
     }
 
-    public List<ResultLastBlock> insertBlocksAndTransactions(Node node, LiteClientExecutor liteClient, ResultLastBlock lastBlock, boolean updateGuiNow) {
+    public List<ResultLastBlock> insertBlocksAndTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
 
         insertBlockEntity(lastBlock);
 
@@ -918,7 +672,7 @@ public class MyLocalTon {
             updateBlocksTabGui(lastBlock);
         }
 
-        List<ResultLastBlock> shardsInBlock = getShardsFromBlock(node, liteClient, lastBlock); // txs from basechain shards
+        List<ResultLastBlock> shardsInBlock = new LiteClient().getShardsFromBlock(node, lastBlock); // txs from basechain shards
 
         for (ResultLastBlock shard : shardsInBlock) {
             log.info(shard.getShortBlockSeqno());
@@ -930,26 +684,16 @@ public class MyLocalTon {
             }
         }
 
-        dumpBlockTransactions(node, liteClient, lastBlock, updateGuiNow); // txs from master-chain
+        dumpBlockTransactions(node, lastBlock, updateGuiNow); // txs from master-chain
 
-        shardsInBlock.stream().filter(b -> (b.getSeqno().compareTo(BigInteger.ZERO) != 0)).forEach(shard -> dumpBlockTransactions(node, liteClient, shard, updateGuiNow)); // txs from shards
+        shardsInBlock.stream().filter(b -> (b.getSeqno().compareTo(BigInteger.ZERO) != 0)).forEach(shard -> dumpBlockTransactions(node, shard, updateGuiNow)); // txs from shards
 
         return shardsInBlock;
     }
 
-    public List<ResultLastBlock> getShardsFromBlock(Node node, LiteClientExecutor liteClient, ResultLastBlock lastBlock) {
-        try {
-            List<ResultLastBlock> foundShardsInBlock = LiteClientParser.parseAllShards(liteClient.executeAllshards(node, lastBlock));
-            log.debug("found {} shards in block {}", foundShardsInBlock.size(), foundShardsInBlock);
-            return foundShardsInBlock;
-        } catch (Exception e) {
-            log.error("Error retrieving shards from the block, {}", e.getMessage());
-            return null;
-        }
-    }
+    public void dumpBlockTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
 
-    public void dumpBlockTransactions(Node node, LiteClientExecutor liteClient, ResultLastBlock lastBlock, boolean updateGuiNow) {
-
+        LiteClient liteClient = new LiteClient();
         List<ResultListBlockTransactions> txs = LiteClientParser.parseListBlockTrans(liteClient.executeListblocktrans(node, lastBlock, 0));
         log.debug("found {} transactions in block {}", txs.size(), lastBlock.getShortBlockSeqno());
 
@@ -1481,7 +1225,7 @@ public class MyLocalTon {
 
         if (isNull(foundWallet)) {
 
-            WalletAddress wa = new FiftExecutor().convertAddr(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
+            WalletAddress wa = new Fift().convertAddr(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
 
             WalletAddress walletAddress = WalletAddress.builder()
                     .wc(lastBlock.getWc())
@@ -1771,7 +1515,7 @@ public class MyLocalTon {
             try {
                 for (WalletEntity wallet : App.dbPool.getAllWallets()) {
                     if (Main.appActive.get()) {
-                        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress()));
+                        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress()));
                         if (nonNull(accountState.getBalance())) {
 
                             Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress());
@@ -1791,9 +1535,9 @@ public class MyLocalTon {
     }
 
     Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) {
-        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(node, address));
+        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(node, address));
         if (nonNull(accountState.getBalance())) {
-            long seqno = new LiteClientExecutor().executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
+            long seqno = new LiteClient().executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
             return Pair.of(accountState, seqno);
         }
         return Pair.of(null, -1L);
@@ -2015,232 +1759,6 @@ public class MyLocalTon {
                 saveSettingsToGson();
                 log.info("Up and running 4 validators");
             }
-        }
-
-        public void createHardFork(Node forkedNode, Node toNode) throws Exception {
-            //public void createHardFork(Node node, ResultLastBlock lastBlock, String externalMsgLocation) throws Exception {
-
-            getStats(forkedNode);
-
-            log.info("run create-hardfork");
-            //String externalMsgLocation = createExternalMessage(node, toNode);
-            //log.info("sleep 7sec");
-            //Thread.sleep(7000);
-            //get last block id
-            //ResultLastBlock lastBlock = getLastBlock(node);
-
-            WalletAddress fromWalletAddress = settings.getNode(forkedNode).getWalletAddress();
-            SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
-                    .executionNode(forkedNode)
-                    .fromWallet(fromWalletAddress)
-                    .fromWalletVersion(WalletVersion.V1)
-                    .fromSubWalletId(-1L)
-                    .destAddr(toNode.getWalletAddress().getBounceableAddressBase64url())
-                    .amount(new BigDecimal(123L))
-                    .build();
-            String externalMsgLocation = new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
-            //String externalMsgLocation = new Wallet().getSeqNoAndPrepareBoc(node, fromWalletAddress, toNode.getWalletAddress().getBounceableAddress(), new BigDecimal(123L), null);
-            settings.setExternalMsgLocation(externalMsgLocation);
-            saveSettingsToGson();
-
-            log.info("sleep 5sec");
-            Thread.sleep(3 * 1000L);
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam); // 10 toncoins was
-            Thread.sleep(3 * 1000L);
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
-            Thread.sleep(3 * 1000L);
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
-            Thread.sleep(3 * 1000L);
-
-            log.info("**************** {} balance before: {}", forkedNode.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(forkedNode, toNode.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
-
-            //get last block id
-            ResultLastBlock forkFromBlock = getLastBlock(forkedNode);
-
-            Thread.sleep(60 * 1000L);
-
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam); //20toncoins
-            Thread.sleep(3 * 1000L);
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
-
-            getStats(forkedNode);
-
-            Thread.sleep(60 * 1000L);
-
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam); // 30 toncoins was
-            Thread.sleep(3 * 1000L);
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
-            Thread.sleep(3 * 1000L);
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
-            Thread.sleep(3 * 1000L);
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
-
-            getStats(forkedNode);
-
-            Thread.sleep(60 * 1000L);
-
-            getStats(forkedNode);
-
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam); // 40 toncoins was
-            Thread.sleep(3 * 1000L);
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
-            Thread.sleep(3 * 1000L);
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
-            Thread.sleep(3 * 1000L);
-            new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
-
-    //        settings.getGenesisNode().getNodeProcess().destroy();
-    //        settings.getNode2().getNodeProcess().destroy();
-    //        settings.getNode3().getNodeProcess().destroy();
-    //        settings.getNode4().getNodeProcess().destroy();
-    //
-    //        settings.getNode5().getNodeProcess().destroy();
-    //        settings.getNode6().getNodeProcess().destroy();
-    //        settings.getNode7().getNodeProcess().destroy();
-
-            log.info(new LiteClientExecutor().executeGetCurrentValidators(forkedNode)); // TODO PARSING
-            //stop instance
-            forkedNode.getNodeProcess().destroy();
-            //newNode1.getNodeProcess().destroy();
-            //newNode2.getNodeProcess().destroy();
-
-            Thread.sleep(1000L);
-            ResultLastBlock newBlock = generateNewBlock(forkedNode, forkFromBlock, externalMsgLocation);
-
-            // reuse dht-server and use lite-server of node4
-            addHardForkEntryIntoMyGlobalConfig(forkedNode, forkedNode.getNodeGlobalConfigLocation(), newBlock);
-
-            startValidator(forkedNode, forkedNode.getNodeForkedGlobalConfigLocation());
-
-            FileUtils.copyFile(new File(forkedNode.getNodeForkedGlobalConfigLocation()), new File(settings.getNode2().getNodeForkedGlobalConfigLocation()));
-            FileUtils.copyFile(new File(forkedNode.getNodeForkedGlobalConfigLocation()), new File(settings.getNode3().getNodeForkedGlobalConfigLocation()));
-            FileUtils.copyDirectory(new File(forkedNode.getTonDbStaticDir()), new File(settings.getNode2().getTonDbStaticDir()));
-            FileUtils.copyDirectory(new File(forkedNode.getTonDbStaticDir()), new File(settings.getNode3().getTonDbStaticDir()));
-
-            settings.getNode2().getNodeProcess().destroy();
-            settings.getNode3().getNodeProcess().destroy();
-
-            startValidator(settings.getNode2(), settings.getNode2().getNodeForkedGlobalConfigLocation());
-            startValidator(settings.getNode3(), forkedNode.getNodeForkedGlobalConfigLocation());
-
-            log.info("All forked nodes are started. Sleep 60 sec");
-            Thread.sleep(60 * 1000L);
-            // but with forked config
-
-
-    /*
-            //recreateDhtServer(genesisForkedNode, genesisForkedNode.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON); 1
-            //idea, update global config with new liteserver
-            //recreateLiteServer(node);
-            //init
-
-            //recreateLocalConfigJsonAndValidatorAccess(genesisForkedNode, genesisForkedNode.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON); 2
-            //recreateLiteServer(genesisForkedNode); 3
-            // error after above line with lite-server recreated
-            //[adnl-ext-server.cpp:34][!manager]	failed ext query: [Error : 651 : node not synced]
-            // error from lite-client
-            // cannot get masterchain info from server
-            //0. delete keyring directory. Execute generateValidatorKeys then
-
-            // here lite-client can't connect, need to recreate adnl and val keys
-    //        log.info("recreating new node keys and adnl address addresses");
-    //        Files.deleteIfExists(Paths.get(forkedNode.getTonDbDir() + File.separator + "temporary"));
-    //        log.info("Starting temporary full-node...");
-
-            // re-elect this node
-            //Process forkedValidator = createGenesisValidator(node, node.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON);
-            // node4 valik,
-            // completed sync. Validating 3 groups, reused 1 times and fails with:
-            //  AdnlPeerTableImpl::subscribe - [adnl-peer-table.cpp:234][!PeerTable][&it != local_ids_.end()]
-            //  smth like current validators cannot be found in dht server
-            // if node is not validator - Validating 0 groups and not failing
-
-            //start first forked full node OK (he is not validator if we compare with genesis validator)
-            Process forkedValidator = startValidator(forkedNode, forkedNode.getNodeForkedGlobalConfigLocation());
-            log.info("sleep 8sec");
-            Thread.sleep(8 * 1000);
-            // wait election id
-            // replacing original global config with forked one
-            FileUtils.copyFile(new File(forkedNode.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON), new File(forkedNode.getNodeGlobalConfigLocation()));
-            //long electionId = new LiteClientExecutor2().executeGetActiveElectionId(genesisForkedNode, settings.getElectorSmcAddrHex());
-
-            convertFullNodeToValidator(forkedNode, 0L, settings.getElectedFor());
-            // completed sync. Validating 0 groups
-            // error - "too big masterchain seqno"
-            // if patch  with "if (!force) {" then error - "too small read"
-
-            // a eto chto bi validator bil initial
-    //        log.info("killing temp validator");
-    //        if (forkedValidator != null) {
-    //            forkedValidator.destroy();
-    //        }
-    //        startValidator(node, node.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON);
-
-            // create neighbors
-
-            log.info("Adding new node6");
-    //  cant join other full nodes: Check `block_id_.seqno() >= opts_->get_last_fork_masterchain_seqno()` failed
-    //  add static/ forked files to the node and above disappears
-
-            // node6
-            newNode1.getNodeProcess().destroy();
-            FileUtils.copyDirectory(new File(forkedNode.getTonDbStaticDir()), new File(newNode1.getTonDbStaticDir()));
-            FileUtils.copyFile(new File(forkedNode.getNodeForkedGlobalConfigLocation()), new File(newNode1.getNodeForkedGlobalConfigLocation()));
-            recreateLocalConfigJsonAndValidatorAccess(newNode1, newNode1.getNodeForkedGlobalConfigLocation());
-            recreateLiteServer(newNode1);
-            startValidator(newNode1, forkedNode.getNodeForkedGlobalConfigLocation());
-            convertFullNodeToValidator(newNode1, 0L, settings.getElectedFor()); // completed sync. Validating 0 groups
-
-            log.info("Adding new node7");
-            // node7
-            newNode2.getNodeProcess().destroy();
-            FileUtils.copyDirectory(new File(forkedNode.getTonDbStaticDir()), new File(newNode2.getTonDbStaticDir()));
-            FileUtils.copyFile(new File(forkedNode.getNodeForkedGlobalConfigLocation()), new File(newNode2.getNodeForkedGlobalConfigLocation()));
-            recreateLocalConfigJsonAndValidatorAccess(newNode2, newNode2.getNodeForkedGlobalConfigLocation());
-            recreateLiteServer(newNode2);
-            startValidator(newNode2, forkedNode.getNodeForkedGlobalConfigLocation());
-            convertFullNodeToValidator(newNode2, 0L, settings.getElectedFor()); // completed sync. Validating 0 groups
-
-            new Utils().showThreads();
-
-            while (true) {
-                ResultLastBlock block = getLastBlockFromForked(forkedNode);
-                log.info("last from {}          {}", settings.getNode2().getNodeName(), getLastBlockFromForked(settings.getNode2()));
-                log.info("last from {}          {}", settings.getNode3().getNodeName(), getLastBlockFromForked(settings.getNode3()));
-                log.info("last from {}          {}", forkedNode.getNodeName(), getLastBlockFromForked(forkedNode));
-                log.info("**************** {} balance after: {}", forkedNode.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor(true).executeGetAccount(forkedNode, toNode.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
-
-                log.info("hashes on {} {}", settings.getNode2(), new LiteClientExecutor(true).executeBySeqno(settings.getNode2(), block.getWc(), block.getShard(), block.getSeqno()));
-                log.info("hashes on {} {}", settings.getNode3(), new LiteClientExecutor(true).executeBySeqno(settings.getNode3(), block.getWc(), block.getShard(), block.getSeqno()));
-                log.info("hashes on {} {}", forkedNode.getNodeName(), new LiteClientExecutor(true).executeBySeqno(forkedNode, block.getWc(), block.getShard(), block.getSeqno()));
-
-                Thread.sleep(10 * 1000L);
-            }
-
-
-    //        Thread.sleep(80 * 1000);
-    //
-    //        new LiteClientExecutor2().executeGetActiveElectionId(forkedNode, settings.getElectorSmcAddrHex());
-    //
-    //        String stdout = new LiteClientExecutor2().executeGetCurrentValidators(forkedNode);
-    //        log.info(stdout);
-    //
-    //        stdout = new LiteClientExecutor2().executeGetPreviousValidators(forkedNode);
-    //        log.info(stdout);
-    //
-    //        stdout = new LiteClientExecutor2().executeGetParticipantList(forkedNode, settings.getElectorSmcAddrHex());
-    //        log.info(stdout);
-    //
-    //        Thread.sleep(80 * 1000);
-    //
-    //        new LiteClientExecutor2().executeGetActiveElectionId(forkedNode, settings.getElectorSmcAddrHex());
-    //        // wait election id
-    //        // send partipation request
-
-
-            //startValidator(newNode, node.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON);
-            // fails with Check `block_id_.seqno() >= opts_->get_last_fork_masterchain_seqno()` failed
-            // better to take synced node
         }
 
 

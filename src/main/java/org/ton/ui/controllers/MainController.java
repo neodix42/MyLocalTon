@@ -32,11 +32,9 @@ import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
-import org.ton.executors.liteclient.LiteClientExecutor;
+import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.BlockShortSeqno;
-import org.ton.executors.liteclient.api.ResultLastBlock;
-import org.ton.executors.liteclient.api.ResultListBlockTransactions;
+import org.ton.executors.liteclient.api.*;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.main.App;
 import org.ton.settings.MyLocalTonSettings;
@@ -155,6 +153,9 @@ public class MainController implements Initializable {
 
     @FXML
     public Tab logsTab;
+
+    @FXML
+    public JFXTabPane validationTabs;
 
     @FXML
     JFXCheckBox shardStateCheckbox;
@@ -537,9 +538,9 @@ public class MainController implements Initializable {
 
                         LongStream.range(1, lastSeqno).forEach(i -> { // TODO for loop big integer
                             try {
-                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClientExecutor().executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
+                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClient().executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
                                 log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
-                                MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), new LiteClientExecutor(), block, false);
+                                MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), block, false);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -644,9 +645,9 @@ public class MainController implements Initializable {
 
                         LongStream.range(1, blockShortSeqno.getSeqno().longValue()).forEach(i -> {
                             try {
-                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClientExecutor().executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
+                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClient().executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
                                 log.debug("load missing block {}: {}", i, block.getFullBlockSeqno());
-                                MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), new LiteClientExecutor(), block, false);
+                                MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), block, false);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -935,7 +936,7 @@ public class MainController implements Initializable {
     }
 
     public void liteServerClicked() throws IOException {
-        String lastCommand = new LiteClientExecutor(false).getLastCommand(MyLocalTon.getInstance().getSettings().getGenesisNode());
+        String lastCommand = new LiteClient().getLastCommand(MyLocalTon.getInstance().getSettings().getGenesisNode());
         log.info("show console with last command, {}", lastCommand);
 
         if (isWindows()) {
@@ -1073,5 +1074,23 @@ public class MainController implements Initializable {
         );
 
         yesNoDialog.show();
+    }
+
+    public void validationTest() throws Exception {
+
+        long activeElectionId = new LiteClient().executeGetActiveElectionId(settings.getGenesisNode(), settings.getElectorSmcAddrHex());
+        log.info("active election id {}", activeElectionId);
+
+        ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(settings.getGenesisNode()));
+        log.info("active elections {}", config15);
+
+        ResultConfig34 config34 = LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(settings.getGenesisNode()));
+        log.info("current validators {}", config34);
+
+        ResultConfig32 config32 = LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(settings.getGenesisNode()));
+        log.info("previous validators {}", config32);
+
+        ResultConfig36 config36 = LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(settings.getGenesisNode()));
+        log.info("next validators {}", config36);
     }
 }

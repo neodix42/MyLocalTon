@@ -1,0 +1,133 @@
+ConfigParam(32) = (
+  prev_validators:(validators_ext utime_since:1642862540 utime_until:1642866540 total:11 main:11 total_weight:3458764513820540919
+    list:(hme_root
+      root:(hm_edge
+        label:(hml_same v:0 n:12)
+        node:(hmn_fork
+          left:(hm_edge
+            label:(hml_short
+              len:unary_zero s:x)
+            node:(hmn_fork
+              left:(hm_edge
+                label:(hml_short
+                  len:unary_zero s:x)
+                node:(hmn_fork
+                  left:(hm_edge
+                    label:(hml_short
+                      len:unary_zero s:x)
+                    node:(hmn_fork
+                      left:(hm_edge
+                        label:(hml_short
+                          len:unary_zero s:x)
+                        node:(hmn_leaf
+                          value:(validator_addr
+                            public_key:(ed25519_pubkey pubkey:x2D3498D8A9EA9AD87DDA5FD28D31FD38E5E54409CFCE57B17CC3818D9E1B90FF) weight:116698054425862567 adnl_addr:xB0F53B21B57F510F404F76C660D3F45B3C8764FE32265636E450E808A4BD96B7)))
+                      right:(hm_edge
+                        label:(hml_short
+                          len:unary_zero s:x)
+                        node:(hmn_leaf
+                          value:(validator_addr
+                            public_key:(ed25519_pubkey pubkey:x9C7BD4694BC326B256160277ACC562A4C75DD063D5972DBB4278C492C7FFBDB4) weight:103622759509136477 adnl_addr:xDA2B0FF251DC6D7867424D2AA81D2C73EA2DE08473C3B4D2EAB2CE39A731D4D5)))))
+                  right:(hm_edge
+                    label:(hml_short
+                      len:unary_zero s:x)
+                    node:(hmn_fork
+                      left:(hm_edge
+                        label:(hml_short
+                          len:unary_zero s:x)
+                        node:(hmn_leaf
+                          value:(validator_addr
+                            public_key:(ed25519_pubkey pubkey:x6E45CDDDA407A026EA6520441E7522C8EE3760F1C4ABDE64813C6764EECB14EF) weight:103622759509136477 adnl_addr:xCBE3E1F628E28D196381072A64AF9444FF35216537CA0DAACD1611B6F68406BA)))
+                      right:(hm_edge
+                        label:(hml_short
+                          len:unary_zero s:x)
+                        node:(hmn_leaf
+                          value:(validator_addr
+                            public_key:(ed25519_pubkey pubkey:x73F870889185AC6576A375AC820C69B81E799A02FA42F263135F571948C52BF1) weight:487929236893022074 adnl_addr:x8B2FCB853CAB637852A760CF58C5AB5547E84665242FBF843B96088F027FB92A)))))))
+              right:(hm_edge
+                label:(hml_short
+                  len:unary_zero s:x)
+                node:(hmn_fork
+                  left:(hm_edge
+                    label:(hml_short
+                      len:unary_zero s:x)
+                    node:(hmn_fork
+                      left:(hm_edge
+                        label:(hml_short
+                          len:unary_zero s:x)
+                        node:(hmn_leaf
+                          value:(validator_addr
+                            public_key:(ed25519_pubkey pubkey:x3D9F3840BF332D0D0FFF0899236356A0F77CFEDB7876F1438F4EBD7DB17D3EF6) weight:103622759509136477 adnl_addr:x6D4C285FE0CC262385EB8F40E12735DCE966E644A5F54507FB8C10D2040CF14F)))
+                      right:(hm_edge
+                        label:(hml_short
+                          len:unary_zero s:x)
+                        node:(hmn_leaf
+                          value:(validator_addr
+                            public_key:(ed25519_pubkey pubkey:x3353BF6F172BA7D5A995D071A82F2D1BF0083E88C52BB628DDBBF56548D989C6) weight:487929927711418802 adnl_addr:x59253655BBD0EDEFA9EB74C3691F4889CD02D9105AD814E936670D01EADBF147)))))
+                  right:(hm_edge
+                    label:(hml_short
+                      len:unary_zero s:x)
+                    node:(hmn_fork
+                      left:(hm_edge
+                        label:(hml_short
+                          len:unary_zero s:x)
+                        node:(hmn_leaf
+                          value:(validator_addr
+                            public_key:(ed25519_pubkey pubkey:x370CCB72065750964411BFB9335035ED627359109A75EBAD524A8F2342C290FA) weight:487929236893022074 adnl_addr:x9660710D3D90261A0431FF104DA3760E852AE84C9EADD0280ACB0A4AB1B6E43C)))
+                      right:(hm_edge
+                        label:(hml_short
+                          len:unary_zero s:x)
+                        node:(hmn_leaf
+                          value:(validator_addr
+                            public_key:(ed25519_pubkey pubkey:x986664C057A69FC222C3A9F33640DA4B48D10DFF56E45289B597FC7EE5DAF38F) weight:487929236893022074 adnl_addr:xA6EA2902ED5CF2246980DA2AFBA907C10EC450D6A6E31A24956A69F8F0E21E2C)))))))))
+          right:(hm_edge
+            label:(hml_short
+              len:(unary_succ
+                x:unary_zero) s:x4_)
+            node:(hmn_fork
+              left:(hm_edge
+                label:(hml_short
+                  len:unary_zero s:x)
+                node:(hmn_fork
+                  left:(hm_edge
+                    label:(hml_short
+                      len:unary_zero s:x)
+                    node:(hmn_leaf
+                      value:(validator_addr
+                        public_key:(ed25519_pubkey pubkey:xDFF5DAFDE9ACA309EC09844338A2AB938E07AD219A228437319E35CBED10486D) weight:487929236893022074 adnl_addr:x98C8552B9D35CB2FC820086E23B234F6268FF3091B994C8D52E462DE132040C2)))
+                  right:(hm_edge
+                    label:(hml_short
+                      len:unary_zero s:x)
+                    node:(hmn_leaf
+                      value:(validator_addr
+                        public_key:(ed25519_pubkey pubkey:x54A77823C8BCC7C0E5A7F4FEBC0FC065E9D10E6C201EEBFA0130A31A02F6AB10) weight:487929236893022074 adnl_addr:x1F84AAA426CA904EAFEB48F26B038461F55624380783990368B316ABB916432E)))))
+              right:(hm_edge
+                label:(hml_short
+                  len:(unary_succ
+                    x:unary_zero) s:x4_)
+                node:(hmn_leaf
+                  value:(validator_addr
+                    public_key:(ed25519_pubkey pubkey:x59C08BA21BB008EE907D7A3A86156B9F145E2345F981B40B5F1107EB7B99604B) weight:103622068690739749 adnl_addr:x5929EDE97D3FC81FC0DBDDE61648CB86E3897C6FBAFD02A9B0DE1F6BB162C26A))))))))))
+
+x{1261EC17CC61EC276C000B000B2FFFFFFFFFFFFFF7C_}
+ x{CC}
+  x{2_}
+   x{2_}
+    x{2_}
+     x{1CE3A049E28B4D26362A7AA6B61F7697F4A34C7F4E3979510273F395EC5F30E0636786E43FC067A610C8021869EC3D4EC86D5FD443D013DDB19834FD16CF21D93F8C89958DB9143A02292F65ADE_}
+     x{1CE3A049E2A71EF51A52F0C9AC9585809DEB3158A931D77418F565CB6ED09E3124B1FFEF6D005C091672CC0517768AC3FC94771B5E19D0934AAA074B1CFA8B78211CF0ED34BAACB38E69CC75356_}
+    x{2_}
+     x{1CE3A049E29B9173776901E809BA994811079D48B23B8DD83C712AF799204F19D93BB2C53BC05C091672CC051772F8F87D8A38A34658E041CA992BE5113FCD48594DF2836AB345846DBDA101AEA_}
+     x{1CE3A049E29CFE1C2224616B195DA8DD6B20831A6E079E6680BE90BC98C4D7D5C652314AFC41B15E4392224DDEA2CBF2E14F2AD8DE14A9D833D6316AD551FA1199490BEFE10EE58223C09FEE4AA_}
+   x{2_}
+    x{2_}
+     x{1CE3A049E28F67CE102FCCCB4343FFC22648D8D5A83DDF3FB6DE1DBC50E3D3AF5F6C5F4FBD805C091672CC05175B530A17F8330988E17AE3D03849CD773A59B991297D5141FEE3043481033C53E_}
+     x{1CE3A049E28CD4EFDBC5CAE9F56A65741C6A0BCB46FC020FA2314AED8A376EFD595236627181B15E6BC8215A6C96494D956EF43B7BEA7ADD30DA47D2227340B64416B6053A4D99C3407AB6FC51E_}
+    x{2_}
+     x{1CE3A049E28DC332DC8195D42591046FEE4CD40D7B589CD644269D7AEB5492A3C8D0B0A43E81B15E4392224DDEA5981C434F640986810C7FC41368DD83A14ABA1327AB740A02B2C292AC6DB90F2_}
+     x{1CE3A049E2A619993015E9A7F088B0EA7CCD903692D234437FD5B914A26D65FF1FB976BCE3C1B15E4392224DDEA9BA8A40BB573C891A60368ABEEA41F043B11435A9B8C689255A9A7E3C38878B2_}
+  x{4}
+   x{2_}
+    x{1CE3A049E2B7FD76BF7A6B28C27B026110CE28AAE4E381EB486688A10DCC678D72FB44121B41B15E4392224DDEA632154AE74D72CBF208021B88EC8D3D89A3FCC246E6532354B918B784C81030A_}
+    x{1CE3A049E29529DE08F22F31F03969FD3FAF03F0197A74439B0807BAFE804C28C680BDAAC401B15E4392224DDE87E12AA909B2A413ABFAD23C9AC0E1187D55890E01E0E640DA2CC5AAEE4590CBA_}
+   x{4738E81278A59C08BA21BB008EE907D7A3A86156B9F145E2345F981B40B5F1107EB7B99604B017023B8F333E2255929EDE97D3FC81FC0DBDDE61648CB86E3897C6FBAFD02A9B0DE1F6BB162C26A}

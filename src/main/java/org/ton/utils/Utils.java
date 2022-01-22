@@ -26,9 +26,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.CodeSource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -355,7 +360,7 @@ public class Utils {
 
             if (proc.waitFor() == 0) {
                 String resultInput = IOUtils.toString(procOutput, Charset.defaultCharset());
-                log.debug("isMacOsArm: {}", resultInput);
+                log.info("isMacOsArm: {}", resultInput);
                 return resultInput.contains("arm");
             }
         } catch (Exception e) {
@@ -431,5 +436,16 @@ public class Utils {
 
     public static String getLightAddress(String addr) {
         return StringUtils.substring(addr, 0, 6) + ".." + StringUtils.substring(addr, -4);
+    }
+
+    public static void replaceOutPortInConfigJson(String path, Integer port) throws IOException {
+        String contentConfigJson = Files.readString(Paths.get(path + "config.json"), StandardCharsets.UTF_8);
+        String replacedConfigJson = StringUtils.replace(contentConfigJson, "3278", String.valueOf(port));
+        Files.writeString(Paths.get(path + "config.json"), replacedConfigJson, StandardOpenOption.CREATE);
+    }
+
+    public static int getIntegerIp(String publicIP) throws UnknownHostException {
+        InetAddress addr = InetAddress.getByName(publicIP);
+        return ByteBuffer.wrap(addr.getAddress()).getInt();
     }
 }
