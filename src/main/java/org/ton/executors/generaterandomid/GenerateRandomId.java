@@ -2,6 +2,7 @@ package org.ton.executors.generaterandomid;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.ton.settings.Node;
 import org.ton.utils.Extractor;
 
@@ -65,5 +66,16 @@ public class GenerateRandomId {
 
             return serverIdBase64;
         }
+    }
+
+    public Pair<String, String> generateLiteServerKeys(Node node) throws Exception {
+        String liteserverKeys = new RandomIdExecutor().execute(node, "-m", "keys", "-n", node.getTonDbKeyringDir() + "liteserver");
+        String[] liteServerHexBase64 = liteserverKeys.split(" ");
+        String liteServerIdHex = liteServerHexBase64[0].trim();
+        String liteServerIdBase64 = liteServerHexBase64[1].trim();
+        log.info("liteServerIdHex {}, liteServerIdBase64 {} on {}", liteServerIdHex, liteServerIdBase64, node.getNodeName());
+
+        Files.copy(Paths.get(node.getTonDbKeyringDir() + "liteserver"), Paths.get(node.getTonDbKeyringDir() + liteServerIdHex), StandardCopyOption.REPLACE_EXISTING);
+        return Pair.of(liteServerIdHex, liteServerIdBase64);
     }
 }

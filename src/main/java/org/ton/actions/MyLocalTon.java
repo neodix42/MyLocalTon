@@ -181,7 +181,7 @@ public class MyLocalTon {
 
             Process validatorGenesisProcess = createGenesisValidator(node, node.getNodeGlobalConfigLocation());
 
-            installLiteServer(node, node.getNodeGlobalConfigLocation(), false);
+            new ValidatorEngine().enableLiteServer(node, node.getNodeGlobalConfigLocation(), false);
 
             return validatorGenesisProcess;
         } else {
@@ -189,45 +189,6 @@ public class MyLocalTon {
             dhtServerProcess = new DhtServer().startDhtServer(node, node.getNodeGlobalConfigLocation());
             Thread.sleep(100);
             return null;
-        }
-    }
-
-    public void installLiteServer(Node node, String myGlobalConfig, boolean reinstall) throws Exception {
-        if (Files.exists(Paths.get(node.getTonDbKeyringDir() + LITESERVER)) && (!reinstall)) {
-            log.info("lite-server exists! Skipping...");
-        } else {
-            log.info("Installing lite-server...");
-
-            Pair<String, String> liteServerKeys = generateLiteServerKeys(node);
-            String liteServers = "\"liteservers\" : [{\"id\":\"" + liteServerKeys.getRight() + "\",\"port\":\"" + node.getLiteServerPort() + "\"}";
-            log.info("liteservers: {} ", liteServers);
-
-            //convert pub key to key
-            String liteserverPubkeyBase64 = Utils.convertPubKeyToBase64(node.getTonDbKeyringDir() + "liteserver.pub");
-            int publicIpNum = Utils.getIntegerIp(node.getPublicIp());
-
-            // replace liteservers array in config.json
-            String configJson = FileUtils.readFileToString(new File(node.getTonDbDir() + CONFIG_JSON), StandardCharsets.UTF_8);
-            String existingLiteservers = "\"liteservers\" : " + Utils.sbb(configJson, "\"liteservers\" : [");
-            String configJsonNew = StringUtils.replace(configJson, existingLiteservers, liteServers + "\n]");
-            FileUtils.writeStringToFile(new File(node.getTonDbDir() + CONFIG_JSON), configJsonNew, StandardCharsets.UTF_8);
-
-            String myGlobalTonConfig = FileUtils.readFileToString(new File(myGlobalConfig), StandardCharsets.UTF_8);
-            String myGlobalTonConfigNew;
-            String liteServerConfigNew;
-            if (myGlobalTonConfig.contains("liteservers")) {
-                //replace exiting lite-servers in global config
-                String existingLiteserver = Utils.sbb(myGlobalTonConfig, "\"liteservers\":[");
-                liteServerConfigNew = "[{\"id\":{\"key\":\"" + liteserverPubkeyBase64 + "\", \"@type\":\"pub.ed25519\"}, \"port\": " + node.getLiteServerPort() + ", \"ip\": " + publicIpNum + "}\n]";
-                myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, existingLiteserver, liteServerConfigNew);
-                FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
-            } else {
-                //add new lite-servers about "validator":{
-                liteServerConfigNew = "\"liteservers\":[{\"id\":{\"key\":\"" + liteserverPubkeyBase64 + "\", \"@type\":\"pub.ed25519\"}, \"port\": " + node.getLiteServerPort() + ", \"ip\": " + publicIpNum + "}\n],\n \"validator\": {";
-                myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, "\"validator\": {", liteServerConfigNew);
-                FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
-            }
-            log.info("lite-server installed");
         }
     }
 
@@ -394,17 +355,6 @@ public class MyLocalTon {
         }
         log.debug(createStateResult);
         return true;
-    }
-
-    public Pair<String, String> generateLiteServerKeys(Node node) throws Exception {
-        String liteserverKeys = new RandomIdExecutor().execute(node, "-m", "keys", "-n", node.getTonDbKeyringDir() + LITESERVER);
-        String[] liteServerHexBase64 = liteserverKeys.split(SPACE);
-        String liteServerIdHex = liteServerHexBase64[0].trim();
-        String liteServerIdBase64 = liteServerHexBase64[1].trim();
-        log.info("liteServerIdHex {}, liteServerIdBase64 {} on {}", liteServerIdHex, liteServerIdBase64, node.getNodeName());
-
-        Files.copy(Paths.get(node.getTonDbKeyringDir() + LITESERVER), Paths.get(node.getTonDbKeyringDir() + liteServerIdHex), StandardCopyOption.REPLACE_EXISTING);
-        return Pair.of(liteServerIdHex, liteServerIdBase64);
     }
 
     /**
@@ -1596,16 +1546,27 @@ public class MyLocalTon {
         }
     }
 
-    public void createFullnode(Node node) throws Exception {
+    public boolean createFullnode(Node node, boolean enableLiteServer) throws Exception {
+        if (Files.exists(Paths.get(node.getTonBinDir()))) {
+            log.info("{} already created, just start it", node.getNodeName());
+            return false;
+        }
         log.info("creating new fullnode {}", node.getNodeName());
         node.extractBinaries();
         ValidatorEngine validatorEngine = new ValidatorEngine();
         validatorEngine.initFullnode(node, settings.getGenesisNode().getNodeGlobalConfigLocation());
         Thread.sleep(2000);
-        validatorEngine.startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
+
+        if (enableLiteServer) {
+            validatorEngine.enableLiteServer(node, node.getNodeGlobalConfigLocation(), false);
+        }
+
+        validatorEngine.startValidator(node, node.getNodeGlobalConfigLocation());
+
         Thread.sleep(2000);
         Utils.waitForBlockchainReady(node);
         log.info("ready {}", node.getNodeName());
+        return true;
     }
 /*
         public void elections(Node genesisNode, Node node2, Node node3, Node node4, Node node5, Node node6) throws Exception {

@@ -36,9 +36,10 @@ import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.*;
 import org.ton.executors.liteclient.api.block.Transaction;
+import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.main.App;
 import org.ton.settings.MyLocalTonSettings;
-import org.ton.settings.Node3;
+import org.ton.settings.Node2;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
 
@@ -1094,9 +1095,11 @@ public class MainController implements Initializable {
         ResultConfig36 config36 = LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(settings.getGenesisNode()));
         log.info("next validators {}", config36);
 
-        MyLocalTon.getInstance().createFullnode(new Node3());
+        Node2 node = new Node2();
+        if (MyLocalTon.getInstance().createFullnode(node, true)) {
+            new ValidatorEngine().startValidator(node, node.getNodeGlobalConfigLocation());
+        }
 
         //validatorEngine.startValidator(node2, settings.getGenesisNode().getNodeGlobalConfigLocation());
-
     }
 }
