@@ -44,6 +44,7 @@ testDB/
 # .idea/modules
 # *.iml
 # *.ipr
+**/*.iml
 
 # CMake
 cmake-build-*/
