@@ -1,6 +1,9 @@
 name: Java 11 Ubuntu-18.04
 
-on: [ push ]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
