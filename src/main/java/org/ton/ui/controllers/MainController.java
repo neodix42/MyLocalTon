@@ -1096,9 +1096,15 @@ public class MainController implements Initializable {
         log.info("next validators {}", config36);
 
         Node2 node = new Node2();
-        if (MyLocalTon.getInstance().createFullnode(node, true)) {
-            new ValidatorEngine().startValidator(node, node.getNodeGlobalConfigLocation());
-        }
+        MyLocalTon.getInstance().createFullnode(node, true);
+
+        new ValidatorEngine().startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
+        Thread.sleep(2000);
+        Utils.waitForBlockchainReady(node);
+        log.info("ready {}", node.getNodeName());
+
+        Utils.waitForNodeSynchronized(node);
+        log.info("synced {}", node.getNodeName());
 
         //validatorEngine.startValidator(node2, settings.getGenesisNode().getNodeGlobalConfigLocation());
     }

@@ -58,7 +58,10 @@ public class ValidatorEngine {
             log.info("Initializing node validator, create keyrings and config.json...");
             Files.copy(Paths.get(sharedGlobalConfig), Paths.get(node.getNodeGlobalConfigLocation()), StandardCopyOption.REPLACE_EXISTING);
             ValidatorEngineExecutor validator = new ValidatorEngineExecutor();
-            Pair<Process, Future<String>> validatorGenesisInit = validator.execute(node, "-C", node.getNodeGlobalConfigLocation(), "--db", node.getTonDbDir(), "--ip", node.getPublicIp() + ":" + node.getPublicPort());
+            Pair<Process, Future<String>> validatorGenesisInit = validator.execute(node,
+                    "-C", node.getNodeGlobalConfigLocation(),
+                    "--db", node.getTonDbDir(),
+                    "--ip", node.getPublicIp() + ":" + node.getPublicPort());
             log.debug("Initialized {} validator, result {}", node.getNodeName(), validatorGenesisInit.getRight().get());
 
             Utils.replaceOutPortInConfigJson(node.getTonDbDir(), node.getOutPort());

@@ -459,4 +459,13 @@ public class Utils {
             lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
     }
+
+    public static void waitForNodeSynchronized(Node node) throws Exception {
+        ResultLastBlock lastBlock;
+        do {
+            Thread.sleep(5000);
+            lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
+        } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
+    }
+
 }

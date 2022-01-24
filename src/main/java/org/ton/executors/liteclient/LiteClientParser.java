@@ -54,6 +54,10 @@ public class LiteClientParser {
             return null;
         }
 
+        if (StringUtils.contains(stdout, "server appears to be out of sync")) {
+            log.info("Blockchain node is out of sync");
+        }
+
         try {
 
             String last = stdout.replace(EOL, SPACE);
@@ -65,6 +69,10 @@ public class LiteClientParser {
             String shard = sb(shortBlockSeqno, ",", ",");
             BigInteger pureBlockSeqno = new BigInteger(sb(shortBlockSeqno, shard + ",", CLOSE));
             Long wc = Long.parseLong(sb(shortBlockSeqno, OPEN, ","));
+            Long secondsAgo = -1L;
+            if (last.contains("seconds ago")) {
+                secondsAgo = Long.parseLong(sb(last, OPEN, "ago)").trim());
+            }
 
             return ResultLastBlock.builder()
                     .createdAt(craetedAt)
@@ -73,6 +81,7 @@ public class LiteClientParser {
                     .fileHash(fileHashId)
                     .wc(wc)
                     .shard(shard)
+                    .syncedSecondsAgo(secondsAgo)
                     .build();
 
         } catch (Exception e) {
@@ -303,7 +312,7 @@ public class LiteClientParser {
         }
 
         List<String> unparsedLeafs = findStringBlocks(stdout, "node:(hmn_leaf");
-        
+
         for (String leaf : unparsedLeafs) {
             validators.add(Validator.builder()
                     .publicKey(sb(leaf, "pubkey:x", CLOSE))

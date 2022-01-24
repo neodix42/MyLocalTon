@@ -18,6 +18,7 @@ public class ResultLastBlock implements Serializable {
     private String shard; // 8000000000000000 in hex, does not fit to Long
     private BigInteger seqno; // 1432551
     private Long createdAt;
+    private Long syncedSecondsAgo;
 
     /**
      * Returns block in format (-1,8000000000000000,1432551)

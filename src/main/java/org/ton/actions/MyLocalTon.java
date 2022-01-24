@@ -1546,10 +1546,10 @@ public class MyLocalTon {
         }
     }
 
-    public boolean createFullnode(Node node, boolean enableLiteServer) throws Exception {
+    public void createFullnode(Node node, boolean enableLiteServer) throws Exception {
         if (Files.exists(Paths.get(node.getTonBinDir()))) {
             log.info("{} already created, just start it", node.getNodeName());
-            return false;
+            return;
         }
         log.info("creating new fullnode {}", node.getNodeName());
         node.extractBinaries();
@@ -1560,13 +1560,6 @@ public class MyLocalTon {
         if (enableLiteServer) {
             validatorEngine.enableLiteServer(node, node.getNodeGlobalConfigLocation(), false);
         }
-
-        validatorEngine.startValidator(node, node.getNodeGlobalConfigLocation());
-
-        Thread.sleep(2000);
-        Utils.waitForBlockchainReady(node);
-        log.info("ready {}", node.getNodeName());
-        return true;
     }
 /*
         public void elections(Node genesisNode, Node node2, Node node3, Node node4, Node node5, Node node6) throws Exception {
