@@ -4,7 +4,7 @@ testDB/
 **/resources/**/*.zip
 .idea/
 !/src/main/resources/org/ton/binaries/patches/readme.txt
-mylocalton.iml
+*.iml
 
 # User-specific stuff
 .idea/**/workspace.xml
@@ -44,6 +44,7 @@ mylocalton.iml
 # .idea/modules
 # *.iml
 # *.ipr
+**/*.iml
 
 # CMake
 cmake-build-*/

@@ -1,6 +1,9 @@
-name: Java 11 Ubuntu-18.04
+name: Cross-platform build
 
-on: [ push ]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
