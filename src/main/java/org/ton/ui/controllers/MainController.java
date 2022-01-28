@@ -22,6 +22,8 @@ import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -32,6 +34,7 @@ import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
+import org.ton.executors.blockchainexplorer.BlockchainExplorer;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.*;
@@ -213,6 +216,15 @@ public class MainController implements Initializable {
 
     @FXML
     public JFXTextField totalValidators;
+
+    @FXML
+    public JFXCheckBox enableBlockchainExplorer;
+
+    @FXML
+    public Tab explorerTab;
+
+    @FXML
+    public WebView webView;
 
     @FXML
     JFXCheckBox shardStateCheckbox;
@@ -751,6 +763,8 @@ public class MainController implements Initializable {
 
         settings = MyLocalTon.getInstance().getSettings();
 
+        WebEngine browser = webView.getEngine();
+
         walletsNumber.setOnMouseReleased(event -> {
             log.debug("walletsNumber released, {}", walletsNumber.getValue());
         });
@@ -771,9 +785,9 @@ public class MainController implements Initializable {
             }
         };
 
-        if (isWindows()) {
-            mainMenuTabs.getTabs().remove(validationTab);
-        }
+        //if (isWindows()) {
+        //mainMenuTabs.getTabs().remove(validationTab);
+        //}
 
         coinsPerWallet.setOnKeyTyped(onlyDigits);
 
@@ -845,6 +859,7 @@ public class MainController implements Initializable {
         tickTockCheckBox.setSelected(settings.getUiSettings().isShowTickTockTransactions());
         mainConfigTxCheckBox.setSelected(settings.getUiSettings().isShowMainConfigTransactions());
         inOutMsgsCheckBox.setSelected(settings.getUiSettings().isShowInOutMessages());
+        enableBlockchainExplorer.setSelected(settings.getUiSettings().isEnableBlockchainExplorer());
         showMsgBodyCheckBox.setSelected(settings.getUiSettings().isShowBodyInMessage());
         shardStateCheckbox.setSelected(settings.getUiSettings().isShowShardStateInBlockDump());
 
@@ -903,6 +918,14 @@ public class MainController implements Initializable {
         myLogLevel.getItems().add("DEBUG");
         myLogLevel.getItems().add("ERROR");
         myLogLevel.getSelectionModel().select(settings.getLogSettings().getMyLocalTonLogLevel());
+
+        if (enableBlockchainExplorer.isSelected()) {
+            mainMenuTabs.getTabs().remove(searchTab);
+            mainMenuTabs.getTabs().remove(explorerTab);
+            mainMenuTabs.getTabs().add(explorerTab);
+        } else {
+            mainMenuTabs.getTabs().remove(explorerTab);
+        }
     }
 
     public void showAccTxs(String hexAddr) throws IOException {
@@ -938,6 +961,7 @@ public class MainController implements Initializable {
         settings.getUiSettings().setShowMainConfigTransactions(mainConfigTxCheckBox.isSelected());
         settings.getUiSettings().setShowInOutMessages(inOutMsgsCheckBox.isSelected());
         settings.getUiSettings().setShowBodyInMessage(showMsgBodyCheckBox.isSelected());
+        settings.getUiSettings().setEnableBlockchainExplorer(enableBlockchainExplorer.isSelected());
         settings.getUiSettings().setShowShardStateInBlockDump(shardStateCheckbox.isSelected());
 
         settings.getWalletSettings().setNumberOfPreinstalledWallets((long) walletsNumber.getValue());
@@ -1171,14 +1195,12 @@ public class MainController implements Initializable {
     }
 
     public void validationTest4() throws Exception {
-        
 
     }
 
     public void showConfigs(org.ton.settings.Node node) throws Exception {
         long activeElectionId = new LiteClient().executeGetActiveElectionId(node, settings.getElectorSmcAddrHex());
         log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
-
 
         ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
         log.info("active elections {}", config15);
@@ -1200,6 +1222,9 @@ public class MainController implements Initializable {
     }
 
     public void addNode(ActionEvent actionEvent) {
+
+        BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
+        blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation());
 
     }
 }

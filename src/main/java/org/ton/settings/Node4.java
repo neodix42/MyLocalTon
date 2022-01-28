@@ -42,6 +42,7 @@ public class Node4 implements Serializable, Node {
     WalletAddress walletAddress;
     transient Process nodeProcess;
     transient Process dhtServerProcess;
+    transient Process blockchainExplorerProcess;
     String nodeGlobalConfigLocation = getTonDbDir() + "my-ton-global.config.json";
     String nodeForkedGlobalConfigLocation = getTonDbDir() + "my-ton-forked.config.json";
 

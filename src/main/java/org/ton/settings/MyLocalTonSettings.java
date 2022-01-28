@@ -147,6 +147,7 @@ public class MyLocalTonSettings implements Serializable {
         boolean showInOutMessages = true;
         boolean showBodyInMessage = true;
         boolean showShardStateInBlockDump = false;
+        boolean enableBlockchainExplorer = false;
     }
 
     // after you disappear from participant list, you have to wait:

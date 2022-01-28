@@ -50,6 +50,8 @@ public interface Node {
 
     void setDhtServerProcess(Process process);
 
+    void setBlockchainExplorerProcess(Process process);
+
     String getValidatorMonitoringPubKeyHex();
 
     String getValidatorMonitoringPubKeyInteger();
