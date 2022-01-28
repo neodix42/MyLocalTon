@@ -71,7 +71,8 @@ public class LiteClientParser {
             Long wc = Long.parseLong(sb(shortBlockSeqno, OPEN, ","));
             Long secondsAgo = -1L;
             if (last.contains("seconds ago")) {
-                secondsAgo = Long.parseLong(sb(last, OPEN, "ago)").trim());
+                String craetedAtStr = sb(last, "created at ", "seconds ago");
+                secondsAgo = Long.parseLong(sb(craetedAtStr, OPEN, SPACE).trim());
             }
 
             return ResultLastBlock.builder()

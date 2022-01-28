@@ -61,7 +61,7 @@ public class GenerateRandomId {
             String[] serverIdsBoth = serverIds.split(" ");
             String serverIdHex = serverIdsBoth[0].trim();
             String serverIdBase64 = serverIdsBoth[1].trim();
-            log.info("Server IDs for {}: {} {}", node.getNodeName(), serverIdHex, serverIdBase64);
+            log.debug("Server IDs for {}: {} {}", node.getNodeName(), serverIdHex, serverIdBase64);
             Files.copy(Paths.get(node.getTonBinDir() + "certs" + File.separator + "server"), Paths.get(node.getTonDbKeyringDir() + serverIdHex), StandardCopyOption.REPLACE_EXISTING);
 
             return serverIdBase64;
@@ -73,7 +73,7 @@ public class GenerateRandomId {
         String[] liteServerHexBase64 = liteserverKeys.split(" ");
         String liteServerIdHex = liteServerHexBase64[0].trim();
         String liteServerIdBase64 = liteServerHexBase64[1].trim();
-        log.info("liteServerIdHex {}, liteServerIdBase64 {} on {}", liteServerIdHex, liteServerIdBase64, node.getNodeName());
+        log.debug("liteServerIdHex {}, liteServerIdBase64 {} on {}", liteServerIdHex, liteServerIdBase64, node.getNodeName());
 
         Files.copy(Paths.get(node.getTonDbKeyringDir() + "liteserver"), Paths.get(node.getTonDbKeyringDir() + liteServerIdHex), StandardCopyOption.REPLACE_EXISTING);
         return Pair.of(liteServerIdHex, liteServerIdBase64);

@@ -8,6 +8,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.ton.enums.TransformationStatus;
 import org.ton.wallet.WalletVersion;
 
 import java.io.File;
@@ -70,6 +71,8 @@ public class MyLocalTonSettings implements Serializable {
 
     //name- status (active, filled)
     Map<String, String> dbPool;
+
+    TransformationStatus transformationStatus = TransformationStatus.NOT_TRANSFORMED;
 
     GenesisNode genesisNode;
     Node2 node2;
@@ -154,11 +157,11 @@ public class MyLocalTonSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 365 * 24 * 60 * 60L; //18
-        Long electionStartBefore = 5 * 60L; //5
-        Long electionEndBefore = 60L; //1
+        Long electedFor = 18 * 60L;//365 * 24 * 60 * 60L; //1080=18min
+        Long electionStartBefore = 8 * 60L; //5
+        Long electionEndBefore = 2 * 60L; //1
         Long electionStakesFrozenFor = 2 * 60L; //2
-        Long originalValidatorSetValidFor = 365 * 24 * 60 * 60L; //5
+        Long originalValidatorSetValidFor = 8 * 60L;//365 * 24 * 60 * 60L; //5
 
         Long validatorStateTtl = 31536000L; // 1 year
         Long validatorBlockTtl = 31536000L;

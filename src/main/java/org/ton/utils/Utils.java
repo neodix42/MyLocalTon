@@ -324,7 +324,7 @@ public class Utils {
                     } while (resultInput.contains("validator-engine"));
                 } else {
                     rt.exec("killall -9 " + "lite-client");
-                    rt.exec("killall -2 " + "validator-engine");
+                    rt.exec("killall -2 " + "validator-engine"); // TODO look up for the shutdown order
                 }
 
                 log.debug("Waiting for processes to be killed...");
@@ -465,7 +465,7 @@ public class Utils {
         do {
             Thread.sleep(5000);
             lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
-        } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
+            log.info("{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
+        } while (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0 && lastBlock.getSyncedSecondsAgo() > 10);
     }
-
 }

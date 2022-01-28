@@ -40,6 +40,7 @@ import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.main.App;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node2;
+import org.ton.settings.Node3;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
 
@@ -157,7 +158,61 @@ public class MainController implements Initializable {
     public Tab logsTab;
 
     @FXML
+    public Tab validationTab;
+
+    @FXML
     public JFXTabPane validationTabs;
+
+    @FXML
+    public JFXTextField nodePublicPort2;
+
+    @FXML
+    public JFXTextField nodeConsolePort2;
+
+    @FXML
+    public JFXTextField liteServerPort2;
+
+    @FXML
+    public Tab fullnode2;
+
+    @FXML
+    public Tab fullnode3;
+
+    @FXML
+    public JFXTextField nodePublicPort3;
+
+    @FXML
+    public JFXTextField nodeConsolePort3;
+
+    @FXML
+    public JFXTextField liteServerPort3;
+
+    @FXML
+    public Label nodeStatus2;
+
+    @FXML
+    public Label nodeStatus3;
+
+    @FXML
+    public Tab genesisnode1;
+
+    @FXML
+    public JFXTextField nodePublicPort1;
+
+    @FXML
+    public JFXTextField nodeConsolePort1;
+
+    @FXML
+    public JFXTextField liteServerPort1;
+
+    @FXML
+    public Label nodeStatus1;
+
+    @FXML
+    public JFXTextField totalNodes;
+
+    @FXML
+    public JFXTextField totalValidators;
 
     @FXML
     JFXCheckBox shardStateCheckbox;
@@ -306,9 +361,7 @@ public class MainController implements Initializable {
                     }
                 }
         );
-        sendDialog.setOnDialogOpened(jfxDialogEvent -> {
-            parent.lookup("#destAddr").requestFocus();
-        });
+        sendDialog.setOnDialogOpened(jfxDialogEvent -> parent.lookup("#destAddr").requestFocus());
         sendDialog.show();
     }
 
@@ -718,6 +771,10 @@ public class MainController implements Initializable {
             }
         };
 
+        if (isWindows()) {
+            mainMenuTabs.getTabs().remove(validationTab);
+        }
+
         coinsPerWallet.setOnKeyTyped(onlyDigits);
 
         nodePublicPort.setOnKeyTyped(onlyDigits);
@@ -1078,34 +1135,71 @@ public class MainController implements Initializable {
         yesNoDialog.show();
     }
 
-    public void validationTest() throws Exception {
+    public void validationTest2() throws Exception {
 
-        long activeElectionId = new LiteClient().executeGetActiveElectionId(settings.getGenesisNode(), settings.getElectorSmcAddrHex());
-        log.info("active election id {}", activeElectionId);
+        showConfigs(settings.getGenesisNode());
 
-        ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(settings.getGenesisNode()));
-        log.info("active elections {}", config15);
+        Node2 node2 = new Node2();
+        MyLocalTon.getInstance().createFullnode(node2, true);
 
-        ResultConfig34 config34 = LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(settings.getGenesisNode()));
-        log.info("current validators {}", config34);
-
-        ResultConfig32 config32 = LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(settings.getGenesisNode()));
-        log.info("previous validators {}", config32);
-
-        ResultConfig36 config36 = LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(settings.getGenesisNode()));
-        log.info("next validators {}", config36);
-
-        Node2 node = new Node2();
-        MyLocalTon.getInstance().createFullnode(node, true);
-
-        new ValidatorEngine().startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
+        new ValidatorEngine().startValidatorWithoutParams(node2, node2.getNodeGlobalConfigLocation());
         Thread.sleep(2000);
-        Utils.waitForBlockchainReady(node);
-        log.info("ready {}", node.getNodeName());
+        Utils.waitForBlockchainReady(node2);
+        log.info("ready {}", node2.getNodeName());
 
-        Utils.waitForNodeSynchronized(node);
-        log.info("synced {}", node.getNodeName());
+        Utils.waitForNodeSynchronized(node2);
+        log.info("synced {}", node2.getNodeName());
+
+        showConfigs(settings.getGenesisNode());
 
         //validatorEngine.startValidator(node2, settings.getGenesisNode().getNodeGlobalConfigLocation());
+    }
+
+    public void validationTest3() throws Exception {
+        Node3 node3 = new Node3();
+        MyLocalTon.getInstance().createFullnode(node3, true);
+
+        new ValidatorEngine().startValidatorWithoutParams(node3, node3.getNodeGlobalConfigLocation());
+        Thread.sleep(2000);
+        Utils.waitForBlockchainReady(node3);
+        log.info("ready {}", node3.getNodeName());
+
+        Utils.waitForNodeSynchronized(node3);
+        log.info("synced {}", node3.getNodeName());
+
+        showConfigs(settings.getGenesisNode());
+    }
+
+    public void validationTest4() throws Exception {
+        
+
+    }
+
+    public void showConfigs(org.ton.settings.Node node) throws Exception {
+        long activeElectionId = new LiteClient().executeGetActiveElectionId(node, settings.getElectorSmcAddrHex());
+        log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
+
+
+        ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
+        log.info("active elections {}", config15);
+
+        ResultConfig34 config34 = LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(node));
+        log.info("current validators {}", config34);
+        log.info("start work time since {}, until {}", Utils.toLocal(config34.getValidators().getSince()), Utils.toLocal(config34.getValidators().getUntil()));
+
+        ResultConfig32 config32 = LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(node));
+        log.info("previous validators {}", config32);
+
+        ResultConfig36 config36 = LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(node));
+        log.info("next validators {}", config36);
+
+    }
+
+    public void validationTest5() throws Exception {
+        showConfigs(settings.getGenesisNode());
+    }
+
+    public void addNode(ActionEvent actionEvent) {
+
     }
 }

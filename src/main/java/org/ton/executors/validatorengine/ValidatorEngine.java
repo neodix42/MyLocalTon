@@ -1,23 +1,40 @@
 package org.ton.executors.validatorengine;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.actions.MyLocalTon;
+import org.ton.executors.createstate.CreateStateExecutor;
 import org.ton.executors.generaterandomid.GenerateRandomId;
+import org.ton.executors.generaterandomid.RandomIdExecutor;
+import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
+import org.ton.utils.Extractor;
 import org.ton.utils.Utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.concurrent.Future;
 
 @Slf4j
 public class ValidatorEngine {
+    private static final String VALIDATOR = "validator";
+    private static final String ZEROSTATE = "zerostate";
+    private static final String DOUBLE_SPACE = "  ";
+    private static final String SPACE = " ";
+    private static final String TEMPLATES = "templates";
+    private static final String CURRENT_DIR = System.getProperty("user.dir");
+    private static final String MY_LOCAL_TON = "myLocalTon";
+
 
     public Process startValidator(Node node, String myGlobalConfig) {
         log.info("starting validator-engine {}", node.getNodeName());
@@ -78,7 +95,7 @@ public class ValidatorEngine {
         if (Files.exists(Paths.get(node.getTonDbKeyringDir() + "liteserver")) && (!reinstall)) {
             log.info("lite-server exists! Skipping...");
         } else {
-            log.info("Installing lite-server...");
+            log.info("Enabling lite-server...");
 
             Pair<String, String> liteServerKeys = new GenerateRandomId().generateLiteServerKeys(node);
             String liteServers = "\"liteservers\" : [{\"id\":\"" + liteServerKeys.getRight() + "\",\"port\":\"" + node.getLiteServerPort() + "\"}";
@@ -110,7 +127,184 @@ public class ValidatorEngine {
                 myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, "\"validator\": {", liteServerConfigNew);
                 FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
             }
-            log.info("lite-server installed");
+            log.info("lite-server enabled");
+        }
+    }
+
+    public void createZeroState(Node node) throws Exception {
+
+        while (!generateZeroState(node)) ;
+
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+        byte[] zerostateRootHashFile = Files.readAllBytes(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.rhash"));
+        byte[] zerostateFileHashFile = Files.readAllBytes(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.fhash"));
+        log.info("ROOT_HASH {}", Base64.encodeBase64String(zerostateRootHashFile));
+        log.info("FILE HASH {}", Base64.encodeBase64String(zerostateFileHashFile));
+
+        settings.setZeroStateFileHashBase64(Base64.encodeBase64String(zerostateFileHashFile));
+        settings.setZeroStateRootHashBase64(Base64.encodeBase64String(zerostateRootHashFile));
+
+        log.debug(settings.toString());
+        MyLocalTon.getInstance().getSettings().saveSettingsToGson(settings);
+
+        //mv zerostate.boc ../db/static/$ZEROSTATE_FILEHASH
+        Files.move(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.boc"), Paths.get(node.getTonDbStaticDir() + settings.getZeroStateFileHashHex()), StandardCopyOption.REPLACE_EXISTING);
+
+        //mv basestate0.boc ../db/static/$BASESTATE_FILEHASH
+        Files.move(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "basestate0.boc"), Paths.get(node.getTonDbStaticDir() + settings.getBaseStateFileHashHex()), StandardCopyOption.REPLACE_EXISTING);
+
+        String content = Files.readString(Paths.get(Extractor.MY_LOCAL_TON_ROOT_DIR + TEMPLATES + File.separator + "ton-private-testnet.config.json.template"), StandardCharsets.UTF_8);
+        content = content.replace("ROOT_HASH", settings.getZeroStateRootHashBase64());
+        content = content.replace("FILE_HASH", settings.getZeroStateFileHashBase64());
+        Files.writeString(Paths.get(node.getNodeGlobalConfigLocation()), content, StandardCharsets.UTF_8);
+    }
+
+
+    private static String sb(String str, String from, String to) {
+        return StringUtils.substringBetween(str, from, to);
+    }
+
+    private boolean generateZeroState(Node node) throws IOException {
+
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+        String createStateResult = new CreateStateExecutor().execute(node, node.getTonBinDir() + "smartcont" + File.separator + "gen-zerostate.fif");
+        log.debug("create zerostate output: {}", createStateResult);
+        String mainWalletAddrBoth = sb(createStateResult, "wallet address = ", "(Saving address to file");
+        String electroSmcAddrBoth = sb(createStateResult, "elector smart contract address = ", "(Saving address to file");
+        String configSmcAddrBoth = sb(createStateResult, "config smart contract address = ", "(Saving address to file");
+        String piece = StringUtils.substring(createStateResult, createStateResult.indexOf("(Initial masterchain state saved to file zerostate.boc)"));
+        String masterFileHashBoth = sb(piece, "file hash= ", "root hash= ");
+        String masterRootHashBoth = sb(piece, "root hash= ", "Basestate0 root hash= ");
+        String basestateRootHashBoth = sb(piece, "Basestate0 root hash= ", "Basestate0 file hash= ");
+        String basestateFileHashBoth = sb(piece, "Basestate0 file hash= ", "Zerostate root hash= ");
+        String zerostateRootHashBoth = sb(piece, "Zerostate root hash= ", "Zerostate file hash= ");
+        String zerostateFileHashBoth = StringUtils.substring(piece, piece.indexOf("Zerostate file hash= ") + "Zerostate file hash= ".length());
+
+        String[] mainWalletAddr = mainWalletAddrBoth.split(SPACE);
+        settings.setMainWalletAddrFull(mainWalletAddr[0].trim());
+        settings.setMainWalletAddrBase64(mainWalletAddr[1].trim());
+        byte[] mainWalletPrvKey = FileUtils.readFileToByteArray(new File(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet.pk"));
+        settings.setMainWalletPrvKey(Hex.encodeHexString(mainWalletPrvKey));
+        settings.setMainWalletFilenameBaseLocation(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet");
+
+        String[] electorSmcAddr = electroSmcAddrBoth.split(SPACE);
+        settings.setElectorSmcAddrHex(electorSmcAddr[0].trim());
+        settings.setElectorSmcAddrBase64(electorSmcAddr[1].trim());
+
+        String[] configSmcAddr = configSmcAddrBoth.split(SPACE);
+        settings.setConfigSmcAddrHex(configSmcAddr[0].trim());
+        settings.setConfigSmcAddrBase64(configSmcAddr[1].trim());
+        byte[] configMasterPrvKey = FileUtils.readFileToByteArray(new File(node.getTonBinDir() + ZEROSTATE + File.separator + "config-master.pk"));
+        settings.setConfigSmcPrvKey(Hex.encodeHexString(configMasterPrvKey));
+
+        String[] masterStateFile = masterFileHashBoth.split(DOUBLE_SPACE);
+        settings.setMasterStateFileHashHex(masterStateFile[0].trim());
+        settings.setMasterStateFileHashBase64(masterStateFile[1].trim());
+
+        String[] masterStateRoot = masterRootHashBoth.split(DOUBLE_SPACE);
+        settings.setMasterStateRootHashHex(masterStateRoot[0].trim());
+        settings.setMasterStateRootHashBase64(masterStateRoot[1].trim());
+
+        String[] baseStateFile = basestateFileHashBoth.split(DOUBLE_SPACE); //ok
+        settings.setBaseStateFileHashHex(baseStateFile[0].trim());
+        settings.setBaseStateFileHashBase64(baseStateFile[1].trim());
+
+        String[] baseStateRoot = basestateRootHashBoth.split(DOUBLE_SPACE);
+        settings.setBaseStateRootHashHex(baseStateRoot[0].trim());
+        settings.setBaseStateRootHashBase64(baseStateRoot[1].trim());
+
+        String[] zeroStateFile = zerostateFileHashBoth.split(DOUBLE_SPACE); //ok
+        settings.setZeroStateFileHashHex(zeroStateFile[0].trim());
+        settings.setZeroStateFileHashHuman(zeroStateFile[1].trim());
+
+        String[] zeroStateRoot = zerostateRootHashBoth.split(DOUBLE_SPACE);
+        settings.setZeroStateRootHashHex(zeroStateRoot[0].trim());
+        settings.setZeroStateRootHashHuman(zeroStateRoot[1].trim());
+        if (
+                (settings.getMasterStateFileHashHex().length() < 64) ||
+                        (settings.getMasterStateRootHashHex().length() < 64) ||
+                        (settings.getBaseStateFileHashHex().length() < 64) ||
+                        (settings.getBaseStateRootHashHex().length() < 64) ||
+                        (settings.getZeroStateRootHashHex().length() < 64) ||
+                        (settings.getZeroStateFileHashHex().length() < 64)
+        ) {
+            log.debug("gen-zerostate.fif generated wrong hashes, recreating...");
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "config-master.addr"));
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.fhash"));
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.rhash"));
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "basestate0.fhash"));
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "basestate0.rhash"));
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "elector.addr"));
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet.addr"));
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "config-master.pk"));
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet.pk"));
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "basestate0.boc"));
+            Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.boc"));
+            return false;
+        }
+        log.debug(createStateResult);
+        return true;
+    }
+
+    public void configureGenesisZeroState() throws IOException {
+
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+        String genZeroStateFifPath = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + "genesis" + File.separator + "bin" + File.separator + "smartcont" + File.separator + "gen-zerostate.fif";
+        String genZeroStateFif = FileUtils.readFileToString(new File(genZeroStateFifPath), StandardCharsets.UTF_8);
+        String genZeroStateFifNew = "";
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFif, "GLOBAL_ID", settings.getBlockchainSettings().getGlobalId().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "INITIAL_BALANCE", settings.getBlockchainSettings().getInitialBalance().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "GAS_PRICE_MC", settings.getBlockchainSettings().getGasPriceMc().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "GAS_PRICE", settings.getBlockchainSettings().getGasPrice().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "CELL_PRICE_MC", settings.getBlockchainSettings().getCellPriceMc().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "CELL_PRICE", settings.getBlockchainSettings().getCellPrice().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "MAX_VALIDATORS", settings.getBlockchainSettings().getMaxValidators().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "MAX_MAIN_VALIDATORS", settings.getBlockchainSettings().getMaxMainValidators().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "MIN_VALIDATORS", settings.getBlockchainSettings().getMinValidators().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "MIN_STAKE", settings.getBlockchainSettings().getMinValidatorStake().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "MAX_STAKE", settings.getBlockchainSettings().getMaxValidatorStake().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "MIN_TOTAL_STAKE", settings.getBlockchainSettings().getMinTotalValidatorStake().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "MAX_FACTOR", settings.getBlockchainSettings().getMaxFactor().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "ELECTED_FOR", settings.getBlockchainSettings().getElectedFor().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "ELECTION_START_BEFORE", settings.getBlockchainSettings().getElectionStartBefore().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "ELECTION_END_BEFORE", settings.getBlockchainSettings().getElectionEndBefore().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "ELECTION_STAKE_FROZEN", settings.getBlockchainSettings().getElectionStakesFrozenFor().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "ORIGINAL_VSET_VALID_FOR", settings.getBlockchainSettings().getOriginalValidatorSetValidFor().toString());
+        FileUtils.writeStringToFile(new File(genZeroStateFifPath), genZeroStateFifNew, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * creates files in db directory; prv key - validator, and pub key - validator.pub
+     */
+    public void generateValidatorKeys(Node node, boolean updateGenZeroStateFif) throws Exception {
+
+        String validatorKeys = new RandomIdExecutor().execute(node, "-m", "keys", "-n", node.getTonDbKeyringDir() + VALIDATOR);
+        String[] valHexBase64 = validatorKeys.split(" ");
+        String validatorIdHex = valHexBase64[0].trim();
+        String validatorIdBase64 = valHexBase64[1].trim();
+        log.info("{}, validatorIdHex {}, validatorIdBase64 {}", node.getNodeName(), validatorIdHex, validatorIdBase64);
+
+        Files.copy(Paths.get(node.getTonDbKeyringDir() + VALIDATOR), Paths.get(node.getTonDbKeyringDir() + validatorIdHex), StandardCopyOption.REPLACE_EXISTING);
+        //convert pub key to key
+        byte[] validatorPubKey = Files.readAllBytes(Paths.get(node.getTonDbKeyringDir() + "validator.pub"));
+        byte[] removed4bytes = Arrays.copyOfRange(validatorPubKey, 4, validatorPubKey.length);
+
+        node.setValidatorIdHex(validatorIdHex);
+        node.setValidatorIdPubKeyHex(Hex.encodeHexString(removed4bytes));
+        MyLocalTon.getInstance().getSettings().saveSettingsToGson(MyLocalTon.getInstance().getSettings()); // TODO check the saved values
+        // create validator-keys.pub
+        Files.write(Paths.get(node.getValidatorKeyPubLocation()), Hex.decodeHex(node.getValidatorIdPubKeyHex()), StandardOpenOption.CREATE);
+
+        if (updateGenZeroStateFif) {
+            // make full node validator
+            // replace path to validator-key.pub in gen-zerostate.fif
+            String genZeroStateFif = FileUtils.readFileToString(new File(node.getGenesisGenZeroStateFifLocation()), StandardCharsets.UTF_8);
+            String genZeroStateFifNew = StringUtils.replace(genZeroStateFif, "// \"path_to_" + node.getNodeName() + "_pub_key\"", "\"" + node.getValidatorKeyPubLocation() + "\"");
+            genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), node.getInitialStake().toString());
+            FileUtils.writeStringToFile(new File(node.getGenesisGenZeroStateFifLocation()), genZeroStateFifNew, StandardCharsets.UTF_8);
         }
     }
 }
