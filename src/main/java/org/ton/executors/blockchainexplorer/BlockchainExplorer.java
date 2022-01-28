@@ -13,11 +13,12 @@ public class BlockchainExplorer {
 
     public static final String MY_LOCAL_TON = "myLocalTon";
 
-    public Process startBlockchainExplorer(Node node, String globalConfigFile) {
+    public Process startBlockchainExplorer(Node node, String globalConfigFile, int port) {
         log.info("blockchain-explorer started with {} at  {}", globalConfigFile, node.getPublicIp() + ":" + node.getDhtPort());
         Pair<Process, Future<String>> blockchainExplorerExecutor = new BlockchainExplorerExecutor().execute(node,
                 "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
-                "-C", globalConfigFile);
+                "-C", globalConfigFile,
+                "-H", String.valueOf(port));
         // "-a", node.getPublicIp() + ":" + node.getLiteServerPort());
         node.setBlockchainExplorerProcess(blockchainExplorerExecutor.getLeft());
         return blockchainExplorerExecutor.getLeft();

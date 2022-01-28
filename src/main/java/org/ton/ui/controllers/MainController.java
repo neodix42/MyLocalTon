@@ -920,9 +920,17 @@ public class MainController implements Initializable {
         myLogLevel.getSelectionModel().select(settings.getLogSettings().getMyLocalTonLogLevel());
 
         if (enableBlockchainExplorer.isSelected()) {
+
+            BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
+            blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
+
             mainMenuTabs.getTabs().remove(searchTab);
             mainMenuTabs.getTabs().remove(explorerTab);
             mainMenuTabs.getTabs().add(explorerTab);
+
+            WebEngine webEngine = webView.getEngine();
+            webEngine.load("http://127.0.0.1:8000/last");
+
         } else {
             mainMenuTabs.getTabs().remove(explorerTab);
         }
@@ -1221,10 +1229,15 @@ public class MainController implements Initializable {
         showConfigs(settings.getGenesisNode());
     }
 
-    public void addNode(ActionEvent actionEvent) {
-
+    public void addNode() throws InterruptedException {
         BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-        blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation());
+        blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
 
+        Thread.sleep(5000);
+
+        mainMenuTabs.getTabs().add(explorerTab);
+
+        WebEngine webEngine = webView.getEngine();
+        webEngine.load("http://127.0.0.1:8000/last");
     }
 }
