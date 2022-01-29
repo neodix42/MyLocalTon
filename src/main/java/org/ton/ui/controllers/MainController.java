@@ -59,8 +59,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.LongStream;
 
-import static com.sun.javafx.PlatformUtil.isLinux;
-import static com.sun.javafx.PlatformUtil.isWindows;
+import static com.sun.javafx.PlatformUtil.*;
 import static java.util.Objects.requireNonNull;
 import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
 import static org.ton.main.App.fxmlLoader;
@@ -217,8 +216,10 @@ public class MainController implements Initializable {
     @FXML
     public JFXTextField totalValidators;
 
-    @FXML
     public JFXCheckBox enableBlockchainExplorer;
+
+    @FXML
+    public Label enableBlockchainExplorerLabel;
 
     @FXML
     public Tab explorerTab;
@@ -919,20 +920,30 @@ public class MainController implements Initializable {
         myLogLevel.getItems().add("ERROR");
         myLogLevel.getSelectionModel().select(settings.getLogSettings().getMyLocalTonLogLevel());
 
-        if (enableBlockchainExplorer.isSelected()) {
+        enableBlockchainExplorer.setVisible(false);
+        enableBlockchainExplorerLabel.setVisible(false);
+        mainMenuTabs.getTabs().remove(explorerTab);
 
-            BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-            blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
+        if (isLinux() || isMac()) {
 
-            mainMenuTabs.getTabs().remove(searchTab);
-            mainMenuTabs.getTabs().remove(explorerTab);
-            mainMenuTabs.getTabs().add(explorerTab);
+            enableBlockchainExplorer.setVisible(true);
+            enableBlockchainExplorerLabel.setVisible(true);
 
-            WebEngine webEngine = webView.getEngine();
-            webEngine.load("http://127.0.0.1:8000/last");
+            if (enableBlockchainExplorer.isSelected()) {
 
-        } else {
-            mainMenuTabs.getTabs().remove(explorerTab);
+                BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
+                blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
+
+                mainMenuTabs.getTabs().remove(searchTab);
+                mainMenuTabs.getTabs().remove(explorerTab);
+                mainMenuTabs.getTabs().add(explorerTab);
+
+                WebEngine webEngine = webView.getEngine();
+                webEngine.load("http://127.0.0.1:8000/last");
+
+            } else {
+                mainMenuTabs.getTabs().remove(explorerTab);
+            }
         }
     }
 

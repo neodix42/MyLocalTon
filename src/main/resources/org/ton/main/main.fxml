@@ -583,7 +583,7 @@
                                 <JFXCheckBox fx:id="shardStateCheckbox" checkedColor="#0088CC" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                                 <Label text="Show body in messages" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                                 <JFXCheckBox fx:id="showMsgBodyCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                                <Label text="Enable native blockchain-explorer" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                <Label fx:id="enableBlockchainExplorerLabel" text="Enable native blockchain-explorer" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
                                 <JFXCheckBox fx:id="enableBlockchainExplorer" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                             </GridPane>
                         </Tab>
