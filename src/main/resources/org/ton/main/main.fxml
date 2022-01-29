@@ -268,8 +268,25 @@
                                     <ColumnConstraints/>
                                     <ColumnConstraints/>
                                     <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
                                 </columnConstraints>
                                 <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
                                     <RowConstraints/>
                                     <RowConstraints/>
                                     <RowConstraints/>
@@ -280,23 +297,41 @@
                                 </rowConstraints>
 
                                 <Label text="Total nodes" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                                <JFXTextField fx:id="totalNodes" disable="true" maxWidth="50" text="4442" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <Label text="2" fx:id="totalNodes" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                                 <Label text="Total validators" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                                <JFXTextField fx:id="totalValidators" disable="true" maxWidth="50" text="4442" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                <Label text="1" fx:id="totalValidators" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                <Label text="Blockchain was launched" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                <Label text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <Label text="Start of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                <Label text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                <Label text="End of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                                <Label text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                <Label text="Start of elections" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                <Label text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                <Label text="Beginning of the next elections" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                <Label text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
 
-                                <JFXButton alignment="CENTER" onAction="#addNode" prefHeight="31.0" prefWidth="100.0" text="Add node" textAlignment="CENTER" GridPane.columnIndex="0"
-                                           GridPane.rowIndex="2"/>
-                                <JFXButton alignment="CENTER" onAction="#validationTest2" prefHeight="31.0" prefWidth="100.0" text="Node 2" textAlignment="CENTER" GridPane.columnIndex="0"
-                                           GridPane.rowIndex="3"/>
-                                <JFXButton alignment="CENTER" onAction="#validationTest3" prefHeight="31.0" prefWidth="100.0" text="Node 3" textAlignment="CENTER" GridPane.columnIndex="0"
-                                           GridPane.rowIndex="4"/>
-                                <JFXButton alignment="CENTER" onAction="#validationTest4" prefHeight="31.0" prefWidth="100.0" text="Participate" textAlignment="CENTER" GridPane.columnIndex="0"
-                                           GridPane.rowIndex="5"/>
-                                <JFXButton alignment="CENTER" onAction="#validationTest5" prefHeight="31.0" prefWidth="100.0" text="Show config" textAlignment="CENTER" GridPane.columnIndex="0"
-                                           GridPane.rowIndex="6"/>
+                                <Label text="Configurator address" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                <Label text="-1:33333333333333333333333333333333333333333333333333333333333" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                                <Label text="Elector address" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                                <Label text="-1:55555555555555555555555555555555555555555555555555555555555" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                                <Label text="Validation period" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+                                <Label text="4000" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                                <Label text="Duration of elections" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
+                                <Label text="2000-500" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                                <Label text="Hold period" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
+                                <Label text="1000" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                                <Label text="Minimum stake" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
+                                <Label text="10000" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                                <Label text="Maximum stake" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
+                                <Label text="10000000" GridPane.columnIndex="1" GridPane.rowIndex="13"/>
+
+
+                                <JFXButton alignment="CENTER" onAction="#addValidator" prefWidth="150.0" text="Add validator" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
+                                <JFXButton alignment="CENTER" onAction="#showConfigs" prefWidth="150.0" text="Show all configs" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
                             </GridPane>
                         </Tab>
-                        <Tab fx:id="genesisnode1" text="Genesis node 1">
+                        <Tab fx:id="genesisnode1" text="Genesis validator 1">
                             <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                                 <padding>
                                     <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
@@ -311,29 +346,10 @@
                                     <RowConstraints/>
                                     <RowConstraints/>
                                     <RowConstraints/>
-                                </rowConstraints>
-
-                                <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                                <JFXTextField fx:id="nodePublicPort1" disable="true" maxWidth="50" text="4442" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                                <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                                <JFXTextField fx:id="nodeConsolePort1" disable="true" maxWidth="50" text="4441" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                                <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                <JFXTextField fx:id="liteServerPort1" disable="true" maxWidth="50" text="4443" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                                <Label text="Full node status" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                <Label fx:id="nodeStatus1" minHeight="25.0" text="synchronized 95 seconds ago" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                            </GridPane>
-                        </Tab>
-                        <Tab fx:id="fullnode2" text="Full node 2">
-                            <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
-                                <padding>
-                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
-                                </padding>
-                                <columnConstraints>
-                                    <ColumnConstraints/>
-                                    <ColumnConstraints/>
-                                    <ColumnConstraints/>
-                                </columnConstraints>
-                                <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
                                     <RowConstraints/>
                                     <RowConstraints/>
                                     <RowConstraints/>
@@ -341,41 +357,23 @@
                                 </rowConstraints>
 
                                 <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                                <JFXTextField fx:id="nodePublicPort2" disable="true" maxWidth="50" text="4442" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <Label text="4442" fx:id="nodePublicPort1" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                                 <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                                <JFXTextField fx:id="nodeConsolePort2" disable="true" maxWidth="50" text="4441" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                <Label text="4441" fx:id="nodeConsolePort1" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                                 <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                <JFXTextField fx:id="liteServerPort2" disable="true" maxWidth="50" minHeight="25.0" text="4443" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                                <Label text="Full node status" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                <Label fx:id="nodeStatus2" minHeight="25.0" text="synchronized 25 seconds ago" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                <Label text="4443" fx:id="liteServerPort1" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <Label text="Status" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                <Label text="synchronized 95 seconds ago" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
-                            </GridPane>
-                        </Tab>
-                        <Tab fx:id="fullnode3" text="Full node 3">
-                            <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
-                                <padding>
-                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
-                                </padding>
-                                <columnConstraints>
-                                    <ColumnConstraints/>
-                                    <ColumnConstraints/>
-                                    <ColumnConstraints/>
-                                </columnConstraints>
-                                <rowConstraints>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                </rowConstraints>
+                                <Label text="ADNL address of local validator" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                                <Label text="8512318543216584354986413541685132165132ACD33333333333333333333" fx:id="validator1AdnlAddress" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                <Label text="Local validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                <Label text="85123185432165843549864135416851321651333333333333333333" fx:id="validator1WalletAddress" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                <Label text="Local validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                <Label text="10000.00" fx:id="validator1WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                <Label text="Local validator database size" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                <Label text="15GB" fx:id="validator1DbSize" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                                <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                                <JFXTextField fx:id="nodePublicPort3" disable="true" maxWidth="50" text="4442" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                                <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                                <JFXTextField fx:id="nodeConsolePort3" disable="true" maxWidth="50" text="4441" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                                <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                <JFXTextField fx:id="liteServerPort3" disable="true" maxWidth="50" text="4443" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                                <Label text="Full node status" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                <Label fx:id="nodeStatus3" minHeight="25.0" text="synchronized 5 seconds ago" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                             </GridPane>
                         </Tab>
                     </JFXTabPane>

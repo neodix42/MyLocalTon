@@ -39,11 +39,8 @@ import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.*;
 import org.ton.executors.liteclient.api.block.Transaction;
-import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.main.App;
 import org.ton.settings.MyLocalTonSettings;
-import org.ton.settings.Node2;
-import org.ton.settings.Node3;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
 
@@ -199,23 +196,24 @@ public class MainController implements Initializable {
     public Tab genesisnode1;
 
     @FXML
-    public JFXTextField nodePublicPort1;
+    public Label nodePublicPort1;
 
     @FXML
-    public JFXTextField nodeConsolePort1;
+    public Label nodeConsolePort1;
 
     @FXML
-    public JFXTextField liteServerPort1;
+    public Label liteServerPort1;
 
     @FXML
     public Label nodeStatus1;
 
     @FXML
-    public JFXTextField totalNodes;
+    public Label totalNodes;
 
     @FXML
-    public JFXTextField totalValidators;
+    public Label totalValidators;
 
+    @FXML
     public JFXCheckBox enableBlockchainExplorer;
 
     @FXML
@@ -226,6 +224,18 @@ public class MainController implements Initializable {
 
     @FXML
     public WebView webView;
+
+    @FXML
+    public Label validator1WalletBalance;
+
+    @FXML
+    public Label validator1DbSize;
+
+    @FXML
+    public Label validator1WalletAddress;
+
+    @FXML
+    public Label validator1AdnlAddress;
 
     @FXML
     JFXCheckBox shardStateCheckbox;
@@ -1181,45 +1191,6 @@ public class MainController implements Initializable {
         yesNoDialog.show();
     }
 
-    public void validationTest2() throws Exception {
-
-        showConfigs(settings.getGenesisNode());
-
-        Node2 node2 = new Node2();
-        MyLocalTon.getInstance().createFullnode(node2, true);
-
-        new ValidatorEngine().startValidatorWithoutParams(node2, node2.getNodeGlobalConfigLocation());
-        Thread.sleep(2000);
-        Utils.waitForBlockchainReady(node2);
-        log.info("ready {}", node2.getNodeName());
-
-        Utils.waitForNodeSynchronized(node2);
-        log.info("synced {}", node2.getNodeName());
-
-        showConfigs(settings.getGenesisNode());
-
-        //validatorEngine.startValidator(node2, settings.getGenesisNode().getNodeGlobalConfigLocation());
-    }
-
-    public void validationTest3() throws Exception {
-        Node3 node3 = new Node3();
-        MyLocalTon.getInstance().createFullnode(node3, true);
-
-        new ValidatorEngine().startValidatorWithoutParams(node3, node3.getNodeGlobalConfigLocation());
-        Thread.sleep(2000);
-        Utils.waitForBlockchainReady(node3);
-        log.info("ready {}", node3.getNodeName());
-
-        Utils.waitForNodeSynchronized(node3);
-        log.info("synced {}", node3.getNodeName());
-
-        showConfigs(settings.getGenesisNode());
-    }
-
-    public void validationTest4() throws Exception {
-
-    }
-
     public void showConfigs(org.ton.settings.Node node) throws Exception {
         long activeElectionId = new LiteClient().executeGetActiveElectionId(node, settings.getElectorSmcAddrHex());
         log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
@@ -1239,11 +1210,11 @@ public class MainController implements Initializable {
 
     }
 
-    public void validationTest5() throws Exception {
+    public void showConfigs() throws Exception {
         showConfigs(settings.getGenesisNode());
     }
 
-    public void addNode() throws InterruptedException {
+    public void addValidator() throws InterruptedException {
         BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
         blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
 
