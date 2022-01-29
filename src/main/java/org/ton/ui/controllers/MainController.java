@@ -930,19 +930,22 @@ public class MainController implements Initializable {
             enableBlockchainExplorerLabel.setVisible(true);
 
             if (enableBlockchainExplorer.isSelected()) {
-
-                BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-                blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
-
                 mainMenuTabs.getTabs().remove(searchTab);
                 mainMenuTabs.getTabs().remove(explorerTab);
                 mainMenuTabs.getTabs().add(explorerTab);
-
-                WebEngine webEngine = webView.getEngine();
-                webEngine.load("http://127.0.0.1:8000/last");
-
             } else {
                 mainMenuTabs.getTabs().remove(explorerTab);
+            }
+        }
+    }
+
+    public void startWeb() {
+        if (isLinux() || isMac()) {
+            if (enableBlockchainExplorer.isSelected()) {
+                BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
+                blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
+                WebEngine webEngine = webView.getEngine();
+                webEngine.load("http://127.0.0.1:8000/last");
             }
         }
     }

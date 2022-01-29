@@ -139,6 +139,10 @@ public class MyLocalTon {
         this.settings = settings;
     }
 
+    public void runBlockchainExplorer() {
+        Platform.runLater(() -> mainController.startWeb());
+    }
+
     public static final class AtomicBigInteger {
 
         private final AtomicReference<BigInteger> valueHolder = new AtomicReference<>();
