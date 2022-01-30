@@ -282,6 +282,9 @@ public class MainController implements Initializable {
     public Label maximumStake;
 
     @FXML
+    public Label validator1PubKey;
+
+    @FXML
     JFXCheckBox shardStateCheckbox;
 
     @FXML

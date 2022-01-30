@@ -369,13 +369,15 @@
                                 <Label text="Status" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
                                 <Label text="synchronized 95 seconds ago" fx:id="nodeStatus1" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                                 <Label text="ADNL address of local validator" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                                <Label text="8512318543216584354986413541685132165132ACD33333333333333333333" fx:id="validator1AdnlAddress" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                                <Label text="Local validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                                <Label text="85123185432165843549864135416851321651333333333333333333" fx:id="validator1WalletAddress" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                                <Label text="Local validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                                <Label text="10000.00" fx:id="validator1WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                                <Label text="Local validator database size" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                                <Label text="15GB" fx:id="validator1DbSize" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                                <Label text="8512318543216584354986413541685132165132ACD34986413541685132121" fx:id="validator1AdnlAddress" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                <Label text="Public key of local validator" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                <Label text="231654548964345613215641231564132351651321654131654654679845464" fx:id="validator1PubKey" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                <Label text="Local validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                <Label text="851231854321658435498641354168513216513413541685132161ADAASAAAAB" fx:id="validator1WalletAddress" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                <Label text="Local validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                <Label text="10000.00" fx:id="validator1WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                                <Label text="Local validator database size" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                                <Label text="15GB" fx:id="validator1DbSize" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
 
                             </GridPane>
                         </Tab>

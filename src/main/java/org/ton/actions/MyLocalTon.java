@@ -405,16 +405,50 @@ public class MyLocalTon {
                         ValidationParam v = getConfig(node);
                         log.info("validation parameters {}", v);
 
+                        long currentTime = System.currentTimeMillis() / 1000;
+
                         MainController c = fxmlLoader.getController();
                         c.totalNodes.setText("1");
                         c.totalValidators.setText(v.getValidatorNodes().toString());
                         c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
                         c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+
                         c.startCycle.setText(Utils.toLocal(v.getStartCycle()));
                         c.endCycle.setText(Utils.toLocal(v.getEndCycle()));
                         c.startElections.setText(Utils.toLocal(v.getStartElections()));
                         c.endElections.setText(Utils.toLocal(v.getEndElections()));
                         c.nextElections.setText(Utils.toLocal(v.getNextElections()));
+
+                        if (v.getStartCycle() > currentTime) {
+                            c.startCycle.setTextFill(Color.GREEN);
+                        } else {
+                            c.startCycle.setTextFill(Color.BLACK);
+                        }
+
+                        if (v.getEndCycle() > currentTime) {
+                            c.endCycle.setTextFill(Color.GREEN);
+                        } else {
+                            c.endCycle.setTextFill(Color.BLACK);
+                        }
+
+                        if (v.getStartElections() > currentTime) {
+                            c.startElections.setTextFill(Color.GREEN);
+                        } else {
+                            c.startElections.setTextFill(Color.BLACK);
+                        }
+
+                        if (v.getEndElections() > currentTime) {
+                            c.endElections.setTextFill(Color.GREEN);
+                        } else {
+                            c.endElections.setTextFill(Color.BLACK);
+                        }
+                        
+                        if (v.getNextElections() > currentTime) {
+                            c.nextElections.setTextFill(Color.GREEN);
+                        } else {
+                            c.nextElections.setTextFill(Color.BLACK);
+                        }
+
                         c.minterAddr.setText(v.getMinterAddr());
                         c.configAddr.setText(v.getConfigAddr());
                         c.electorAddr.setText(v.getElectorAddr());
@@ -430,6 +464,7 @@ public class MyLocalTon {
 
                         c.nodeStatus1.setText("todo");
                         c.validator1AdnlAddress.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorAdnlAddrHex());
+                        c.validator1PubKey.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorIdPubKeyHex());
 
 
                     } catch (Exception e) {
@@ -438,7 +473,7 @@ public class MyLocalTon {
                 });
 
                 try {
-                    Thread.sleep(30 * 1000);
+                    Thread.sleep(60 * 1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
