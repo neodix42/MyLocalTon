@@ -400,78 +400,16 @@ public class MyLocalTon {
         blockchainValidationExecutorService.execute(() -> {
             Thread.currentThread().setName("MyLocalTon - Validation Monitor");
             while (Main.appActive.get()) {
-                Platform.runLater(() -> {
-                    try {
-                        ValidationParam v = getConfig(node);
-                        log.info("validation parameters {}", v);
+                try {
+                    ValidationParam v = getConfig(node);
+                    log.info("validation parameters {}", v);
+                    updateValidationTabGUI(v);
 
-                        long currentTime = System.currentTimeMillis() / 1000;
+                    //participate(node, v.getStartCycle());
 
-                        MainController c = fxmlLoader.getController();
-                        c.totalNodes.setText("1");
-                        c.totalValidators.setText(v.getValidatorNodes().toString());
-                        c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
-                        c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
-
-                        c.startCycle.setText(Utils.toLocal(v.getStartCycle()));
-                        c.endCycle.setText(Utils.toLocal(v.getEndCycle()));
-                        c.startElections.setText(Utils.toLocal(v.getStartElections()));
-                        c.endElections.setText(Utils.toLocal(v.getEndElections()));
-                        c.nextElections.setText(Utils.toLocal(v.getNextElections()));
-
-                        if (v.getStartCycle() > currentTime) {
-                            c.startCycle.setTextFill(Color.GREEN);
-                        } else {
-                            c.startCycle.setTextFill(Color.BLACK);
-                        }
-
-                        if (v.getEndCycle() > currentTime) {
-                            c.endCycle.setTextFill(Color.GREEN);
-                        } else {
-                            c.endCycle.setTextFill(Color.BLACK);
-                        }
-
-                        if (v.getStartElections() > currentTime) {
-                            c.startElections.setTextFill(Color.GREEN);
-                        } else {
-                            c.startElections.setTextFill(Color.BLACK);
-                        }
-
-                        if (v.getEndElections() > currentTime) {
-                            c.endElections.setTextFill(Color.GREEN);
-                        } else {
-                            c.endElections.setTextFill(Color.BLACK);
-                        }
-                        
-                        if (v.getNextElections() > currentTime) {
-                            c.nextElections.setTextFill(Color.GREEN);
-                        } else {
-                            c.nextElections.setTextFill(Color.BLACK);
-                        }
-
-                        c.minterAddr.setText(v.getMinterAddr());
-                        c.configAddr.setText(v.getConfigAddr());
-                        c.electorAddr.setText(v.getElectorAddr());
-                        c.validationPeriod.setText(v.getValidationDuration().toString());
-                        c.electionPeriod.setText(v.getElectionDuration().toString());
-                        c.holdPeriod.setText(v.getHoldPeriod().toString());
-                        c.minimumStake.setText(v.getMinStake().toString());
-                        c.maximumStake.setText(v.getMaxStake().toString());
-
-                        c.nodePublicPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getPublicPort().toString());
-                        c.nodeConsolePort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getConsolePort().toString());
-                        c.liteServerPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getLiteServerPort().toString());
-
-                        c.nodeStatus1.setText("todo");
-                        c.validator1AdnlAddress.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorAdnlAddrHex());
-                        c.validator1PubKey.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorIdPubKeyHex());
-
-
-                    } catch (Exception e) {
-                        log.error("Error getting blockchain configuration! Error {}", e.getMessage());
-                    }
-                });
-
+                } catch (Exception e) {
+                    log.error("Error getting blockchain configuration! Error {}", e.getMessage());
+                }
                 try {
                     Thread.sleep(60 * 1000);
                 } catch (InterruptedException e) {
@@ -480,6 +418,79 @@ public class MyLocalTon {
             }
 
             blockchainValidationExecutorService.shutdownNow();
+        });
+    }
+
+    private void updateValidationTabGUI(ValidationParam v) {
+
+        Platform.runLater(() -> {
+
+            try {
+
+                long currentTime = System.currentTimeMillis() / 1000;
+
+                MainController c = fxmlLoader.getController();
+                c.totalNodes.setText("1");
+                c.totalValidators.setText(v.getValidatorNodes().toString());
+                c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+                c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+
+                c.startCycle.setText(Utils.toLocal(v.getStartCycle()));
+                c.endCycle.setText(Utils.toLocal(v.getEndCycle()));
+                c.startElections.setText(Utils.toLocal(v.getStartElections()));
+                c.endElections.setText(Utils.toLocal(v.getEndElections()));
+                c.nextElections.setText(Utils.toLocal(v.getNextElections()));
+
+                if (v.getStartCycle() > currentTime) {
+                    c.startCycle.setTextFill(Color.GREEN);
+                } else {
+                    c.startCycle.setTextFill(Color.BLACK);
+                }
+
+                if (v.getEndCycle() > currentTime) {
+                    c.endCycle.setTextFill(Color.GREEN);
+                } else {
+                    c.endCycle.setTextFill(Color.BLACK);
+                }
+
+                if (v.getStartElections() > currentTime) {
+                    c.startElections.setTextFill(Color.GREEN);
+                } else {
+                    c.startElections.setTextFill(Color.BLACK);
+                }
+
+                if (v.getEndElections() > currentTime) {
+                    c.endElections.setTextFill(Color.GREEN);
+                } else {
+                    c.endElections.setTextFill(Color.BLACK);
+                }
+
+                if (v.getNextElections() > currentTime) {
+                    c.nextElections.setTextFill(Color.GREEN);
+                } else {
+                    c.nextElections.setTextFill(Color.BLACK);
+                }
+
+                c.minterAddr.setText(v.getMinterAddr());
+                c.configAddr.setText(v.getConfigAddr());
+                c.electorAddr.setText(v.getElectorAddr());
+                c.validationPeriod.setText(v.getValidationDuration().toString());
+                c.electionPeriod.setText(v.getElectionDuration().toString());
+                c.holdPeriod.setText(v.getHoldPeriod().toString());
+                c.minimumStake.setText(v.getMinStake().toString());
+                c.maximumStake.setText(v.getMaxStake().toString());
+
+                c.nodePublicPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getPublicPort().toString());
+                c.nodeConsolePort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getConsolePort().toString());
+                c.liteServerPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getLiteServerPort().toString());
+
+                c.nodeStatus1.setText("todo");
+                c.validator1AdnlAddress.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorAdnlAddrHex());
+                c.validator1PubKey.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorIdPubKeyHex());
+
+            } catch (Exception e) {
+                log.error("Error updating validation tab GUI! Error {}", e.getMessage());
+            }
         });
     }
 
