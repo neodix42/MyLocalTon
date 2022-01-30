@@ -328,7 +328,8 @@
 
 
                                 <JFXButton alignment="CENTER" onAction="#addValidator" prefWidth="150.0" text="Add validator" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
-                                <JFXButton alignment="CENTER" onAction="#showConfigs" prefWidth="150.0" text="Show all configs" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
+                                <JFXButton alignment="CENTER" onAction="#showConfiguration" prefWidth="150.0" text="Show all configs" textAlignment="CENTER" GridPane.columnIndex="0"
+                                           GridPane.rowIndex="16"/>
                             </GridPane>
                         </Tab>
                         <Tab fx:id="genesisnode1" text="Genesis validator 1">

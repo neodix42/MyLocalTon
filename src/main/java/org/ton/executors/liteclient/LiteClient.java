@@ -190,9 +190,30 @@ public class LiteClient {
         }
     }
 
+    public String executeBlockchainInfo(Node node) throws Exception {
+        //
+        final String command = "getconfig 12";
+        Pair<Process, Future<String>> result = new LiteClientExecutor().execute(node, command);
+        if (nonNull(result)) {
+            return result.getRight().get();
+        } else {
+            return null;
+        }
+    }
+
     public String executeGetElections(Node node) throws Exception {
         //
         final String command = "getconfig 15";
+        Pair<Process, Future<String>> result = new LiteClientExecutor().execute(node, command);
+        if (nonNull(result)) {
+            return result.getRight().get();
+        } else {
+            return null;
+        }
+    }
+
+    public String executeGetConfigSmcAddress(Node node) throws Exception {
+        final String command = "getconfig 0";
         Pair<Process, Future<String>> result = new LiteClientExecutor().execute(node, command);
         if (nonNull(result)) {
             return result.getRight().get();
@@ -211,6 +232,17 @@ public class LiteClient {
         }
     }
 
+    public String executeGetMinterSmcAddress(Node node) throws Exception {
+        final String command = "getconfig 2";
+        Pair<Process, Future<String>> result = new LiteClientExecutor().execute(node, command);
+        if (nonNull(result)) {
+            return result.getRight().get();
+        } else {
+            return null;
+        }
+    }
+
+    // start of the validation cycle
     public long executeGetActiveElectionId(Node node, String electorAddr) throws Exception {
         return LiteClientParser.parseRunMethodSeqno(executeRunMethod(node, electorAddr, "active_election_id", ""));
     }

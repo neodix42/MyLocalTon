@@ -192,13 +192,72 @@ public class LiteClientParser {
         return parseTransaction(blockdump, includeMessageBody);
     }
 
+    // config address
+    public static ResultConfig0 parseConfig0(String stdout) {
+        return ResultConfig0.builder()
+                .configSmcAddr(sb(stdout, "config_addr:x", CLOSE))
+                .build();
+    }
+
+    // elector address
+    public static ResultConfig1 parseConfig1(String stdout) {
+        return ResultConfig1.builder()
+                .electorSmcAddress(sb(stdout, "elector_addr:x", CLOSE))
+                .build();
+    }
+
+    // minter address
+    public static ResultConfig2 parseConfig2(String stdout) {
+        return ResultConfig2.builder()
+                .minterSmcAddress(sb(stdout, "minter_addr:x", CLOSE))
+                .build();
+    }
+
+    public static ResultConfig12 parseConfig12(String stdout) {
+
+        stdout = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
+
+        return ResultConfig12.builder()
+                .enabledSince(Long.parseLong(sb(stdout, "workchain enabled_since:", SPACE)))
+                .actualMinSplit(Long.parseLong(sb(stdout, "actual_min_split:", SPACE)))
+                .minSplit(Long.parseLong(sb(stdout, "min_split:", SPACE)))
+                .maxSplit(Long.parseLong(sb(stdout, "max_split:", SPACE)))
+                .basic(Long.parseLong(sb(stdout, "basic:", SPACE)))
+                .active(Long.parseLong(sb(stdout, "active:", SPACE)))
+                .acceptMsg(Long.parseLong(sb(stdout, "accept_msgs:", SPACE)))
+                .flags(Long.parseLong(sb(stdout, "flags:", SPACE)))
+                .rootHash(sb(stdout, "zerostate_root_hash:x", SPACE))
+                .fileHash(sb(stdout, "zerostate_file_hash:x", SPACE))
+                .version(Long.parseLong(sb(stdout, "version:", SPACE)))
+                .build();
+    }
+
     public static ResultConfig15 parseConfig15(String stdout) {
+
+        stdout = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
+
         //    validators_elected_for:4000 elections_start_before:2000 elections_end_before:500 stake_held_for:1000
         return ResultConfig15.builder()
                 .validatorsElectedFor(Long.parseLong(sb(stdout, "validators_elected_for:", SPACE)))
                 .electionsStartBefore(Long.parseLong(sb(stdout, "elections_start_before:", SPACE)))
                 .electionsEndBefore(Long.parseLong(sb(stdout, "elections_end_before:", SPACE)))
                 .stakeHeldFor(Long.parseLong(sb(stdout, "stake_held_for:", ")")))
+                .build();
+    }
+
+    public static ResultConfig17 parseConfig17(String stdout) {
+
+        stdout = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
+        
+        String minStake = sbb(stdout, "min_stake:");
+        String maxStake = sbb(stdout, "max_stake:");
+        String minTotalStake = sbb(stdout, "min_total_stake:");
+
+        return ResultConfig17.builder()
+                .minStake(parseBigIntegerBracket(minStake, "value:"))
+                .maxStake(parseBigIntegerBracket(maxStake, "value:"))
+                .minTotalStake(parseBigIntegerBracket(minTotalStake, "value:"))
+                .maxStakeFactor(parseBigIntegerBracket(stdout, "max_stake_factor:"))
                 .build();
     }
 

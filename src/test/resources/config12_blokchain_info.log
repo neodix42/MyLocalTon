@@ -1,0 +1,10 @@
+ConfigParam(12) = (
+  workchains:(hme_root
+    root:(hm_edge
+      label:(hml_same v:0 n:32)
+      node:(hmn_leaf
+        value:(workchain enabled_since:1643393486 actual_min_split:0 min_split:1 max_split:32 basic:1 active:1 accept_msgs:1 flags:0 zerostate_root_hash:x96046BEE202425534D09242C3C28B6C730EDCF405C3D272D5257EF8E55E57081 zerostate_file_hash:x23BCB250A65922A69C61782EE0FFE49E70EA2E936B7D386D617FBB2EE1A526FF version:0
+          format:(wfmt_basic vm_version:-1 vm_mode:0))))))
+
+x{C_}
+ x{D05330FA18E700009070004B0235F7101212A9A68492161E145B639876E7A02E1E9396A92BF7C72AF2B84091DE5928532C91534E30BC17707FF24F38751749B5BE9C36B0BFDD9770D2937F800000000FFFFFFFF80000000000000004_}

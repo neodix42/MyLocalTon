@@ -1,0 +1,9 @@
+ConfigParam(17) = (
+  min_stake:(nanograms
+    amount:(var_uint len:6 value:10000000000000))
+  max_stake:(nanograms
+    amount:(var_uint len:7 value:10000000000000000))
+  min_total_stake:(nanograms
+    amount:(var_uint len:7 value:500000000000000)) max_stake_factor:196608)
+
+x{609184E72A00072386F26FC10000701C6BF5263400000030000}

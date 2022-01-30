@@ -40,6 +40,7 @@ import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.*;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.main.App;
+import org.ton.parameters.ValidationParam;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
@@ -1191,12 +1192,19 @@ public class MainController implements Initializable {
         yesNoDialog.show();
     }
 
-    public void showConfigs(org.ton.settings.Node node) throws Exception {
+    public void showConfig(org.ton.settings.Node node) throws Exception {
+
+        ResultConfig12 config12 = LiteClientParser.parseConfig12(new LiteClient().executeBlockchainInfo(node));
+        log.info("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
+
         long activeElectionId = new LiteClient().executeGetActiveElectionId(node, settings.getElectorSmcAddrHex());
         log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
 
         ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
         log.info("active elections {}", config15);
+
+        ResultConfig17 config17 = LiteClientParser.parseConfig17(new LiteClient().executeGetMinMaxStake(node));
+        log.info("min/max stake {}", config17);
 
         ResultConfig34 config34 = LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(node));
         log.info("current validators {}", config34);
@@ -1208,10 +1216,38 @@ public class MainController implements Initializable {
         ResultConfig36 config36 = LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(node));
         log.info("next validators {}", config36);
 
+        ResultConfig0 config0 = LiteClientParser.parseConfig0(new LiteClient().executeGetConfigSmcAddress(node));
+        log.info("config address {}", config0.getConfigSmcAddr());
+
+        ResultConfig1 config1 = LiteClientParser.parseConfig1(new LiteClient().executeGetElectorSmcAddress(node));
+        log.info("elector address {}", config1.getElectorSmcAddress());
+
+        ResultConfig2 config2 = LiteClientParser.parseConfig2(new LiteClient().executeGetMinterSmcAddress(node));
+        log.info("minter address {}", config2.getMinterSmcAddress());
+
+        ValidationParam validationParam = ValidationParam.builder()
+                .totalNodes(1L)
+                .validatorNodes(config34.getValidators().getTotal())
+                .blockchainLaunchTime(config12.getEnabledSince())
+                .startCycle(activeElectionId) // same as config34.getValidators().getSince()
+                .endCycle(activeElectionId + config15.getValidatorsElectedFor())
+                .startElections(activeElectionId - config15.getElectionsStartBefore())
+                .endElections(activeElectionId - config15.getElectionsEndBefore())
+                .nextElections(activeElectionId - config15.getElectionsStartBefore() + config15.getValidatorsElectedFor())
+                .electionDuration(config15.getElectionsStartBefore() - config15.getElectionsEndBefore())
+                .validationDuration(config15.getValidatorsElectedFor())
+                .holdPeriod(config15.getStakeHeldFor())
+                .minStake(config17.getMinStake())
+                .maxStake(config17.getMaxStake())
+                .configAddr("-1:" + config0.getConfigSmcAddr())
+                .electorAddr("-1:" + config1.getElectorSmcAddress())
+                .minterAddr("-1:" + config2.getMinterSmcAddress())
+                .build();
+
     }
 
-    public void showConfigs() throws Exception {
-        showConfigs(settings.getGenesisNode());
+    public void showConfiguration() throws Exception {
+        showConfig(settings.getGenesisNode());
     }
 
     public void addValidator() throws InterruptedException {

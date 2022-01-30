@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
+
 @Builder
 @Getter
 @Setter
@@ -14,12 +16,14 @@ public class ValidationParam {
     long startCycle;
     long endCycle;
     long startElections;
+    long endElections;
     long nextElections;
+    String minterAddr;
     String configAddr;
     String electorAddr;
     long electionDuration;
     long validationDuration;
     long holdPeriod;
-    long minStake;
-    long maxStake;
+    BigInteger minStake;
+    BigInteger maxStake;
 }

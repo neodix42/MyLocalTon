@@ -521,6 +521,60 @@ public class LiteClientParserTest {
     }
 
     @Test
+    public void TestParseConfig0() throws IOException {
+        // given
+        String getConfig0 = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/config0_configaddr.log")), StandardCharsets.UTF_8);
+
+        // when
+        ResultConfig0 result = LiteClientParser.parseConfig0(getConfig0);
+
+        // then
+        assertThat(result.getConfigSmcAddr()).isEqualTo("5555555555555555555555555555555555555555555555555555555555555555");
+        log.info(result.toString());
+    }
+
+    @Test
+    public void TestParseConfig1() throws IOException {
+        // given
+        String getConfig1 = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/config1_electoraddr.log")), StandardCharsets.UTF_8);
+
+        // when
+        ResultConfig1 result = LiteClientParser.parseConfig1(getConfig1);
+
+        // then
+        assertThat(result.getElectorSmcAddress()).isEqualTo("3333333333333333333333333333333333333333333333333333333333333333");
+        log.info(result.toString());
+    }
+
+    @Test
+    public void TestParseConfig2() throws IOException {
+        // given
+        String getConfig2 = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/config2_minteraddr.log")), StandardCharsets.UTF_8);
+
+        // when
+        ResultConfig2 result = LiteClientParser.parseConfig2(getConfig2);
+
+        // then
+        assertThat(result.getMinterSmcAddress()).isEqualTo("0000000000000000000000000000000000000000000000000000000000000000");
+        log.info(result.toString());
+    }
+
+    @Test
+    public void TestParseConfig12() throws IOException {
+        // given
+        String getConfig12 = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/config12_blokchain_info.log")), StandardCharsets.UTF_8);
+
+        // when
+        ResultConfig12 result = LiteClientParser.parseConfig12(getConfig12);
+
+        // then
+        assertThat(result.getEnabledSince()).isEqualTo(1643393486L);
+        assertThat(result.getMaxSplit()).isEqualTo(32L);
+        assertThat(result.getFileHash()).isEqualTo("23BCB250A65922A69C61782EE0FFE49E70EA2E936B7D386D617FBB2EE1A526FF");
+        log.info(result.toString());
+    }
+
+    @Test
     public void TestParseConfig15() throws IOException {
         // given
         String getConfig15 = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/config15_elections.log")), StandardCharsets.UTF_8);
@@ -531,6 +585,21 @@ public class LiteClientParserTest {
         // then
         assertThat(result.getValidatorsElectedFor()).isEqualTo(4000L);
         assertThat(result.getStakeHeldFor()).isEqualTo(1000L);
+        log.info(result.toString());
+    }
+
+    @Test
+    public void TestParseConfig17() throws IOException {
+        // given
+        String getConfig17 = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/config17_minmaxstakes.log")), StandardCharsets.UTF_8);
+
+        // when
+        ResultConfig17 result = LiteClientParser.parseConfig17(getConfig17);
+
+        // then
+        assertThat(result.getMinStake()).isEqualTo(10000000000000L);
+        assertThat(result.getMaxStake()).isEqualTo(10000000000000000L);
+        assertThat(result.getMaxStakeFactor()).isEqualTo(196608L);
         log.info(result.toString());
     }
 
