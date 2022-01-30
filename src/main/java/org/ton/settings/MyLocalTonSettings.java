@@ -185,6 +185,7 @@ public class MyLocalTonSettings implements Serializable {
 
     Long currentValidatorSetSince = 0L;
     Long currentValidatorSetUntil = 0L;
+
     Boolean initiallyElected = false;
     String externalMsgLocation;
 

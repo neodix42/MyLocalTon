@@ -26,10 +26,7 @@ import org.ton.executors.dhtserver.DhtServer;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.AccountState;
-import org.ton.executors.liteclient.api.ResultConfig15;
-import org.ton.executors.liteclient.api.ResultLastBlock;
-import org.ton.executors.liteclient.api.ResultListBlockTransactions;
+import org.ton.executors.liteclient.api.*;
 import org.ton.executors.liteclient.api.block.Address;
 import org.ton.executors.liteclient.api.block.Message;
 import org.ton.executors.liteclient.api.block.Transaction;
@@ -39,6 +36,7 @@ import org.ton.executors.validatorengineconsole.ValidatorEngineConsole;
 import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
+import org.ton.parameters.ValidationParam;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
@@ -394,6 +392,62 @@ public class MyLocalTon {
         }, 0L, 15L, TimeUnit.SECONDS);
     }
 
+    public void runValidationMonitor(Node node) {
+        log.info("Starting validation monitor");
+
+        ExecutorService blockchainValidationExecutorService = Executors.newSingleThreadExecutor();
+
+        blockchainValidationExecutorService.execute(() -> {
+            Thread.currentThread().setName("MyLocalTon - Validation Monitor");
+            while (Main.appActive.get()) {
+                Platform.runLater(() -> {
+                    try {
+                        ValidationParam v = getConfig(node);
+                        log.info("validation parameters {}", v);
+
+                        MainController c = fxmlLoader.getController();
+                        c.totalNodes.setText("1");
+                        c.totalValidators.setText(v.getValidatorNodes().toString());
+                        c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+                        c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+                        c.startCycle.setText(Utils.toLocal(v.getStartCycle()));
+                        c.endCycle.setText(Utils.toLocal(v.getEndCycle()));
+                        c.startElections.setText(Utils.toLocal(v.getStartElections()));
+                        c.endElections.setText(Utils.toLocal(v.getEndElections()));
+                        c.nextElections.setText(Utils.toLocal(v.getNextElections()));
+                        c.minterAddr.setText(v.getMinterAddr());
+                        c.configAddr.setText(v.getConfigAddr());
+                        c.electorAddr.setText(v.getElectorAddr());
+                        c.validationPeriod.setText(v.getValidationDuration().toString());
+                        c.electionPeriod.setText(v.getElectionDuration().toString());
+                        c.holdPeriod.setText(v.getHoldPeriod().toString());
+                        c.minimumStake.setText(v.getMinStake().toString());
+                        c.maximumStake.setText(v.getMaxStake().toString());
+
+                        c.nodePublicPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getPublicPort().toString());
+                        c.nodeConsolePort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getConsolePort().toString());
+                        c.liteServerPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getLiteServerPort().toString());
+
+                        c.nodeStatus1.setText("todo");
+                        c.validator1AdnlAddress.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorAdnlAddrHex());
+
+
+                    } catch (Exception e) {
+                        log.error("Error getting blockchain configuration! Error {}", e.getMessage());
+                    }
+                });
+
+                try {
+                    Thread.sleep(30 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            blockchainValidationExecutorService.shutdownNow();
+        });
+    }
+
     public void runBlockchainMonitor(Node node) {
         log.info("Starting node monitor");
 
@@ -442,6 +496,62 @@ public class MyLocalTon {
             }
             blockchainMonitorExecutorService.shutdownNow();
         });
+    }
+
+    public ValidationParam getConfig(org.ton.settings.Node node) throws Exception {
+
+        ResultConfig12 config12 = LiteClientParser.parseConfig12(new LiteClient().executeBlockchainInfo(node));
+        log.info("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
+
+        long activeElectionId = new LiteClient().executeGetActiveElectionId(node, MyLocalTon.getInstance().getSettings().getElectorSmcAddrHex());
+        log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
+
+        ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
+        log.info("active elections {}", config15);
+
+        ResultConfig17 config17 = LiteClientParser.parseConfig17(new LiteClient().executeGetMinMaxStake(node));
+        log.info("min/max stake {}", config17);
+
+        ResultConfig34 config34 = LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(node));
+        log.info("current validators {}", config34);
+
+        log.info("start work time since {}, until {}", Utils.toLocal(config34.getValidators().getSince()), Utils.toLocal(config34.getValidators().getUntil()));
+
+        ResultConfig32 config32 = LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(node));
+        log.info("previous validators {}", config32);
+
+        ResultConfig36 config36 = LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(node));
+        log.info("next validators {}", config36);
+
+        ResultConfig0 config0 = LiteClientParser.parseConfig0(new LiteClient().executeGetConfigSmcAddress(node));
+        log.info("config address {}", config0.getConfigSmcAddr());
+
+        ResultConfig1 config1 = LiteClientParser.parseConfig1(new LiteClient().executeGetElectorSmcAddress(node));
+        log.info("elector address {}", config1.getElectorSmcAddress());
+
+        ResultConfig2 config2 = LiteClientParser.parseConfig2(new LiteClient().executeGetMinterSmcAddress(node));
+        log.info("minter address {}", config2.getMinterSmcAddress());
+
+        List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(node, config1.getElectorSmcAddress()));
+
+        return ValidationParam.builder()
+                .totalNodes(1L)
+                .validatorNodes(config34.getValidators().getTotal())
+                .blockchainLaunchTime(config12.getEnabledSince())
+                .startCycle(activeElectionId) // same as config34.getValidators().getSince()
+                .endCycle(activeElectionId + config15.getValidatorsElectedFor())
+                .startElections(activeElectionId - config15.getElectionsStartBefore())
+                .endElections(activeElectionId - config15.getElectionsEndBefore())
+                .nextElections(activeElectionId - config15.getElectionsStartBefore() + config15.getValidatorsElectedFor())
+                .electionDuration(config15.getElectionsStartBefore() - config15.getElectionsEndBefore())
+                .validationDuration(config15.getValidatorsElectedFor())
+                .holdPeriod(config15.getStakeHeldFor())
+                .minStake(config17.getMinStake())
+                .maxStake(config17.getMaxStake())
+                .configAddr(config0.getConfigSmcAddr())
+                .electorAddr(config1.getElectorSmcAddress())
+                .minterAddr(config2.getMinterSmcAddress())
+                .build();
     }
 
     public List<ResultLastBlock> insertBlocksAndTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
@@ -1328,12 +1438,11 @@ public class MyLocalTon {
         //        WalletAddress walletAddress = createControllingSmartContract(genesisNode, node, -1L);
         //        settings.getNode(node).setWalletAddress(walletAddress);
 
-        String stdout = new LiteClient().executeGetElections(node);
-        log.debug(stdout);
-        ResultConfig15 config15 = LiteClientParser.parseConfig15(stdout);
+        ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
         log.info("elections {}", config15);
 
         convertFullNodeToValidator(node, electionId, config15.getValidatorsElectedFor());
+
         String signature = new Fift().createValidatorElectionRequest(node, electionId, new BigDecimal("2.7"));
         Pair<String, String> validatorPublicKey = new Fift().signValidatorElectionRequest(node, electionId, new BigDecimal("2.7"), signature);
         settings.getNode(node).setValidatorMonitoringPubKeyHex(validatorPublicKey.getLeft());
@@ -1369,7 +1478,7 @@ public class MyLocalTon {
     }
 
     public void convertFullNodeToValidator(Node node, long electionId, long electedForDuration) throws Exception {
-        if (Files.exists(Paths.get(node.getTonDbDir() + VALIDATOR))) {
+        if (Files.exists(Paths.get(node.getTonDbDir() + VALIDATOR))) { // TODO REMOVE?
             log.info("Found non-empty state; Skip conversion to validator!");
         } else {
 
@@ -1398,7 +1507,6 @@ public class MyLocalTon {
             settings.setCurrentValidatorSetSince(startWorkTime);
 
             saveSettingsToGson();
-
         }
     }
 

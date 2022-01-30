@@ -129,5 +129,7 @@ public class App extends Application {
         mainController.showSuccessMsg("Wallets are ready. You are all set!", 5);
 
         myLocalTon.runAccountsMonitor();
+
+        myLocalTon.runValidationMonitor(genesisNode);
     }
 }

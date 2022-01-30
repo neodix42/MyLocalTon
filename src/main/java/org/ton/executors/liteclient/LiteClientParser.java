@@ -195,21 +195,21 @@ public class LiteClientParser {
     // config address
     public static ResultConfig0 parseConfig0(String stdout) {
         return ResultConfig0.builder()
-                .configSmcAddr(sb(stdout, "config_addr:x", CLOSE))
+                .configSmcAddr("-1:" + sb(stdout, "config_addr:x", CLOSE))
                 .build();
     }
 
     // elector address
     public static ResultConfig1 parseConfig1(String stdout) {
         return ResultConfig1.builder()
-                .electorSmcAddress(sb(stdout, "elector_addr:x", CLOSE))
+                .electorSmcAddress("-1:" + sb(stdout, "elector_addr:x", CLOSE))
                 .build();
     }
 
     // minter address
     public static ResultConfig2 parseConfig2(String stdout) {
         return ResultConfig2.builder()
-                .minterSmcAddress(sb(stdout, "minter_addr:x", CLOSE))
+                .minterSmcAddress("-1:" + sb(stdout, "minter_addr:x", CLOSE))
                 .build();
     }
 
@@ -248,7 +248,7 @@ public class LiteClientParser {
     public static ResultConfig17 parseConfig17(String stdout) {
 
         stdout = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
-        
+
         String minStake = sbb(stdout, "min_stake:");
         String maxStake = sbb(stdout, "max_stake:");
         String minTotalStake = sbb(stdout, "min_total_stake:");
@@ -1578,6 +1578,10 @@ public class LiteClientParser {
 
         if (StringUtils.isEmpty(stdout) || !stdout.contains("participant_list"))
             return Collections.emptyList();
+
+        if (stdout.contains("cannot parse answer")) {
+            return Collections.emptyList();
+        }
 
         String result = StringUtils.substringBetween(stdout, "result:  [ (", ") ]");
 

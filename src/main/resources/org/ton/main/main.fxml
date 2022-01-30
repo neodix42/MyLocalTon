@@ -301,35 +301,38 @@
                                 <Label text="Total validators" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                                 <Label text="1" fx:id="totalValidators" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                                 <Label text="Blockchain was launched" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                <Label text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <Label text="29.01.2019 13:44:15" fx:id="blockchainLaunched" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                                 <Label text="Start of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                <Label text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                <Label text="29.01.2019 13:44:15" fx:id="startCycle" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                                 <Label text="End of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                                <Label text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                <Label text="29.01.2019 13:44:15" fx:id="endCycle" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                                 <Label text="Start of elections" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                                <Label text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                                <Label text="Beginning of the next elections" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                                <Label text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                <Label text="29.01.2019 13:44:15" fx:id="startElections" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                <Label text="End of elections" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                <Label text="29.01.2019 13:44:15" fx:id="endElections" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                <Label text="Beginning of the next elections" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                <Label text="29.01.2019 13:44:15" fx:id="nextElections" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                                <Label text="Configurator address" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                                <Label text="-1:33333333333333333333333333333333333333333333333333333333333" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
-                                <Label text="Elector address" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-                                <Label text="-1:55555555555555555555555555555555555555555555555555555555555" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
-                                <Label text="Validation period" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
-                                <Label text="4000" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
-                                <Label text="Duration of elections" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                                <Label text="2000-500" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
-                                <Label text="Hold period" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                                <Label text="1000" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
-                                <Label text="Minimum stake" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
-                                <Label text="10000" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
-                                <Label text="Maximum stake" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
-                                <Label text="10000000" GridPane.columnIndex="1" GridPane.rowIndex="13"/>
+                                <Label text="Minter address" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                                <Label text="-1:0000000000000000000000000000000000000000000000000000000000" fx:id="minterAddr" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                                <Label text="Configurator address" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+                                <Label text="-1:33333333333333333333333333333333333333333333333333333333333" fx:id="configAddr" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                                <Label text="Elector address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
+                                <Label text="-1:55555555555555555555555555555555555555555555555555555555555" fx:id="electorAddr" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                                <Label text="Validation period" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
+                                <Label text="4000" fx:id="validationPeriod" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                                <Label text="Duration of elections" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
+                                <Label text="2000-500" fx:id="electionPeriod" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                                <Label text="Hold period" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
+                                <Label text="1000" fx:id="holdPeriod" GridPane.columnIndex="1" GridPane.rowIndex="13"/>
+                                <Label text="Minimum stake" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
+                                <Label text="10000" fx:id="minimumStake" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                                <Label text="Maximum stake" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
+                                <Label text="10000000" fx:id="maximumStake" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
 
-
-                                <JFXButton alignment="CENTER" onAction="#addValidator" prefWidth="150.0" text="Add validator" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
+                                <JFXButton alignment="CENTER" onAction="#addValidator" prefWidth="150.0" text="Add validator" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="17"/>
                                 <JFXButton alignment="CENTER" onAction="#showConfiguration" prefWidth="150.0" text="Show all configs" textAlignment="CENTER" GridPane.columnIndex="0"
-                                           GridPane.rowIndex="16"/>
+                                           GridPane.rowIndex="18"/>
                             </GridPane>
                         </Tab>
                         <Tab fx:id="genesisnode1" text="Genesis validator 1">
@@ -364,8 +367,7 @@
                                 <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
                                 <Label text="4443" fx:id="liteServerPort1" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                                 <Label text="Status" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                <Label text="synchronized 95 seconds ago" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-
+                                <Label text="synchronized 95 seconds ago" fx:id="nodeStatus1" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                                 <Label text="ADNL address of local validator" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                                 <Label text="8512318543216584354986413541685132165132ACD33333333333333333333" fx:id="validator1AdnlAddress" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                                 <Label text="Local validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
