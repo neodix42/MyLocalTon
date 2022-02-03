@@ -123,7 +123,8 @@ public class App extends Application {
 
         myLocalTon.createPreInstalledWallets(genesisNode);
 
-        // myLocalTon.runBlockchainExplorer(); TODO
+
+        myLocalTon.runBlockchainExplorer();
 
         Thread.sleep(1000);
         mainController.showSuccessMsg("Wallets are ready. You are all set!", 5);

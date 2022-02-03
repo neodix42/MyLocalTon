@@ -58,7 +58,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.LongStream;
 
-import static com.sun.javafx.PlatformUtil.*;
+import static com.sun.javafx.PlatformUtil.isLinux;
+import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.requireNonNull;
 import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
 import static org.ton.main.App.fxmlLoader;
@@ -984,7 +985,8 @@ public class MainController implements Initializable {
         enableBlockchainExplorerLabel.setVisible(false);
         mainMenuTabs.getTabs().remove(explorerTab);
 
-        if (isLinux() || isMac()) {
+        //if (isLinux() || isMac()) {
+        if (isLinux()) {
 
             enableBlockchainExplorer.setVisible(true);
             enableBlockchainExplorerLabel.setVisible(true);
@@ -1001,7 +1003,8 @@ public class MainController implements Initializable {
 
     public void startWeb() {
 
-        if (isLinux() || isMac()) {
+        //if (isLinux() || isMac()) {
+        if (isLinux()) {
             if (enableBlockchainExplorer.isSelected()) {
                 BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
                 blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
