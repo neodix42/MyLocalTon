@@ -14,12 +14,13 @@ alpha version and cannot be treated as production ready.
 | Ubuntu 18.04  | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |
 | Ubuntu 20.04  | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:    |  |
 | Debian 11.2  | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
+| MacOS 11.6.1 M1  | :heavy_check_mark:   | not tested   |  not tested | :heavy_check_mark:    |  |
 | MacOS 12.01  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
 | MacOS 11.6  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
 | Windows 10  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:   |  |
 | Windows Server 2019  | :heavy_check_mark:   | :heavy_check_mark:   | not tested  | :heavy_check_mark:    |  |
 
-Please make sure you are not using headless (no GUI) Java and OS/Java combination matches as per table above. MacOS M1 on ARM64 architeture is not supported yet.
+Please make sure you are not using headless (no GUI) Java and OS/Java combination matches as per table above.
 
 In case you are using MacPorts instead of Homebrew on Mac please execute the following command:
 `mkdir -p /usr/local/opt/readline/lib; ln -s /opt/local/lib/libreadline.8.dylib /usr/local/opt/readline/lib/`

@@ -79,7 +79,7 @@ public class Wallet {
 
         long seqno = liteClient.executeGetSeqno(sendToncoinsParam.getExecutionNode(), sendToncoinsParam.getFromWallet().getFullWalletAddress());
 
-        log.info("getSeqNoAndSendTonCoins(), source wallet {}, version {}, seqno {}, amount {}, dest {}",
+        log.debug("getSeqNoAndSendTonCoins(), source wallet {}, version {}, seqno {}, amount {}, dest {}",
                 sendToncoinsParam.getFromWallet().getFullWalletAddress(), sendToncoinsParam.getFromWalletVersion().getValue(), seqno, sendToncoinsParam.getAmount(), sendToncoinsParam.getDestAddr());
 
         String externalMsgLocation = new Fift().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);

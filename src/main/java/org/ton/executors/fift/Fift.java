@@ -42,7 +42,9 @@ public class Fift {
         String resultBocFile = UUID.randomUUID().toString();
         String resultBocFileLocation = "wallets" + File.separator + resultBocFile;
         Pair<Process, Future<String>> result;
+
         String walletScript;
+
         if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1) || sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.MASTER)) {
             walletScript = "wallet.fif";
         } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V2)) {
@@ -53,7 +55,7 @@ public class Fift {
             walletScript = "wallet.fif";
         }
 
-        log.info("Sending using {}", walletScript);
+        log.debug("Sending using {}", walletScript);
 
         result = new FiftExecutor().execute(sendToncoinsParam.getExecutionNode(),
                 "smartcont" + File.separator + walletScript,
@@ -69,7 +71,7 @@ public class Fift {
                 resultBocFileLocation);
 
         String resultStr = result.getRight().get();
-        log.info(resultStr);
+        log.debug(resultStr);
 
         if (Files.exists(Paths.get(sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc"), LinkOption.NOFOLLOW_LINKS)) {
             return sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc";
