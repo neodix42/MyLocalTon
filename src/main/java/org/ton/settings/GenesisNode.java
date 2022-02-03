@@ -31,13 +31,22 @@ public class GenesisNode implements Serializable, Node {
     Integer dhtOutPort = 3278;
     Integer dhtForkedOutPort = 3288;
 
-    Long initialStake = 10000000000000L;
-    String validatorMonitoringPubKeyHex;
-    String validatorMonitoringPubKeyInteger;
-    String validatorIdHex;
-    String validatorIdBase64;
-    String validatorIdPubKeyHex;
+    Long initialStake = 10000 * 1000000000L; // 10k
+
+    String validatorPrvKeyHex;
+    String validatorPrvKeyBase64;
+    String validatorPubKeyHex;
+    String validatorPubKeyBase64;
     String validatorAdnlAddrHex;
+
+    String validationSigningKey;
+    String validationSigningPubKey;
+    String validationAndlKey;
+    String validationPubKeyHex;
+    String validationPubKeyInteger;
+    Boolean validationParticipated = Boolean.FALSE;
+    Boolean validationPubKeyAndAdnlCreated = Boolean.FALSE;
+
     WalletAddress walletAddress;
     transient Process nodeProcess;
     transient Process dhtServerProcess;
@@ -78,6 +87,11 @@ public class GenesisNode implements Serializable, Node {
     @Override
     public String getDhtServerKeyringDir() {
         return getDhtServerDir() + "keyring" + File.separator;
+    }
+
+    @Override
+    public String getTonCertsDir() {
+        return getTonBinDir() + File.separator + "certs" + File.separator;
     }
 
     @Override

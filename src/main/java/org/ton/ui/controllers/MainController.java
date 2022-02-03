@@ -285,6 +285,9 @@ public class MainController implements Initializable {
     public Label validator1PubKey;
 
     @FXML
+    public ProgressBar validationCountDown;
+
+    @FXML
     JFXCheckBox shardStateCheckbox;
 
     @FXML
@@ -844,7 +847,7 @@ public class MainController implements Initializable {
         };
 
         //if (isWindows()) {
-        //mainMenuTabs.getTabs().remove(validationTab);
+        mainMenuTabs.getTabs().remove(validationTab);
         //}
 
         coinsPerWallet.setOnKeyTyped(onlyDigits);
@@ -997,6 +1000,7 @@ public class MainController implements Initializable {
     }
 
     public void startWeb() {
+
         if (isLinux() || isMac()) {
             if (enableBlockchainExplorer.isSelected()) {
                 BlockchainExplorer blockchainExplorer = new BlockchainExplorer();

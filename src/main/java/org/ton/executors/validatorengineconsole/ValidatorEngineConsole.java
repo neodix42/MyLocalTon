@@ -27,21 +27,21 @@ public class ValidatorEngineConsole {
         log.debug(result.getLeft());
     }
 
-    public void addValidatorAddr(Node node, String validatorIdHex, String newValAdnl, long electionId, long electedForDuration) {
+    public void addValidatorAddr(Node node, String validatorIdHex, String newValAdnl, long electionEnd) {
         ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addvalidatoraddr  " + validatorIdHex + " " + newValAdnl + " " + (electionId + electedForDuration + 1)); // TODO some bug here
+        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addvalidatoraddr  " + validatorIdHex + " " + newValAdnl + " " + electionEnd);
         log.debug(result.getLeft());
     }
 
-    public void addPermKey(Node node, String validatorIdHex, long electionId, long electedForDuration) {
+    public void addPermKey(Node node, String validatorIdHex, long electionId, long electionEnd) {
         ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addpermkey " + validatorIdHex + " " + electionId + " " + (electionId + electedForDuration + 1));
+        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addpermkey " + validatorIdHex + " " + electionId + " " + electionEnd);
         log.debug(result.getLeft());
     }
 
-    public void addTempKey(Node node, String validatorIdHex, long electionId, long electedForDuration) {
+    public void addTempKey(Node node, String validatorIdHex, long electionEnd) {
         ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
-        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addtempkey " + validatorIdHex + " " + validatorIdHex + " " + (electionId + electedForDuration + 1));
+        Pair<String, Process> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addtempkey " + validatorIdHex + " " + validatorIdHex + " " + electionEnd);
         log.debug(result.getLeft());
     }
 

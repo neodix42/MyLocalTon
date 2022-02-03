@@ -4,8 +4,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.ton.executors.liteclient.api.ResultListParticipants;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Builder
 @Getter
@@ -28,4 +30,5 @@ public class ValidationParam {
     Long holdPeriod;
     BigInteger minStake;
     BigInteger maxStake;
+    List<ResultListParticipants> participants;
 }

@@ -35,10 +35,20 @@ public class Node3 implements Serializable, Node {
     Long initialStake = 20L;
     String validatorMonitoringPubKeyHex;
     String validatorMonitoringPubKeyInteger;
-    String validatorIdHex;
-    String validatorIdBase64;
-    String validatorIdPubKeyHex;
+    String validatorPrvKeyHex;
+    String validatorPrvKeyBase64;
+    String validatorPubKeyHex;
+    String validatorPubKeyBase64;
     String validatorAdnlAddrHex;
+
+    String validationSigningKey;
+    String validationSigningPubKey;
+    String validationAndlKey;
+    String validationPubKeyHex;
+    String validationPubKeyInteger;
+    Boolean validationParticipated = Boolean.FALSE;
+    Boolean validationPubKeyAndAdnlCreated = Boolean.FALSE;
+
     WalletAddress walletAddress;
     transient Process nodeProcess;
     transient Process dhtServerProcess;
@@ -79,6 +89,11 @@ public class Node3 implements Serializable, Node {
     @Override
     public String getDhtServerKeyringDir() {
         return getDhtServerDir() + "keyring" + File.separator;
+    }
+
+    @Override
+    public String getTonCertsDir() {
+        return getTonBinDir() + File.separator + "certs" + File.separator;
     }
 
     @Override

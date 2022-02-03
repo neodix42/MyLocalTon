@@ -69,7 +69,7 @@ public class Fift {
                 resultBocFileLocation);
 
         String resultStr = result.getRight().get();
-        log.debug(resultStr);
+        log.info(resultStr);
 
         if (Files.exists(Paths.get(sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc"), LinkOption.NOFOLLOW_LINKS)) {
             return sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc";
@@ -323,47 +323,65 @@ public class Fift {
      */
     public String createValidatorElectionRequest(Node node, long startElectionTime, BigDecimal maxFactor) throws ExecutionException, InterruptedException {
         log.info("CreateValidatorElectionRequest {}", node.getNodeName());
+
         String fileNameBase = UUID.randomUUID().toString();
+
         Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "validator-elect-req.fif",
                 node.getWalletAddress().getBounceableAddressBase64url(),
                 String.valueOf(startElectionTime),
                 maxFactor.toPlainString(),
-                node.getValidatorAdnlAddrHex(),
+                node.getValidationAndlKey(),
                 fileNameBase);
 
         String resultStr = result.getRight().get();
-        log.debug(resultStr);
+
+        log.info(resultStr);
+
         String[] array = resultStr.split(System.lineSeparator());
         String generatedMessageBase64 = array[array.length - 2].trim();
         String generatedMessageHex = array[array.length - 3].trim();
-        //sign hex string and base64, 2 line from bottom in output
-        Pair<String, Process> signed = new ValidatorEngineConsoleExecutor().execute(node, "-k", node.getTonDbDir() + "client", "-p", node.getTonDbDir() + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "sign " + node.getValidatorIdHex() + " " + generatedMessageHex);
-        log.debug(signed.getLeft());
+
+        log.info("signing request by validator");
+
+        //sign hex string and base64, 2nd line from bottom in output
+        Pair<String, Process> signed = new ValidatorEngineConsoleExecutor().execute(node,
+                "-k", node.getTonCertsDir() + "client",
+                "-p", node.getTonCertsDir() + "server.pub",
+                "-v", "0",
+                "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(),
+                "-rc",
+                "sign " + node.getValidationSigningKey() + " " + generatedMessageHex);
+
+        log.info(signed.getLeft()); // make debug
+
         String signature = StringUtils.substring(signed.getLeft(), signed.getLeft().indexOf("signature") + 9).trim();
+        log.info("signature {}", signature);
 
         return signature;
     }
 
-    public Pair<String, String> signValidatorElectionRequest(Node node, long startElectionTime, BigDecimal maxFactor, String signatureFromElectionRequest) throws
+    public void signValidatorElectionRequest(Node node, long startElectionTime, BigDecimal maxFactor, String signatureFromElectionRequest) throws
             ExecutionException, InterruptedException {
         log.info("signValidatorElectionRequest {}", node.getNodeName());
+
         Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "validator-elect-signed.fif",
                 node.getWalletAddress().getBounceableAddressBase64url(),
                 String.valueOf(startElectionTime),
                 maxFactor.toPlainString(),
-                node.getValidatorAdnlAddrHex(),
-                node.getValidatorIdBase64(),
+                node.getValidationAndlKey(),
+                node.getValidationSigningPubKey(),
                 signatureFromElectionRequest);
 
         String resultStr = result.getRight().get();
-        log.debug(resultStr);
+        log.info(resultStr); // make debug
 
-        resultStr = resultStr.replace("\r\n", SPACE);
-        resultStr = resultStr.replace("\n", SPACE);
+        resultStr = resultStr.replace("\r\n", SPACE).replace("\n", SPACE);
+
         String validatorPublicKeyHex = StringUtils.substringBetween(resultStr, "with validator public key ", SPACE).trim();
         BigInteger bigInt = new BigInteger(validatorPublicKeyHex, 16);
 
-        //fift -s wallet.fif my_wallet_id -1:3333333333333333333333333333333333333333333333333333333333333333 1 100001. -B validator-query.boc
-        return Pair.of(validatorPublicKeyHex, bigInt.toString());
+        node.setValidationPubKeyHex(validatorPublicKeyHex);
+        node.setValidationPubKeyInteger(bigInt.toString());
+
     }
 }

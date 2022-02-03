@@ -20,6 +20,8 @@ public interface Node {
 
     String getDhtServerKeyringDir();
 
+    String getTonCertsDir();
+
     String getPublicIp();
 
     Integer getPublicPort();
@@ -52,29 +54,41 @@ public interface Node {
 
     void setBlockchainExplorerProcess(Process process);
 
-    String getValidatorMonitoringPubKeyHex();
+    String getValidationPubKeyHex();
 
-    String getValidatorMonitoringPubKeyInteger();
+    String getValidationPubKeyInteger();
 
-    void setValidatorMonitoringPubKeyHex(String validatorMonitoringPubKeyHex);
+    void setValidationPubKeyHex(String validationPubKeyHex);
 
-    void setValidatorMonitoringPubKeyInteger(String validatorMonitoringPubKeyInteger);
+    void setValidationPubKeyInteger(String validatorMonitoringPubKeyInteger);
 
-    String getValidatorIdHex();
+    void setValidationParticipated(Boolean participated);
+
+    void setValidationPubKeyAndAdnlCreated(Boolean pubKeyAndAdnlCreated);
+
+    Boolean getValidationParticipated();
+
+    Boolean getValidationPubKeyAndAdnlCreated();
+
+    String getValidatorPrvKeyHex();
+
+    String getValidatorPrvKeyBase64();
+
+    String getValidatorPubKeyHex();
+
+    String getValidatorPubKeyBase64();
 
     void setWalletAddress(WalletAddress walletAddress);
 
     WalletAddress getWalletAddress();
 
-    String getValidatorIdBase64();
+    void setValidatorPrvKeyHex(String validatorPrvKeyHex);
 
-    String getValidatorIdPubKeyHex();
+    void setValidatorPrvKeyBase64(String validatorPrvKeyBase64);
 
-    void setValidatorIdHex(String validatorIdHex);
+    void setValidatorPubKeyHex(String validatorPubKeyHex);
 
-    void setValidatorIdBase64(String validatorIdBase64);
-
-    void setValidatorIdPubKeyHex(String validatorIdPubKeyHex);
+    void setValidatorPubKeyBase64(String validatorPubKeyHex);
 
     void setValidatorAdnlAddrHex(String validatorAdnlAddrHex);
 
@@ -93,4 +107,17 @@ public interface Node {
     void extractBinaries() throws IOException;
 
     String getGenesisGenZeroStateFifLocation();
+
+    void setValidationSigningKey(String validationSigningKey);
+
+    void setValidationSigningPubKey(String validationSigningPubKey);
+
+    void setValidationAndlKey(String validationAndlKey);
+
+    String getValidationSigningKey();
+
+    String getValidationSigningPubKey();
+
+    String getValidationAndlKey();
+
 }

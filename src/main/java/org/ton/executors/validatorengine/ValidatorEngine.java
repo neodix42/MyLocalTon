@@ -14,6 +14,7 @@ import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.utils.Extractor;
 import org.ton.utils.Utils;
+import org.ton.wallet.WalletAddress;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +35,6 @@ public class ValidatorEngine {
     private static final String TEMPLATES = "templates";
     private static final String CURRENT_DIR = System.getProperty("user.dir");
     private static final String MY_LOCAL_TON = "myLocalTon";
-
 
     public Process startValidator(Node node, String myGlobalConfig) {
         log.info("starting validator-engine {}", node.getNodeName());
@@ -57,7 +57,9 @@ public class ValidatorEngine {
     }
 
     public Pair<Process, Future<String>> startValidatorWithoutParams(Node node, String myGlobalConfig) {
+
         ValidatorEngineExecutor validatorGenesis = new ValidatorEngineExecutor();
+
         return validatorGenesis.execute(node,
                 "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
                 "-t", "1",
@@ -73,12 +75,16 @@ public class ValidatorEngine {
             log.info("Found non-empty state; Skip initialization!");
         } else {
             log.info("Initializing node validator, create keyrings and config.json...");
+
             Files.copy(Paths.get(sharedGlobalConfig), Paths.get(node.getNodeGlobalConfigLocation()), StandardCopyOption.REPLACE_EXISTING);
+
             ValidatorEngineExecutor validator = new ValidatorEngineExecutor();
+
             Pair<Process, Future<String>> validatorGenesisInit = validator.execute(node,
                     "-C", node.getNodeGlobalConfigLocation(),
                     "--db", node.getTonDbDir(),
                     "--ip", node.getPublicIp() + ":" + node.getPublicPort());
+
             log.debug("Initialized {} validator, result {}", node.getNodeName(), validatorGenesisInit.getRight().get());
 
             Utils.replaceOutPortInConfigJson(node.getTonDbDir(), node.getOutPort());
@@ -160,7 +166,6 @@ public class ValidatorEngine {
         Files.writeString(Paths.get(node.getNodeGlobalConfigLocation()), content, StandardCharsets.UTF_8);
     }
 
-
     private static String sb(String str, String from, String to) {
         return StringUtils.substringBetween(str, from, to);
     }
@@ -172,7 +177,7 @@ public class ValidatorEngine {
         String createStateResult = new CreateStateExecutor().execute(node, node.getTonBinDir() + "smartcont" + File.separator + "gen-zerostate.fif");
         log.debug("create zerostate output: {}", createStateResult);
         String mainWalletAddrBoth = sb(createStateResult, "wallet address = ", "(Saving address to file");
-        String electroSmcAddrBoth = sb(createStateResult, "elector smart contract address = ", "(Saving address to file");
+        String electorSmcAddrBoth = sb(createStateResult, "elector smart contract address = ", "(Saving address to file");
         String configSmcAddrBoth = sb(createStateResult, "config smart contract address = ", "(Saving address to file");
         String piece = StringUtils.substring(createStateResult, createStateResult.indexOf("(Initial masterchain state saved to file zerostate.boc)"));
         String masterFileHashBoth = sb(piece, "file hash= ", "root hash= ");
@@ -185,11 +190,23 @@ public class ValidatorEngine {
         String[] mainWalletAddr = mainWalletAddrBoth.split(SPACE);
         settings.setMainWalletAddrFull(mainWalletAddr[0].trim());
         settings.setMainWalletAddrBase64(mainWalletAddr[1].trim());
+
         byte[] mainWalletPrvKey = FileUtils.readFileToByteArray(new File(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet.pk"));
         settings.setMainWalletPrvKey(Hex.encodeHexString(mainWalletPrvKey));
         settings.setMainWalletFilenameBaseLocation(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet");
 
-        String[] electorSmcAddr = electroSmcAddrBoth.split(SPACE);
+        WalletAddress genesisWalletAddress = WalletAddress.builder()
+                .fullWalletAddress(mainWalletAddr[0].trim())
+                .bounceableAddressBase64url(mainWalletAddr[1].trim())
+                .filenameBaseLocation(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet")
+                .privateKeyLocation(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet.pk")
+                .privateKeyHex(Hex.encodeHexString(mainWalletPrvKey))
+                .build();
+
+        // basically genesis node uses main-wallet and sends requests to elections on its behalf
+        node.setWalletAddress(genesisWalletAddress);
+
+        String[] electorSmcAddr = electorSmcAddrBoth.split(SPACE);
         settings.setElectorSmcAddrHex(electorSmcAddr[0].trim());
         settings.setElectorSmcAddrBase64(electorSmcAddr[1].trim());
 
@@ -222,6 +239,7 @@ public class ValidatorEngine {
         String[] zeroStateRoot = zerostateRootHashBoth.split(DOUBLE_SPACE);
         settings.setZeroStateRootHashHex(zeroStateRoot[0].trim());
         settings.setZeroStateRootHashHuman(zeroStateRoot[1].trim());
+
         if (
                 (settings.getMasterStateFileHashHex().length() < 64) ||
                         (settings.getMasterStateRootHashHex().length() < 64) ||
@@ -244,7 +262,9 @@ public class ValidatorEngine {
             Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.boc"));
             return false;
         }
+
         log.debug(createStateResult);
+
         return true;
     }
 
@@ -255,6 +275,7 @@ public class ValidatorEngine {
         String genZeroStateFifPath = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + "genesis" + File.separator + "bin" + File.separator + "smartcont" + File.separator + "gen-zerostate.fif";
         String genZeroStateFif = FileUtils.readFileToString(new File(genZeroStateFifPath), StandardCharsets.UTF_8);
         String genZeroStateFifNew = "";
+
         genZeroStateFifNew = StringUtils.replace(genZeroStateFif, "GLOBAL_ID", settings.getBlockchainSettings().getGlobalId().toString());
         genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "INITIAL_BALANCE", settings.getBlockchainSettings().getInitialBalance().toString());
         genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "GAS_PRICE_MC", settings.getBlockchainSettings().getGasPriceMc().toString());
@@ -273,6 +294,7 @@ public class ValidatorEngine {
         genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "ELECTION_END_BEFORE", settings.getBlockchainSettings().getElectionEndBefore().toString());
         genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "ELECTION_STAKE_FROZEN", settings.getBlockchainSettings().getElectionStakesFrozenFor().toString());
         genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "ORIGINAL_VSET_VALID_FOR", settings.getBlockchainSettings().getOriginalValidatorSetValidFor().toString());
+
         FileUtils.writeStringToFile(new File(genZeroStateFifPath), genZeroStateFifNew, StandardCharsets.UTF_8);
     }
 
@@ -283,20 +305,24 @@ public class ValidatorEngine {
 
         String validatorKeys = new RandomIdExecutor().execute(node, "-m", "keys", "-n", node.getTonDbKeyringDir() + VALIDATOR);
         String[] valHexBase64 = validatorKeys.split(" ");
-        String validatorIdHex = valHexBase64[0].trim();
-        String validatorIdBase64 = valHexBase64[1].trim();
-        log.info("{}, validatorIdHex {}, validatorIdBase64 {}", node.getNodeName(), validatorIdHex, validatorIdBase64);
+        String validatorPrvKeyHex = valHexBase64[0].trim();
+        String validatorPrvKeyBase64 = valHexBase64[1].trim();
 
-        Files.copy(Paths.get(node.getTonDbKeyringDir() + VALIDATOR), Paths.get(node.getTonDbKeyringDir() + validatorIdHex), StandardCopyOption.REPLACE_EXISTING);
+        log.info("{}, validatorPrvKeyHex {}, validatorPrvKeyBase64 {}", node.getNodeName(), validatorPrvKeyHex, validatorPrvKeyBase64);
+
+        Files.copy(Paths.get(node.getTonDbKeyringDir() + VALIDATOR), Paths.get(node.getTonDbKeyringDir() + validatorPrvKeyHex), StandardCopyOption.REPLACE_EXISTING);
         //convert pub key to key
         byte[] validatorPubKey = Files.readAllBytes(Paths.get(node.getTonDbKeyringDir() + "validator.pub"));
         byte[] removed4bytes = Arrays.copyOfRange(validatorPubKey, 4, validatorPubKey.length);
 
-        node.setValidatorIdHex(validatorIdHex);
-        node.setValidatorIdPubKeyHex(Hex.encodeHexString(removed4bytes));
-        MyLocalTon.getInstance().getSettings().saveSettingsToGson(MyLocalTon.getInstance().getSettings()); // TODO check the saved values
+        node.setValidatorPrvKeyHex(validatorPrvKeyHex);
+        node.setValidatorPrvKeyBase64(validatorPrvKeyBase64);
+        node.setValidatorPubKeyHex(Hex.encodeHexString(removed4bytes));
+        node.setValidatorPubKeyBase64(Base64.encodeBase64String(validatorPubKey)); // move to  createGenesisValidator ? todo
+
+        MyLocalTon.getInstance().getSettings().saveSettingsToGson(MyLocalTon.getInstance().getSettings());
         // create validator-keys.pub
-        Files.write(Paths.get(node.getValidatorKeyPubLocation()), Hex.decodeHex(node.getValidatorIdPubKeyHex()), StandardOpenOption.CREATE);
+        Files.write(Paths.get(node.getValidatorKeyPubLocation()), Hex.decodeHex(node.getValidatorPubKeyHex()), StandardOpenOption.CREATE);
 
         if (updateGenZeroStateFif) {
             // make full node validator

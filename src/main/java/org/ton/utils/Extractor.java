@@ -60,13 +60,10 @@ public class Extractor {
                     } else {
                         log.error("This Linux system officially is not supported, but let's try to run TON binaries compiled on Ubuntu 20.04");
                         extractUbuntuBinaries("ubuntu20");
-                        //System.exit(0); // initiating shutdown hook
                     }
                 } else if (isMac()) {
                     if (Utils.isMacOsArm()) {
-                        log.error("MacOS arm64 is not supported.");
-                        //extractMacBinaries("macos-arm64.zip");
-                        System.exit(0); // initiating shutdown hook
+                        extractMacBinaries("macos-arm64.zip");
                     } else {
                         extractMacBinaries("macos.zip");
                     }

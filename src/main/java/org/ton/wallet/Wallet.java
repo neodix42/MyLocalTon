@@ -76,8 +76,10 @@ public class Wallet {
     }
 
     public String getSeqNoAndSendTonCoins(SendToncoinsParam sendToncoinsParam) throws Exception {
+
         long seqno = liteClient.executeGetSeqno(sendToncoinsParam.getExecutionNode(), sendToncoinsParam.getFromWallet().getFullWalletAddress());
-        log.debug("getSeqNoAndSendTonCoins(), source wallet {}, version {}, seqno {}, amount {}, dest {}",
+
+        log.info("getSeqNoAndSendTonCoins(), source wallet {}, version {}, seqno {}, amount {}, dest {}",
                 sendToncoinsParam.getFromWallet().getFullWalletAddress(), sendToncoinsParam.getFromWalletVersion().getValue(), seqno, sendToncoinsParam.getAmount(), sendToncoinsParam.getDestAddr());
 
         String externalMsgLocation = new Fift().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
@@ -86,7 +88,8 @@ public class Wallet {
 
         //FileUtils.deleteQuietly(new File(tempBocFileAbsolutePath)); // sure ?
 
-        log.info("Sent {} Toncoins by node {} from {} to {}.", sendToncoinsParam.getAmount(), sendToncoinsParam.getExecutionNode().getNodeName(), sendToncoinsParam.getFromWallet().getFullWalletAddress(), sendToncoinsParam.getDestAddr());
+        log.info("Sent {} Toncoins by node {} from {} to {}.",
+                sendToncoinsParam.getAmount(), sendToncoinsParam.getExecutionNode().getNodeName(), sendToncoinsParam.getFromWallet().getFullWalletAddress(), sendToncoinsParam.getDestAddr());
 
         return externalMsgLocation;
     }

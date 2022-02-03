@@ -358,13 +358,13 @@ public class Utils {
 
     public static boolean isMacOsArm() {
         try {
-            Process proc = Runtime.getRuntime().exec("arch");
+            Process proc = Runtime.getRuntime().exec("sysctl -n machdep.cpu.brand_string");
             InputStream procOutput = proc.getInputStream();
 
             if (proc.waitFor() == 0) {
                 String resultInput = IOUtils.toString(procOutput, Charset.defaultCharset());
                 log.info("isMacOsArm: {}", resultInput);
-                return resultInput.contains("arm");
+                return resultInput.contains("M1");
             }
         } catch (Exception e) {
             log.error("isMacOsArm error: {}", e.getMessage());
@@ -467,5 +467,9 @@ public class Utils {
             lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
             log.info("{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
         } while (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0 && lastBlock.getSyncedSecondsAgo() > 10);
+    }
+
+    public static long getCurrentTimeSeconds() {
+        return System.currentTimeMillis() / 1000;
     }
 }

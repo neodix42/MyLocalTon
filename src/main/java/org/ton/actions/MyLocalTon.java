@@ -216,8 +216,8 @@ public class MyLocalTon {
             log.info("Found non-empty state of genesis validator.");
             return null;
         } else {
-            String validatorIdHex = node.getValidatorIdHex();
-            log.info("{} validatorIdHex {}", node.getNodeName(), node.getValidatorIdHex());
+            String validatorPrvKeyHex = node.getValidatorPrvKeyHex();
+            log.info("{} validatorIdHex {}", node.getNodeName(), node.getValidatorPrvKeyHex());
             //shortly start validator
             log.info("Starting temporary full-node...");
             Pair<Process, Future<String>> validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig);
@@ -227,24 +227,27 @@ public class MyLocalTon {
             ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
 
             String newNodeKey = validatorEngineConsole.generateNewNodeKey(node);
-            log.info("newNodeKey {}", newNodeKey);
+            String newNodePubKey = validatorEngineConsole.exportPubKey(node, newNodeKey);
             String newValAdnl = validatorEngineConsole.generateNewNodeKey(node);
+
+            log.info("newNodeKey {}, newNodePubKey {}, newValAdnl {}", newNodeKey, newNodePubKey, newValAdnl);
+
+            settings.getNode(node).setValidatorPubKeyBase64(newNodePubKey);
             settings.getNode(node).setValidatorAdnlAddrHex(newValAdnl);
-            log.info("newValAdnl {}", newValAdnl);
 
             long startWorkTime = Instant.now().getEpochSecond();
             long electionId = 0L;
-            long electedForDuration = startWorkTime + YEAR;
+            long electionEnd = startWorkTime + YEAR;
 
-            validatorEngineConsole.addPermKey(node, validatorIdHex, electionId, electedForDuration);
-            validatorEngineConsole.addTempKey(node, validatorIdHex, electionId, electedForDuration);
+            validatorEngineConsole.addPermKey(node, validatorPrvKeyHex, electionId, electionEnd);
+            validatorEngineConsole.addTempKey(node, validatorPrvKeyHex, electionEnd);
             validatorEngineConsole.addAdnl(node, newValAdnl);
-            validatorEngineConsole.addAdnl(node, validatorIdHex);
-            validatorEngineConsole.addValidatorAddr(node, validatorIdHex, newValAdnl, electionId, electedForDuration);
+            validatorEngineConsole.addAdnl(node, validatorPrvKeyHex);
+            validatorEngineConsole.addValidatorAddr(node, validatorPrvKeyHex, newValAdnl, electionEnd);
 
             validatorEngineConsole.addAdnl(node, newNodeKey);
             validatorEngineConsole.changeFullNodeAddr(node, newNodeKey);
-            validatorEngineConsole.importF(node, validatorIdHex);
+            validatorEngineConsole.importF(node, validatorPrvKeyHex);
 
             saveSettingsToGson();
 
@@ -399,13 +402,24 @@ public class MyLocalTon {
 
         blockchainValidationExecutorService.execute(() -> {
             Thread.currentThread().setName("MyLocalTon - Validation Monitor");
+
             while (Main.appActive.get()) {
                 try {
+
                     ValidationParam v = getConfig(node);
-                    log.info("validation parameters {}", v);
+                    log.debug("validation parameters {}", v);
+
                     updateValidationTabGUI(v);
 
-                    //participate(node, v.getStartCycle());
+                    long currentTime = Utils.getCurrentTimeSeconds();
+
+                    if ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections())) {
+                        participate(node, v); // loop for other nodes
+                    } else {
+                        log.info("Elections closed");
+                    }
+
+                    //reap
 
                 } catch (Exception e) {
                     log.error("Error getting blockchain configuration! Error {}", e.getMessage());
@@ -486,7 +500,7 @@ public class MyLocalTon {
 
                 c.nodeStatus1.setText("todo");
                 c.validator1AdnlAddress.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorAdnlAddrHex());
-                c.validator1PubKey.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorIdPubKeyHex());
+                c.validator1PubKey.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorPubKeyHex());
 
             } catch (Exception e) {
                 log.error("Error updating validation tab GUI! Error {}", e.getMessage());
@@ -579,6 +593,7 @@ public class MyLocalTon {
         log.info("minter address {}", config2.getMinterSmcAddress());
 
         List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(node, config1.getElectorSmcAddress()));
+        log.info("participants {}", participants);
 
         return ValidationParam.builder()
                 .totalNodes(1L)
@@ -597,6 +612,7 @@ public class MyLocalTon {
                 .configAddr(config0.getConfigSmcAddr())
                 .electorAddr(config1.getElectorSmcAddress())
                 .minterAddr(config2.getMinterSmcAddress())
+                .participants(participants)
                 .build();
     }
 
@@ -1479,81 +1495,98 @@ public class MyLocalTon {
         return Pair.of(null, -1L);
     }
 
-    public void participate(Node node, long electionId) throws Exception {
+    public void participate(Node node, ValidationParam v) throws Exception {
 
-        //        WalletAddress walletAddress = createControllingSmartContract(genesisNode, node, -1L);
-        //        settings.getNode(node).setWalletAddress(walletAddress);
+        try {
+            long electionId = v.getStartCycle();
+            log.info("{} with wallet {} wants to participate in elections {} ({})", node.getNodeName(), node.getWalletAddress().getBounceableAddressBase64url(), electionId, Utils.toLocal(electionId));
 
-        ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
-        log.info("elections {}", config15);
-
-        convertFullNodeToValidator(node, electionId, config15.getValidatorsElectedFor());
-
-        String signature = new Fift().createValidatorElectionRequest(node, electionId, new BigDecimal("2.7"));
-        Pair<String, String> validatorPublicKey = new Fift().signValidatorElectionRequest(node, electionId, new BigDecimal("2.7"), signature);
-        settings.getNode(node).setValidatorMonitoringPubKeyHex(validatorPublicKey.getLeft());
-        settings.getNode(node).setValidatorMonitoringPubKeyInteger(validatorPublicKey.getRight());
-
-        saveSettingsToGson();
-
-        WalletAddress fromMasterWalletAddress = WalletAddress.builder()
-                .fullWalletAddress(settings.getMainWalletAddrFull())
-                .privateKeyHex(settings.getMainWalletPrvKey())
-                .bounceableAddressBase64url(settings.getMainWalletAddrBase64())
-                .filenameBase("main-wallet")
-                .filenameBaseLocation(settings.getMainWalletFilenameBaseLocation())
-                .build();
-
-        SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
-                .executionNode(node)
-                .fromWallet(node.getWalletAddress())
-                .fromWalletVersion(WalletVersion.V3)
-                .fromSubWalletId(-1L)
-                .destAddr(settings.getElectorSmcAddrHex())
-                .amount(BigDecimal.valueOf(50000L))
-                .bocLocation(node.getTonBinDir() + "validator-query.boc")
-                .build();
-
-        new Wallet().sendTonCoins(sendToncoinsParam);
-
-//        new Wallet().sendTonCoins(node,
-//                node.getWalletAddress(),
-//                settings.getElectorSmcAddrHex(),
-//                BigDecimal.valueOf(10001L),
-//                node.getTonBinDir() + "validator-query.boc");
-    }
-
-    public void convertFullNodeToValidator(Node node, long electionId, long electedForDuration) throws Exception {
-        if (Files.exists(Paths.get(node.getTonDbDir() + VALIDATOR))) { // TODO REMOVE?
-            log.info("Found non-empty state; Skip conversion to validator!");
-        } else {
-
-            ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
-            String newValKey = validatorEngineConsole.generateNewNodeKey(node);
-            log.info("newValKey {}", newValKey);
-            String newValPubKey = validatorEngineConsole.exportPubKey(node, newValKey);
-            log.info("newValPubKey {}", newValPubKey);
-            settings.getNode(node).setValidatorIdHex(newValKey);
-            settings.getNode(node).setValidatorIdBase64(newValPubKey);
-
-            String newValAdnl = validatorEngineConsole.generateNewNodeKey(node);
-            settings.getNode(node).setValidatorAdnlAddrHex(newValAdnl);
-            log.info("newValAdnl {}", newValAdnl);
-
-            long startWorkTime = Instant.now().getEpochSecond();
-            if (electionId == 0) {
-                electedForDuration = startWorkTime + electedForDuration;
+            if (node.getValidationParticipated()) {
+                log.info("{} has already sent request for elections", node.getNodeName());
+                return;
             }
-            validatorEngineConsole.addPermKey(node, newValKey, electionId, electedForDuration);
-            validatorEngineConsole.addTempKey(node, newValKey, electionId, electedForDuration);
-            validatorEngineConsole.addAdnl(node, newValAdnl);
-            validatorEngineConsole.addValidatorAddr(node, newValKey, newValAdnl, electionId, electedForDuration);
 
-            validatorEngineConsole.getStats(node);
-            settings.setCurrentValidatorSetSince(startWorkTime);
+            //can be done only once
+            createValidatorPubKeyAndAdnlAddress(node, electionId);
+
+            // if it's a genesis node it has a wallet already - main-wallet.pk
+            if (!node.getNodeName().equals("genesis")) {
+                log.info("creating controlling smart-contract (wallet) for node {}", node.getNodeName());
+                //        WalletAddress walletAddress = createControllingSmartContract(genesisNode, node, -1L);
+                //        settings.getNode(node).setWalletAddress(walletAddress);
+            }
+
+            Fift fift = new Fift();
+            String signature = fift.createValidatorElectionRequest(node, electionId, new BigDecimal("2.7"));
+            fift.signValidatorElectionRequest(node, electionId, new BigDecimal("2.7"), signature);
+
+            //top up validator wallet
+            WalletAddress fromMasterWalletAddress = WalletAddress.builder()
+                    .fullWalletAddress(settings.getMainWalletAddrFull())
+                    .privateKeyHex(settings.getMainWalletPrvKey())
+                    .bounceableAddressBase64url(settings.getMainWalletAddrBase64())
+                    .filenameBase("main-wallet")
+                    .filenameBaseLocation(settings.getMainWalletFilenameBaseLocation())
+                    .build();
+
+            // send stake and validator-query.boc to elector
+            SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
+                    .executionNode(node)
+                    .fromWallet(node.getWalletAddress())
+                    .fromWalletVersion(WalletVersion.V1)
+                    .fromSubWalletId(-1L)
+                    .destAddr(settings.getElectorSmcAddrHex())
+                    .amount(BigDecimal.valueOf(50000L))
+                    .bocLocation("validator-query.boc")
+//                    .bocLocation(node.getTonBinDir() + "validator-query.boc")
+                    .build();
+
+            new Wallet().sendTonCoins(sendToncoinsParam);
+
+            node.setValidationParticipated(true);
 
             saveSettingsToGson();
+        } catch (Exception e) {
+            log.error("Error participating in elections! Error {}", e.getMessage());
         }
+    }
+
+    public void createValidatorPubKeyAndAdnlAddress(Node node, long electionId) throws Exception {
+
+        long electionEnd = electionId + YEAR;
+
+        createSigningKeyForValidation(node, electionId, electionEnd);
+        createAdnlKeyForValidation(node, node.getValidationSigningKey(), electionEnd);
+
+        node.setValidationPubKeyAndAdnlCreated(true);
+
+        saveSettingsToGson();
+    }
+
+    void createSigningKeyForValidation(Node node, long electionId, long electionEnd) {
+        ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
+
+        String signingKey = validatorEngineConsole.generateNewNodeKey(node);
+        String signingPubKey = validatorEngineConsole.exportPubKey(node, signingKey);
+
+        log.info("signingKey {}, signingPubKey {}", signingKey, signingPubKey);
+
+        node.setValidationSigningKey(signingKey);
+        node.setValidationSigningPubKey(signingPubKey);
+
+        validatorEngineConsole.addPermKey(node, signingKey, electionId, electionEnd);
+        validatorEngineConsole.addTempKey(node, signingKey, electionEnd);
+    }
+
+    void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) {
+        ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
+        String adnlKey = validatorEngineConsole.generateNewNodeKey(node);
+        log.info("adnlKey {}", adnlKey);
+        node.setValidationAndlKey(adnlKey);
+
+        validatorEngineConsole.addAdnl(node, adnlKey);
+        validatorEngineConsole.addValidatorAddr(node, signingKey, adnlKey, electionEnd);
+        //validatorEngineConsole.getStats(node);
     }
 
     public void createFullnode(Node node, boolean enableLiteServer) throws Exception {
