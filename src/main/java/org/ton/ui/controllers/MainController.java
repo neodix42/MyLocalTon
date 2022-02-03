@@ -846,10 +846,6 @@ public class MainController implements Initializable {
             }
         };
 
-        //if (isWindows()) {
-        mainMenuTabs.getTabs().remove(validationTab);
-        //}
-
         coinsPerWallet.setOnKeyTyped(onlyDigits);
 
         nodePublicPort.setOnKeyTyped(onlyDigits);
@@ -979,6 +975,10 @@ public class MainController implements Initializable {
         myLogLevel.getItems().add("DEBUG");
         myLogLevel.getItems().add("ERROR");
         myLogLevel.getSelectionModel().select(settings.getLogSettings().getMyLocalTonLogLevel());
+
+        //if (isWindows()) {
+        mainMenuTabs.getTabs().remove(validationTab); // TODO
+        //}
 
         enableBlockchainExplorer.setVisible(false);
         enableBlockchainExplorerLabel.setVisible(false);

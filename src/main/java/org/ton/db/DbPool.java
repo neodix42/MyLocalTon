@@ -81,7 +81,7 @@ public class DbPool {
 
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.schedule(() -> {
-                log.info("new spawning prepared");
+                log.debug("new spawning prepared");
                 spawned.set(false);
             }, 5, TimeUnit.SECONDS);
             scheduler.shutdown();
