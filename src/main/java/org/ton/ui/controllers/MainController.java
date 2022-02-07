@@ -42,6 +42,7 @@ import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.executors.liteclient.api.ResultListBlockTransactions;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.main.App;
+import org.ton.parameters.ValidationParam;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
@@ -287,6 +288,15 @@ public class MainController implements Initializable {
 
     @FXML
     public ProgressBar validationCountDown;
+
+    @FXML
+    public Label minterBalance;
+
+    @FXML
+    public Label configBalance;
+
+    @FXML
+    public Label electorBalance;
 
     @FXML
     JFXCheckBox shardStateCheckbox;
@@ -978,7 +988,7 @@ public class MainController implements Initializable {
         myLogLevel.getSelectionModel().select(settings.getLogSettings().getMyLocalTonLogLevel());
 
         //if (isWindows()) {
-        mainMenuTabs.getTabs().remove(validationTab); // TODO
+        //mainMenuTabs.getTabs().remove(validationTab); // TODO
         //}
 
         enableBlockchainExplorer.setVisible(false);
@@ -1246,18 +1256,33 @@ public class MainController implements Initializable {
     }
 
     public void showConfiguration() throws Exception {
-        MyLocalTon.getInstance().getConfig(settings.getGenesisNode());
+        Utils.getConfig(settings.getGenesisNode());
     }
 
-    public void addValidator() throws InterruptedException {
-        BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-        blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
+    public void testValidator() throws Exception {
 
-        Thread.sleep(5000);
+        ValidationParam v = Utils.getConfig(settings.getGenesisNode());
+        log.info("validation params {}", v);
 
-        mainMenuTabs.getTabs().add(explorerTab);
+        Utils.updateValidationTabGUI(v);
 
-        WebEngine webEngine = webView.getEngine();
-        webEngine.load("http://127.0.0.1:8000/last");
+        MyLocalTon.getInstance().createFullnode(settings.getNode2(), true, true);
+        Utils.waitForBlockchainReady(settings.getNode2());
+        Utils.waitForNodeSynchronized(settings.getNode2());
+
+        MyLocalTon.getInstance().createFullnode(settings.getNode3(), true, true);
+        Utils.waitForBlockchainReady(settings.getNode3());
+        Utils.waitForNodeSynchronized(settings.getNode3());
+
+        long currentTime = Utils.getCurrentTimeSeconds();
+
+        if ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections())) {
+            log.info("Elections opened");
+            Utils.participate(settings.getGenesisNode(), v);
+            Utils.participate(settings.getNode2(), v);
+            Utils.participate(settings.getNode3(), v);
+        } else {
+            log.info("Elections closed");
+        }
     }
 }

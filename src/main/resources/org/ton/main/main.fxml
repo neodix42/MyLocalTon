@@ -321,10 +321,13 @@
 
                                         <Label text="Minter address" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
                                         <Label fx:id="minterAddr" text="-1:0000000000000000000000000000000000000000000000000000000000" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                                        <Label fx:id="minterBalance" text="9874654646531" GridPane.columnIndex="2" GridPane.rowIndex="8"/>
                                         <Label text="Configurator address" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                                         <Label fx:id="configAddr" text="-1:33333333333333333333333333333333333333333333333333333333333" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                                        <Label fx:id="configBalance" text="978" GridPane.columnIndex="2" GridPane.rowIndex="9"/>
                                         <Label text="Elector address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
                                         <Label fx:id="electorAddr" text="-1:55555555555555555555555555555555555555555555555555555555555" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                                        <Label fx:id="electorBalance" text="30000" GridPane.columnIndex="2" GridPane.rowIndex="10"/>
                                         <Label text="Validation period" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
                                         <Label fx:id="validationPeriod" text="4000" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
                                         <Label text="Duration of elections" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
@@ -336,7 +339,7 @@
                                         <Label text="Maximum stake" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
                                         <Label fx:id="maximumStake" text="10000000" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
 
-                                        <JFXButton alignment="CENTER" onAction="#addValidator" prefWidth="150.0" text="Add validator" textAlignment="CENTER" GridPane.columnIndex="0"
+                                        <JFXButton alignment="CENTER" onAction="#testValidator" prefWidth="150.0" text="Test validation" textAlignment="CENTER" GridPane.columnIndex="0"
                                                    GridPane.rowIndex="17"/>
                                         <JFXButton alignment="CENTER" onAction="#showConfiguration" prefWidth="150.0" text="Show all configs" textAlignment="CENTER" GridPane.columnIndex="0"
                                                    GridPane.rowIndex="18"/>

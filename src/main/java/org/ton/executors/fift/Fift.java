@@ -55,7 +55,7 @@ public class Fift {
             walletScript = "wallet.fif";
         }
 
-        log.debug("Sending using {}", walletScript);
+        log.info("Sending using {}", walletScript);
 
         result = new FiftExecutor().execute(sendToncoinsParam.getExecutionNode(),
                 "smartcont" + File.separator + walletScript,
@@ -66,8 +66,8 @@ public class Fift {
                 sendToncoinsParam.getAmount().toPlainString(),
                 (nonNull(sendToncoinsParam.getClearBounce()) && sendToncoinsParam.getClearBounce().equals(Boolean.TRUE)) ? "-n" : "",
                 (nonNull(sendToncoinsParam.getForceBounce()) && sendToncoinsParam.getForceBounce().equals(Boolean.TRUE)) ? "-b" : "",
-                (isNull(sendToncoinsParam.getBocLocation())) ? "" : "-B " + sendToncoinsParam.getBocLocation(),
-                (isNull(sendToncoinsParam.getComment())) ? "" : "-C " + sendToncoinsParam.getComment(),
+                (isNull(sendToncoinsParam.getComment())) ? "" : "-C " + sendToncoinsParam.getComment().trim(),
+                (isNull(sendToncoinsParam.getBocLocation())) ? "" : "-B\"" + sendToncoinsParam.getBocLocation().trim() + "\"",
                 resultBocFileLocation);
 
         String resultStr = result.getRight().get();
@@ -385,5 +385,16 @@ public class Fift {
         node.setValidationPubKeyHex(validatorPublicKeyHex);
         node.setValidationPubKeyInteger(bigInt.toString());
 
+    }
+
+    public void createRecoverStake(Node node) throws ExecutionException, InterruptedException {
+        log.info("createRecoverStake {}", node.getNodeName());
+
+        Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "recover-stake.fif");
+
+        String resultStr = result.getRight().get();
+        log.info(resultStr); // make debug
+
+        //resultStr = resultStr.replace("\r\n", SPACE).replace("\n", SPACE);
     }
 }

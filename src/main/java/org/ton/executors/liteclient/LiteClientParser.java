@@ -1601,4 +1601,25 @@ public class LiteClientParser {
         return participantsList;
     }
 
+    public static ResultComputeReturnStake parseRunMethodComputeReturnStake(String stdout) {
+
+        log.debug("parseRunMethodComputeReturnStake {}", stdout);
+
+        if (StringUtils.isEmpty(stdout) || !stdout.contains("compute_returned_stake"))
+            return ResultComputeReturnStake.builder()
+                    .stake(new BigInteger("-1"))
+                    .build();
+
+        if (stdout.contains("cannot parse answer")) {
+            return ResultComputeReturnStake.builder()
+                    .stake(new BigInteger("-1"))
+                    .build();
+        }
+
+        String result = StringUtils.substringBetween(stdout, "result:  [", "]");
+
+        return ResultComputeReturnStake.builder()
+                .stake(new BigInteger(result.trim()))
+                .build();
+    }
 }

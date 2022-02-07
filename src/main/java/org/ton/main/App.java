@@ -123,7 +123,6 @@ public class App extends Application {
 
         myLocalTon.createPreInstalledWallets(genesisNode);
 
-
         myLocalTon.runBlockchainExplorer();
 
         Thread.sleep(1000);
@@ -132,5 +131,7 @@ public class App extends Application {
         myLocalTon.runAccountsMonitor();
 
         //myLocalTon.runValidationMonitor(genesisNode);
+
+        myLocalTon.monitorParticipants(genesisNode);
     }
 }

@@ -3,6 +3,7 @@ package org.ton.utils;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import javafx.application.Platform;
+import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -16,18 +17,25 @@ import org.jutils.jprocesses.JProcesses;
 import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
 import org.ton.actions.MyLocalTon;
+import org.ton.db.entities.WalletEntity;
+import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.AccountState;
-import org.ton.executors.liteclient.api.ResultLastBlock;
+import org.ton.executors.liteclient.api.*;
 import org.ton.main.App;
 import org.ton.main.Main;
+import org.ton.parameters.SendToncoinsParam;
+import org.ton.parameters.ValidationParam;
+import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
+import org.ton.ui.controllers.MainController;
+import org.ton.wallet.Wallet;
 import org.ton.wallet.WalletVersion;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -54,6 +62,7 @@ import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.executors.liteclient.LiteClientParser.*;
+import static org.ton.main.App.fxmlLoader;
 
 @Slf4j
 public class Utils {
@@ -471,5 +480,192 @@ public class Utils {
 
     public static long getCurrentTimeSeconds() {
         return System.currentTimeMillis() / 1000;
+    }
+
+    public static ValidationParam getConfig(org.ton.settings.Node node) throws Exception {
+
+        ResultConfig12 config12 = LiteClientParser.parseConfig12(new LiteClient().executeBlockchainInfo(node));
+        log.info("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
+
+        long activeElectionId = new LiteClient().executeGetActiveElectionId(node, MyLocalTon.getInstance().getSettings().getElectorSmcAddrHex());
+        log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
+
+        ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
+        log.info("active elections {}", config15);
+
+        ResultConfig17 config17 = LiteClientParser.parseConfig17(new LiteClient().executeGetMinMaxStake(node));
+        log.info("min/max stake {}", config17);
+
+        ResultConfig34 config34 = LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(node));
+        log.info("current validators {}", config34);
+
+        log.info("start work time since {}, until {}", Utils.toLocal(config34.getValidators().getSince()), Utils.toLocal(config34.getValidators().getUntil()));
+
+        ResultConfig32 config32 = LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(node));
+        log.info("previous validators {}", config32);
+
+        ResultConfig36 config36 = LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(node));
+        log.info("next validators {}", config36);
+
+        ResultConfig0 config0 = LiteClientParser.parseConfig0(new LiteClient().executeGetConfigSmcAddress(node));
+        log.info("config address {}", config0.getConfigSmcAddr());
+
+        ResultConfig1 config1 = LiteClientParser.parseConfig1(new LiteClient().executeGetElectorSmcAddress(node));
+        log.info("elector address {}", config1.getElectorSmcAddress());
+
+        ResultConfig2 config2 = LiteClientParser.parseConfig2(new LiteClient().executeGetMinterSmcAddress(node));
+        log.info("minter address {}", config2.getMinterSmcAddress());
+
+        List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(node, config1.getElectorSmcAddress()));
+        log.info("participants {}", participants);
+
+        return ValidationParam.builder()
+                .totalNodes(1L)
+                .validatorNodes(config34.getValidators().getTotal())
+                .blockchainLaunchTime(config12.getEnabledSince())
+                .startCycle(activeElectionId) // same as config34.getValidators().getSince()
+                .endCycle(activeElectionId + config15.getValidatorsElectedFor())
+                .startElections(activeElectionId - config15.getElectionsStartBefore())
+                .endElections(activeElectionId - config15.getElectionsEndBefore())
+                .nextElections(activeElectionId - config15.getElectionsStartBefore() + config15.getValidatorsElectedFor())
+                .electionDuration(config15.getElectionsStartBefore() - config15.getElectionsEndBefore())
+                .validationDuration(config15.getValidatorsElectedFor())
+                .holdPeriod(config15.getStakeHeldFor())
+                .minStake(config17.getMinStake())
+                .maxStake(config17.getMaxStake())
+                .configAddr(config0.getConfigSmcAddr())
+                .electorAddr(config1.getElectorSmcAddress())
+                .minterAddr(config2.getMinterSmcAddress())
+                .participants(participants)
+                .build();
+    }
+
+    public static void participate(Node node, ValidationParam v) {
+
+        try {
+            long electionId = v.getStartCycle();
+            MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+            if (node.getValidationParticipated()) {
+                log.info("{} has already sent request for elections", node.getNodeName());
+                return;
+            }
+
+            //can be done only once
+            MyLocalTon.getInstance().createValidatorPubKeyAndAdnlAddress(node, electionId);
+
+            // if it's a genesis node it has a wallet already - main-wallet.pk
+            if (isNull(node.getWalletAddress())) {
+                log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
+                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), 30005L);
+                node.setWalletAddress(walletEntity.getWallet());
+                Thread.sleep(10 * 1000); //10 sec
+            }
+
+            log.info("{} with wallet {} wants to participate in elections {} ({})", node.getNodeName(), node.getWalletAddress().getBounceableAddressBase64url(), electionId, Utils.toLocal(electionId));
+
+            Fift fift = new Fift();
+            String signature = fift.createValidatorElectionRequest(node, electionId, new BigDecimal("2.7"));
+            fift.signValidatorElectionRequest(node, electionId, new BigDecimal("2.7"), signature);
+
+            // send stake and validator-query.boc to elector
+            SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
+                    .executionNode(node)
+                    .fromWallet(node.getWalletAddress())
+                    .fromWalletVersion(WalletVersion.V3)
+                    .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
+                    .destAddr(settings.getElectorSmcAddrHex())
+                    .amount(BigDecimal.valueOf(10002L))
+                    .comment("validator-request")
+                    .bocLocation(node.getTonBinDir() + "validator-query.boc")
+                    .build();
+
+            new Wallet().sendTonCoins(sendToncoinsParam);
+
+            node.setValidationParticipated(true);
+
+            settings.saveSettingsToGson(settings);
+
+        } catch (Exception e) {
+            log.error("Error participating in elections! Error {}", e.getMessage());
+        }
+    }
+
+    private static void colorValidationTiming(ValidationParam v, MainController c) {
+
+        long currentTime = System.currentTimeMillis() / 1000;
+
+        if (v.getStartCycle() > currentTime) {
+            c.startCycle.setTextFill(Color.GREEN);
+        } else {
+            c.startCycle.setTextFill(Color.BLACK);
+        }
+
+        if (v.getEndCycle() > currentTime) {
+            c.endCycle.setTextFill(Color.GREEN);
+        } else {
+            c.endCycle.setTextFill(Color.BLACK);
+        }
+
+        if (v.getStartElections() > currentTime) {
+            c.startElections.setTextFill(Color.GREEN);
+        } else {
+            c.startElections.setTextFill(Color.BLACK);
+        }
+
+        if (v.getEndElections() > currentTime) {
+            c.endElections.setTextFill(Color.GREEN);
+        } else {
+            c.endElections.setTextFill(Color.BLACK);
+        }
+
+        if (v.getNextElections() > currentTime) {
+            c.nextElections.setTextFill(Color.GREEN);
+        } else {
+            c.nextElections.setTextFill(Color.BLACK);
+        }
+    }
+
+    public static void updateValidationTabGUI(ValidationParam v) {
+
+        Platform.runLater(() -> {
+
+            try {
+
+                MainController c = fxmlLoader.getController();
+                c.totalNodes.setText("1");
+                c.totalValidators.setText(v.getValidatorNodes().toString());
+                c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+                c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+
+                c.startCycle.setText(Utils.toLocal(v.getStartCycle()));
+                c.endCycle.setText(Utils.toLocal(v.getEndCycle()));
+                c.startElections.setText(Utils.toLocal(v.getStartElections()));
+                c.endElections.setText(Utils.toLocal(v.getEndElections()));
+                c.nextElections.setText(Utils.toLocal(v.getNextElections()));
+
+                colorValidationTiming(v, c);
+
+                c.minterAddr.setText(v.getMinterAddr());
+                c.configAddr.setText(v.getConfigAddr());
+                c.electorAddr.setText(v.getElectorAddr());
+                c.validationPeriod.setText(v.getValidationDuration().toString());
+                c.electionPeriod.setText(v.getElectionDuration().toString());
+                c.holdPeriod.setText(v.getHoldPeriod().toString());
+                c.minimumStake.setText(v.getMinStake().divide(BigInteger.valueOf(1000000000L)).toString());
+                c.maximumStake.setText(v.getMaxStake().divide(BigInteger.valueOf(1000000000L)).toString());
+
+                c.nodePublicPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getPublicPort().toString());
+                c.nodeConsolePort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getConsolePort().toString());
+                c.liteServerPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getLiteServerPort().toString());
+
+                c.nodeStatus1.setText("todo");
+                c.validator1AdnlAddress.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorAdnlAddrHex());
+                c.validator1PubKey.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorPubKeyHex());
+
+            } catch (Exception e) {
+                log.error("Error updating validation tab GUI! Error {}", e.getMessage());
+            }
+        });
     }
 }

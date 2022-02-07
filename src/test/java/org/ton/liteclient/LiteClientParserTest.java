@@ -511,6 +511,16 @@ public class LiteClientParserTest {
     }
 
     @Test
+    public void TestParseComputeReturnStake() throws IOException {
+        // given
+        String computeReturnStake = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/compute_returnstake.log")), StandardCharsets.UTF_8);
+        // when
+        ResultComputeReturnStake stake = LiteClientParser.parseRunMethodComputeReturnStake(computeReturnStake);
+
+        assertEquals(stake.getStake(), BigInteger.ZERO);
+    }
+
+    @Test
     public void TestParseParticipantListEmpty() throws IOException {
         // given
         String participantListOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/participant_list_empty.log")), StandardCharsets.UTF_8);
