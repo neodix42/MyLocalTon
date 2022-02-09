@@ -1256,33 +1256,136 @@ public class MainController implements Initializable {
     }
 
     public void showConfiguration() throws Exception {
-        Utils.getConfig(settings.getGenesisNode());
-    }
-
-    public void testValidator() throws Exception {
-
         ValidationParam v = Utils.getConfig(settings.getGenesisNode());
         log.info("validation params {}", v);
 
         Utils.updateValidationTabGUI(v);
+    }
 
-        MyLocalTon.getInstance().createFullnode(settings.getNode2(), true, true);
-        Utils.waitForBlockchainReady(settings.getNode2());
-        Utils.waitForNodeSynchronized(settings.getNode2());
+    public void testValidator() throws Exception {
 
-        MyLocalTon.getInstance().createFullnode(settings.getNode3(), true, true);
-        Utils.waitForBlockchainReady(settings.getNode3());
-        Utils.waitForNodeSynchronized(settings.getNode3());
+        Executors.newSingleThreadExecutor().submit(() -> {
+            Thread.currentThread().setName("MyLocalTon - Accounts Monitor");
+            try {
 
-        long currentTime = Utils.getCurrentTimeSeconds();
+                org.ton.settings.Node node2 = settings.getNode2();
+//                org.ton.settings.Node node3 = settings.getNode3();
+//                org.ton.settings.Node node4 = settings.getNode4();
+//                org.ton.settings.Node node5 = settings.getNode5();
 
-        if ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections())) {
-            log.info("Elections opened");
-            Utils.participate(settings.getGenesisNode(), v);
-            Utils.participate(settings.getNode2(), v);
-            Utils.participate(settings.getNode3(), v);
-        } else {
-            log.info("Elections closed");
-        }
+                ValidationParam v = Utils.getConfig(settings.getGenesisNode());
+                log.info("validation params {}", v);
+
+                Utils.updateValidationTabGUI(v);
+
+//                Executors.newSingleThreadExecutor().submit(() -> {
+//                    Thread.currentThread().setName("MyLocalTon - Validator " + node2.getNodeName());
+//                    try {
+//                        MyLocalTon.getInstance().createFullnode(node2, true, true);
+//                        Utils.waitForBlockchainReady(node2);
+//                        Utils.waitForNodeSynchronized(node2);
+//                        saveSettings();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+
+//                Executors.newSingleThreadExecutor().submit(() -> {
+//                    Thread.currentThread().setName("MyLocalTon - Validator " + node3.getNodeName());
+//                    try {
+//                        MyLocalTon.getInstance().createFullnode(node3, true, true);
+//                        Utils.waitForBlockchainReady(node3);
+//                        Utils.waitForNodeSynchronized(node3);
+//                        saveSettings();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+//
+//                Executors.newSingleThreadExecutor().submit(() -> {
+//                    Thread.currentThread().setName("MyLocalTon - Validator " + node4.getNodeName());
+//                    try {
+//                        MyLocalTon.getInstance().createFullnode(node4, true, true);
+//                        Utils.waitForBlockchainReady(node4);
+//                        Utils.waitForNodeSynchronized(node4);
+//                        saveSettings();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+
+                Thread.sleep(5 * 1000);
+
+                MyLocalTon.getInstance().createFullnode(node2, true, true); //     add true to create wallet
+                Utils.waitForBlockchainReady(node2);
+                Utils.waitForNodeSynchronized(node2);
+                saveSettings();
+
+                Thread.sleep(10 * 1000);
+
+                v = Utils.getConfig(settings.getGenesisNode());
+                log.info("validation params {}", v);
+
+                while (true) {
+                    long electionId = new LiteClient().executeGetActiveElectionId(settings.getGenesisNode(), settings.getElectorSmcAddrHex());
+                    log.info("ELECTION ID {} {}", electionId, Utils.toUTC(electionId));
+                    if (electionId != 0) break;
+                    Thread.sleep(10 * 1000);
+                }
+
+                long currentTime = Utils.getCurrentTimeSeconds();
+
+                if ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections())) {
+                    log.info("Elections opened");
+                    Utils.participate(settings.getGenesisNode(), v);
+                    Utils.participate(node2, v);
+                    //Utils.participate(node3, v);
+                    //Utils.participate(node4, v);
+                    //Utils.participate(node5, v);
+                } else {
+                    log.info("Elections closed");
+                }
+
+                Thread.sleep(2000);
+                String stdout;
+                while (true) {
+                    stdout = new LiteClient().executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex());
+                    if (LiteClientParser.parseRunMethodParticipantList(stdout).isEmpty()) {
+                        break;
+                    }
+                    log.info("PARTICIPANTS {}, sleep 30sec", LiteClientParser.parseRunMethodParticipantList(stdout).size());
+                    Thread.sleep(30 * 1000);
+                }
+
+                stdout = new LiteClient().executeGetCurrentValidators(settings.getGenesisNode());
+                log.info(stdout);
+                while (Long.parseLong(StringUtils.substringBetween(stdout, "total:", " ").trim()) != 2) {
+                    stdout = new LiteClient().executeGetCurrentValidators(settings.getGenesisNode());
+                    log.info("sleep 15 sec");
+                    Thread.sleep(15 * 1000);
+                }
+
+                stdout = new LiteClient().executeGetPreviousValidators(settings.getGenesisNode());
+                log.info(stdout);
+
+                stdout = new LiteClient().executeGetNextValidators(settings.getGenesisNode());
+                log.info(stdout);
+
+                stdout = new LiteClient().executeGetCurrentValidators(settings.getGenesisNode());
+                log.info(stdout);
+
+                log.info("Up and running 2 new validators");
+
+                while (true) {
+                    long electionId = new LiteClient().executeGetActiveElectionId(settings.getGenesisNode(), settings.getElectorSmcAddrHex());
+                    log.info("ELECTION ID {}, {}", electionId, Utils.toLocal(electionId));
+                    //   if (electionId != 0) break;
+                    Thread.sleep(15 * 1000);
+                }
+
+            } catch (Exception e) {
+                log.error("ERROR, {}", e.getMessage());
+            }
+        });
     }
 }

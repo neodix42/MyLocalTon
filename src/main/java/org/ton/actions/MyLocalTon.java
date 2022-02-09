@@ -183,7 +183,7 @@ public class MyLocalTon {
 
             Process validatorGenesisProcess = createGenesisValidator(node, node.getNodeGlobalConfigLocation());
 
-            new ValidatorEngine().enableLiteServer(node, node.getNodeGlobalConfigLocation(), false);
+            validatorEngine.enableLiteServer(node, node.getNodeGlobalConfigLocation(), false);
 
             return validatorGenesisProcess;
         } else {
@@ -233,8 +233,8 @@ public class MyLocalTon {
 
             log.info("newNodeKey {}, newNodePubKey {}, newValAdnl {}", newNodeKey, newNodePubKey, newValAdnl);
 
-            settings.getNode(node).setValidatorPubKeyBase64(newNodePubKey);
-            settings.getNode(node).setValidatorAdnlAddrHex(newValAdnl);
+            node.setValidatorPubKeyBase64(newNodePubKey);
+            node.setValidatorAdnlAddrHex(newValAdnl);
 
             long startWorkTime = Instant.now().getEpochSecond();
             long electionId = 0L;
@@ -267,9 +267,9 @@ public class MyLocalTon {
 
     public WalletEntity createWalletWithFundsAndSmartContract(Node fromNode, Node toNode, long workchain, long subWalletId, long amount) throws Exception {
         Wallet wallet = new Wallet();
-        WalletVersion walletVersion;
+        WalletVersion walletVersion = settings.getWalletSettings().getWalletVersion();
+        log.debug("createWalletWithFundsAndSmartContract, default wallet version {}", walletVersion.getValue());
 
-        walletVersion = settings.getWalletSettings().getWalletVersion();
         WalletAddress walletAddress = wallet.createWallet(toNode, walletVersion, workchain, subWalletId);
 
         WalletEntity walletEntity = WalletEntity.builder()
@@ -296,7 +296,7 @@ public class MyLocalTon {
                 .build();
 
         SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
-                .executionNode(fromNode)
+                .executionNode(settings.getGenesisNode())
                 .fromWallet(fromMasterWalletAddress)
                 .fromWalletVersion(WalletVersion.V1)
                 .fromSubWalletId(-1L)
@@ -306,9 +306,10 @@ public class MyLocalTon {
 
         wallet.sendTonCoins(sendToncoinsParam);
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         // install smart-contract into a new wallet
+        log.debug("installing wallet smc from node {}, boc {}", fromNode.getNodeName(), walletAddress.getWalletQueryFileBocLocation());
         wallet.installWalletSmartContract(fromNode, walletAddress);
 
         return walletEntity;
@@ -358,20 +359,20 @@ public class MyLocalTon {
         }
     }
 
-    public WalletEntity createWalletEntity(Node genesisNode, String fileBaseName, long workchain, long subWalletid, long amount) throws Exception {
+    public WalletEntity createWalletEntity(Node node, String fileBaseName, long workchain, long subWalletid, long amount) {
 
         try {
-
             WalletEntity wallet;
             if (isNull(fileBaseName)) { //generate and read address of just generated wallet
-                wallet = createWalletWithFundsAndSmartContract(genesisNode, genesisNode, workchain, subWalletid, amount);
+                wallet = createWalletWithFundsAndSmartContract(settings.getGenesisNode(), node, workchain, subWalletid, amount);
                 log.debug("create wallet address {}", wallet.getHexAddress());
             } else { //read address of initially created wallet (main-wallet and config-master)
-                wallet = new Fift().getWalletByBasename(genesisNode, fileBaseName);
-                log.info("read wallet address: {}", wallet.getHexAddress());
+                wallet = new Fift().getWalletByBasename(node, fileBaseName);
+                log.debug("read wallet address: {}", wallet.getHexAddress());
             }
 
-            Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress());
+            Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(node, wallet.getWc() + ":" + wallet.getHexAddress());
+            log.info("on node {}, created wallet {} with balance {}", node.getNodeName(), wallet.getWc() + ":" + wallet.getHexAddress(), stateAndSeqno.getLeft().getBalance().getToncoins());
             App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
 
             wallet.setAccountState(stateAndSeqno.getLeft());
@@ -1354,9 +1355,6 @@ public class MyLocalTon {
                     AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
                     log.info("{} ({}) balance: {}", settings.getGenesisNode().getNodeName(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
 
-                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getNode2(), settings.getNode2().getWalletAddress().getFullWalletAddress()));
-                    log.info("{} ({}) balance: {}", settings.getNode2().getNodeName(), settings.getNode2().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
-
                     accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
                     log.info("{} ({}) balance: {}", "main-wallet", settings.getMainWalletAddrFull(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
 
@@ -1365,6 +1363,16 @@ public class MyLocalTon {
 
                     accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
                     log.info("{} ({}) balance: {}", "elector-smc", settings.getElectorSmcAddrHex(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+
+                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getNode2(), settings.getNode2().getWalletAddress().getFullWalletAddress()));
+                    log.info("{} ({}) balance: {}", settings.getNode2().getNodeName(), settings.getNode2().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+
+//                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getNode3(), settings.getNode3().getWalletAddress().getFullWalletAddress()));
+//                    log.info("{} ({}) balance: {}", settings.getNode3().getNodeName(), settings.getNode3().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+//
+//                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getNode4(), settings.getNode4().getWalletAddress().getFullWalletAddress()));
+//                    log.info("{} ({}) balance: {}", settings.getNode4().getNodeName(), settings.getNode4().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+
 
                 } catch (Exception e) {
                     log.error("Error in monitorParticipants(), " + e.getMessage());
@@ -1433,13 +1441,13 @@ public class MyLocalTon {
 
             new Wallet().sendTonCoins(sendToncoinsParam);
         } else {
-            log.info("stake is {}, nothing to reap", result.getStake());
+            log.info("{} stake is {}, nothing to reap", node.getNodeName(), result.getStake());
         }
     }
 
     public void createValidatorPubKeyAndAdnlAddress(Node node, long electionId) throws Exception {
 
-        long electionEnd = electionId + YEAR;
+        long electionEnd = electionId + 600; // was YEAR
 
         createSigningKeyForValidation(node, electionId, electionEnd);
         createAdnlKeyForValidation(node, node.getValidationSigningKey(), electionEnd);
@@ -1455,10 +1463,10 @@ public class MyLocalTon {
         String signingKey = validatorEngineConsole.generateNewNodeKey(node);
         String signingPubKey = validatorEngineConsole.exportPubKey(node, signingKey);
 
-        log.info("signingKey {}, signingPubKey {}", signingKey, signingPubKey);
+        log.info("{} signingKey {}, signingPubKey {}", node.getNodeName(), signingKey, signingPubKey);
 
-        node.setValidationSigningKey(signingKey);
-        node.setValidationSigningPubKey(signingPubKey);
+        node.setValidationSigningKey(signingKey); // setValidatorIdHex(newValKey);
+        node.setValidationSigningPubKey(signingPubKey); // setValidatorIdBase64(newValPubKey);
 
         validatorEngineConsole.addPermKey(node, signingKey, electionId, electionEnd);
         validatorEngineConsole.addTempKey(node, signingKey, electionEnd);
@@ -1467,8 +1475,8 @@ public class MyLocalTon {
     void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) {
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
         String adnlKey = validatorEngineConsole.generateNewNodeKey(node);
-        log.info("adnlKey {}", adnlKey);
-        node.setValidationAndlKey(adnlKey);
+        log.info("{} adnlKey {}", node.getNodeName(), adnlKey);
+        node.setValidationAndlKey(adnlKey); // .setValidatorAdnlAddrHex(newValAdnl);
 
         validatorEngineConsole.addAdnl(node, adnlKey);
         validatorEngineConsole.addValidatorAddr(node, signingKey, adnlKey, electionEnd);

@@ -32,12 +32,6 @@ public class Wallet {
         return nonNull(accountState.getStatus()); // has stateInit with some toncoins
     }
 
-    /**
-     * Used to send toncoins from one-time-wallet, where do we have prvkey, which is used in fift script
-     */
-    public String sendTonCoins(SendToncoinsParam sendToncoinsParam) throws Exception {
-        return getSeqNoAndSendTonCoins(sendToncoinsParam);
-    }
 
     public boolean walletHasContractInstalled(Node fromNode, WalletAddress walletAddress, String contractQueryBocFile) throws Exception {
         AccountState accountState;
@@ -75,21 +69,46 @@ public class Wallet {
 
     }
 
-    public String getSeqNoAndSendTonCoins(SendToncoinsParam sendToncoinsParam) throws Exception {
+    /**
+     * Used to send toncoins from one-time-wallet, where do we have prvkey, which is used in fift script
+     */
+    public String sendTonCoins(SendToncoinsParam sendToncoinsParam) throws Exception {
 
         long seqno = liteClient.executeGetSeqno(sendToncoinsParam.getExecutionNode(), sendToncoinsParam.getFromWallet().getFullWalletAddress());
 
-        log.debug("getSeqNoAndSendTonCoins(), source wallet {}, version {}, seqno {}, amount {}, dest {}",
-                sendToncoinsParam.getFromWallet().getFullWalletAddress(), sendToncoinsParam.getFromWalletVersion().getValue(), seqno, sendToncoinsParam.getAmount(), sendToncoinsParam.getDestAddr());
+        log.info("getSeqNoAndSendTonCoins(), source wallet {}, version {}, seqno {}, amount {}, dest {}",
+                sendToncoinsParam.getFromWallet().getFullWalletAddress(),
+                sendToncoinsParam.getFromWalletVersion().getValue(),
+                seqno,
+                sendToncoinsParam.getAmount(),
+                sendToncoinsParam.getDestAddr());
 
         String externalMsgLocation = new Fift().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
 
-        log.debug(liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
+        log.info(liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
 
         //FileUtils.deleteQuietly(new File(tempBocFileAbsolutePath)); // sure ?
 
-        log.info("Sent {} Toncoins by node {} from {} to {}.",
-                sendToncoinsParam.getAmount(), sendToncoinsParam.getExecutionNode().getNodeName(), sendToncoinsParam.getFromWallet().getFullWalletAddress(), sendToncoinsParam.getDestAddr());
+        log.info("Sent {} Toncoins by {} from {} to {}.",
+                sendToncoinsParam.getAmount(),
+                sendToncoinsParam.getExecutionNode().getNodeName(),
+                sendToncoinsParam.getFromWallet().getFullWalletAddress(),
+                sendToncoinsParam.getDestAddr());
+
+        int counter = 0;
+        while (true) {
+            Thread.sleep(3 * 1000);
+            long newSeqno = liteClient.executeGetSeqno(sendToncoinsParam.getExecutionNode(), sendToncoinsParam.getFromWallet().getFullWalletAddress());
+            if (newSeqno > seqno) {
+                break;
+            }
+            log.info("{} waiting for wallet to update seqno. Old seqno {}, new seqno {}", sendToncoinsParam.getExecutionNode().getNodeName(), seqno, newSeqno);
+            counter++;
+            if ((counter % 10) == 0) {
+                log.info("resending external message {}", externalMsgLocation);
+                log.info(liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
+            }
+        }
 
         return externalMsgLocation;
     }

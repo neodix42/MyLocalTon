@@ -40,8 +40,6 @@ public interface Node {
 
     Integer getLiteServerPort();
 
-    Long getInitialStake();
-
     String getNodeName();
 
     Process getNodeProcess();

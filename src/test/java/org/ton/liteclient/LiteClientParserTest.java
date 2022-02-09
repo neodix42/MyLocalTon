@@ -539,7 +539,7 @@ public class LiteClientParserTest {
         ResultConfig0 result = LiteClientParser.parseConfig0(getConfig0);
 
         // then
-        assertThat(result.getConfigSmcAddr()).isEqualTo("5555555555555555555555555555555555555555555555555555555555555555");
+        assertThat(result.getConfigSmcAddr()).isEqualTo("-1:5555555555555555555555555555555555555555555555555555555555555555");
         log.info(result.toString());
     }
 
@@ -552,7 +552,7 @@ public class LiteClientParserTest {
         ResultConfig1 result = LiteClientParser.parseConfig1(getConfig1);
 
         // then
-        assertThat(result.getElectorSmcAddress()).isEqualTo("3333333333333333333333333333333333333333333333333333333333333333");
+        assertThat(result.getElectorSmcAddress()).isEqualTo("-1:3333333333333333333333333333333333333333333333333333333333333333");
         log.info(result.toString());
     }
 
@@ -565,7 +565,7 @@ public class LiteClientParserTest {
         ResultConfig2 result = LiteClientParser.parseConfig2(getConfig2);
 
         // then
-        assertThat(result.getMinterSmcAddress()).isEqualTo("0000000000000000000000000000000000000000000000000000000000000000");
+        assertThat(result.getMinterSmcAddress()).isEqualTo("-1:0000000000000000000000000000000000000000000000000000000000000000");
         log.info(result.toString());
     }
 
@@ -637,10 +637,10 @@ public class LiteClientParserTest {
         // when
         ResultConfig34 result = LiteClientParser.parseConfig34(getConfig34);
         // then
-        assertThat(result.getValidators().getUntil()).isEqualTo(1619177079L);
-        assertThat(result.getValidators().getTotal()).isEqualTo(1L);
-        assertThat(result.getValidators().getMain()).isEqualTo(1L);
-        assertThat(result.getValidators().getTotalWeight()).isEqualTo(100L);
+        assertThat(result.getValidators().getUntil()).isEqualTo(1644344873L);
+        assertThat(result.getValidators().getTotal()).isEqualTo(2L);
+        assertThat(result.getValidators().getMain()).isEqualTo(2L);
+        assertThat(result.getValidators().getTotalWeight()).isEqualTo(1152921504606846976L);
         log.info(result.getValidators().toString());
     }
 

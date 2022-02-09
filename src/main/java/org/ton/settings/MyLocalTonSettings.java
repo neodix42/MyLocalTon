@@ -131,8 +131,8 @@ public class MyLocalTonSettings implements Serializable {
     @Getter
     @Setter
     public static class WalletSettings implements Serializable {
-        Long numberOfPreinstalledWallets = 5L;
-        Long initialAmount = 777L;
+        Long numberOfPreinstalledWallets = 4L;
+        Long initialAmount = 778L;
         WalletVersion walletVersion = WalletVersion.V3;
         Long defaultWorkChain = 0L;
         long defaultSubWalletId = 1L;
@@ -158,11 +158,11 @@ public class MyLocalTonSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 18 * 60L;//365 * 24 * 60 * 60L; // 1080=18min
-        Long electionStartBefore = 8 * 60L; //5
-        Long electionEndBefore = 2 * 60L; //1
-        Long electionStakesFrozenFor = 2 * 60L; //2
-        Long originalValidatorSetValidFor = 8 * 60L;//365 * 24 * 60 * 60L; // 480=8min
+        Long electedFor = 18 * 60L; // 3 * 60L;//365 * 24 * 60 * 60L; // 1080=18min
+        Long electionStartBefore = 8 * 60L; //8 * 60L; //5
+        Long electionEndBefore = 2 * 60L;//2 * 60L; //1
+        Long electionStakesFrozenFor = 2 * 60L;// 2 * 60L; //2
+        Long originalValidatorSetValidFor = 8 * 60L; //7 * 60L;//365 * 24 * 60 * 60L; // 480=8min
 
         Long validatorStateTtl = 31536000L; // 1 year
         Long validatorBlockTtl = 31536000L;
@@ -179,8 +179,10 @@ public class MyLocalTonSettings implements Serializable {
 
         Long minValidatorStake = 10000L;
         Long maxValidatorStake = 10000000L;
-        Long minTotalValidatorStake = 500000L;
+        Long minTotalValidatorStake = 10000L;
         Long maxFactor = 3L;
+        Long initialStake = 10000 * 1000000000L; // 10k
+        //Long initialStake = 17L; // 10k
     }
 
     Long currentValidatorSetSince = 0L;

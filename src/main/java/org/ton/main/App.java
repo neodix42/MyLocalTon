@@ -130,7 +130,7 @@ public class App extends Application {
 
         myLocalTon.runAccountsMonitor();
 
-        //myLocalTon.runValidationMonitor(genesisNode);
+//        myLocalTon.runValidationMonitor(genesisNode);
 
         myLocalTon.monitorParticipants(genesisNode);
     }

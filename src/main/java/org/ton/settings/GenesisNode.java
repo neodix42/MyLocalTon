@@ -31,8 +31,6 @@ public class GenesisNode implements Serializable, Node {
     Integer dhtOutPort = 3278;
     Integer dhtForkedOutPort = 3288;
 
-    Long initialStake = 10000 * 1000000000L; // 10k
-
     String validatorPrvKeyHex;
     String validatorPrvKeyBase64;
     String validatorPubKeyHex;

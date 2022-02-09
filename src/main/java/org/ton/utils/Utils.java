@@ -523,8 +523,8 @@ public class Utils {
                 .totalNodes(1L)
                 .validatorNodes(config34.getValidators().getTotal())
                 .blockchainLaunchTime(config12.getEnabledSince())
-                .startCycle(activeElectionId) // same as config34.getValidators().getSince()
-                .endCycle(activeElectionId + config15.getValidatorsElectedFor())
+                .startValidationCycle(activeElectionId) // same as config34.getValidators().getSince()
+                .endValidationCycle(activeElectionId + config15.getValidatorsElectedFor())
                 .startElections(activeElectionId - config15.getElectionsStartBefore())
                 .endElections(activeElectionId - config15.getElectionsEndBefore())
                 .nextElections(activeElectionId - config15.getElectionsStartBefore() + config15.getValidatorsElectedFor())
@@ -543,7 +543,7 @@ public class Utils {
     public static void participate(Node node, ValidationParam v) {
 
         try {
-            long electionId = v.getStartCycle();
+            long electionId = v.getStartValidationCycle();
             MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
             if (node.getValidationParticipated()) {
@@ -551,32 +551,34 @@ public class Utils {
                 return;
             }
 
-            //can be done only once
-            MyLocalTon.getInstance().createValidatorPubKeyAndAdnlAddress(node, electionId);
-
             // if it's a genesis node it has a wallet already - main-wallet.pk
             if (isNull(node.getWalletAddress())) {
                 log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
                 WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), 30005L);
                 node.setWalletAddress(walletEntity.getWallet());
-                Thread.sleep(10 * 1000); //10 sec
+                Thread.sleep(5 * 1000); //10 sec
             }
+
+            //can be done only once
+            MyLocalTon.getInstance().createValidatorPubKeyAndAdnlAddress(node, electionId);
 
             log.info("{} with wallet {} wants to participate in elections {} ({})", node.getNodeName(), node.getWalletAddress().getBounceableAddressBase64url(), electionId, Utils.toLocal(electionId));
 
             Fift fift = new Fift();
-            String signature = fift.createValidatorElectionRequest(node, electionId, new BigDecimal("2.7"));
-            fift.signValidatorElectionRequest(node, electionId, new BigDecimal("2.7"), signature);
+            String signature = fift.createValidatorElectionRequest(node, electionId, new BigDecimal("10"));
+            fift.signValidatorElectionRequest(node, electionId, new BigDecimal("10"), signature);
+
+            MyLocalTon.getInstance().saveSettingsToGson();
 
             // send stake and validator-query.boc to elector
             SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                     .executionNode(node)
                     .fromWallet(node.getWalletAddress())
-                    .fromWalletVersion(WalletVersion.V3)
+                    .fromWalletVersion(WalletVersion.V3) // todo wallet version
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
-                    .amount(BigDecimal.valueOf(10002L))
-                    .comment("validator-request")
+                    .amount(BigDecimal.valueOf(10004L))
+                    // .comment("validator-request")
                     .bocLocation(node.getTonBinDir() + "validator-query.boc")
                     .build();
 
@@ -585,7 +587,6 @@ public class Utils {
             node.setValidationParticipated(true);
 
             settings.saveSettingsToGson(settings);
-
         } catch (Exception e) {
             log.error("Error participating in elections! Error {}", e.getMessage());
         }
@@ -595,13 +596,13 @@ public class Utils {
 
         long currentTime = System.currentTimeMillis() / 1000;
 
-        if (v.getStartCycle() > currentTime) {
+        if (v.getStartValidationCycle() > currentTime) {
             c.startCycle.setTextFill(Color.GREEN);
         } else {
             c.startCycle.setTextFill(Color.BLACK);
         }
 
-        if (v.getEndCycle() > currentTime) {
+        if (v.getEndValidationCycle() > currentTime) {
             c.endCycle.setTextFill(Color.GREEN);
         } else {
             c.endCycle.setTextFill(Color.BLACK);
@@ -638,8 +639,8 @@ public class Utils {
                 c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
                 c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
 
-                c.startCycle.setText(Utils.toLocal(v.getStartCycle()));
-                c.endCycle.setText(Utils.toLocal(v.getEndCycle()));
+                c.startCycle.setText(Utils.toLocal(v.getStartValidationCycle()));
+                c.endCycle.setText(Utils.toLocal(v.getEndValidationCycle()));
                 c.startElections.setText(Utils.toLocal(v.getStartElections()));
                 c.endElections.setText(Utils.toLocal(v.getEndElections()));
                 c.nextElections.setText(Utils.toLocal(v.getNextElections()));

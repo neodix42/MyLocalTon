@@ -17,8 +17,8 @@ public class ValidationParam {
     Long totalNodes;
     Long validatorNodes;
     Long blockchainLaunchTime;
-    Long startCycle;
-    Long endCycle;
+    Long startValidationCycle;
+    Long endValidationCycle;
     Long startElections;
     Long endElections;
     Long nextElections;
