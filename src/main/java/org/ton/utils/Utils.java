@@ -527,6 +527,8 @@ public class Utils {
                 .endValidationCycle(activeElectionId + config15.getValidatorsElectedFor())
                 .startElections(activeElectionId - config15.getElectionsStartBefore())
                 .endElections(activeElectionId - config15.getElectionsEndBefore())
+                .startElectionsBefore(config15.getElectionsStartBefore())
+                .endElectionsBefore(config15.getElectionsEndBefore())
                 .nextElections(activeElectionId - config15.getElectionsStartBefore() + config15.getValidatorsElectedFor())
                 .electionDuration(config15.getElectionsStartBefore() - config15.getElectionsEndBefore())
                 .validationDuration(config15.getValidatorsElectedFor())

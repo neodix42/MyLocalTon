@@ -22,6 +22,8 @@ public class ValidationParam {
     Long startElections;
     Long endElections;
     Long nextElections;
+    Long startElectionsBefore;
+    Long endElectionsBefore;
     String minterAddr;
     String configAddr;
     String electorAddr;

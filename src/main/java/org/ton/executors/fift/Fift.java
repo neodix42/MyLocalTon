@@ -79,7 +79,7 @@ public class Fift {
                 resultBocFileLocation);
 
         String resultStr = result.getRight().get();
-        log.info(resultStr);
+        log.debug(resultStr);
 
         if (Files.exists(Paths.get(sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc"), LinkOption.NOFOLLOW_LINKS)) {
             log.info("prepared boc file {}", sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc");
@@ -346,7 +346,7 @@ public class Fift {
 
         String resultStr = result.getRight().get();
 
-        log.info(resultStr);
+        log.debug(resultStr);
 
         String[] array = resultStr.split(System.lineSeparator());
         String generatedMessageBase64 = array[array.length - 2].trim();
@@ -384,7 +384,7 @@ public class Fift {
                 signatureFromElectionRequest);
 
         String resultStr = result.getRight().get();
-        log.info(resultStr); // make debug
+        log.debug(resultStr); // make debug
 
         resultStr = resultStr.replace("\r\n", SPACE).replace("\n", SPACE);
 

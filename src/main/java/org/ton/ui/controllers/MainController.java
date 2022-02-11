@@ -299,6 +299,60 @@ public class MainController implements Initializable {
     public Label electorBalance;
 
     @FXML
+    public Label legendHoldStake;
+
+    @FXML
+    public Label legendValidation;
+
+    @FXML
+    public Label legendElections;
+
+    @FXML
+    public Label legendPause;
+
+    @FXML
+    public Label stakeHoldRange3;
+
+    @FXML
+    public Label validationRange3;
+
+    @FXML
+    public Label pauseRange3;
+
+    @FXML
+    public Label electionsRange3;
+
+    @FXML
+    public Label stakeHoldRange2;
+
+    @FXML
+    public Label validationRange2;
+
+    @FXML
+    public Label pauseRange2;
+
+    @FXML
+    public Label electionsRange2;
+
+    @FXML
+    public Label stakeHoldRange1;
+
+    @FXML
+    public Label validationRange1;
+
+    @FXML
+    public Label pauseRange1;
+
+    @FXML
+    public Label electionsRange1;
+
+    @FXML
+    public Pane electionsChartPane;
+
+    @FXML
+    public Separator timeLine;
+
+    @FXML
     JFXCheckBox shardStateCheckbox;
 
     @FXML
@@ -1387,5 +1441,78 @@ public class MainController implements Initializable {
                 log.error("ERROR, {}", e.getMessage());
             }
         });
+    }
+
+    public void drawElections() throws Exception {
+        log.info("draw elections");
+
+        ValidationParam v = Utils.getConfig(settings.getGenesisNode());
+        log.info("validation params {}", v);
+
+        double scaleFactor = (double) 200 / v.getValidationDuration();
+        double scaleFactorElections = (double) (v.getEndElections() - v.getStartElections()) / v.getValidationDuration();// 20min/1h = 0.3
+        double scaleFactorPause = (double) (v.getStartValidationCycle() - v.getEndElections()) / v.getValidationDuration();
+        double scaleFactorHoldPeriod = (double) v.getHoldPeriod() / v.getValidationDuration();
+        double scaleStartNextElections = (double) v.getStartElectionsBefore() / v.getValidationDuration();
+        // assume duration of validation cycle is 1, then other ranges scaled down/up accordingly
+
+        long space = 4;
+        long validationWidth = 200;
+        long electionsWidth = (long) ((v.getEndElections() - v.getStartElections()) * scaleFactor);
+        long pauseWidth = (long) ((v.getStartValidationCycle() - v.getEndElections()) * scaleFactor);
+        long holdStakeWidth = (long) (v.getHoldPeriod() * scaleFactor);
+
+        // start X position of line 1 (very first elections)
+        long startXElectionsLine1 = 20;
+        long startXPauseLine1 = startXElectionsLine1 + electionsWidth + space;
+        long startXValidationLine1 = startXPauseLine1 + pauseWidth + space;
+        long startXHoldStakeLine1 = startXValidationLine1 + validationWidth + space;
+
+        timeLine.setLayoutX((startXValidationLine1 + validationWidth));
+
+        // start X position of line 2 (next elections)
+        long startXElectionsLine2 = (long) ((startXValidationLine1 + validationWidth) - (scaleFactor * v.getStartElectionsBefore())); // validationCycleEndStart - electionsStartBefore
+        long startXPauseLine2 = startXElectionsLine2 + +electionsWidth + space;
+        long startXValidationLine2 = startXPauseLine2 + pauseWidth + space;
+        long startXHoldStakeLine2 = startXValidationLine2 + validationWidth + space;
+
+        // start X position of line 3 (next elections)
+        long startXElectionsLine3 = startXElectionsLine2 + startXElectionsLine2 - startXElectionsLine1;
+        long startXPauseLine3 = startXElectionsLine3 + +electionsWidth + space;
+        long startXValidationLine3 = startXPauseLine3 + pauseWidth + space;
+        long startXHoldStakeLine3 = startXValidationLine3 + validationWidth + space;
+
+        log.info("scale {}, electionsWidth {}, pauseWidth {}, validationWidth {}, hostStakeWidth {}", scaleFactorElections, electionsWidth, pauseWidth, validationWidth, holdStakeWidth);
+
+        electionsRange1.setMinWidth(electionsWidth);
+        electionsRange2.setMinWidth(electionsWidth);
+        electionsRange3.setMinWidth(electionsWidth);
+
+        pauseRange1.setMinWidth(pauseWidth);
+        pauseRange2.setMinWidth(pauseWidth);
+        pauseRange3.setMinWidth(pauseWidth);
+
+        validationRange1.setMinWidth(validationWidth);
+        validationRange2.setMinWidth(validationWidth);
+        validationRange3.setMinWidth(validationWidth);
+
+        stakeHoldRange1.setMinWidth(holdStakeWidth);
+        stakeHoldRange2.setMinWidth(holdStakeWidth);
+        stakeHoldRange3.setMinWidth(holdStakeWidth);
+
+        electionsRange1.setLayoutX(startXElectionsLine1);
+        pauseRange1.setLayoutX(startXPauseLine1);
+        validationRange1.setLayoutX(startXValidationLine1);
+        stakeHoldRange1.setLayoutX(startXHoldStakeLine1);
+
+        electionsRange2.setLayoutX(startXElectionsLine2);
+        pauseRange2.setLayoutX(startXPauseLine2);
+        validationRange2.setLayoutX(startXValidationLine2);
+        stakeHoldRange2.setLayoutX(startXHoldStakeLine2);
+
+        electionsRange3.setLayoutX(startXElectionsLine3);
+        pauseRange3.setLayoutX(startXPauseLine3);
+        validationRange3.setLayoutX(startXValidationLine3);
+        stakeHoldRange3.setLayoutX(startXHoldStakeLine3);
     }
 }
