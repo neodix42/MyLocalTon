@@ -25,11 +25,13 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
+import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
@@ -1514,5 +1516,37 @@ public class MainController implements Initializable {
         pauseRange3.setLayoutX(startXPauseLine3);
         validationRange3.setLayoutX(startXValidationLine3);
         stakeHoldRange3.setLayoutX(startXHoldStakeLine3);
+
+        long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
+        String elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
+        String elections1ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(v.getStartElections()), Utils.toLocal(v.getEndElections()), elections1Duration);
+        electionsRange1.setTooltip(new Tooltip(elections1ToolTip));
+
+        long pauseDurationInSeconds = v.getStartValidationCycle() - v.getEndElections();
+        String pause1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
+        String pause1ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(v.getEndElections()), Utils.toLocal(v.getStartValidationCycle()), pause1Duration);
+        pauseRange1.setTooltip(new Tooltip(pause1ToolTip));
+
+        long validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
+        String validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
+        String validation1ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(v.getStartValidationCycle()), Utils.toLocal(v.getEndValidationCycle()), validation1Duration);
+        validationRange1.setTooltip(new Tooltip(validation1ToolTip));
+
+        long stakeHoldDurationInSeconds = v.getHoldPeriod();
+        String stakeHold1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
+        String stakeHold1ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(v.getStartValidationCycle()), Utils.toLocal(v.getEndValidationCycle()), stakeHold1Duration);
+        stakeHoldRange1.setTooltip(new Tooltip(stakeHold1ToolTip));
+
+        //add labels
+
+    }
+
+    private static final String SQUARE_BUBBLE = "M24 1h-24v16.981h4v5.019l7-5.019h13z";
+
+    private Tooltip makeBubble(Tooltip tooltip) {
+        tooltip.setStyle("-fx-font-size: 16px; -fx-shape: \"" + SQUARE_BUBBLE + "\";");
+        tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
+
+        return tooltip;
     }
 }
