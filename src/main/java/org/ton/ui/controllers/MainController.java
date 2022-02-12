@@ -1451,26 +1451,21 @@ public class MainController implements Initializable {
         ValidationParam v = Utils.getConfig(settings.getGenesisNode());
         log.info("validation params {}", v);
 
+        // assume duration of validation cycle is 1 unit of 200 pixels, then other ranges scaled down/up accordingly
         double scaleFactor = (double) 200 / v.getValidationDuration();
-        double scaleFactorElections = (double) (v.getEndElections() - v.getStartElections()) / v.getValidationDuration();// 20min/1h = 0.3
-        double scaleFactorPause = (double) (v.getStartValidationCycle() - v.getEndElections()) / v.getValidationDuration();
-        double scaleFactorHoldPeriod = (double) v.getHoldPeriod() / v.getValidationDuration();
-        double scaleStartNextElections = (double) v.getStartElectionsBefore() / v.getValidationDuration();
-        // assume duration of validation cycle is 1, then other ranges scaled down/up accordingly
+        double scaleFactorElections = (double) (v.getEndElections() - v.getStartElections()) / v.getValidationDuration();// 20min/1h = 0.3        
 
-        long space = 4;
+        long space = 3;
         long validationWidth = 200;
         long electionsWidth = (long) ((v.getEndElections() - v.getStartElections()) * scaleFactor);
         long pauseWidth = (long) ((v.getStartValidationCycle() - v.getEndElections()) * scaleFactor);
         long holdStakeWidth = (long) (v.getHoldPeriod() * scaleFactor);
 
         // start X position of line 1 (very first elections)
-        long startXElectionsLine1 = 20;
+        long startXElectionsLine1 = 40;
         long startXPauseLine1 = startXElectionsLine1 + electionsWidth + space;
         long startXValidationLine1 = startXPauseLine1 + pauseWidth + space;
         long startXHoldStakeLine1 = startXValidationLine1 + validationWidth + space;
-
-        timeLine.setLayoutX((startXValidationLine1 + validationWidth));
 
         // start X position of line 2 (next elections)
         long startXElectionsLine2 = (long) ((startXValidationLine1 + validationWidth) - (scaleFactor * v.getStartElectionsBefore())); // validationCycleEndStart - electionsStartBefore
@@ -1517,6 +1512,10 @@ public class MainController implements Initializable {
         validationRange3.setLayoutX(startXValidationLine3);
         stakeHoldRange3.setLayoutX(startXHoldStakeLine3);
 
+        long electionsDelta = v.getNextElections() - v.getStartElections();
+        log.info("elections delta {}", electionsDelta);
+
+        //add labels
         long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
         String elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
         String elections1ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(v.getStartElections()), Utils.toLocal(v.getEndElections()), elections1Duration);
@@ -1534,11 +1533,53 @@ public class MainController implements Initializable {
 
         long stakeHoldDurationInSeconds = v.getHoldPeriod();
         String stakeHold1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
-        String stakeHold1ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(v.getStartValidationCycle()), Utils.toLocal(v.getEndValidationCycle()), stakeHold1Duration);
+        String stakeHold1ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(v.getEndValidationCycle()), Utils.toLocal(java.time.Duration.ofSeconds(v.getEndValidationCycle()).plusSeconds(v.getHoldPeriod()).toSeconds()), stakeHold1Duration);
         stakeHoldRange1.setTooltip(new Tooltip(stakeHold1ToolTip));
 
-        //add labels
+        long endElections2 = java.time.Duration.ofSeconds(v.getNextElections()).plusSeconds(electionDurationInSeconds).toSeconds();
+        String elections2ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(v.getNextElections()), Utils.toLocal(endElections2), elections1Duration);
+        electionsRange2.setTooltip(new Tooltip(elections2ToolTip));
 
+        long endPause2 = java.time.Duration.ofSeconds(endElections2).plusSeconds(pauseDurationInSeconds).toSeconds();
+        String pause2ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(endElections2), Utils.toLocal(endPause2), pause1Duration);
+        pauseRange2.setTooltip(new Tooltip(pause2ToolTip));
+
+        long endValidation2 = java.time.Duration.ofSeconds(endPause2).plusSeconds(validationDurationInSeconds).toSeconds();
+        String validation2ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(endPause2), Utils.toLocal(endValidation2), validation1Duration);
+        validationRange2.setTooltip(new Tooltip(validation2ToolTip));
+
+        long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v.getHoldPeriod()).toSeconds();
+        String holdStake2ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
+        stakeHoldRange2.setTooltip(new Tooltip(holdStake2ToolTip));
+
+        long startElections3 = java.time.Duration.ofSeconds(v.getNextElections()).plusSeconds(electionsDelta).toSeconds();
+        long endElections3 = java.time.Duration.ofSeconds(v.getNextElections()).plusSeconds(electionDurationInSeconds + electionsDelta).toSeconds();
+        String elections3ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(startElections3), Utils.toLocal(endElections3), elections1Duration);
+        electionsRange3.setTooltip(new Tooltip(elections3ToolTip));
+
+        long endPause3 = java.time.Duration.ofSeconds(endElections3).plusSeconds(pauseDurationInSeconds).toSeconds();
+        String pause3ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(endElections3), Utils.toLocal(endPause3), pause1Duration);
+        pauseRange3.setTooltip(new Tooltip(pause3ToolTip));
+
+        long endValidation3 = java.time.Duration.ofSeconds(endPause3).plusSeconds(validationDurationInSeconds).toSeconds();
+        String validation3ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(endPause3), Utils.toLocal(endValidation3), validation1Duration);
+        validationRange3.setTooltip(new Tooltip(validation3ToolTip));
+
+        long endHoldStake3 = java.time.Duration.ofSeconds(endValidation3).plusSeconds(v.getHoldPeriod()).toSeconds();
+        String holdStake3ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(endValidation3), Utils.toLocal(endHoldStake3), stakeHold1Duration);
+        stakeHoldRange3.setTooltip(new Tooltip(holdStake3ToolTip));
+
+        long fullWidthInSeconds = startXHoldStakeLine3 + holdStakeWidth;
+        long fullDurationSeconds = endHoldStake3 - v.getStartElections();
+        log.info("full width {}px, {}s", fullWidthInSeconds, fullDurationSeconds); // full width 858px, 2880s
+
+        double scale = (double) fullWidthInSeconds / fullDurationSeconds; // 0.33
+        long currentTime = Utils.getCurrentTimeSeconds();
+        long x = currentTime - v.getStartElections(); // delta in seconds from start 2000
+        double xcoord = 40 + (x * scale);
+        log.info("scale {}, curr {}, x {}, xcoord {}", scale, currentTime, x, xcoord);
+
+        timeLine.setLayoutX(xcoord); // TODO test how changes with new election id/start validation time
     }
 
     private static final String SQUARE_BUBBLE = "M24 1h-24v16.981h4v5.019l7-5.019h13z";

@@ -347,27 +347,27 @@
                                             <Label fx:id="pauseRange1" layoutX="125" layoutY="20" minWidth="50"
                                                    style="-fx-background-color: radial-gradient(radius 180%, orange, derive(orange, -30%), derive(orange, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
                                             <Label fx:id="validationRange1" layoutX="180" layoutY="20" minWidth="200"
-                                                   style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, red, derive(red, -30%), derive(red, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                                   style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #F08080, derive(#F08080, -30%), derive(#F08080, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
                                             <Label fx:id="stakeHoldRange1" layoutX="385" layoutY="20" minWidth="50"
-                                                   style="-fx-background-color: radial-gradient(radius 180%, green, derive(green, -30%), derive(green, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                                   style="-fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
 
                                             <Label fx:id="electionsRange2" layoutX="150" layoutY="50" minWidth="100"
                                                    style="-fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
                                             <Label fx:id="pauseRange2" layoutX="260" layoutY="50" minWidth="50"
                                                    style="-fx-background-color: radial-gradient(radius 180%, orange, derive(orange, -30%), derive(orange, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
                                             <Label fx:id="validationRange2" layoutX="370" layoutY="50" minWidth="200"
-                                                   style="-fx-background-color: radial-gradient(radius 180%, red, derive(red, -30%), derive(red, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                                   style="-fx-background-color: radial-gradient(radius 180%, #F08080, derive(#F08080, -30%), derive(#F08080, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
                                             <Label fx:id="stakeHoldRange2" layoutX="480" layoutY="50" minWidth="50"
-                                                   style="-fx-background-color: radial-gradient(radius 180%, green, derive(green, -30%), derive(green, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                                   style="-fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
 
                                             <Label fx:id="electionsRange3" layoutX="420" layoutY="80" minWidth="100"
                                                    style="-fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
                                             <Label fx:id="pauseRange3" layoutX="520" layoutY="80" minWidth="50"
                                                    style="-fx-background-color: radial-gradient(radius 180%, orange, derive(orange, -30%), derive(orange, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
                                             <Label fx:id="validationRange3" layoutX="630" layoutY="80" minWidth="200"
-                                                   style="-fx-background-color: radial-gradient(radius 180%, red, derive(red, -30%), derive(red, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                                   style="-fx-background-color: radial-gradient(radius 180%, #F08080, derive(#F08080, -30%), derive(#F08080, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
                                             <Label fx:id="stakeHoldRange3" layoutX="740" layoutY="80" minWidth="50"
-                                                   style="-fx-background-color: radial-gradient(radius 180%, green, derive(green, -30%), derive(green, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                                   style="-fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
 
                                             <Label fx:id="legendElections" layoutX="900" layoutY="20" minWidth="140.0"
                                                    style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
@@ -376,10 +376,10 @@
                                                    style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, orange, derive(orange, -30%), derive(orange, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                                    text="Pause"/>
                                             <Label fx:id="legendValidation" layoutX="900" layoutY="80" minWidth="140.0"
-                                                   style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, red, derive(red, -30%), derive(red, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
+                                                   style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #F08080, derive(#F08080, -30%), derive(#F08080, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                                    text="Validation cycle"/>
                                             <Label fx:id="legendHoldStake" layoutX="900" layoutY="110" minWidth="140.0"
-                                                   style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, green, derive(green, -30%), derive(green, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
+                                                   style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                                    text="Stake Hold"/>
                                             <Separator fx:id="timeLine" layoutX="67.0" layoutY="10.0" orientation="VERTICAL" prefHeight="97.0" prefWidth="0.0"/>
 
@@ -695,33 +695,33 @@
                                         <JFXTextField fx:id="initialBalance" text="4999990000" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
                                         <Label text="max-validators" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                        <JFXTextField fx:id="maxValidators" disable="true" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="maxValidators" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
                                         <Label text="max-main-validators" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                        <JFXTextField fx:id="maxMainValidators" disable="true" text="100" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                        <JFXTextField fx:id="maxMainValidators" text="100" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
                                         <Label text="min-validators" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                                        <JFXTextField fx:id="minValidators" disable="true" text="1" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                        <JFXTextField fx:id="minValidators" text="1" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
                                         <Label text="elected-for" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                                        <JFXTextField fx:id="electedFor" disable="true" text="1080" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="electedFor" text="1080" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                                         <Label text="min-stake" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
-                                        <JFXTextField fx:id="minStake" disable="true" text="10000" GridPane.columnIndex="3" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="minStake" text="10000" GridPane.columnIndex="3" GridPane.rowIndex="5"/>
 
                                         <Label text="elect-start-before" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                                        <JFXTextField fx:id="electionStartBefore" disable="true" text="300" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="electionStartBefore" text="300" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                                         <Label text="max-stake" GridPane.columnIndex="2" GridPane.rowIndex="6"/>
-                                        <JFXTextField fx:id="maxStake" disable="true" text="10000000" GridPane.columnIndex="3" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="maxStake" text="10000000" GridPane.columnIndex="3" GridPane.rowIndex="6"/>
 
                                         <Label text="elect-end-before" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                                        <JFXTextField fx:id="electionEndBefore" disable="true" text="60" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                                        <JFXTextField fx:id="electionEndBefore" text="60" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
                                         <Label text="min-total-stake" GridPane.columnIndex="2" GridPane.rowIndex="7"/>
-                                        <JFXTextField fx:id="minTotalStake" disable="true" text="500000" GridPane.columnIndex="3" GridPane.rowIndex="7"/>
+                                        <JFXTextField fx:id="minTotalStake" text="500000" GridPane.columnIndex="3" GridPane.rowIndex="7"/>
 
                                         <Label text="stakes-frozen-for" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-                                        <JFXTextField fx:id="stakesFrozenFor" disable="true" text="120" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                                        <JFXTextField fx:id="stakesFrozenFor" text="120" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
                                         <Label text="max-factor" GridPane.columnIndex="2" GridPane.rowIndex="8"/>
-                                        <JFXTextField fx:id="maxFactor" disable="true" text="3" GridPane.columnIndex="3" GridPane.rowIndex="8"/>
+                                        <JFXTextField fx:id="maxFactor" text="3" GridPane.columnIndex="3" GridPane.rowIndex="8"/>
 
                                         <Label text="gas-price-wc" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                                         <JFXTextField fx:id="gasPrice" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="9"/>

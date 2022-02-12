@@ -32,7 +32,6 @@ public class Wallet {
         return nonNull(accountState.getStatus()); // has stateInit with some toncoins
     }
 
-
     public boolean walletHasContractInstalled(Node fromNode, WalletAddress walletAddress, String contractQueryBocFile) throws Exception {
         AccountState accountState;
 
@@ -85,7 +84,7 @@ public class Wallet {
 
         String externalMsgLocation = new Fift().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
 
-        log.info(liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
+        log.debug(liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
 
         //FileUtils.deleteQuietly(new File(tempBocFileAbsolutePath)); // sure ?
 

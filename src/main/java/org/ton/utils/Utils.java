@@ -9,6 +9,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.model.Paragraph;
@@ -641,10 +642,28 @@ public class Utils {
                 c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
                 c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
 
-                c.startCycle.setText(Utils.toLocal(v.getStartValidationCycle()));
-                c.endCycle.setText(Utils.toLocal(v.getEndValidationCycle()));
-                c.startElections.setText(Utils.toLocal(v.getStartElections()));
-                c.endElections.setText(Utils.toLocal(v.getEndElections()));
+                long validationStartInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartValidationCycle());
+                String startsValidationDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationStartInAgoSeconds).toMillis(), "HH:mm:ss", true);
+                if ((Utils.getCurrentTimeSeconds() - v.getStartValidationCycle()) > 0) {
+                    c.startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Started ago (" + startsValidationDuration + ")");
+                } else {
+                    c.startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Starts in (" + startsValidationDuration + ")");
+                }
+                long validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
+                String validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
+                c.endCycle.setText(Utils.toLocal(v.getEndValidationCycle()) + "  Duration (" + validation1Duration + ")");
+
+                long electionsStartsInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartElections());
+                String startsElectionDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionsStartsInAgoSeconds).toMillis(), "HH:mm:ss", true);
+                if ((Utils.getCurrentTimeSeconds() - v.getStartElections()) > 0) {
+                    c.startElections.setText(Utils.toLocal(v.getStartElections()) + "  Started ago (" + startsElectionDuration + ")");
+                } else {
+                    c.startElections.setText(Utils.toLocal(v.getStartElections()) + "  Starts in (" + startsElectionDuration + ")");
+                }
+                long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
+                String elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
+
+                c.endElections.setText(Utils.toLocal(v.getEndElections()) + "  Duration (" + elections1Duration + ")");
                 c.nextElections.setText(Utils.toLocal(v.getNextElections()));
 
                 colorValidationTiming(v, c);
