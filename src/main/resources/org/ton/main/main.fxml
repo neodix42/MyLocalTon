@@ -401,7 +401,7 @@
                                 </center>
                             </BorderPane>
                         </Tab>
-                        <Tab fx:id="genesisnode1" text="Genesis validator 1">
+                        <Tab fx:id="genesisnode1" text="Validator">
                             <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                                 <padding>
                                     <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
