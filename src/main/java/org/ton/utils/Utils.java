@@ -643,13 +643,12 @@ public class Utils {
             try {
 
                 MainController c = fxmlLoader.getController();
-                
+
                 c.totalValidators.setText(v.getValidatorNodes().toString());
                 c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
                 c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
 
                 Long startValidationCycle = v.getStartValidationCycle();
-
 
                 if (startValidationCycle < YEAR_1971) {
                     return;
@@ -694,9 +693,8 @@ public class Utils {
                 c.nodeConsolePort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getConsolePort().toString());
                 c.liteServerPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getLiteServerPort().toString());
 
-                c.nodeStatus1.setText("todo");
                 c.validator1AdnlAddress.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorAdnlAddrHex());
-                c.validator1PubKey.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorPubKeyHex());
+                c.validator1PubKeyHex.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorPubKeyHex());
 
             } catch (Exception e) {
                 log.error("Error updating validation tab GUI! Error {}", e.getMessage());

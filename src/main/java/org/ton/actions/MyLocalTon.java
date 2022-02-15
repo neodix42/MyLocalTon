@@ -428,27 +428,6 @@ public class MyLocalTon {
 
                     Utils.updateValidationTabGUI(v);
 
-                    Platform.runLater(() -> {
-                        try {
-                            mainController.drawElections();
-
-                            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
-                            mainController.minterBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
-
-                            accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
-                            mainController.configBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
-
-                            accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
-                            mainController.electorBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
-
-                            mainController.totalParticipants.setText(String.valueOf(LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size()));
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            log.error(ExceptionUtils.getStackTrace(e));
-                        }
-                    });
-
                     long currentTime = Utils.getCurrentTimeSeconds();
 
                     if ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections())) {
@@ -461,7 +440,40 @@ public class MyLocalTon {
                         //node2.setValidationParticipated(false);
                     }
 
-                    //log.info("PARTICIPANTS {}", LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size());
+                    Platform.runLater(() -> {
+                        try {
+                            mainController.drawElections();
+
+                            mainController.electionsChartPane.setVisible(true);
+
+                            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
+                            mainController.minterBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+                            accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
+                            mainController.configBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+                            accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
+                            mainController.electorBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+                            accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
+
+                            mainController.totalParticipants.setText(String.valueOf(LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size()));
+
+                            mainController.validator1AdnlAddress.setText(settings.getGenesisNode().getValidatorAdnlAddrHex());
+                            mainController.validator1PubKeyHex.setText(settings.getGenesisNode().getValidationPubKeyHex());
+                            mainController.validator1PubKeyInteger.setText(settings.getGenesisNode().getValidationPubKeyInteger() + " (used in participants list)");
+                            mainController.validator1WalletAddress.setText(settings.getGenesisNode().getWalletAddress().getFullWalletAddress());
+                            mainController.validator1WalletBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+                            mainController.nodePublicPort1.setText(settings.getGenesisNode().getPublicPort().toString());
+                            mainController.nodeConsolePort1.setText(settings.getGenesisNode().getConsolePort().toString());
+                            mainController.liteServerPort1.setText(settings.getGenesisNode().getLiteServerPort().toString());
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            log.error(ExceptionUtils.getStackTrace(e));
+                        }
+                    });
+
                     log.info("PREVIOUS VALIDATORS {}", LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(settings.getGenesisNode())).getValidators().getTotal());
                     log.info("CURRENT VALIDATORS {}", LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(settings.getGenesisNode())).getValidators().getTotal());
                     log.info("NEXT VALIDATORS {}", LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(settings.getGenesisNode())).getValidators().getTotal());
@@ -700,7 +712,7 @@ public class MyLocalTon {
 
         Value value = walletEntity.getAccountState().getBalance();
         BigDecimal balance = isNull(value) ? BigDecimal.ZERO : value.getToncoins();
-        String formattedBalance = String.format("%,.8f", balance.divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+        String formattedBalance = String.format("%,.9f", balance.divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
         ((Label) accountRow.lookup("#balance")).setText(formattedBalance);
 
         String status = isNull(walletEntity.getAccountState().getStatus()) ? "" : walletEntity.getAccountState().getStatus();
@@ -1458,6 +1470,8 @@ public class MyLocalTon {
 
         ResultComputeReturnStake result = LiteClientParser.parseRunMethodComputeReturnStake(new LiteClient().executeComputeReturnedStake(node, settings.getElectorSmcAddrHex(), settings.getGenesisNode().getWalletAddress().getHexWalletAddress()));
 
+        log.info("reap amount {}", result.getStake());
+
         if (result.getStake().compareTo(BigInteger.ZERO) > 0) {
             log.info("{} stake is greater than 0, send request for stake recovery", node.getNodeName());
 
@@ -1471,7 +1485,7 @@ public class MyLocalTon {
                     .fromWalletVersion(WalletVersion.V3)
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
-                    .amount(BigDecimal.valueOf(20L)) // amount to recover
+                    .amount(BigDecimal.valueOf(200L)) // amount to recover
                     .comment("stake-recover-request")
                     .bocLocation(node.getTonBinDir() + "recover-query.boc")
                     .build();

@@ -236,9 +236,6 @@ public class MainController implements Initializable {
     public Label validator1WalletBalance;
 
     @FXML
-    public Label validator1DbSize;
-
-    @FXML
     public Label validator1WalletAddress;
 
     @FXML
@@ -287,7 +284,7 @@ public class MainController implements Initializable {
     public Label maximumStake;
 
     @FXML
-    public Label validator1PubKey;
+    public Label validator1PubKeyHex;
 
     @FXML
     public ProgressBar validationCountDown;
@@ -354,6 +351,12 @@ public class MainController implements Initializable {
 
     @FXML
     public Separator timeLine;
+
+    @FXML
+    public Label validator1PubKeyInteger;
+
+    @FXML
+    public ProgressBar progressValidationUpdate;
 
     @FXML
     JFXCheckBox shardStateCheckbox;
@@ -1471,7 +1474,6 @@ public class MainController implements Initializable {
             saveSettings();
         }
 
-
         // assume duration of validation cycle is 1 unit of 200 pixels, then other ranges scaled down/up accordingly
         double scaleFactor = (double) 200 / v.getValidationDuration();
 
@@ -1613,7 +1615,50 @@ public class MainController implements Initializable {
 //        x = currentTime - settings.getLastValidationParam().getStartElections();
 //        xcoord = 0 + (x * settings.getTimeLineScale());
 
-
         timeLine.setLayoutX(xcoord);
+    }
+
+    public void validation1AdnlClicked(MouseEvent mouseEvent) {
+        String addr = validator1AdnlAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
+    }
+
+    public void validation1WalletAddrClicked(MouseEvent mouseEvent) {
+        String addr = validator1WalletAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
+    }
+
+    public void validation1PubKeyIntegerClicked(MouseEvent mouseEvent) {
+        String addr = validator1PubKeyInteger.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
+    }
+
+    public void validation1PubKeyHexClicked(MouseEvent mouseEvent) {
+        String addr = validator1PubKeyHex.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
     }
 }
