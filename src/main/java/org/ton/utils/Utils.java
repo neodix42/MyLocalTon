@@ -9,6 +9,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.fxmisc.richtext.GenericStyledArea;
@@ -73,6 +74,8 @@ public class Utils {
 
     public static final String WALLET_MASTER = "FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F31D307D4D101FB00A4C8CB1FCBFFC9ED54";
     public static final String WALLET_CONFIG = "FF00F4A413F4BCF2C80B";
+
+    public static final int YEAR_1971 = 34131600;
 
     public static final String[] KEYWORDS = new String[]{
             "abstract", "assert", "boolean", "break", "byte",
@@ -540,6 +543,7 @@ public class Utils {
                 .electorAddr(config1.getElectorSmcAddress())
                 .minterAddr(config2.getMinterSmcAddress())
                 .participants(participants)
+                .previousValidators(config32.getValidators().getValidators())
                 .build();
     }
 
@@ -560,6 +564,8 @@ public class Utils {
                 WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), 30005L);
                 node.setWalletAddress(walletEntity.getWallet());
                 Thread.sleep(5 * 1000); //10 sec
+            } else {
+                log.info("{} no need to create controlling smart-contract (wallet)", node.getNodeName());
             }
 
             //can be done only once
@@ -568,8 +574,8 @@ public class Utils {
             log.info("{} with wallet {} wants to participate in elections {} ({})", node.getNodeName(), node.getWalletAddress().getBounceableAddressBase64url(), electionId, Utils.toLocal(electionId));
 
             Fift fift = new Fift();
-            String signature = fift.createValidatorElectionRequest(node, electionId, new BigDecimal("10"));
-            fift.signValidatorElectionRequest(node, electionId, new BigDecimal("10"), signature);
+            String signature = fift.createValidatorElectionRequest(node, electionId, settings.getBlockchainSettings().getMaxFactor());
+            fift.signValidatorElectionRequest(node, electionId, settings.getBlockchainSettings().getMaxFactor(), signature);
 
             MyLocalTon.getInstance().saveSettingsToGson();
 
@@ -592,6 +598,7 @@ public class Utils {
             settings.saveSettingsToGson(settings);
         } catch (Exception e) {
             log.error("Error participating in elections! Error {}", e.getMessage());
+            log.error(ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -633,23 +640,31 @@ public class Utils {
     public static void updateValidationTabGUI(ValidationParam v) {
 
         Platform.runLater(() -> {
-
             try {
 
                 MainController c = fxmlLoader.getController();
-                c.totalNodes.setText("1");
+                
                 c.totalValidators.setText(v.getValidatorNodes().toString());
                 c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
                 c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
 
-                long validationStartInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartValidationCycle());
-                String startsValidationDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationStartInAgoSeconds).toMillis(), "HH:mm:ss", true);
-                if ((Utils.getCurrentTimeSeconds() - v.getStartValidationCycle()) > 0) {
-                    c.startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Started ago (" + startsValidationDuration + ")");
-                } else {
-                    c.startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Starts in (" + startsValidationDuration + ")");
+                Long startValidationCycle = v.getStartValidationCycle();
+
+
+                if (startValidationCycle < YEAR_1971) {
+                    return;
                 }
-                long validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
+
+                colorValidationTiming(v, c);
+
+                long validationStartInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - startValidationCycle);
+                String startsValidationDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationStartInAgoSeconds).toMillis(), "HH:mm:ss", true);
+                if ((Utils.getCurrentTimeSeconds() - startValidationCycle) > 0) {
+                    c.startCycle.setText(Utils.toLocal(startValidationCycle) + "  Started ago (" + startsValidationDuration + ")");
+                } else {
+                    c.startCycle.setText(Utils.toLocal(startValidationCycle) + "  Starts in (" + startsValidationDuration + ")");
+                }
+                long validationDurationInSeconds = v.getEndValidationCycle() - startValidationCycle;
                 String validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
                 c.endCycle.setText(Utils.toLocal(v.getEndValidationCycle()) + "  Duration (" + validation1Duration + ")");
 
@@ -665,8 +680,6 @@ public class Utils {
 
                 c.endElections.setText(Utils.toLocal(v.getEndElections()) + "  Duration (" + elections1Duration + ")");
                 c.nextElections.setText(Utils.toLocal(v.getNextElections()));
-
-                colorValidationTiming(v, c);
 
                 c.minterAddr.setText(v.getMinterAddr());
                 c.configAddr.setText(v.getConfigAddr());
@@ -687,6 +700,7 @@ public class Utils {
 
             } catch (Exception e) {
                 log.error("Error updating validation tab GUI! Error {}", e.getMessage());
+                e.printStackTrace();
             }
         });
     }

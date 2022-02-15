@@ -9,16 +9,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.ton.enums.TransformationStatus;
+import org.ton.parameters.ValidationParam;
 import org.ton.wallet.WalletVersion;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -119,6 +122,13 @@ public class MyLocalTonSettings implements Serializable {
     String zeroStateFileHashHuman;
     String zeroStateFileHashBase64;
 
+    //Long lastStartValidationCycle;
+    //Long lastStartElectionId;
+    ValidationParam lastValidationParam;
+    Double timeLineScale;
+    public HashMap<Long, Integer> electionsCounter = new HashMap<>();
+
+
     //options - logs
     @Getter
     @Setter
@@ -158,11 +168,11 @@ public class MyLocalTonSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 12 * 60L; // 3 * 60L;//365 * 24 * 60 * 60L; // 1080=18min
-        Long electionStartBefore = 8 * 60L; //8 * 60L; //5
+        Long electedFor = 8 * 60L; // 3 * 60L;//365 * 24 * 60 * 60L; // 1080=18min
+        Long electionStartBefore = 6 * 60L; //8 * 60L; //5
         Long electionEndBefore = 2 * 60L;//2 * 60L; //1
-        Long electionStakesFrozenFor = 4 * 60L;// 2 * 60L; //2
-        Long originalValidatorSetValidFor = 8 * 60L; //7 * 60L;//365 * 24 * 60 * 60L; // 480=8min
+        Long electionStakesFrozenFor = 3 * 60L;// 2 * 60L; //2
+        Long originalValidatorSetValidFor = 7 * 60L; //7 * 60L;//365 * 24 * 60 * 60L; // 480=8min
 
         Long validatorStateTtl = 31536000L; // 1 year
         Long validatorBlockTtl = 31536000L;
@@ -180,7 +190,7 @@ public class MyLocalTonSettings implements Serializable {
         Long minValidatorStake = 10000L;
         Long maxValidatorStake = 10000000L;
         Long minTotalValidatorStake = 10000L;
-        Long maxFactor = 3L;
+        BigDecimal maxFactor = new BigDecimal(3);
         Long initialStake = 10000 * 1000000000L; // 10k
         //Long initialStake = 17L; // 10k
     }

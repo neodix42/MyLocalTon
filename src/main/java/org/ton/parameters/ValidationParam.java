@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.ton.executors.liteclient.api.ResultListParticipants;
+import org.ton.executors.liteclient.api.config.Validator;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -33,4 +34,5 @@ public class ValidationParam {
     BigInteger minStake;
     BigInteger maxStake;
     List<ResultListParticipants> participants;
+    List<Validator> previousValidators;
 }

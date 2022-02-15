@@ -121,7 +121,7 @@ public class App extends Application {
         mainController.showSuccessMsg("TON blockchain is ready!", 2);
         Thread.sleep(3000);
 
-        myLocalTon.createPreInstalledWallets(genesisNode);
+        //myLocalTon.createPreInstalledWallets(genesisNode);
 
         myLocalTon.runBlockchainExplorer();
 
@@ -130,7 +130,7 @@ public class App extends Application {
 
         myLocalTon.runAccountsMonitor();
 
-//        myLocalTon.runValidationMonitor(genesisNode);
+        myLocalTon.runValidationMonitor();
 
         myLocalTon.monitorParticipants(genesisNode);
     }

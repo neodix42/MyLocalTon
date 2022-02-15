@@ -25,7 +25,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
-import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -50,6 +49,7 @@ import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.file.Files;
@@ -72,6 +72,7 @@ public class MainController implements Initializable {
 
     public static final String LIGHT_BLUE = "#dbedff";
     public static final String ORANGE = "orange";
+    public static final int YEAR_1971 = 34131600;
     @FXML
     public StackPane superWindow;
 
@@ -214,7 +215,7 @@ public class MainController implements Initializable {
     public Label nodeStatus1;
 
     @FXML
-    public Label totalNodes;
+    public Label totalParticipants;
 
     @FXML
     public Label totalValidators;
@@ -1139,7 +1140,7 @@ public class MainController implements Initializable {
         settings.getBlockchainSettings().setMinValidatorStake(Long.valueOf(minStake.getText()));
         settings.getBlockchainSettings().setMaxValidatorStake(Long.valueOf(maxStake.getText()));
         settings.getBlockchainSettings().setMinTotalValidatorStake(Long.valueOf(minTotalStake.getText()));
-        settings.getBlockchainSettings().setMaxFactor(Long.valueOf(maxFactor.getText()));
+        settings.getBlockchainSettings().setMaxFactor(new BigDecimal(maxFactor.getText()));
 
         settings.getBlockchainSettings().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl.getText()));
         settings.getBlockchainSettings().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl.getText()));
@@ -1447,28 +1448,50 @@ public class MainController implements Initializable {
 
     public void drawElections() throws Exception {
         log.info("draw elections");
+        long x;
+        double xcoord;
+        long currentTime = Utils.getCurrentTimeSeconds();
 
         ValidationParam v = Utils.getConfig(settings.getGenesisNode());
-        log.info("validation params {}", v);
+        log.debug("validation params {}", v);
+
+        if (v.getStartValidationCycle() < YEAR_1971) {// active election id available
+            v = settings.getLastValidationParam();
+
+            if (((settings.electionsCounter.size() % 3) == 0) && (settings.electionsCounter.size() > 10)) {
+                settings.electionsCounter.clear();
+            }
+            log.info("scale {}, curr {} {}, el-counter {}", settings.getTimeLineScale(), currentTime, Utils.toLocal(currentTime), settings.electionsCounter.size());
+            settings.electionsCounter.put(settings.getLastValidationParam().getStartElections(), 1);
+
+            saveSettings();
+        } else {
+            settings.setLastValidationParam(v);
+
+            saveSettings();
+        }
+
 
         // assume duration of validation cycle is 1 unit of 200 pixels, then other ranges scaled down/up accordingly
         double scaleFactor = (double) 200 / v.getValidationDuration();
-        double scaleFactorElections = (double) (v.getEndElections() - v.getStartElections()) / v.getValidationDuration();// 20min/1h = 0.3        
 
         long space = 3;
         long validationWidth = 200;
         long electionsWidth = (long) ((v.getEndElections() - v.getStartElections()) * scaleFactor);
         long pauseWidth = (long) ((v.getStartValidationCycle() - v.getEndElections()) * scaleFactor);
         long holdStakeWidth = (long) (v.getHoldPeriod() * scaleFactor);
+        long electionsDelta = v.getNextElections() - v.getStartElections();
+        long electionsDeltaWidth = (long) (electionsDelta * scaleFactor);
+        log.info("elections delta {}s, {}px", electionsDelta, electionsDeltaWidth);
 
         // start X position of line 1 (very first elections)
-        long startXElectionsLine1 = 40;
+        long startXElectionsLine1 = 0;
         long startXPauseLine1 = startXElectionsLine1 + electionsWidth + space;
         long startXValidationLine1 = startXPauseLine1 + pauseWidth + space;
         long startXHoldStakeLine1 = startXValidationLine1 + validationWidth + space;
 
         // start X position of line 2 (next elections)
-        long startXElectionsLine2 = (long) ((startXValidationLine1 + validationWidth) - (scaleFactor * v.getStartElectionsBefore())); // validationCycleEndStart - electionsStartBefore
+        long startXElectionsLine2 = (long) ((startXValidationLine1 + validationWidth) - (scaleFactor * v.getStartElectionsBefore()));
         long startXPauseLine2 = startXElectionsLine2 + +electionsWidth + space;
         long startXValidationLine2 = startXPauseLine2 + pauseWidth + space;
         long startXHoldStakeLine2 = startXValidationLine2 + validationWidth + space;
@@ -1479,7 +1502,7 @@ public class MainController implements Initializable {
         long startXValidationLine3 = startXPauseLine3 + pauseWidth + space;
         long startXHoldStakeLine3 = startXValidationLine3 + validationWidth + space;
 
-        log.info("scale {}, electionsWidth {}, pauseWidth {}, validationWidth {}, hostStakeWidth {}", scaleFactorElections, electionsWidth, pauseWidth, validationWidth, holdStakeWidth);
+        log.info("electionsWidth {}, pauseWidth {}, validationWidth {}, hostStakeWidth {}", electionsWidth, pauseWidth, validationWidth, holdStakeWidth);
 
         electionsRange1.setMinWidth(electionsWidth);
         electionsRange2.setMinWidth(electionsWidth);
@@ -1511,9 +1534,6 @@ public class MainController implements Initializable {
         pauseRange3.setLayoutX(startXPauseLine3);
         validationRange3.setLayoutX(startXValidationLine3);
         stakeHoldRange3.setLayoutX(startXHoldStakeLine3);
-
-        long electionsDelta = v.getNextElections() - v.getStartElections();
-        log.info("elections delta {}", electionsDelta);
 
         //add labels
         long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
@@ -1569,25 +1589,31 @@ public class MainController implements Initializable {
         String holdStake3ToolTip = String.format("Start: %s\nEnd: %s\nDuration: %s", Utils.toLocal(endValidation3), Utils.toLocal(endHoldStake3), stakeHold1Duration);
         stakeHoldRange3.setTooltip(new Tooltip(holdStake3ToolTip));
 
+        // draw time line
         long fullWidthInSeconds = startXHoldStakeLine3 + holdStakeWidth;
         long fullDurationSeconds = endHoldStake3 - v.getStartElections();
         log.info("full width {}px, {}s", fullWidthInSeconds, fullDurationSeconds); // full width 858px, 2880s
-
         double scale = (double) fullWidthInSeconds / fullDurationSeconds; // 0.33
-        long currentTime = Utils.getCurrentTimeSeconds();
-        long x = currentTime - v.getStartElections(); // delta in seconds from start 2000
-        double xcoord = 40 + (x * scale);
-        log.info("scale {}, curr {}, x {}, xcoord {}", scale, currentTime, x, xcoord);
 
-        timeLine.setLayoutX(xcoord); // TODO test how changes with new election id/start validation time
-    }
+        x = currentTime - v.getStartElections(); // delta in seconds from start 2000
+        settings.setLastValidationParam(v);
+        settings.setTimeLineScale(scale);
+//        if (v.getPreviousValidators().isEmpty()) {
+//            xcoord = 0 + (x * scale);
+//        } else {
+        //xcoord = ((settings.electionsCounter.size()) % 3) * electionsDeltaWidth + (x * scale);
+        xcoord = (((settings.electionsCounter.size()) % 3) + 1) * (x * scale);
+//        }
+        log.info("scale {}, curr {}, x {}, xcoord {}, el-counter {}", scale, currentTime, x, xcoord, settings.electionsCounter.size());
 
-    private static final String SQUARE_BUBBLE = "M24 1h-24v16.981h4v5.019l7-5.019h13z";
+        //timeLine.setLayoutX(xcoord);
 
-    private Tooltip makeBubble(Tooltip tooltip) {
-        tooltip.setStyle("-fx-font-size: 16px; -fx-shape: \"" + SQUARE_BUBBLE + "\";");
-        tooltip.setAnchorLocation(PopupWindow.AnchorLocation.WINDOW_BOTTOM_LEFT);
+//        log.info("getStartValidationCycle < 1971, {} {}, settings {} {}", v.getStartElections(), Utils.toLocal(v.getStartElections()), settings.getLastValidationParam().getStartElections(), Utils.toLocal(settings.getLastValidationParam().getStartElections()));
+//        long currentTime = Utils.getCurrentTimeSeconds();
+//        x = currentTime - settings.getLastValidationParam().getStartElections();
+//        xcoord = 0 + (x * settings.getTimeLineScale());
 
-        return tooltip;
+
+        timeLine.setLayoutX(xcoord);
     }
 }

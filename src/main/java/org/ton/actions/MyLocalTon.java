@@ -16,6 +16,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Strings;
 import org.ton.db.entities.BlockEntity;
@@ -404,8 +405,15 @@ public class MyLocalTon {
         }, 0L, 15L, TimeUnit.SECONDS);
     }
 
-    public void runValidationMonitor(Node node) {
+    public void runValidationMonitor() throws Exception {
         log.info("Starting validation monitor");
+
+        log.info("starting node 2");
+        org.ton.settings.Node node2 = settings.getNode2();
+        MyLocalTon.getInstance().createFullnode(node2, true, true); //     add true to create wallet
+        Utils.waitForBlockchainReady(node2);
+        Utils.waitForNodeSynchronized(node2);
+        saveSettingsToGson();
 
         ExecutorService blockchainValidationExecutorService = Executors.newSingleThreadExecutor();
 
@@ -415,28 +423,65 @@ public class MyLocalTon {
             while (Main.appActive.get()) {
                 try {
 
-                    ValidationParam v = Utils.getConfig(node);
+                    ValidationParam v = Utils.getConfig(settings.getGenesisNode());
                     log.debug("validation parameters {}", v);
 
                     Utils.updateValidationTabGUI(v);
 
+                    Platform.runLater(() -> {
+                        try {
+                            mainController.drawElections();
+
+                            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
+                            mainController.minterBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+                            accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
+                            mainController.configBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+                            accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
+                            mainController.electorBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+
+                            mainController.totalParticipants.setText(String.valueOf(LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size()));
+
+                            //log.info("{} ({}) balance: {}", settings.getGenesisNode().getNodeName(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+                            //log.info("{} ({}) balance: {}", settings.getGenesisNode().getNodeName(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            log.error(ExceptionUtils.getStackTrace(e));
+                        }
+                    });
+
                     long currentTime = Utils.getCurrentTimeSeconds();
 
                     if ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections())) {
-                        log.info("Elections opened");
-                        Utils.participate(node, v); // loop for other nodes
+                        log.info("ELECTIONS OPENED");
+                        Utils.participate(settings.getGenesisNode(), v); // loop for other nodes IN PARALLEL
+                        Utils.participate(node2, v); // loop for other nodes
                     } else {
-                        log.info("Elections closed");
+                        log.info("ELECTIONS CLOSED");
+                        settings.getGenesisNode().setValidationParticipated(false);
+                        node2.setValidationParticipated(false);
                     }
 
-                    reap(node);
+                    //log.info("PARTICIPANTS {}", LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size());
+                    log.info("PREVIOUS VALIDATORS {}", LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(settings.getGenesisNode())).getValidators().getTotal());
+                    log.info("CURRENT VALIDATORS {}", LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(settings.getGenesisNode())).getValidators().getTotal());
+                    log.info("NEXT VALIDATORS {}", LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(settings.getGenesisNode())).getValidators().getTotal());
+
+
+                    reap(settings.getGenesisNode());
+                    reap(node2);
 
                 } catch (Exception e) {
                     log.error("Error getting blockchain configuration! Error {}", e.getMessage());
                 }
 
+                log.info("participate, sleep 30 sec ");
+
                 try {
-                    Thread.sleep(60 * 1000); // todo scheduled
+                    Thread.sleep(30 * 1000); // todo scheduled
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -1397,7 +1442,6 @@ public class MyLocalTon {
                             wallet.setSeqno(stateAndSeqno.getRight());
                             updateAccountsTabGui(wallet);
                         }
-
                     }
                 }
             } catch (Exception e) {
@@ -1422,7 +1466,7 @@ public class MyLocalTon {
         ResultComputeReturnStake result = LiteClientParser.parseRunMethodComputeReturnStake(new LiteClient().executeComputeReturnedStake(node, settings.getElectorSmcAddrHex(), settings.getGenesisNode().getWalletAddress().getHexWalletAddress()));
 
         if (result.getStake().compareTo(BigInteger.ZERO) > 0) {
-            log.info("stake is greater than 0, send request for stake recovery");
+            log.info("{} stake is greater than 0, send request for stake recovery", node.getNodeName());
 
             //create recover-query.boc
             new Fift().createRecoverStake(node);
@@ -1486,6 +1530,9 @@ public class MyLocalTon {
     public void createFullnode(Node node, boolean enableLiteServer, boolean start) throws Exception {
         if (Files.exists(Paths.get(node.getTonBinDir()))) {
             log.info("{} already created, just start it", node.getNodeName());
+            if (start) {
+                new ValidatorEngine().startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
+            }
             return;
         }
         log.info("creating new fullnode {}", node.getNodeName());
