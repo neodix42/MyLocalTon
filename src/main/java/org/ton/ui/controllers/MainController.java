@@ -1455,7 +1455,7 @@ public class MainController implements Initializable {
         if (v.getStartValidationCycle() < YEAR_1971) {// active election id available
             v = settings.getLastValidationParam();
 
-            if (((settings.electionsCounter.size() % 3) == 0) && (settings.electionsCounter.size() > 10)) {
+            if (settings.electionsCounter.size() > 11) {
                 settings.electionsCounter.clear();
             }
             log.info("scale {}, curr {} {}, el-counter {}", settings.getTimeLineScale(), currentTime, Utils.toLocal(currentTime), settings.electionsCounter.size());
@@ -1468,8 +1468,8 @@ public class MainController implements Initializable {
             saveSettings();
         }
 
-        log.info("------ size {}", settings.electionsCounter.size());
-        if ((settings.electionsCounter.size() % 3) != 0) {
+        log.info("------ size {}, mod {}", settings.electionsCounter.size(), settings.getCycleMod());
+        if ((settings.electionsCounter.size() % settings.getCycleMod()) != 0) {
             log.info("-------- !=0 do not draw elections");
         } else {
             long startXHoldStakeLine3 = positionBars(v);
@@ -1593,6 +1593,7 @@ public class MainController implements Initializable {
             electionsRange1.setTooltip(new Tooltip(elections1ToolTip));
         } else {
             electionsRange1.setTooltip(null);
+            settings.setCycleMod(2);
         }
 
         pauseDurationInSeconds = v.getStartValidationCycle() - v.getEndElections();

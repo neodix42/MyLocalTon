@@ -127,6 +127,7 @@ public class MyLocalTonSettings implements Serializable {
     ValidationParam lastValidationParam;
     Double timeLineScale;
     public HashMap<Long, Integer> electionsCounter = new HashMap<>();
+    int cycleMod = 3;
 
     //options - logs
     @Getter
