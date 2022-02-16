@@ -587,7 +587,7 @@ public class Utils {
                     .fromWalletVersion(WalletVersion.V3) // todo wallet version
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
-                    .amount(BigDecimal.valueOf(10004L))
+                    .amount(BigDecimal.valueOf(10001L))
                     // .comment("validator-request")
                     .bocLocation(node.getTonBinDir() + "validator-query.boc")
                     .build();

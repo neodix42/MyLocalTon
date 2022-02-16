@@ -408,7 +408,7 @@ public class MyLocalTon {
     public void runValidationMonitor() throws Exception {
         log.info("Starting validation monitor");
 
-        log.info("starting node 2");
+//        log.info("starting node 2");
 //        org.ton.settings.Node node2 = settings.getNode2();
 //        MyLocalTon.getInstance().createFullnode(node2, true, true); //     add true to create wallet
 //        Utils.waitForBlockchainReady(node2);
