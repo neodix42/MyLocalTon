@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 <BorderPane fx:id="txRowBorderPane" onMouseEntered="#handleMouseEnter" onMouseExited="#handleMouseExit" prefHeight="46.0" prefWidth="1045.0" style="-fx-background-color: dbedff;"
-            stylesheets="@../css/global-font.css" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.TxController">
+            stylesheets="@../css/global-font.css" xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.TxController">
     <stylesheets>
         <URL value="@../css/global-font.css"/>
     </stylesheets>

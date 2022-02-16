@@ -10,7 +10,7 @@
         <maven.compiler.release>11</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <apache.commons.lang3.version>3.9</apache.commons.lang3.version>
-        <openjfx.version>17.0.1</openjfx.version>
+        <openjfx.version>17.0.2</openjfx.version>
         <jfoenix.version>9.0.4</jfoenix.version>
         <commons-io.version>2.7</commons-io.version>
         <commons-codec.version>1.14</commons-codec.version>
@@ -78,18 +78,28 @@
             <version>${openjfx.version}</version>
             <classifier>win</classifier>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
             <version>${openjfx.version}</version>
             <classifier>linux</classifier>
         </dependency>
+        -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${openjfx.version}</version>
+            <classifier>linux-aarch64</classifier>
+        </dependency>
+        <!--
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
             <version>${openjfx.version}</version>
             <classifier>mac</classifier>
         </dependency>
+        -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
