@@ -128,7 +128,6 @@ public class MyLocalTonSettings implements Serializable {
     Double timeLineScale;
     public HashMap<Long, Integer> electionsCounter = new HashMap<>();
 
-
     //options - logs
     @Getter
     @Setter
@@ -158,6 +157,7 @@ public class MyLocalTonSettings implements Serializable {
         boolean showBodyInMessage = true;
         boolean showShardStateInBlockDump = false;
         boolean enableBlockchainExplorer = false;
+        int blockchainExplorerPort = 8000;
     }
 
     // after you disappear from participant list, you have to wait:

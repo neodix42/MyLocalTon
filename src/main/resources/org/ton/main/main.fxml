@@ -712,7 +712,7 @@
                                         <Label text="elect-end-before" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
                                         <JFXTextField fx:id="electionEndBefore" text="60" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
                                         <Label text="min-total-stake" GridPane.columnIndex="2" GridPane.rowIndex="7"/>
-                                        <JFXTextField fx:id="minTotalStake" text="500000" GridPane.columnIndex="3" GridPane.rowIndex="7"/>
+                                        <JFXTextField fx:id="minTotalStake" text="10000" GridPane.columnIndex="3" GridPane.rowIndex="7"/>
 
                                         <Label text="stakes-frozen-for" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
                                         <JFXTextField fx:id="stakesFrozenFor" text="120" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
@@ -767,10 +767,9 @@
                                         <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset" GridPane.columnSpan="3"
                                                GridPane.rowIndex="16"/>
                                         <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="4" GridPane.rowIndex="16">
-                                            <BorderPane.margin>
-                                                <Insets right="10.0"/>
-                                            </BorderPane.margin>
+                                            <!--
                                             <JFXButton alignment="CENTER" onAction="#transformAction" prefHeight="31.0" prefWidth="100.0" text="Transform" textAlignment="CENTER"/>
+                                            -->
                                             <JFXButton alignment="CENTER" onAction="#resetAction" prefHeight="31.0" prefWidth="100.0" text="Reset" textAlignment="CENTER"/>
                                         </HBox>
                                     </GridPane>
@@ -784,7 +783,6 @@
                                         <ImageView fx:id="aboutLogo" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
                                             <Image url="@../images/logo2.png"/>
                                         </ImageView>
-                                        <Label style="-fx-alignment: center; -fx-font-size: 16;" text="v1.0.6-alpha"/>
                                         <Label style="-fx-alignment: center; -fx-font-size: 16;" text="The Open Network"/>
                                         <Label style="-fx-alignment: center; -fx-font-size: 16;" text="Telegram @neodix"/>
                                         <BorderPane.margin>

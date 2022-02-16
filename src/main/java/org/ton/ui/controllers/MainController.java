@@ -61,8 +61,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.LongStream;
 
-import static com.sun.javafx.PlatformUtil.isLinux;
-import static com.sun.javafx.PlatformUtil.isWindows;
+import static com.sun.javafx.PlatformUtil.*;
 import static java.util.Objects.requireNonNull;
 import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
 import static org.ton.main.App.fxmlLoader;
@@ -1047,21 +1046,15 @@ public class MainController implements Initializable {
         myLogLevel.getItems().add("ERROR");
         myLogLevel.getSelectionModel().select(settings.getLogSettings().getMyLocalTonLogLevel());
 
-        //if (isWindows()) {
-        //mainMenuTabs.getTabs().remove(validationTab); // TODO
-        //}
-
         enableBlockchainExplorer.setVisible(false);
         enableBlockchainExplorerLabel.setVisible(false);
         mainMenuTabs.getTabs().remove(explorerTab);
 
-        //if (isLinux() || isMac()) {
-        if (isLinux()) {
-
-            enableBlockchainExplorer.setVisible(true);
-            enableBlockchainExplorerLabel.setVisible(true);
+        if (isLinux() || isMac()) {
 
             if (enableBlockchainExplorer.isSelected()) {
+                enableBlockchainExplorer.setVisible(true);
+                enableBlockchainExplorerLabel.setVisible(true);
                 mainMenuTabs.getTabs().remove(searchTab);
                 mainMenuTabs.getTabs().remove(explorerTab);
                 mainMenuTabs.getTabs().add(explorerTab);
@@ -1073,13 +1066,13 @@ public class MainController implements Initializable {
 
     public void startWeb() {
 
-        //if (isLinux() || isMac()) {
-        if (isLinux()) {
+        if (isLinux() || isMac()) {
             if (enableBlockchainExplorer.isSelected()) {
+                log.info("Starting native blockchain-explorer on port {}", settings.getUiSettings().getBlockchainExplorerPort());
                 BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-                blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
+                blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getBlockchainExplorerPort());
                 WebEngine webEngine = webView.getEngine();
-                webEngine.load("http://127.0.0.1:8000/last");
+                webEngine.load("http://127.0.0.1:" + settings.getUiSettings().getBlockchainExplorerPort() + "/last");
             }
         }
     }
@@ -1227,6 +1220,7 @@ public class MainController implements Initializable {
         yesNoDialog.show();
     }
 
+    /*
     public void transformAction() throws IOException {
 
         Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
@@ -1252,7 +1246,7 @@ public class MainController implements Initializable {
 
         yesNoDialog.show();
     }
-
+    */
     public void showMessage(String msg) {
 
         try {
