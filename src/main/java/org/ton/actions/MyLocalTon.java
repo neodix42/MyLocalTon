@@ -426,8 +426,6 @@ public class MyLocalTon {
                     ValidationParam v = Utils.getConfig(settings.getGenesisNode());
                     log.debug("validation parameters {}", v);
 
-                    Utils.updateValidationTabGUI(v);
-
                     long currentTime = Utils.getCurrentTimeSeconds();
 
                     if ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections())) {
@@ -439,6 +437,8 @@ public class MyLocalTon {
                         settings.getGenesisNode().setValidationParticipated(false);
                         //node2.setValidationParticipated(false);
                     }
+
+                    Utils.updateValidationTabGUI(v);
 
                     Platform.runLater(() -> {
                         try {
