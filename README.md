@@ -15,6 +15,7 @@ alpha version and cannot be treated as production ready.
 | Ubuntu 20.04  | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:    |  |
 | Debian 11.2  | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
 | MacOS 11.6.1 M1  | :heavy_check_mark:   | not tested   |  not tested | :heavy_check_mark:    |  |
+| MacOS 12.2.1 M1  | not tested   | not tested   |  not tested | :heavy_check_mark:    |  |
 | MacOS 12.01  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
 | MacOS 11.6  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
 | Windows 10  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:   |  |
@@ -22,8 +23,15 @@ alpha version and cannot be treated as production ready.
 
 Please make sure you are not using headless (no GUI) Java and OS/Java combination matches as per table above.
 
+### For MacOS users
+
 In case you are using MacPorts instead of Homebrew on Mac please execute the following command:
+
 `mkdir -p /usr/local/opt/readline/lib; ln -s /opt/local/lib/libreadline.8.dylib /usr/local/opt/readline/lib/`
+
+Also please make sure you have OpenSSL installed. You can do it as follows:
+
+`brew install openssl`
 
 ## Java installation
 
@@ -47,12 +55,16 @@ https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msv
 
 ## Installation and usage
 
-Download MyLocalTon.jar from https://github.com/neodiX42/MyLocalTon/actions. Click the latest successful build and find MyLocalTon under Artifacts section. Open console, go to location where you have
-just placed the executable and execute the following command.
+Download MyLocalTon.jar from https://github.com/neodiX42/MyLocalTon/actions. Click the latest successful build executed again `main` branch and find MyLocalTon under Artifacts section. Open console,
+go to the location where you have just placed the executable and execute the following command.
 
 `java -jar MyLocalTon.jar`
 
 Make sure you have write rights inside the directory.
+
+### For MacOS M1 and Linux users with aarch64 architecture
+
+On the page https://github.com/neodiX42/MyLocalTon/actions please take the build from the branch `arm64-aarch64`
 
 ## Upgrade
 

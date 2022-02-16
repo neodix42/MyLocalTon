@@ -60,17 +60,33 @@
             <version>${openjfx.version}</version>
             <classifier>win</classifier>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${openjfx.version}</version>
             <classifier>linux</classifier>
         </dependency>
+        -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${openjfx.version}</version>
+            <classifier>linux-aarch64</classifier>
+        </dependency>
+        <!--
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${openjfx.version}</version>
             <classifier>mac</classifier>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${openjfx.version}</version>
+            <classifier>mac-aarch64</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
