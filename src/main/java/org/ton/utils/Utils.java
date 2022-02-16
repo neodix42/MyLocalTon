@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -561,7 +562,7 @@ public class Utils {
             // if it's a genesis node it has a wallet already - main-wallet.pk
             if (isNull(node.getWalletAddress())) {
                 log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
-                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), 30005L);
+                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), 50005L);
                 node.setWalletAddress(walletEntity.getWallet());
                 Thread.sleep(5 * 1000); //10 sec
             } else {
@@ -637,33 +638,32 @@ public class Utils {
         }
     }
 
-    public static void updateValidationTabGUI(ValidationParam v) {
+    public static void updateValidationTabGUI(ValidationParam v1) {
 
         Platform.runLater(() -> {
             try {
+
+                ValidationParam v = v1;
+
+                if (v1.getStartValidationCycle() < YEAR_1971) {
+                    v = MyLocalTon.getInstance().getSettings().getLastValidationParam();
+                }
 
                 MainController c = fxmlLoader.getController();
 
                 c.totalValidators.setText(v.getValidatorNodes().toString());
                 c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
-                c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
-
-                Long startValidationCycle = v.getStartValidationCycle();
-
-                if (startValidationCycle < YEAR_1971) {
-                    return;
-                }
 
                 colorValidationTiming(v, c);
 
-                long validationStartInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - startValidationCycle);
+                long validationStartInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartValidationCycle());
                 String startsValidationDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationStartInAgoSeconds).toMillis(), "HH:mm:ss", true);
-                if ((Utils.getCurrentTimeSeconds() - startValidationCycle) > 0) {
-                    c.startCycle.setText(Utils.toLocal(startValidationCycle) + "  Started ago (" + startsValidationDuration + ")");
+                if ((Utils.getCurrentTimeSeconds() - v.getStartValidationCycle()) > 0) {
+                    c.startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Started ago (" + startsValidationDuration + ")");
                 } else {
-                    c.startCycle.setText(Utils.toLocal(startValidationCycle) + "  Starts in (" + startsValidationDuration + ")");
+                    c.startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Starts in (" + startsValidationDuration + ")");
                 }
-                long validationDurationInSeconds = v.getEndValidationCycle() - startValidationCycle;
+                long validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
                 String validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
                 c.endCycle.setText(Utils.toLocal(v.getEndValidationCycle()) + "  Duration (" + validation1Duration + ")");
 
@@ -689,12 +689,32 @@ public class Utils {
                 c.minimumStake.setText(v.getMinStake().divide(BigInteger.valueOf(1000000000L)).toString());
                 c.maximumStake.setText(v.getMaxStake().divide(BigInteger.valueOf(1000000000L)).toString());
 
-                c.nodePublicPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getPublicPort().toString());
-                c.nodeConsolePort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getConsolePort().toString());
-                c.liteServerPort1.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getLiteServerPort().toString());
+                MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
-                c.validator1AdnlAddress.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorAdnlAddrHex());
-                c.validator1PubKeyHex.setText(MyLocalTon.getInstance().getSettings().getGenesisNode().getValidatorPubKeyHex());
+                LiteClient liteClient = new LiteClient();
+
+                AccountState accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
+                c.minterBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+                accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
+                c.configBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+                accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
+                c.electorBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+                accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
+
+                c.totalParticipants.setText(String.valueOf(LiteClientParser.parseRunMethodParticipantList(liteClient.executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size()));
+
+                // validator page
+                c.validator1AdnlAddress.setText(settings.getGenesisNode().getValidatorAdnlAddrHex());
+                c.validator1PubKeyHex.setText(settings.getGenesisNode().getValidationPubKeyHex());
+                c.validator1PubKeyInteger.setText(settings.getGenesisNode().getValidationPubKeyInteger() + " (used in participants list)");
+                c.validator1WalletAddress.setText(settings.getGenesisNode().getWalletAddress().getFullWalletAddress());
+                c.validator1WalletBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+                c.nodePublicPort1.setText(settings.getGenesisNode().getPublicPort().toString());
+                c.nodeConsolePort1.setText(settings.getGenesisNode().getConsolePort().toString());
+                c.liteServerPort1.setText(settings.getGenesisNode().getLiteServerPort().toString());
 
             } catch (Exception e) {
                 log.error("Error updating validation tab GUI! Error {}", e.getMessage());

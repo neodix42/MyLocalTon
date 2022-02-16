@@ -132,6 +132,6 @@ public class App extends Application {
 
         myLocalTon.runValidationMonitor();
 
-        myLocalTon.monitorParticipants(genesisNode);
+        //myLocalTon.monitorParticipants(genesisNode);
     }
 }
