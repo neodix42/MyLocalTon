@@ -401,8 +401,6 @@ public class Fift {
         Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "recover-stake.fif");
 
         String resultStr = result.getRight().get();
-        log.info(resultStr); // make debug
-
-        //resultStr = resultStr.replace("\r\n", SPACE).replace("\n", SPACE);
+        log.debug(resultStr);
     }
 }

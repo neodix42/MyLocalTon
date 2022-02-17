@@ -424,15 +424,15 @@
                                 <Label fx:id="liteServerPort1" text="4443" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                                 <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
                                 <Label fx:id="nodeStatus1" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                                <Label text="ADNL address of local validator" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                                <Label text="ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                                 <Label fx:id="validator1AdnlAddress" onMouseClicked="#validation1AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                                <Label text="Public key of local validator (hex)" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                <Label text="Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
                                 <Label fx:id="validator1PubKeyHex" onMouseClicked="#validation1PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                                <Label text="Public key of local validator (integer)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                <Label text="Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
                                 <Label fx:id="validator1PubKeyInteger" onMouseClicked="#validation1PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                                <Label text="Local validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
                                 <Label fx:id="validator1WalletAddress" onMouseClicked="#validation1WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
-                                <Label text="Local validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                                <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
                                 <Label fx:id="validator1WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
 
                             </GridPane>

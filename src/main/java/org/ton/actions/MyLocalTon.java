@@ -438,7 +438,7 @@ public class MyLocalTon {
                         //node2.setValidationParticipated(false);
                     }
 
-                    Utils.updateValidationTabGUI(v);
+                    Utils.updateValidationTabInfo(v);
 
                     Platform.runLater(() -> {
                         try {
@@ -1492,10 +1492,10 @@ public class MyLocalTon {
         String signingKey = validatorEngineConsole.generateNewNodeKey(node);
         String signingPubKey = validatorEngineConsole.exportPubKey(node, signingKey);
 
-        log.info("{} signingKey {}, signingPubKey {}", node.getNodeName(), signingKey, signingPubKey);
+        log.info("{} signingKey {}, new signingPubKey {} for current elections", node.getNodeName(), signingKey, signingPubKey);
 
-        node.setValidationSigningKey(signingKey); // setValidatorIdHex(newValKey);
-        node.setValidationSigningPubKey(signingPubKey); // setValidatorIdBase64(newValPubKey);
+        node.setValidationSigningKey(signingKey);
+        node.setValidationSigningPubKey(signingPubKey);
 
         validatorEngineConsole.addPermKey(node, signingKey, electionId, electionEnd);
         validatorEngineConsole.addTempKey(node, signingKey, electionEnd);
@@ -1504,8 +1504,8 @@ public class MyLocalTon {
     void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) {
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
         String adnlKey = validatorEngineConsole.generateNewNodeKey(node);
-        log.info("{} adnlKey {}", node.getNodeName(), adnlKey);
-        node.setValidationAndlKey(adnlKey); // .setValidatorAdnlAddrHex(newValAdnl);
+        log.info("{} new adnlKey {} for current elections", node.getNodeName(), adnlKey);
+        node.setValidationAndlKey(adnlKey);
 
         validatorEngineConsole.addAdnl(node, adnlKey);
         validatorEngineConsole.addValidatorAddr(node, signingKey, adnlKey, electionEnd);

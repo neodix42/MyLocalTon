@@ -638,7 +638,7 @@ public class Utils {
         }
     }
 
-    public static void updateValidationTabGUI(ValidationParam v1) {
+    public static void updateValidationTabInfo(ValidationParam v1) {
 
         Platform.runLater(() -> {
             try {
@@ -683,9 +683,10 @@ public class Utils {
                 c.minterAddr.setText(v.getMinterAddr());
                 c.configAddr.setText(v.getConfigAddr());
                 c.electorAddr.setText(v.getElectorAddr());
-                c.validationPeriod.setText(v.getValidationDuration().toString());
-                c.electionPeriod.setText(v.getElectionDuration().toString());
-                c.holdPeriod.setText(v.getHoldPeriod().toString());
+                c.validationPeriod.setText(v.getValidationDuration().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getValidationDuration()).toMillis(), "HH:mm:ss", true) + ")");
+                c.electionPeriod.setText(v.getElectionDuration().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getElectionDuration()).toMillis(), "HH:mm:ss", true) + ")");
+
+                c.holdPeriod.setText(v.getHoldPeriod().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getHoldPeriod()).toMillis(), "HH:mm:ss", true) + ")");
                 c.minimumStake.setText(v.getMinStake().divide(BigInteger.valueOf(1000000000L)).toString());
                 c.maximumStake.setText(v.getMaxStake().divide(BigInteger.valueOf(1000000000L)).toString());
 
@@ -702,12 +703,12 @@ public class Utils {
                 accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
                 c.electorBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
 
-                accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
-
                 c.totalParticipants.setText(String.valueOf(LiteClientParser.parseRunMethodParticipantList(liteClient.executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size()));
 
                 // validator page
-                c.validator1AdnlAddress.setText(settings.getGenesisNode().getValidatorAdnlAddrHex());
+                log.info("update validator page, {}", settings.getGenesisNode().getValidationAndlKey());
+                accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
+                c.validator1AdnlAddress.setText(settings.getGenesisNode().getValidationAndlKey());
                 c.validator1PubKeyHex.setText(settings.getGenesisNode().getValidationPubKeyHex());
                 c.validator1PubKeyInteger.setText(settings.getGenesisNode().getValidationPubKeyInteger() + " (used in participants list)");
                 c.validator1WalletAddress.setText(settings.getGenesisNode().getWalletAddress().getFullWalletAddress());

@@ -123,11 +123,11 @@ public class MyLocalTonSettings implements Serializable {
     String zeroStateFileHashBase64;
 
     //Long lastStartValidationCycle;
-    //Long lastStartElectionId;
+    Long startElectionIdEvery3Cycles;
     ValidationParam lastValidationParam;
     Double timeLineScale;
     public HashMap<Long, Integer> electionsCounter = new HashMap<>();
-    int cycleMod = 3;
+    int cycleMod = 4;
 
     //options - logs
     @Getter
