@@ -3,14 +3,12 @@ package org.ton.utils;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import javafx.application.Platform;
-import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.model.Paragraph;
@@ -30,7 +28,6 @@ import org.ton.parameters.SendToncoinsParam;
 import org.ton.parameters.ValidationParam;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
-import org.ton.ui.controllers.MainController;
 import org.ton.wallet.Wallet;
 import org.ton.wallet.WalletVersion;
 
@@ -39,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -65,7 +61,6 @@ import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.executors.liteclient.LiteClientParser.*;
-import static org.ton.main.App.fxmlLoader;
 
 @Slf4j
 public class Utils {
@@ -490,21 +485,21 @@ public class Utils {
     public static ValidationParam getConfig(org.ton.settings.Node node) throws Exception {
 
         ResultConfig12 config12 = LiteClientParser.parseConfig12(new LiteClient().executeBlockchainInfo(node));
-        log.info("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
+        log.debug("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
 
         long activeElectionId = new LiteClient().executeGetActiveElectionId(node, MyLocalTon.getInstance().getSettings().getElectorSmcAddrHex());
         log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
 
         ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
-        log.info("active elections {}", config15);
+        log.debug("current elections params {}", config15);
 
         ResultConfig17 config17 = LiteClientParser.parseConfig17(new LiteClient().executeGetMinMaxStake(node));
-        log.info("min/max stake {}", config17);
+        log.debug("min/max stake {}", config17);
 
         ResultConfig34 config34 = LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(node));
-        log.info("current validators {}", config34);
+        log.debug("current validators {}", config34);
 
-        log.info("start work time since {}, until {}", Utils.toLocal(config34.getValidators().getSince()), Utils.toLocal(config34.getValidators().getUntil()));
+        log.debug("start work time since {}, until {}", Utils.toLocal(config34.getValidators().getSince()), Utils.toLocal(config34.getValidators().getUntil()));
 
         ResultConfig32 config32 = LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(node));
         log.info("previous validators {}", config32);
@@ -513,19 +508,19 @@ public class Utils {
         log.info("next validators {}", config36);
 
         ResultConfig0 config0 = LiteClientParser.parseConfig0(new LiteClient().executeGetConfigSmcAddress(node));
-        log.info("config address {}", config0.getConfigSmcAddr());
+        log.debug("config address {}", config0.getConfigSmcAddr());
 
         ResultConfig1 config1 = LiteClientParser.parseConfig1(new LiteClient().executeGetElectorSmcAddress(node));
-        log.info("elector address {}", config1.getElectorSmcAddress());
+        log.debug("elector address {}", config1.getElectorSmcAddress());
 
         ResultConfig2 config2 = LiteClientParser.parseConfig2(new LiteClient().executeGetMinterSmcAddress(node));
-        log.info("minter address {}", config2.getMinterSmcAddress());
+        log.debug("minter address {}", config2.getMinterSmcAddress());
 
         List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(node, config1.getElectorSmcAddress()));
         log.info("participants {}", participants);
 
         return ValidationParam.builder()
-                .totalNodes(1L)
+                .totalNodes(1L) // not used
                 .validatorNodes(config34.getValidators().getTotal())
                 .blockchainLaunchTime(config12.getEnabledSince())
                 .startValidationCycle(activeElectionId) // same as config34.getValidators().getSince()
@@ -601,126 +596,5 @@ public class Utils {
             log.error("Error participating in elections! Error {}", e.getMessage());
             log.error(ExceptionUtils.getStackTrace(e));
         }
-    }
-
-    private static void colorValidationTiming(ValidationParam v, MainController c) {
-
-        long currentTime = System.currentTimeMillis() / 1000;
-
-        if (v.getStartValidationCycle() > currentTime) {
-            c.startCycle.setTextFill(Color.GREEN);
-        } else {
-            c.startCycle.setTextFill(Color.BLACK);
-        }
-
-        if (v.getEndValidationCycle() > currentTime) {
-            c.endCycle.setTextFill(Color.GREEN);
-        } else {
-            c.endCycle.setTextFill(Color.BLACK);
-        }
-
-        if (v.getStartElections() > currentTime) {
-            c.startElections.setTextFill(Color.GREEN);
-        } else {
-            c.startElections.setTextFill(Color.BLACK);
-        }
-
-        if (v.getEndElections() > currentTime) {
-            c.endElections.setTextFill(Color.GREEN);
-        } else {
-            c.endElections.setTextFill(Color.BLACK);
-        }
-
-        if (v.getNextElections() > currentTime) {
-            c.nextElections.setTextFill(Color.GREEN);
-        } else {
-            c.nextElections.setTextFill(Color.BLACK);
-        }
-    }
-
-    public static void updateValidationTabInfo(ValidationParam v1) {
-
-        Platform.runLater(() -> {
-            try {
-
-                ValidationParam v = v1;
-
-                if (v1.getStartValidationCycle() < YEAR_1971) {
-                    v = MyLocalTon.getInstance().getSettings().getLastValidationParam();
-                }
-
-                MainController c = fxmlLoader.getController();
-
-                c.totalValidators.setText(v.getValidatorNodes().toString());
-                c.blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
-
-                colorValidationTiming(v, c);
-
-                long validationStartInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartValidationCycle());
-                String startsValidationDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationStartInAgoSeconds).toMillis(), "HH:mm:ss", true);
-                if ((Utils.getCurrentTimeSeconds() - v.getStartValidationCycle()) > 0) {
-                    c.startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Started ago (" + startsValidationDuration + ")");
-                } else {
-                    c.startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Starts in (" + startsValidationDuration + ")");
-                }
-                long validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
-                String validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
-                c.endCycle.setText(Utils.toLocal(v.getEndValidationCycle()) + "  Duration (" + validation1Duration + ")");
-
-                long electionsStartsInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartElections());
-                String startsElectionDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionsStartsInAgoSeconds).toMillis(), "HH:mm:ss", true);
-                if ((Utils.getCurrentTimeSeconds() - v.getStartElections()) > 0) {
-                    c.startElections.setText(Utils.toLocal(v.getStartElections()) + "  Started ago (" + startsElectionDuration + ")");
-                } else {
-                    c.startElections.setText(Utils.toLocal(v.getStartElections()) + "  Starts in (" + startsElectionDuration + ")");
-                }
-                long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
-                String elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
-
-                c.endElections.setText(Utils.toLocal(v.getEndElections()) + "  Duration (" + elections1Duration + ")");
-                c.nextElections.setText(Utils.toLocal(v.getNextElections()));
-
-                c.minterAddr.setText(v.getMinterAddr());
-                c.configAddr.setText(v.getConfigAddr());
-                c.electorAddr.setText(v.getElectorAddr());
-                c.validationPeriod.setText(v.getValidationDuration().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getValidationDuration()).toMillis(), "HH:mm:ss", true) + ")");
-                c.electionPeriod.setText(v.getElectionDuration().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getElectionDuration()).toMillis(), "HH:mm:ss", true) + ")");
-
-                c.holdPeriod.setText(v.getHoldPeriod().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getHoldPeriod()).toMillis(), "HH:mm:ss", true) + ")");
-                c.minimumStake.setText(v.getMinStake().divide(BigInteger.valueOf(1000000000L)).toString());
-                c.maximumStake.setText(v.getMaxStake().divide(BigInteger.valueOf(1000000000L)).toString());
-
-                MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
-
-                LiteClient liteClient = new LiteClient();
-
-                AccountState accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
-                c.minterBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
-
-                accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
-                c.configBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
-
-                accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
-                c.electorBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
-
-                c.totalParticipants.setText(String.valueOf(LiteClientParser.parseRunMethodParticipantList(liteClient.executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size()));
-
-                // validator page
-                log.info("update validator page, {}", settings.getGenesisNode().getValidationAndlKey());
-                accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
-                c.validator1AdnlAddress.setText(settings.getGenesisNode().getValidationAndlKey());
-                c.validator1PubKeyHex.setText(settings.getGenesisNode().getValidationPubKeyHex());
-                c.validator1PubKeyInteger.setText(settings.getGenesisNode().getValidationPubKeyInteger() + " (used in participants list)");
-                c.validator1WalletAddress.setText(settings.getGenesisNode().getWalletAddress().getFullWalletAddress());
-                c.validator1WalletBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
-                c.nodePublicPort1.setText(settings.getGenesisNode().getPublicPort().toString());
-                c.nodeConsolePort1.setText(settings.getGenesisNode().getConsolePort().toString());
-                c.liteServerPort1.setText(settings.getGenesisNode().getLiteServerPort().toString());
-
-            } catch (Exception e) {
-                log.error("Error updating validation tab GUI! Error {}", e.getMessage());
-                e.printStackTrace();
-            }
-        });
     }
 }

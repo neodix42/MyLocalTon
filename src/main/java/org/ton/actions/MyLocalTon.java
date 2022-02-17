@@ -415,9 +415,7 @@ public class MyLocalTon {
 //        Utils.waitForNodeSynchronized(node2);
 //        saveSettingsToGson();
 
-        ExecutorService blockchainValidationExecutorService = Executors.newSingleThreadExecutor();
-
-        blockchainValidationExecutorService.execute(() -> {
+        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Validation Monitor");
 
             while (Main.appActive.get()) {
@@ -438,10 +436,9 @@ public class MyLocalTon {
                         //node2.setValidationParticipated(false);
                     }
 
-                    Utils.updateValidationTabInfo(v);
-
                     Platform.runLater(() -> {
                         try {
+                            mainController.updateValidationTabInfo(v);
                             mainController.drawElections();
 
                             mainController.electionsChartPane.setVisible(true);
@@ -452,9 +449,9 @@ public class MyLocalTon {
                         }
                     });
 
-                    log.info("PREVIOUS VALIDATORS {}", LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(settings.getGenesisNode())).getValidators().getTotal());
-                    log.info("CURRENT VALIDATORS {}", LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(settings.getGenesisNode())).getValidators().getTotal());
-                    log.info("NEXT VALIDATORS {}", LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(settings.getGenesisNode())).getValidators().getTotal());
+                    log.info("previous validator {}", LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(settings.getGenesisNode())).getValidators().getTotal());
+                    log.info("current validator {}", LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(settings.getGenesisNode())).getValidators().getTotal());
+                    log.info("next validator {}", LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(settings.getGenesisNode())).getValidators().getTotal());
 
                     reap(settings.getGenesisNode());
                     //reap(node2);
@@ -471,8 +468,7 @@ public class MyLocalTon {
                     e.printStackTrace();
                 }
             }
-            blockchainValidationExecutorService.shutdownNow();
-        });
+        }, 0L, 30L, TimeUnit.SECONDS);
     }
 
     public void runBlockchainMonitor(Node node) {
@@ -1444,11 +1440,11 @@ public class MyLocalTon {
 
     public void reap(Node node) throws Exception {
 
-        log.info("reap");
+        log.debug("reap");
 
         ResultComputeReturnStake result = LiteClientParser.parseRunMethodComputeReturnStake(new LiteClient().executeComputeReturnedStake(node, settings.getElectorSmcAddrHex(), settings.getGenesisNode().getWalletAddress().getHexWalletAddress()));
 
-        log.info("reap amount {}", result.getStake());
+        log.debug("reap amount {}", result.getStake());
 
         if (result.getStake().compareTo(BigInteger.ZERO) > 0) {
             log.info("{} stake is greater than 0, send request for stake recovery", node.getNodeName());
@@ -1463,7 +1459,7 @@ public class MyLocalTon {
                     .fromWalletVersion(WalletVersion.V3)
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
-                    .amount(BigDecimal.valueOf(2L)) // amount to recover
+                    .amount(BigDecimal.valueOf(1L))
                     .comment("stake-recover-request")
                     .bocLocation(node.getTonBinDir() + "recover-query.boc")
                     .build();

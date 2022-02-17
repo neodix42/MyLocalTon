@@ -38,6 +38,7 @@ import org.ton.db.entities.WalletEntity;
 import org.ton.executors.blockchainexplorer.BlockchainExplorer;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
+import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.liteclient.api.BlockShortSeqno;
 import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.executors.liteclient.api.ResultListBlockTransactions;
@@ -51,6 +52,7 @@ import org.ton.wallet.WalletVersion;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -1310,142 +1312,123 @@ public class MainController implements Initializable {
         yesNoDialog.show();
     }
 
-    public void showConfiguration() throws Exception {
-        ValidationParam v = Utils.getConfig(settings.getGenesisNode());
-        log.info("validation params {}", v);
+    public void updateValidationTabInfo(ValidationParam v1) {
+        try {
 
-        Utils.updateValidationTabInfo(v);
+            ValidationParam v = v1;
+
+            if (v1.getStartValidationCycle() < YEAR_1971) {
+                v = MyLocalTon.getInstance().getSettings().getLastValidationParam();
+            }
+
+            totalValidators.setText(v.getValidatorNodes().toString());
+            blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+
+            colorValidationTiming(v);
+
+            long validationStartInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartValidationCycle());
+            String startsValidationDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationStartInAgoSeconds).toMillis(), "HH:mm:ss", true);
+            if ((Utils.getCurrentTimeSeconds() - v.getStartValidationCycle()) > 0) {
+                startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Started ago (" + startsValidationDuration + ")");
+            } else {
+                startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Starts in (" + startsValidationDuration + ")");
+            }
+            long validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
+            String validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            endCycle.setText(Utils.toLocal(v.getEndValidationCycle()) + "  Duration (" + validation1Duration + ")");
+
+            long electionsStartsInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartElections());
+            String startsElectionDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionsStartsInAgoSeconds).toMillis(), "HH:mm:ss", true);
+            if ((Utils.getCurrentTimeSeconds() - v.getStartElections()) > 0) {
+                startElections.setText(Utils.toLocal(v.getStartElections()) + "  Started ago (" + startsElectionDuration + ")");
+            } else {
+                startElections.setText(Utils.toLocal(v.getStartElections()) + "  Starts in (" + startsElectionDuration + ")");
+            }
+            long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
+            String elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
+
+            endElections.setText(Utils.toLocal(v.getEndElections()) + "  Duration (" + elections1Duration + ")");
+            nextElections.setText(Utils.toLocal(v.getNextElections()));
+
+            minterAddr.setText(v.getMinterAddr());
+            configAddr.setText(v.getConfigAddr());
+            electorAddr.setText(v.getElectorAddr());
+            validationPeriod.setText(v.getValidationDuration().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getValidationDuration()).toMillis(), "HH:mm:ss", true) + ")");
+            electionPeriod.setText(v.getElectionDuration().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getElectionDuration()).toMillis(), "HH:mm:ss", true) + ")");
+
+            holdPeriod.setText(v.getHoldPeriod().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getHoldPeriod()).toMillis(), "HH:mm:ss", true) + ")");
+            minimumStake.setText(v.getMinStake().divide(BigInteger.valueOf(1000000000L)).toString());
+            maximumStake.setText(v.getMaxStake().divide(BigInteger.valueOf(1000000000L)).toString());
+
+            MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+            LiteClient liteClient = new LiteClient();
+
+            AccountState accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
+            minterBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+            accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
+            configBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+            accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
+            electorBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+
+            totalParticipants.setText(String.valueOf(LiteClientParser.parseRunMethodParticipantList(liteClient.executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size()));
+
+            // validator page
+            accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
+            validator1AdnlAddress.setText(settings.getGenesisNode().getValidationAndlKey());
+            validator1PubKeyHex.setText(settings.getGenesisNode().getValidationPubKeyHex());
+            validator1PubKeyInteger.setText(settings.getGenesisNode().getValidationPubKeyInteger() + " (used in participants list)");
+            validator1WalletAddress.setText(settings.getGenesisNode().getWalletAddress().getFullWalletAddress());
+            validator1WalletBalance.setText(accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+            nodePublicPort1.setText(settings.getGenesisNode().getPublicPort().toString());
+            nodeConsolePort1.setText(settings.getGenesisNode().getConsolePort().toString());
+            liteServerPort1.setText(settings.getGenesisNode().getLiteServerPort().toString());
+
+        } catch (Exception e) {
+            log.error("Error updating validation tab GUI! Error {}", e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    public void testValidator() throws Exception {
+    private void colorValidationTiming(ValidationParam v) {
 
-        Executors.newSingleThreadExecutor().submit(() -> {
-            Thread.currentThread().setName("MyLocalTon - Accounts Monitor");
-            try {
+        long currentTime = System.currentTimeMillis() / 1000;
 
-                org.ton.settings.Node node2 = settings.getNode2();
-//                org.ton.settings.Node node3 = settings.getNode3();
-//                org.ton.settings.Node node4 = settings.getNode4();
-//                org.ton.settings.Node node5 = settings.getNode5();
+        if (v.getStartValidationCycle() > currentTime) {
+            startCycle.setTextFill(Color.GREEN);
+        } else {
+            startCycle.setTextFill(Color.BLACK);
+        }
 
-                ValidationParam v = Utils.getConfig(settings.getGenesisNode());
-                log.info("validation params {}", v);
+        if (v.getEndValidationCycle() > currentTime) {
+            endCycle.setTextFill(Color.GREEN);
+        } else {
+            endCycle.setTextFill(Color.BLACK);
+        }
 
-                Utils.updateValidationTabInfo(v);
+        if (v.getStartElections() > currentTime) {
+            startElections.setTextFill(Color.GREEN);
+        } else {
+            startElections.setTextFill(Color.BLACK);
+        }
 
-//                Executors.newSingleThreadExecutor().submit(() -> {
-//                    Thread.currentThread().setName("MyLocalTon - Validator " + node2.getNodeName());
-//                    try {
-//                        MyLocalTon.getInstance().createFullnode(node2, true, true);
-//                        Utils.waitForBlockchainReady(node2);
-//                        Utils.waitForNodeSynchronized(node2);
-//                        saveSettings();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                });
+        if (v.getEndElections() > currentTime) {
+            endElections.setTextFill(Color.GREEN);
+        } else {
+            endElections.setTextFill(Color.BLACK);
+        }
 
-//                Executors.newSingleThreadExecutor().submit(() -> {
-//                    Thread.currentThread().setName("MyLocalTon - Validator " + node3.getNodeName());
-//                    try {
-//                        MyLocalTon.getInstance().createFullnode(node3, true, true);
-//                        Utils.waitForBlockchainReady(node3);
-//                        Utils.waitForNodeSynchronized(node3);
-//                        saveSettings();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                });
-//
-//                Executors.newSingleThreadExecutor().submit(() -> {
-//                    Thread.currentThread().setName("MyLocalTon - Validator " + node4.getNodeName());
-//                    try {
-//                        MyLocalTon.getInstance().createFullnode(node4, true, true);
-//                        Utils.waitForBlockchainReady(node4);
-//                        Utils.waitForNodeSynchronized(node4);
-//                        saveSettings();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                });
-
-                Thread.sleep(5 * 1000);
-
-                MyLocalTon.getInstance().createFullnode(node2, true, true); //     add true to create wallet
-                Utils.waitForBlockchainReady(node2);
-                Utils.waitForNodeSynchronized(node2);
-                saveSettings();
-
-                Thread.sleep(10 * 1000);
-
-                v = Utils.getConfig(settings.getGenesisNode());
-                log.info("validation params {}", v);
-
-                while (true) {
-                    long electionId = new LiteClient().executeGetActiveElectionId(settings.getGenesisNode(), settings.getElectorSmcAddrHex());
-                    log.info("ELECTION ID {} {}", electionId, Utils.toUTC(electionId));
-                    if (electionId != 0) break;
-                    Thread.sleep(10 * 1000);
-                }
-
-                long currentTime = Utils.getCurrentTimeSeconds();
-
-                if ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections())) {
-                    log.info("Elections opened");
-                    Utils.participate(settings.getGenesisNode(), v);
-                    Utils.participate(node2, v);
-                    //Utils.participate(node3, v);
-                    //Utils.participate(node4, v);
-                    //Utils.participate(node5, v);
-                } else {
-                    log.info("Elections closed");
-                }
-
-                Thread.sleep(2000);
-                String stdout;
-                while (true) {
-                    stdout = new LiteClient().executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex());
-                    if (LiteClientParser.parseRunMethodParticipantList(stdout).isEmpty()) {
-                        break;
-                    }
-                    log.info("PARTICIPANTS {}, sleep 30sec", LiteClientParser.parseRunMethodParticipantList(stdout).size());
-                    Thread.sleep(30 * 1000);
-                }
-
-                stdout = new LiteClient().executeGetCurrentValidators(settings.getGenesisNode());
-                log.info(stdout);
-                while (Long.parseLong(StringUtils.substringBetween(stdout, "total:", " ").trim()) != 2) {
-                    stdout = new LiteClient().executeGetCurrentValidators(settings.getGenesisNode());
-                    log.info("sleep 15 sec");
-                    Thread.sleep(15 * 1000);
-                }
-
-                stdout = new LiteClient().executeGetPreviousValidators(settings.getGenesisNode());
-                log.info(stdout);
-
-                stdout = new LiteClient().executeGetNextValidators(settings.getGenesisNode());
-                log.info(stdout);
-
-                stdout = new LiteClient().executeGetCurrentValidators(settings.getGenesisNode());
-                log.info(stdout);
-
-                log.info("Up and running 2 new validators");
-
-                while (true) {
-                    long electionId = new LiteClient().executeGetActiveElectionId(settings.getGenesisNode(), settings.getElectorSmcAddrHex());
-                    log.info("ELECTION ID {}, {}", electionId, Utils.toLocal(electionId));
-                    //   if (electionId != 0) break;
-                    Thread.sleep(15 * 1000);
-                }
-
-            } catch (Exception e) {
-                log.error("ERROR, {}", e.getMessage());
-            }
-        });
+        if (v.getNextElections() > currentTime) {
+            nextElections.setTextFill(Color.GREEN);
+        } else {
+            nextElections.setTextFill(Color.BLACK);
+        }
     }
 
     public void drawElections() throws Exception {
-        log.info("draw elections");
+        log.debug("draw elections");
         long x;
         double xcoord;
         long currentTime = Utils.getCurrentTimeSeconds();
@@ -1453,9 +1436,11 @@ public class MainController implements Initializable {
         ValidationParam v = Utils.getConfig(settings.getGenesisNode());
         log.debug("validation params {}", v);
 
-//        settings.electionsCounter.put(settings.getLastValidationParam().getStartElections(), 1);
-        settings.electionsCounter.put(v.getStartValidationCycle(), 1);
-        log.info("scale {}, curr {} {}, el-counter {}", settings.getTimeLineScale(), currentTime, Utils.toLocal(currentTime), settings.electionsCounter.size());
+        if (v.getStartValidationCycle() > YEAR_1971) {
+            settings.electionsCounter.put(v.getStartValidationCycle(), 1);
+        }
+
+        log.info("electionsCounter {}, cycle mod {}", settings.electionsCounter.size(), settings.getCycleMod());
 
         if (v.getStartValidationCycle() < YEAR_1971) {// active election id available
             v = settings.getLastValidationParam();
@@ -1469,7 +1454,6 @@ public class MainController implements Initializable {
         }
 
         saveSettings();
-        log.info("------ size {}, mod {}", settings.electionsCounter.size(), settings.getCycleMod());
 
         // UPDATE ONLY EVERY 4th and LATER EVERY 3rd TIME
         if (((settings.electionsCounter.size() - 1) % settings.getCycleMod()) == 0) {
@@ -1481,25 +1465,16 @@ public class MainController implements Initializable {
             // draw time-line
             long fullWidthInPixels = startXHoldStakeLine3 + holdStakeWidth;
             long fullDurationSeconds = endHoldStake3 - v.getStartElections();
-            log.info("full width {}px, {}s", fullWidthInPixels, fullDurationSeconds); // full width 858px, 2880s
+            log.debug("full width {}px, {}s", fullWidthInPixels, fullDurationSeconds); // full width 858px, 2880s
             double scale = (double) fullWidthInPixels / fullDurationSeconds; // 0.33
 
-            //x = currentTime - v.getStartElections(); // delta in seconds from start 2000
             settings.setLastValidationParam(v);
             settings.setTimeLineScale(scale);
             settings.setStartElectionIdEvery3Cycles(v.getStartElections());
-            //xcoord = 0 + (x * scale);
-            //xcoord = ((settings.electionsCounter.size()) % 3) * electionsDeltaWidth + (x * scale);
-            //xcoord = (((settings.electionsCounter.size()) % 3) + 1) * (x * scale);
-            //log.info("scale {}, curr {}, x {}, xcoord {}, el-counter {}", scale, currentTime, x, xcoord, settings.electionsCounter.size());
-
-            //timeLine.setLayoutX(xcoord);
-
-//        log.info("getStartValidationCycle < 1971, {} {}, settings {} {}", v.getStartElections(), Utils.toLocal(v.getStartElections()), settings.getLastValidationParam().getStartElections(), Utils.toLocal(settings.getLastValidationParam().getStartElections()));
-//        long currentTime = Utils.getCurrentTimeSeconds();
-//        x = currentTime - settings.getLastValidationParam().getStartElections();
-//        xcoord = 0 + (x * settings.getTimeLineScale());
-            //timeLine.setLayoutX(xcoord);
+        } else {
+            // draw pre-calculated position and labels
+            // positionBars(settings.getLastValidationParam());
+            // addLabelsToBars(settings.getLastValidationParam());
         }
 
         // update time line position
@@ -1508,8 +1483,7 @@ public class MainController implements Initializable {
         long electionsDelta = v.getNextElections() - v.getStartElections();
         long electionsDeltaWidth = (long) (electionsDelta * scaleFactor);
 
-        //xcoord = (((settings.electionsCounter.size()) % settings.getCycleMod()) + 1) * (x * settings.getTimeLineScale());
-        if (settings.electionsCounter.size() > 4) {
+        if (settings.electionsCounter.size() > 3) {
             xcoord = electionsDeltaWidth + (x * settings.getTimeLineScale());
         } else {
             xcoord = 0 + (x * settings.getTimeLineScale());
@@ -1521,14 +1495,14 @@ public class MainController implements Initializable {
         // assume duration of validation cycle is 1 unit of 200 pixels, then other ranges scaled down/up accordingly
         double scaleFactor = (double) 200 / v.getValidationDuration();
 
-        long space = 2;
+        long space = 3;
         long validationWidth = 200;
         long electionsWidth = (long) ((v.getEndElections() - v.getStartElections()) * scaleFactor);
         long pauseWidth = (long) ((v.getStartValidationCycle() - v.getEndElections()) * scaleFactor);
         long holdStakeWidth = (long) (v.getHoldPeriod() * scaleFactor);
         long electionsDelta = v.getNextElections() - v.getStartElections();
         long electionsDeltaWidth = (long) (electionsDelta * scaleFactor);
-        log.info("elections delta {}s, {}px", electionsDelta, electionsDeltaWidth);
+        log.debug("elections delta {}s, {}px", electionsDelta, electionsDeltaWidth);
 
         // start X position of line 1 (very first elections)
         long startXElectionsLine1 = 0;
@@ -1537,7 +1511,7 @@ public class MainController implements Initializable {
         long startXHoldStakeLine1 = startXValidationLine1 + validationWidth + space;
 
         // start X position of line 2 (next elections)
-        long startXElectionsLine2 = (long) ((startXValidationLine1 + validationWidth) - (scaleFactor * v.getStartElectionsBefore())) - 3;
+        long startXElectionsLine2 = (long) ((startXValidationLine1 + validationWidth) - (scaleFactor * v.getStartElectionsBefore())) - 2;
         long startXPauseLine2 = startXElectionsLine2 + electionsWidth + space;
         long startXValidationLine2 = startXPauseLine2 + pauseWidth + space;
         long startXHoldStakeLine2 = startXValidationLine2 + validationWidth + space;
@@ -1548,7 +1522,7 @@ public class MainController implements Initializable {
         long startXValidationLine3 = startXPauseLine3 + pauseWidth + space;
         long startXHoldStakeLine3 = startXValidationLine3 + validationWidth + space;
 
-        log.info("electionsWidth {}, pauseWidth {}, validationWidth {}, hostStakeWidth {}", electionsWidth, pauseWidth, validationWidth, holdStakeWidth);
+        log.debug("electionsWidth {}, pauseWidth {}, validationWidth {}, hostStakeWidth {}", electionsWidth, pauseWidth, validationWidth, holdStakeWidth);
 
         electionsRange1.setMinWidth(electionsWidth);
         electionsRange2.setMinWidth(electionsWidth);
@@ -1595,7 +1569,7 @@ public class MainController implements Initializable {
         long stakeHoldDurationInSeconds;
         String stakeHold1Duration;
 
-        log.info("addLabelsToBars, size {}", settings.electionsCounter.size());
+        log.debug("addLabelsToBars, size {}", settings.electionsCounter.size());
 
         //1
         elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
