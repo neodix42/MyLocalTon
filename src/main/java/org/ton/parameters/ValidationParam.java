@@ -35,4 +35,5 @@ public class ValidationParam {
     BigInteger maxStake;
     List<ResultListParticipants> participants;
     List<Validator> previousValidators;
+    List<Validator> currentValidators;
 }

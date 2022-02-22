@@ -517,7 +517,7 @@ public class LiteClientParserTest {
         // when
         ResultComputeReturnStake stake = LiteClientParser.parseRunMethodComputeReturnStake(computeReturnStake);
 
-        assertEquals(stake.getStake(), BigInteger.ZERO);
+        assertEquals(stake.getStake(), BigDecimal.ZERO);
     }
 
     @Test

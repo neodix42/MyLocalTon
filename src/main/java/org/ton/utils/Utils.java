@@ -34,7 +34,6 @@ import org.ton.wallet.WalletVersion;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -540,6 +539,7 @@ public class Utils {
                 .minterAddr(config2.getMinterSmcAddress())
                 .participants(participants)
                 .previousValidators(config32.getValidators().getValidators())
+                .currentValidators(config34.getValidators().getValidators())
                 .build();
     }
 
@@ -582,7 +582,7 @@ public class Utils {
                     .fromWalletVersion(WalletVersion.V3) // todo wallet version
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
-                    .amount(BigDecimal.valueOf(10001L))
+                    .amount(settings.getDefaultStake())
                     // .comment("validator-request")
                     .bocLocation(node.getTonBinDir() + "validator-query.boc")
                     .build();

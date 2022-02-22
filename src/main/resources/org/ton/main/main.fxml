@@ -336,7 +336,7 @@
                                 <Label fx:id="minimumStake" text="0" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                                 <Label text="Maximum stake" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
                                 <Label fx:id="maximumStake" text="0" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
-                                <Pane fx:id="electionsChartPane" minHeight="130" GridPane.columnSpan="3" GridPane.rowIndex="16" visible="false">
+                                <Pane fx:id="electionsChartPane" minHeight="130" visible="false" GridPane.columnSpan="3" GridPane.rowIndex="16">
 
                                     <Label fx:id="electionsRange1" layoutX="20" layoutY="20" minWidth="100"
                                            style="-fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
@@ -385,10 +385,7 @@
                                                                            GridPane.rowIndex="6"/>
                                                                 <JFXButton alignment="CENTER" onAction="#drawElections" prefWidth="150.0" text="Draw elections" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="7"/>
                                 -->
-                                <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0" prefWidth="1200.0" progress="0.45" GridPane.columnSpan="11" GridPane.rowIndex="17"/>
-                                <opaqueInsets>
-                                    <Insets/>
-                                </opaqueInsets>
+                                <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0" prefWidth="1200.0" GridPane.columnSpan="11" GridPane.rowIndex="17"/>
                             </GridPane>
                         </Tab>
                         <Tab fx:id="genesisnode1" text="Validator">
@@ -414,6 +411,10 @@
                                     <RowConstraints/>
                                     <RowConstraints/>
                                     <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
                                 </rowConstraints>
 
                                 <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
@@ -424,16 +425,42 @@
                                 <Label fx:id="liteServerPort1" text="4443" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                                 <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
                                 <Label fx:id="nodeStatus1" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                                <Label text="ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                                <Label fx:id="validator1AdnlAddress" onMouseClicked="#validation1AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                                <Label text="Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                                <Label fx:id="validator1PubKeyHex" onMouseClicked="#validation1PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                                <Label text="Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                                <Label fx:id="validator1PubKeyInteger" onMouseClicked="#validation1PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                                <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                                <Label fx:id="validator1WalletAddress" onMouseClicked="#validation1WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
-                                <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-                                <Label fx:id="validator1WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+
+                                <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+
+                                <Label text="ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                <Label fx:id="validator1AdnlAddress" onMouseClicked="#validation1AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                <Label text="Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                <Label fx:id="validator1PubKeyHex" onMouseClicked="#validation1PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                <Label text="Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                <Label fx:id="validator1PubKeyInteger" onMouseClicked="#validation1PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+
+                                <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+
+                                <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+                                <Label text="ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
+                                <Label fx:id="validator1AdnlAddressNext" onMouseClicked="#validation1AdnlClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                                <Label text="Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
+                                <Label fx:id="validator1PubKeyHexNext" onMouseClicked="#validation1PubKeyHexClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                                <Label text="Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
+                                <Label fx:id="validator1PubKeyIntegerNext" onMouseClicked="#validation1PubKeyIntegerClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+
+                                <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
+
+                                <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
+                                <Label fx:id="validator1WalletAddress" onMouseClicked="#validation1WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                                <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
+                                <Label fx:id="validator1WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
+                                <Label text="Total collected" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
+                                <Label fx:id="validator1totalCollected" GridPane.columnIndex="1" GridPane.rowIndex="16" text="0"/>
+                                <Label text="Last collected" GridPane.columnIndex="0" GridPane.rowIndex="17"/>
+                                <Label fx:id="validator1LastCollected" GridPane.columnIndex="1" GridPane.rowIndex="17" text="0"/>
+                                <Label text="Total rewards (pure)" GridPane.columnIndex="0" GridPane.rowIndex="18"/>
+                                <Label fx:id="validator1TotalRewardsPure" GridPane.columnIndex="1" GridPane.rowIndex="18" text="0"/>
+                                <Label text="Last reward (pure)" GridPane.columnIndex="0" GridPane.rowIndex="19"/>
+                                <Label fx:id="validator1LastRewardPure" GridPane.columnIndex="1" GridPane.rowIndex="19" text="0"/>
+                                <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
+                                <Label fx:id="validator1AvgPureReward" GridPane.columnIndex="1" GridPane.rowIndex="20" text="0"/>
 
                             </GridPane>
                         </Tab>

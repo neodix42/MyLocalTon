@@ -125,9 +125,12 @@ public class MyLocalTonSettings implements Serializable {
     //Long lastStartValidationCycle;
     Long startElectionIdEvery3Cycles;
     ValidationParam lastValidationParam;
+    ValidationParam lastValidationParamEvery3Cycles;
     Double timeLineScale;
     public HashMap<Long, Integer> electionsCounter = new HashMap<>();
     int cycleMod = 3;
+    int cycleModEquals = 1;
+    BigDecimal defaultStake = new BigDecimal(10001);
 
     //options - logs
     @Getter
@@ -169,11 +172,11 @@ public class MyLocalTonSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 8 * 60L; // 3 * 60L;//365 * 24 * 60 * 60L; // 1080=18min
-        Long electionStartBefore = 6 * 60L; //8 * 60L; //5
-        Long electionEndBefore = 2 * 60L;//2 * 60L; //1
-        Long electionStakesFrozenFor = 3 * 60L;// 2 * 60L; //2
-        Long originalValidatorSetValidFor = 7 * 60L; //7 * 60L;//365 * 24 * 60 * 60L; // 480=8min
+        Long electedFor = 3 * 60L; // 3 * 60L;//365 * 24 * 60 * 60L; // 1080=18min
+        Long electionStartBefore = 2 * 60L; //8 * 60L; //5
+        Long electionEndBefore = 1 * 60L;//2 * 60L; //1
+        Long electionStakesFrozenFor = 30L;// 2 * 60L; //2
+        Long originalValidatorSetValidFor = 3 * 60L; //7 * 60L;//365 * 24 * 60 * 60L; // 480=8min
 
         Long validatorStateTtl = 31536000L; // 1 year
         Long validatorBlockTtl = 31536000L;

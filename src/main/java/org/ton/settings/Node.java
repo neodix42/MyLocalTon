@@ -3,6 +3,7 @@ package org.ton.settings;
 import org.ton.wallet.WalletAddress;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 public interface Node {
 
@@ -79,6 +80,26 @@ public interface Node {
     void setWalletAddress(WalletAddress walletAddress);
 
     WalletAddress getWalletAddress();
+
+    BigDecimal getTotalRewardsCollected();
+
+    void setTotalRewardsCollected(BigDecimal totalRewardsCollected);
+
+    BigDecimal getLastRewardCollected();
+
+    void setLastRewardCollected(BigDecimal lastRewardCollected);
+
+    BigDecimal getTotalPureRewardsCollected();
+
+    void setTotalPureRewardsCollected(BigDecimal totalPureRewardsCollected);
+
+    BigDecimal getLastPureRewardCollected();
+
+    void setLastPureRewardCollected(BigDecimal lastPureRewardCollected);
+
+    BigDecimal getAvgPureRewardCollected();
+
+    void setAvgPureRewardCollected(BigDecimal avgPureRewardCollected);
 
     void setValidatorPrvKeyHex(String validatorPrvKeyHex);
 

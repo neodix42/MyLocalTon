@@ -5,11 +5,11 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 
 @Builder
 @Getter
 @ToString
 public class ResultComputeReturnStake implements Serializable {
-    private BigInteger stake;
+    private BigDecimal stake;
 }

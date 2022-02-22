@@ -2,13 +2,18 @@ package org.ton.actions;
 
 import com.google.gson.GsonBuilder;
 import com.jfoenix.controls.JFXListView;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.paint.Color;
+import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -84,6 +89,7 @@ public class MyLocalTon {
     public static final String NONEXISTENT = "Nonexistent";
     public static final String EXTERNAL = "external";
     public static final String FROZEN = "Frozen";
+    public static final long ONE_BLN = 1000000000L;
     private static MyLocalTon singleInstance = null;
 
     private static final String CURRENT_DIR = System.getProperty("user.dir");
@@ -112,6 +118,8 @@ public class MyLocalTon {
     AtomicLong accountsScrollBarHighWaterMark = new AtomicLong(30);
     public static final int SCROLL_BAR_DELTA = 30;
     public static final Long MAX_ROWS_IN_GUI = 1000L;
+    public static final int YEAR_1971 = 34131600;
+    public static final int VALIDATION_GUI_REFRESH_SECONDS = 30;
 
     ScheduledExecutorService monitorExecutorService;
     Process dhtServerProcess;
@@ -418,28 +426,42 @@ public class MyLocalTon {
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Validation Monitor");
 
-            while (Main.appActive.get()) {
+            if (Main.appActive.get()) {
                 try {
 
                     ValidationParam v = Utils.getConfig(settings.getGenesisNode());
                     log.debug("validation parameters {}", v);
+
+                    if (v.getStartValidationCycle() > YEAR_1971) {
+                        log.info("adding new election id {}", v.getStartValidationCycle());
+                        settings.electionsCounter.put(v.getStartValidationCycle(), 1);
+                        settings.setLastValidationParam(v);
+                    } else {// active election id not available
+                        log.info("taking old election id {}", settings.getLastValidationParam().getStartValidationCycle());
+                        v = settings.getLastValidationParam();
+                    }
+
+                    saveSettingsToGson();
+
+                    ValidationParam finalV = v;
 
                     long currentTime = Utils.getCurrentTimeSeconds();
 
                     if ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections())) {
                         log.info("ELECTIONS OPENED");
                         Utils.participate(settings.getGenesisNode(), v); // loop for other nodes IN PARALLEL
-                        // Utils.participate(node2, v); // loop for other nodes
+                        mainController.drawElections(finalV); // once in elections enough (bars and labels)
                     } else {
                         log.info("ELECTIONS CLOSED");
                         settings.getGenesisNode().setValidationParticipated(false);
-                        //node2.setValidationParticipated(false);
                     }
 
                     Platform.runLater(() -> {
                         try {
-                            mainController.updateValidationTabInfo(v);
-                            mainController.drawElections();
+
+                            mainController.updateValidationTabInfo(finalV);
+
+                            mainController.drawTimeLine(finalV);
 
                             mainController.electionsChartPane.setVisible(true);
 
@@ -449,26 +471,31 @@ public class MyLocalTon {
                         }
                     });
 
-                    log.info("previous validator {}", LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(settings.getGenesisNode())).getValidators().getTotal());
-                    log.info("current validator {}", LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(settings.getGenesisNode())).getValidators().getTotal());
-                    log.info("next validator {}", LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(settings.getGenesisNode())).getValidators().getTotal());
+                    log.debug("previous validator {}", LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(settings.getGenesisNode())).getValidators().getTotal());
+                    log.debug("current validator {}", LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(settings.getGenesisNode())).getValidators().getTotal());
+                    log.debug("next validator {}", LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(settings.getGenesisNode())).getValidators().getTotal());
 
                     reap(settings.getGenesisNode());
-                    //reap(node2);
 
                 } catch (Exception e) {
                     log.error("Error getting blockchain configuration! Error {}", e.getMessage());
+                    log.error(ExceptionUtils.getStackTrace(e));
                 }
 
-                log.info("participate, sleep 30 sec ");
+                log.debug("refresh GUI, sleep 30 sec ");
 
-                try {
-                    Thread.sleep(30 * 1000); // todo scheduled
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Platform.runLater(() -> {
+                    ProgressBar progress = mainController.progressValidationUpdate;
+                    Timeline timeline = new Timeline(
+                            new KeyFrame(Duration.ZERO, new KeyValue(progress.progressProperty(), 0)),
+                            new KeyFrame(Duration.seconds(VALIDATION_GUI_REFRESH_SECONDS), new KeyValue(progress.progressProperty(), 1))
+                    );
+                    timeline.setCycleCount(1);
+                    timeline.play();
+                });
+
             }
-        }, 0L, 30L, TimeUnit.SECONDS);
+        }, 0L, VALIDATION_GUI_REFRESH_SECONDS, TimeUnit.SECONDS);
     }
 
     public void runBlockchainMonitor(Node node) {
@@ -686,7 +713,7 @@ public class MyLocalTon {
 
         Value value = walletEntity.getAccountState().getBalance();
         BigDecimal balance = isNull(value) ? BigDecimal.ZERO : value.getToncoins();
-        String formattedBalance = String.format("%,.9f", balance.divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+        String formattedBalance = String.format("%,.9f", balance.divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
         ((Label) accountRow.lookup("#balance")).setText(formattedBalance);
 
         String status = isNull(walletEntity.getAccountState().getStatus()) ? "" : walletEntity.getAccountState().getStatus();
@@ -811,9 +838,9 @@ public class MyLocalTon {
         if (((Label) txRow.lookup("#to")).getText().equals(searchFor)) {
             ((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
         }
-        ((Label) txRow.lookup("#amount")).setText(txEntity.getAmount().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+        ((Label) txRow.lookup("#amount")).setText(txEntity.getAmount().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING).toPlainString());
 
-        ((Label) txRow.lookup("#fees")).setText(txEntity.getTx().getTotalFees().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+        ((Label) txRow.lookup("#fees")).setText(txEntity.getTx().getTotalFees().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING).toPlainString());
         ((Label) txRow.lookup("#time")).setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(new Timestamp(txEntity.getTx().getNow() * 1000).getTime())));
 
         showButtonWithMessage(txRow, txEntity);
@@ -833,9 +860,9 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#from")).setText(txEntity.getFrom().getAddr());
         ((Label) txRow.lookup("#to")).setText(txEntity.getTo().getAddr());
-        ((Label) txRow.lookup("#amount")).setText(txEntity.getAmount().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+        ((Label) txRow.lookup("#amount")).setText(txEntity.getAmount().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING).toPlainString());
 
-        ((Label) txRow.lookup("#fees")).setText(txDetails.getTotalFees().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING).toPlainString());
+        ((Label) txRow.lookup("#fees")).setText(txDetails.getTotalFees().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING).toPlainString());
         ((Label) txRow.lookup("#time")).setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(new Timestamp(txDetails.getNow() * 1000).getTime())));
 
         showButtonWithMessage(txRow, txEntity);
@@ -1378,16 +1405,16 @@ public class MyLocalTon {
                     log.info("AMOUNT OF PARTICIPANTS: {}", participants.size());
 
                     AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
-                    log.info("{} ({}) balance: {}", settings.getGenesisNode().getNodeName(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+                    log.info("{} ({}) balance: {}", settings.getGenesisNode().getNodeName(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
 
                     accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
-                    log.info("{} ({}) balance: {}", "main-wallet", settings.getMainWalletAddrFull(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+                    log.info("{} ({}) balance: {}", "main-wallet", settings.getMainWalletAddrFull(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
 
                     accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
-                    log.info("{} ({}) balance: {}", "config-wallet", settings.getConfigSmcAddrHex(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+                    log.info("{} ({}) balance: {}", "config-wallet", settings.getConfigSmcAddrHex(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
 
                     accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
-                    log.info("{} ({}) balance: {}", "elector-smc", settings.getElectorSmcAddrHex(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
+                    log.info("{} ({}) balance: {}", "elector-smc", settings.getElectorSmcAddrHex(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
 
 //                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getNode2(), settings.getNode2().getWalletAddress().getFullWalletAddress()));
 //                    log.info("{} ({}) balance: {}", settings.getNode2().getNodeName(), settings.getNode2().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
@@ -1446,7 +1473,7 @@ public class MyLocalTon {
 
         log.debug("reap amount {}", result.getStake());
 
-        if (result.getStake().compareTo(BigInteger.ZERO) > 0) {
+        if (result.getStake().compareTo(BigDecimal.ZERO) > 0) {
             log.info("{} stake is greater than 0, send request for stake recovery", node.getNodeName());
 
             //create recover-query.boc
@@ -1465,6 +1492,23 @@ public class MyLocalTon {
                     .build();
 
             new Wallet().sendTonCoins(sendToncoinsParam);
+
+            settings.getNode(node).setLastRewardCollected(result.getStake());
+            settings.getNode(node).setTotalRewardsCollected(settings.getNode(node).getTotalRewardsCollected().add(result.getStake()));
+            settings.getNode(node).setLastPureRewardCollected(result.getStake().subtract(settings.getDefaultStake().multiply(BigDecimal.valueOf(ONE_BLN))));
+            settings.getNode(node).setTotalPureRewardsCollected(settings.getNode(node).getTotalPureRewardsCollected().add(settings.getNode(node).getLastPureRewardCollected()));
+            settings.getNode(node).setAvgPureRewardCollected(settings.getNode(node).getTotalPureRewardsCollected().divide(new BigDecimal(settings.electionsCounter.size() - 1), 9, RoundingMode.CEILING));
+
+            saveSettingsToGson();
+
+            Platform.runLater(() -> {
+                log.info("updating reaped values {}", String.format("%,.9f", settings.getNode(node).getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                mainController.validator1totalCollected.setText(String.format("%,.9f", settings.getNode(node).getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                mainController.validator1LastCollected.setText(String.format("%,.9f", settings.getNode(node).getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                mainController.validator1TotalRewardsPure.setText(String.format("%,.9f", settings.getNode(node).getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                mainController.validator1LastRewardPure.setText(String.format("%,.9f", settings.getNode(node).getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                mainController.validator1AvgPureReward.setText(String.format("%,.9f", settings.getNode(node).getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            });
         } else {
             log.info("{} stake is {}, nothing to reap", node.getNodeName(), result.getStake());
         }
