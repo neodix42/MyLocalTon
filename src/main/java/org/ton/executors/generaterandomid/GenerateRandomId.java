@@ -61,7 +61,7 @@ public class GenerateRandomId {
             String[] serverIdsBoth = serverIds.split(" ");
             String serverIdHex = serverIdsBoth[0].trim();
             String serverIdBase64 = serverIdsBoth[1].trim();
-            log.debug("Server IDs for {}: {} {}", node.getNodeName(), serverIdHex, serverIdBase64);
+            log.info("Server IDs for {}: {} {}", node.getNodeName(), serverIdHex, serverIdBase64);
             Files.copy(Paths.get(node.getTonBinDir() + "certs" + File.separator + "server"), Paths.get(node.getTonDbKeyringDir() + serverIdHex), StandardCopyOption.REPLACE_EXISTING);
 
             return serverIdBase64;

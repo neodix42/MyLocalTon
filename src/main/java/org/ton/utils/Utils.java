@@ -2,12 +2,16 @@ package org.ton.utils;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.model.Paragraph;
@@ -16,16 +20,22 @@ import org.jutils.jprocesses.JProcesses;
 import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
 import org.ton.actions.MyLocalTon;
+import org.ton.db.entities.WalletEntity;
+import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.AccountState;
-import org.ton.executors.liteclient.api.ResultLastBlock;
+import org.ton.executors.liteclient.api.*;
 import org.ton.main.App;
 import org.ton.main.Main;
+import org.ton.parameters.SendToncoinsParam;
+import org.ton.parameters.ValidationParam;
+import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
+import org.ton.wallet.Wallet;
 import org.ton.wallet.WalletVersion;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -35,6 +45,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.CodeSource;
@@ -46,6 +57,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -54,6 +67,7 @@ import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.executors.liteclient.LiteClientParser.*;
+import static org.ton.settings.MyLocalTonSettings.SETTINGS_FILE;
 
 @Slf4j
 public class Utils {
@@ -63,6 +77,8 @@ public class Utils {
 
     public static final String WALLET_MASTER = "FF0020DD2082014C97BA9730ED44D0D70B1FE0A4F260810200D71820D70B1FED44D0D31FD3FFD15112BAF2A122F901541044F910F2A2F80001D31F31D307D4D101FB00A4C8CB1FCBFFC9ED54";
     public static final String WALLET_CONFIG = "FF00F4A413F4BCF2C80B";
+
+    public static final int YEAR_1971 = 34131600;
 
     public static final String[] KEYWORDS = new String[]{
             "abstract", "assert", "boolean", "break", "byte",
@@ -282,13 +298,19 @@ public class Utils {
 
     public static boolean doShutdown() {
         try {
+
+            while (Main.inElections.get()) {
+                Thread.sleep(500);
+                log.info("waiting for operations to be finished");
+            }
+
             if (Main.appActive.get()) {
                 log.debug("Do shutdown");
                 Main.appActive.set(false);
                 App.dbPool.closeDbs();
                 Main.fileLock.release();
                 Main.randomAccessFile.close();
-                Main.file.delete();
+                FileUtils.deleteQuietly(Main.file);
                 log.info("Destroying external processes...");
 
                 MyLocalTon.getInstance().getDhtServerProcess().destroy();
@@ -471,5 +493,166 @@ public class Utils {
 
     public static long getCurrentTimeSeconds() {
         return System.currentTimeMillis() / 1000;
+    }
+
+    public static ValidationParam getConfig(org.ton.settings.Node node) throws Exception {
+
+        ResultConfig12 config12 = LiteClientParser.parseConfig12(new LiteClient().executeBlockchainInfo(node));
+        log.debug("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
+
+        long activeElectionId = new LiteClient().executeGetActiveElectionId(node, MyLocalTon.getInstance().getSettings().getElectorSmcAddrHex());
+        log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
+
+        ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
+        log.debug("current elections params {}", config15);
+
+        ResultConfig17 config17 = LiteClientParser.parseConfig17(new LiteClient().executeGetMinMaxStake(node));
+        log.debug("min/max stake {}", config17);
+
+        ResultConfig34 config34 = LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(node));
+        log.debug("current validators {}", config34);
+
+        log.debug("start work time since {}, until {}", Utils.toLocal(config34.getValidators().getSince()), Utils.toLocal(config34.getValidators().getUntil()));
+
+        ResultConfig32 config32 = LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(node));
+        log.info("previous validators {}", config32);
+
+        ResultConfig36 config36 = LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(node));
+        log.info("next validators {}", config36);
+
+        ResultConfig0 config0 = LiteClientParser.parseConfig0(new LiteClient().executeGetConfigSmcAddress(node));
+        log.debug("config address {}", config0.getConfigSmcAddr());
+
+        ResultConfig1 config1 = LiteClientParser.parseConfig1(new LiteClient().executeGetElectorSmcAddress(node));
+        log.debug("elector address {}", config1.getElectorSmcAddress());
+
+        ResultConfig2 config2 = LiteClientParser.parseConfig2(new LiteClient().executeGetMinterSmcAddress(node));
+        log.debug("minter address {}", config2.getMinterSmcAddress());
+
+        List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(node, config1.getElectorSmcAddress()));
+        log.info("participants {}", participants);
+
+        return ValidationParam.builder()
+                .totalNodes(1L) // not used
+                .validatorNodes(config34.getValidators().getTotal())
+                .blockchainLaunchTime(config12.getEnabledSince())
+                .startValidationCycle(activeElectionId) // same as config34.getValidators().getSince()
+                .endValidationCycle(activeElectionId + config15.getValidatorsElectedFor())
+                .startElections(activeElectionId - config15.getElectionsStartBefore())
+                .endElections(activeElectionId - config15.getElectionsEndBefore())
+                .startElectionsBefore(config15.getElectionsStartBefore())
+                .endElectionsBefore(config15.getElectionsEndBefore())
+                .nextElections(activeElectionId - config15.getElectionsStartBefore() + config15.getValidatorsElectedFor())
+                .electionDuration(config15.getElectionsStartBefore() - config15.getElectionsEndBefore())
+                .validationDuration(config15.getValidatorsElectedFor())
+                .holdPeriod(config15.getStakeHeldFor())
+                .minStake(config17.getMinStake())
+                .maxStake(config17.getMaxStake())
+                .configAddr(config0.getConfigSmcAddr())
+                .electorAddr(config1.getElectorSmcAddress())
+                .minterAddr(config2.getMinterSmcAddress())
+                .participants(participants)
+                .previousValidators(config32.getValidators().getValidators())
+                .currentValidators(config34.getValidators().getValidators())
+                .build();
+    }
+
+    private static boolean hasParticipated(long electionId) {
+        return MyLocalTon.getInstance().getSettings().electionsCounterGlobal.getOrDefault(electionId, false);
+    }
+
+    public static void participate(Node node, ValidationParam v) {
+
+        try {
+            long electionId = v.getStartValidationCycle();
+
+            if (hasParticipated(electionId)) { // TODO actually we need to track participation per node, but for now it's ok
+                log.info("{} has already sent request for elections", node.getNodeName());
+                if (electionId < Utils.getCurrentTimeSeconds()) {
+                    log.info("electionId is outdated");
+                } else {
+                    return;
+                }
+            }
+
+            MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+            // if it's a genesis node it has a wallet already - main-wallet.pk
+            if (isNull(node.getWalletAddress())) {
+                log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
+                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), settings.getDefaultValidatorBalance());
+                node.setWalletAddress(walletEntity.getWallet());
+                Thread.sleep(5 * 1000); //10 sec
+            } else {
+                log.info("{} no need to create controlling smart-contract (wallet)", node.getNodeName());
+            }
+
+            //can be done only once
+            MyLocalTon.getInstance().createValidatorPubKeyAndAdnlAddress(node, electionId);
+
+            log.info("{} with wallet {} wants to participate in elections {} ({})", node.getNodeName(), node.getWalletAddress().getBounceableAddressBase64url(), electionId, Utils.toLocal(electionId));
+
+            Fift fift = new Fift();
+            String signature = fift.createValidatorElectionRequest(node, electionId, settings.getBlockchainSettings().getMaxFactor());
+            fift.signValidatorElectionRequest(node, electionId, settings.getBlockchainSettings().getMaxFactor(), signature);
+
+            MyLocalTon.getInstance().saveSettingsToGson();
+
+            // send stake and validator-query.boc to elector
+            SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
+                    .executionNode(node)
+                    .fromWallet(node.getWalletAddress())
+                    .fromWalletVersion(WalletVersion.V3)
+                    .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
+                    .destAddr(settings.getElectorSmcAddrHex())
+                    .amount(settings.getDefaultStake())
+                    .comment("validator-request-send-stake")
+                    .bocLocation(node.getTonBinDir() + "validator-query.boc")
+                    .build();
+
+            new Wallet().sendTonCoins(sendToncoinsParam);
+
+            //node.setValidationParticipated(true);
+            settings.electionsCounterGlobal.put(v.getStartValidationCycle(), true);
+
+            saveSettingsToGson(settings);
+        } catch (Exception e) {
+            log.error("Error participating in elections! Error {}", e.getMessage());
+            log.error(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+    public static MyLocalTonSettings loadSettings() {
+        try {
+            if (Files.exists(Paths.get(SETTINGS_FILE), LinkOption.NOFOLLOW_LINKS)) {
+                return new Gson().fromJson(new FileReader(new File(SETTINGS_FILE)), MyLocalTonSettings.class);
+            } else {
+                log.info("No settings.json found. Very first launch with default settings.");
+                return new MyLocalTonSettings();
+            }
+        } catch (Exception e) {
+            log.error("Can't load settings file: {}", SETTINGS_FILE);
+            return null;
+        }
+    }
+
+    public static void saveSettingsToGson(MyLocalTonSettings settings) {
+        try {
+            ExecutorService service = Executors.newSingleThreadExecutor();
+            service.submit(() -> saveSettingsToGsonSynchronized(settings));
+            service.shutdown();
+            Thread.sleep(30);
+        } catch (Exception e) {
+            log.error("Cannot save settings. Error:  {}", e.getMessage());
+        }
+    }
+
+    private static synchronized void saveSettingsToGsonSynchronized(MyLocalTonSettings settings) {
+        try {
+            String abJson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(settings);
+            FileUtils.writeStringToFile(new File(SETTINGS_FILE), abJson, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

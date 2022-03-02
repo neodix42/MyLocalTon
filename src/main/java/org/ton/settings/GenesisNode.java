@@ -9,6 +9,7 @@ import org.ton.wallet.WalletAddress;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import static org.ton.settings.MyLocalTonSettings.CURRENT_DIR;
 
@@ -31,8 +32,6 @@ public class GenesisNode implements Serializable, Node {
     Integer dhtOutPort = 3278;
     Integer dhtForkedOutPort = 3288;
 
-    Long initialStake = 10000 * 1000000000L; // 10k
-
     String validatorPrvKeyHex;
     String validatorPrvKeyBase64;
     String validatorPubKeyHex;
@@ -44,8 +43,12 @@ public class GenesisNode implements Serializable, Node {
     String validationAndlKey;
     String validationPubKeyHex;
     String validationPubKeyInteger;
-    Boolean validationParticipated = Boolean.FALSE;
     Boolean validationPubKeyAndAdnlCreated = Boolean.FALSE;
+    BigDecimal totalRewardsCollected = BigDecimal.ZERO;
+    BigDecimal lastRewardCollected = BigDecimal.ZERO;
+    BigDecimal totalPureRewardsCollected = BigDecimal.ZERO;
+    BigDecimal lastPureRewardCollected = BigDecimal.ZERO;
+    BigDecimal avgPureRewardCollected = BigDecimal.ZERO;
 
     WalletAddress walletAddress;
     transient Process nodeProcess;

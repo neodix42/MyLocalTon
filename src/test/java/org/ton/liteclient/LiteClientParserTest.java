@@ -511,6 +511,16 @@ public class LiteClientParserTest {
     }
 
     @Test
+    public void TestParseComputeReturnStake() throws IOException {
+        // given
+        String computeReturnStake = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/compute_returnstake.log")), StandardCharsets.UTF_8);
+        // when
+        ResultComputeReturnStake stake = LiteClientParser.parseRunMethodComputeReturnStake(computeReturnStake);
+
+        assertEquals(stake.getStake(), BigDecimal.ZERO);
+    }
+
+    @Test
     public void TestParseParticipantListEmpty() throws IOException {
         // given
         String participantListOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/participant_list_empty.log")), StandardCharsets.UTF_8);
@@ -627,10 +637,10 @@ public class LiteClientParserTest {
         // when
         ResultConfig34 result = LiteClientParser.parseConfig34(getConfig34);
         // then
-        assertThat(result.getValidators().getUntil()).isEqualTo(1619177079L);
-        assertThat(result.getValidators().getTotal()).isEqualTo(1L);
-        assertThat(result.getValidators().getMain()).isEqualTo(1L);
-        assertThat(result.getValidators().getTotalWeight()).isEqualTo(100L);
+        assertThat(result.getValidators().getUntil()).isEqualTo(1644344873L);
+        assertThat(result.getValidators().getTotal()).isEqualTo(2L);
+        assertThat(result.getValidators().getMain()).isEqualTo(2L);
+        assertThat(result.getValidators().getTotalWeight()).isEqualTo(1152921504606846976L);
         log.info(result.getValidators().toString());
     }
 

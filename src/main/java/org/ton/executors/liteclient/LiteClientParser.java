@@ -261,6 +261,34 @@ public class LiteClientParser {
                 .build();
     }
 
+    private static List<Validator> parseConfigValidators(String stdout) {
+        List<Validator> validators = new ArrayList<>();
+
+        List<String> unparsedLeafs = findStringBlocks(stdout, "node:(hmn_leaf");
+
+        for (String leaf : unparsedLeafs) {
+
+            String pubKey = sb(leaf, "pubkey:x", CLOSE);
+            BigInteger weight;
+            String adnlAddress;
+
+            if (leaf.contains("adnl_addr:x")) {
+                weight = new BigInteger(sb(leaf, "weight:", SPACE));
+                adnlAddress = sb(leaf, "adnl_addr:x", CLOSE);
+            } else {
+                weight = new BigInteger(sb(leaf, "weight:", CLOSE));
+                adnlAddress = null;
+            }
+            validators.add(Validator.builder()
+                    .publicKey(pubKey)
+                    .adnlAddress(adnlAddress)
+                    .weight(weight)
+                    .build());
+        }
+
+        return validators;
+    }
+
     /**
      * current validators
      */
@@ -283,15 +311,7 @@ public class LiteClientParser {
                     .build();
         }
 
-        List<String> unparsedLeafs = findStringBlocks(stdout, "node:(hmn_leaf");
-
-        for (String leaf : unparsedLeafs) {
-            validators.add(Validator.builder()
-                    .publicKey(sb(leaf, "pubkey:x", CLOSE))
-                    .adnlAddress(null)
-                    .weight(new BigInteger(sb(leaf, "weight:", CLOSE)))
-                    .build());
-        }
+        validators = parseConfigValidators(stdout);
 
         return ResultConfig34.builder()
                 .validators(Validators.builder()
@@ -327,15 +347,7 @@ public class LiteClientParser {
                     .build();
         }
 
-        List<String> unparsedLeafs = findStringBlocks(stdout, "node:(hmn_leaf");
-
-        for (String leaf : unparsedLeafs) {
-            validators.add(Validator.builder()
-                    .publicKey(sb(leaf, "pubkey:x", CLOSE))
-                    .adnlAddress(sb(leaf, "adnl_addr:x", CLOSE))
-                    .weight(new BigInteger(sb(leaf, "weight:", SPACE)))
-                    .build());
-        }
+        validators = parseConfigValidators(stdout);
 
         return ResultConfig36.builder()
                 .validators(Validators.builder()
@@ -371,15 +383,7 @@ public class LiteClientParser {
                     .build();
         }
 
-        List<String> unparsedLeafs = findStringBlocks(stdout, "node:(hmn_leaf");
-
-        for (String leaf : unparsedLeafs) {
-            validators.add(Validator.builder()
-                    .publicKey(sb(leaf, "pubkey:x", CLOSE))
-                    .adnlAddress(sb(leaf, "adnl_addr:x", CLOSE))
-                    .weight(new BigInteger(sb(leaf, "weight:", SPACE)))
-                    .build());
-        }
+        validators = parseConfigValidators(stdout);
 
         return ResultConfig32.builder()
                 .validators(Validators.builder()
@@ -1601,4 +1605,25 @@ public class LiteClientParser {
         return participantsList;
     }
 
+    public static ResultComputeReturnStake parseRunMethodComputeReturnStake(String stdout) {
+
+        log.debug("parseRunMethodComputeReturnStake {}", stdout);
+
+        if (StringUtils.isEmpty(stdout) || !stdout.contains("compute_returned_stake"))
+            return ResultComputeReturnStake.builder()
+                    .stake(new BigDecimal("-1"))
+                    .build();
+
+        if (stdout.contains("cannot parse answer")) {
+            return ResultComputeReturnStake.builder()
+                    .stake(new BigDecimal("-1"))
+                    .build();
+        }
+
+        String result = StringUtils.substringBetween(stdout, "result:  [", "]");
+
+        return ResultComputeReturnStake.builder()
+                .stake(new BigDecimal(result.trim()))
+                .build();
+    }
 }

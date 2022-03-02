@@ -9,6 +9,7 @@ import org.ton.wallet.WalletAddress;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -32,7 +33,6 @@ public class Node2 implements Serializable, Node {
     Integer dhtOutPort = 3272;
     Integer dhtForkedOutPort = 3282;
     Integer outPort = 3272;
-    Long initialStake = 20L;
     String validatorMonitoringPubKeyHex;
     String validatorMonitoringPubKeyInteger;
     String validatorPrvKeyHex;
@@ -46,8 +46,12 @@ public class Node2 implements Serializable, Node {
     String validationAndlKey;
     String validationPubKeyHex;
     String validationPubKeyInteger;
-    Boolean validationParticipated = Boolean.FALSE;
     Boolean validationPubKeyAndAdnlCreated = Boolean.FALSE;
+    BigDecimal totalRewardsCollected = BigDecimal.ZERO;
+    BigDecimal lastRewardCollected = BigDecimal.ZERO;
+    BigDecimal totalPureRewardsCollected = BigDecimal.ZERO;
+    BigDecimal lastPureRewardCollected = BigDecimal.ZERO;
+    BigDecimal avgPureRewardCollected = BigDecimal.ZERO;
 
     WalletAddress walletAddress;
     transient Process nodeProcess;

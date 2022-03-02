@@ -54,6 +54,7 @@
             <artifactId>richtextfx</artifactId>
             <version>0.10.7</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
@@ -90,6 +91,13 @@
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${openjfx.version}</version>
+            <classifier>mac-aarch64</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
             <version>${openjfx.version}</version>
             <classifier>win</classifier>
@@ -122,6 +130,7 @@
             <version>${openjfx.version}</version>
             <classifier>mac-aarch64</classifier>
         </dependency>
+
         <dependency>
             <groupId>com.jfoenix</groupId>
             <artifactId>jfoenix</artifactId>

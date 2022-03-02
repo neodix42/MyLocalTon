@@ -8,6 +8,7 @@ import org.ton.callables.parameters.WalletCallbackParam;
 import org.ton.db.entities.*;
 import org.ton.executors.liteclient.api.AccountState;
 import org.ton.settings.MyLocalTonSettings;
+import org.ton.utils.Utils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
@@ -77,7 +78,7 @@ public class DbPool {
             poolInSettings.put(dbName, "ACTIVE");
 
             settings.setDbPool(poolInSettings);
-            settings.saveSettingsToGson(settings);
+            Utils.saveSettingsToGson(settings);
 
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.schedule(() -> {

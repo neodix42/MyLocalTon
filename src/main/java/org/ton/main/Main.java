@@ -16,6 +16,8 @@ import static java.util.Objects.nonNull;
 public class Main {
 
     public static final AtomicBoolean appActive = new AtomicBoolean(true);
+    public static final AtomicBoolean inElections = new AtomicBoolean(false);
+    //public static final AtomicBoolean parsingBlocks = new AtomicBoolean(false);
     public static final File file = new File(MyLocalTonSettings.LOCK_FILE);
     public static RandomAccessFile randomAccessFile;
     public static FileLock fileLock;
