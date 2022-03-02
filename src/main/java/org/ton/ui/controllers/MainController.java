@@ -30,6 +30,8 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
@@ -37,17 +39,21 @@ import org.ton.db.entities.WalletEntity;
 import org.ton.executors.blockchainexplorer.BlockchainExplorer;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
+import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.liteclient.api.BlockShortSeqno;
 import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.executors.liteclient.api.ResultListBlockTransactions;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.main.App;
+import org.ton.parameters.ValidationParam;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -58,17 +64,20 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.LongStream;
 
-import static com.sun.javafx.PlatformUtil.isLinux;
-import static com.sun.javafx.PlatformUtil.isWindows;
+import static com.sun.javafx.PlatformUtil.*;
+import static java.util.Objects.nonNull;
 import static java.util.Objects.requireNonNull;
 import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
 import static org.ton.main.App.fxmlLoader;
+import static org.ton.main.App.mainController;
 
 @Slf4j
 public class MainController implements Initializable {
 
     public static final String LIGHT_BLUE = "#dbedff";
     public static final String ORANGE = "orange";
+    public static final int YEAR_1971 = 34131600;
+    public static final long ONE_BLN = 1000000000L;
     @FXML
     public StackPane superWindow;
 
@@ -211,7 +220,7 @@ public class MainController implements Initializable {
     public Label nodeStatus1;
 
     @FXML
-    public Label totalNodes;
+    public Label totalParticipants;
 
     @FXML
     public Label totalValidators;
@@ -230,9 +239,6 @@ public class MainController implements Initializable {
 
     @FXML
     public Label validator1WalletBalance;
-
-    @FXML
-    public Label validator1DbSize;
 
     @FXML
     public Label validator1WalletAddress;
@@ -283,10 +289,106 @@ public class MainController implements Initializable {
     public Label maximumStake;
 
     @FXML
-    public Label validator1PubKey;
+    public Label validator1PubKeyHex;
 
     @FXML
     public ProgressBar validationCountDown;
+
+    @FXML
+    public Label minterBalance;
+
+    @FXML
+    public Label configBalance;
+
+    @FXML
+    public Label electorBalance;
+
+    @FXML
+    public Label legendHoldStake;
+
+    @FXML
+    public Label legendValidation;
+
+    @FXML
+    public Label legendElections;
+
+    @FXML
+    public Label legendPause;
+
+    @FXML
+    public Label stakeHoldRange3;
+
+    @FXML
+    public Label validationRange3;
+
+    @FXML
+    public Label pauseRange3;
+
+    @FXML
+    public Label electionsRange3;
+
+    @FXML
+    public Label stakeHoldRange2;
+
+    @FXML
+    public Label validationRange2;
+
+    @FXML
+    public Label pauseRange2;
+
+    @FXML
+    public Label electionsRange2;
+
+    @FXML
+    public Label stakeHoldRange1;
+
+    @FXML
+    public Label validationRange1;
+
+    @FXML
+    public Label pauseRange1;
+
+    @FXML
+    public Label electionsRange1;
+
+    @FXML
+    public Pane electionsChartPane;
+
+    @FXML
+    public Separator timeLine;
+
+    @FXML
+    public Label validator1PubKeyInteger;
+
+    @FXML
+    public ProgressBar progressValidationUpdate;
+
+    @FXML
+    public Label validator1AdnlAddressNext;
+
+    @FXML
+    public Label validator1PubKeyHexNext;
+
+    @FXML
+    public Label validator1PubKeyIntegerNext;
+
+    @FXML
+    public Label validator1totalCollected;
+
+    @FXML
+    public Label validator1LastCollected;
+
+    @FXML
+    public Label validator1TotalRewardsPure;
+
+    @FXML
+    public Label validator1LastRewardPure;
+
+    @FXML
+    public Label validator1AvgPureReward;
+
+    @FXML
+    public Label participatedInElections;
 
     @FXML
     JFXCheckBox shardStateCheckbox;
@@ -977,16 +1079,11 @@ public class MainController implements Initializable {
         myLogLevel.getItems().add("ERROR");
         myLogLevel.getSelectionModel().select(settings.getLogSettings().getMyLocalTonLogLevel());
 
-        //if (isWindows()) {
-        mainMenuTabs.getTabs().remove(validationTab); // TODO
-        //}
-
         enableBlockchainExplorer.setVisible(false);
         enableBlockchainExplorerLabel.setVisible(false);
         mainMenuTabs.getTabs().remove(explorerTab);
 
-        //if (isLinux() || isMac()) {
-        if (isLinux()) {
+        if (isLinux() || isMac()) {
 
             enableBlockchainExplorer.setVisible(true);
             enableBlockchainExplorerLabel.setVisible(true);
@@ -1003,13 +1100,13 @@ public class MainController implements Initializable {
 
     public void startWeb() {
 
-        //if (isLinux() || isMac()) {
-        if (isLinux()) {
+        if (isLinux() || isMac()) {
             if (enableBlockchainExplorer.isSelected()) {
+                log.info("Starting native blockchain-explorer on port {}", settings.getUiSettings().getBlockchainExplorerPort());
                 BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-                blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
+                blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getBlockchainExplorerPort());
                 WebEngine webEngine = webView.getEngine();
-                webEngine.load("http://127.0.0.1:8000/last");
+                webEngine.load("http://127.0.0.1:" + settings.getUiSettings().getBlockchainExplorerPort() + "/last");
             }
         }
     }
@@ -1041,7 +1138,7 @@ public class MainController implements Initializable {
         foundTabs.getSelectionModel().selectLast();
     }
 
-    void saveSettings() {
+    public void saveSettings() {
         log.debug("saving all settings");
         settings.getUiSettings().setShowTickTockTransactions(tickTockCheckBox.isSelected());
         settings.getUiSettings().setShowMainConfigTransactions(mainConfigTxCheckBox.isSelected());
@@ -1051,7 +1148,7 @@ public class MainController implements Initializable {
         settings.getUiSettings().setShowShardStateInBlockDump(shardStateCheckbox.isSelected());
 
         settings.getWalletSettings().setNumberOfPreinstalledWallets((long) walletsNumber.getValue());
-        settings.getWalletSettings().setInitialAmount(Long.valueOf(coinsPerWallet.getText()));
+        settings.getWalletSettings().setInitialAmount(new BigDecimal(coinsPerWallet.getText()));
         settings.getWalletSettings().setWalletVersion(WalletVersion.getKeyByValue(walletVersion.getValue()));
 
         settings.getBlockchainSettings().setMinValidators(Long.valueOf(minValidators.getText()));
@@ -1073,7 +1170,7 @@ public class MainController implements Initializable {
         settings.getBlockchainSettings().setMinValidatorStake(Long.valueOf(minStake.getText()));
         settings.getBlockchainSettings().setMaxValidatorStake(Long.valueOf(maxStake.getText()));
         settings.getBlockchainSettings().setMinTotalValidatorStake(Long.valueOf(minTotalStake.getText()));
-        settings.getBlockchainSettings().setMaxFactor(Long.valueOf(maxFactor.getText()));
+        settings.getBlockchainSettings().setMaxFactor(new BigDecimal(maxFactor.getText()));
 
         settings.getBlockchainSettings().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl.getText()));
         settings.getBlockchainSettings().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl.getText()));
@@ -1089,7 +1186,7 @@ public class MainController implements Initializable {
         settings.getGenesisNode().setLiteServerPort(Integer.valueOf(litesServerPort.getText()));
         settings.getGenesisNode().setDhtPort(Integer.valueOf(dhtServerPort.getText()));
 
-        settings.saveSettingsToGson(settings);
+        Utils.saveSettingsToGson(settings);
     }
 
     public void accountsOnScroll(ScrollEvent scrollEvent) {
@@ -1157,6 +1254,7 @@ public class MainController implements Initializable {
         yesNoDialog.show();
     }
 
+    /*
     public void transformAction() throws IOException {
 
         Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
@@ -1182,7 +1280,7 @@ public class MainController implements Initializable {
 
         yesNoDialog.show();
     }
-
+    */
     public void showMessage(String msg) {
 
         try {
@@ -1245,19 +1343,511 @@ public class MainController implements Initializable {
         yesNoDialog.show();
     }
 
-    public void showConfiguration() throws Exception {
-        MyLocalTon.getInstance().getConfig(settings.getGenesisNode());
+    public void updateValidationTabInfo(ValidationParam v) {
+        try {
+
+            totalValidators.setText(v.getValidatorNodes().toString());
+            blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+
+            colorValidationTiming(v);
+
+            long validationStartInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartValidationCycle());
+            String startsValidationDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationStartInAgoSeconds).toMillis(), "HH:mm:ss", true);
+            if ((Utils.getCurrentTimeSeconds() - v.getStartValidationCycle()) > 0) {
+                startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Started ago (" + startsValidationDuration + ")");
+            } else {
+                startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Starts in (" + startsValidationDuration + ")");
+            }
+            long validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
+            String validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            endCycle.setText(Utils.toLocal(v.getEndValidationCycle()) + "  Duration (" + validation1Duration + ")");
+
+            long electionsStartsInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartElections());
+            String startsElectionDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionsStartsInAgoSeconds).toMillis(), "HH:mm:ss", true);
+            if ((Utils.getCurrentTimeSeconds() - v.getStartElections()) > 0) {
+                startElections.setText(Utils.toLocal(v.getStartElections()) + "  Started ago (" + startsElectionDuration + ") Election Id " + v.getStartValidationCycle());
+                startElections.setTooltip(new Tooltip("Election Id (" + Utils.toLocal(v.getStartValidationCycle()) + ")"));
+            } else {
+                startElections.setText(Utils.toLocal(v.getStartElections()) + "  Starts in (" + startsElectionDuration + ")");
+                startElections.setTooltip(null);
+            }
+            long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
+            String elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
+
+            endElections.setText(Utils.toLocal(v.getEndElections()) + "  Duration (" + elections1Duration + ")");
+
+            long nextElectionsStartsInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getNextElections());
+            String nextElectionDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(nextElectionsStartsInAgoSeconds).toMillis(), "HH:mm:ss", true);
+            if ((Utils.getCurrentTimeSeconds() - v.getNextElections()) > 0) {
+                nextElections.setText(Utils.toLocal(v.getNextElections()) + "  Started ago (" + nextElectionDuration + ")");
+            } else {
+                nextElections.setText(Utils.toLocal(v.getNextElections()) + "  Starts in (" + nextElectionDuration + ")");
+            }
+
+            minterAddr.setText(v.getMinterAddr());
+            configAddr.setText(v.getConfigAddr());
+            electorAddr.setText(v.getElectorAddr());
+            validationPeriod.setText(v.getValidationDuration().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getValidationDuration()).toMillis(), "HH:mm:ss", true) + ")");
+            electionPeriod.setText(v.getElectionDuration().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getElectionDuration()).toMillis(), "HH:mm:ss", true) + ")");
+
+            holdPeriod.setText(v.getHoldPeriod().toString() + " (" + DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(v.getHoldPeriod()).toMillis(), "HH:mm:ss", true) + ")");
+            minimumStake.setText(String.format("%,.9f", new BigDecimal(v.getMinStake().divide(BigInteger.valueOf(ONE_BLN)))));
+            maximumStake.setText(String.format("%,.9f", new BigDecimal(v.getMaxStake().divide(BigInteger.valueOf(ONE_BLN)))));
+
+            //every 30 sec
+            //MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+            LiteClient liteClient = new LiteClient();
+
+            AccountState accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
+            minterBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+
+            accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
+            configBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+
+            accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
+            electorBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+
+            totalParticipants.setText(String.valueOf(LiteClientParser.parseRunMethodParticipantList(liteClient.executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size()));
+
+            // validator page
+            validator1AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
+            validator1PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
+            validator1PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+
+            accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
+            validator1AdnlAddressNext.setText(settings.getGenesisNode().getValidationAndlKey());
+            validator1PubKeyHexNext.setText(settings.getGenesisNode().getValidationPubKeyHex());
+            validator1PubKeyIntegerNext.setText(settings.getGenesisNode().getValidationPubKeyInteger() + " (used in participants list)");
+            validator1WalletAddress.setText(settings.getGenesisNode().getWalletAddress().getFullWalletAddress());
+            validator1WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            nodePublicPort1.setText(settings.getGenesisNode().getPublicPort().toString());
+            nodeConsolePort1.setText(settings.getGenesisNode().getConsolePort().toString());
+            liteServerPort1.setText(settings.getGenesisNode().getLiteServerPort().toString());
+
+        } catch (Exception e) {
+            log.error("Error updating validation tab GUI! Error {}", e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    public void addValidator() throws InterruptedException {
-        BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-        blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), 8000);
+    private void colorValidationTiming(ValidationParam v) {
 
-        Thread.sleep(5000);
+        long currentTime = System.currentTimeMillis() / 1000;
 
-        mainMenuTabs.getTabs().add(explorerTab);
+        if (v.getStartValidationCycle() > currentTime) {
+            startCycle.setTextFill(Color.GREEN);
+        } else {
+            startCycle.setTextFill(Color.BLACK);
+        }
 
-        WebEngine webEngine = webView.getEngine();
-        webEngine.load("http://127.0.0.1:8000/last");
+        if (v.getEndValidationCycle() > currentTime) {
+            endCycle.setTextFill(Color.GREEN);
+        } else {
+            endCycle.setTextFill(Color.BLACK);
+        }
+
+        if (v.getStartElections() > currentTime) {
+            startElections.setTextFill(Color.GREEN);
+        } else {
+            startElections.setTextFill(Color.BLACK);
+        }
+
+        if (v.getEndElections() > currentTime) {
+            endElections.setTextFill(Color.GREEN);
+        } else {
+            endElections.setTextFill(Color.BLACK);
+        }
+
+        if (v.getNextElections() > currentTime) {
+            nextElections.setTextFill(Color.GREEN);
+        } else {
+            nextElections.setTextFill(Color.BLACK);
+        }
+    }
+
+    public void drawElections(ValidationParam v) {
+        log.debug("draw drawBarsAndLabels");
+
+        Platform.runLater(() -> {
+            try {
+
+                mainController.drawBarsAndLabels(v); // once in elections enough (bars and labels)
+
+                mainController.updateValidationTabInfo(v);
+
+                mainController.drawTimeLine(v);
+
+                mainController.electionsChartPane.setVisible(true);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error(ExceptionUtils.getStackTrace(e));
+            }
+        });
+    }
+
+    public void drawBarsAndLabels(ValidationParam v) {
+        log.debug("draw drawBarsAndLabels");
+
+        try {
+
+            if (settings.electionsCounter.size() > 3) {
+                settings.setCycleMod(2);
+                settings.setCycleModEquals(0);
+                settings.setVeryFirstElections(Boolean.FALSE);
+                log.debug("size {}, globalSize {}, cycleMod {}, cycleModEqual {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size(), settings.getCycleMod(), settings.getCycleModEquals());
+            }
+
+            long electionsDelta = v.getNextElections() - v.getStartElections();
+            log.debug("currTime - startElections = {} > {} 3*delta", (Utils.getCurrentTimeSeconds() - v.getStartElections()), (electionsDelta * 3));
+            // use case when mylocalton started after long pause and electionId was taken last one but the next one is way ahead in time
+            if ((Utils.getCurrentTimeSeconds() - v.getStartElections()) > (electionsDelta * 3)) {
+                log.debug("A. setStartElectionIdEvery3Cycles {}", Utils.toLocal(v.getStartElections()));
+                settings.setLastValidationParamEvery3Cycles(v);
+            }
+
+            // use case to rotate labels each two elections (and after 3 elections very first time)
+            if ((settings.electionsCounter.size() % settings.getCycleMod()) == settings.getCycleModEquals()) {
+                log.debug("B. setStartElectionIdEvery3Cycles {}", Utils.toLocal(v.getStartElections()));
+                settings.setLastValidationParamEvery3Cycles(v);
+            }
+
+            positionBars(settings.getLastValidationParamEvery3Cycles());
+            addLabelsToBars(settings.getLastValidationParamEvery3Cycles());
+
+            long startXHoldStakeLine3 = (long) stakeHoldRange3.getLayoutX();
+            long endHoldStake3 = settings.getStakeHoldRange3End();
+
+            double scaleFactor = (double) 200 / v.getValidationDuration();
+            long holdStakeWidth = (long) (v.getHoldPeriod() * scaleFactor);
+
+            log.debug("startXHoldStakeLine3 {}, endHoldStake3 {}, holdStakeWidth {}", startXHoldStakeLine3, endHoldStake3, holdStakeWidth);
+
+            // draw time-line
+            long fullWidthInPixels = startXHoldStakeLine3 + holdStakeWidth;
+            long fullDurationSeconds = endHoldStake3 - settings.getLastValidationParamEvery3Cycles().getStartElections();
+            double scale = (double) fullWidthInPixels / fullDurationSeconds;
+            log.debug("full width {}px, {}s, scale {}", fullWidthInPixels, fullDurationSeconds, scale);
+
+            settings.setTimeLineScale(scale);
+            saveSettings();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+    public void drawTimeLine(ValidationParam v) {
+
+        if (nonNull(settings.getTimeLineScale())) {
+
+            log.debug("draw time-line");
+            // update time-line position
+            long x;
+            double xcoord;
+            long currentTime = Utils.getCurrentTimeSeconds();
+
+            log.debug("Current StartElectionIdEvery3Cycles {}, size {} global {}", Utils.toLocal(settings.getLastValidationParamEvery3Cycles().getStartElections()), settings.electionsCounter.size(), settings.electionsCounterGlobal.size());
+
+            x = currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections();//settings.getStartElectionIdEvery3Cycles(); // delta in seconds from start 2000
+            double scaleFactor = (double) 200 / v.getValidationDuration();
+            long electionsDelta = v.getNextElections() - v.getStartElections();
+            long electionsDeltaWidth = (long) (electionsDelta * scaleFactor);
+
+            if (settings.electionsCounter.size() > 3) {
+                xcoord = electionsDeltaWidth + (x * settings.getTimeLineScale());
+            } else {
+                xcoord = 0 + (x * settings.getTimeLineScale());
+            }
+            log.debug("electionsDelta {}, electionsDeltaWidth {}, xcoord {}", electionsDelta, electionsDeltaWidth, xcoord);
+            timeLine.setLayoutX(xcoord);
+            saveSettings();
+        }
+    }
+
+    private void positionBars(ValidationParam v) {
+        // assume duration of validation cycle is 1 unit of 200 pixels, then other ranges scaled down/up accordingly
+        double scaleFactor = (double) 200 / v.getValidationDuration();
+
+        long space = 3;
+        long validationWidth = 200;
+        long electionsWidth = (long) ((v.getEndElections() - v.getStartElections()) * scaleFactor);
+        long pauseWidth = (long) ((v.getStartValidationCycle() - v.getEndElections()) * scaleFactor);
+        long holdStakeWidth = (long) (v.getHoldPeriod() * scaleFactor);
+        long electionsDelta = v.getNextElections() - v.getStartElections();
+        long electionsDeltaWidth = (long) (electionsDelta * scaleFactor);
+        log.debug("elections delta {}s, {}px", electionsDelta, electionsDeltaWidth);
+
+        // start X position of line 1 (very first elections)
+        long startXElectionsLine1 = 0;
+        long startXPauseLine1 = startXElectionsLine1 + electionsWidth + space;
+        long startXValidationLine1 = startXPauseLine1 + pauseWidth + space;
+        long startXHoldStakeLine1 = startXValidationLine1 + validationWidth + space;
+
+        // start X position of line 2 (next elections)
+        long startXElectionsLine2 = (long) ((startXValidationLine1 + validationWidth) - (scaleFactor * v.getStartElectionsBefore())) - 3;
+        long startXPauseLine2 = startXElectionsLine2 + electionsWidth + space;
+        long startXValidationLine2 = startXPauseLine2 + pauseWidth + space;
+        long startXHoldStakeLine2 = startXValidationLine2 + validationWidth + space;
+
+        // start X position of line 3 (next elections)
+        long startXElectionsLine3 = startXElectionsLine2 + startXElectionsLine2 - startXElectionsLine1;
+        long startXPauseLine3 = startXElectionsLine3 + electionsWidth + space;
+        long startXValidationLine3 = startXPauseLine3 + pauseWidth + space;
+        long startXHoldStakeLine3 = startXValidationLine3 + validationWidth + space;
+
+        log.debug("electionsWidth {}, pauseWidth {}, validationWidth {}, hostStakeWidth {}", electionsWidth, pauseWidth, validationWidth, holdStakeWidth);
+
+        electionsRange1.setMinWidth(electionsWidth);
+        electionsRange2.setMinWidth(electionsWidth);
+        electionsRange3.setMinWidth(electionsWidth);
+
+        pauseRange1.setMinWidth(pauseWidth);
+        pauseRange2.setMinWidth(pauseWidth);
+        pauseRange3.setMinWidth(pauseWidth);
+
+        validationRange1.setMinWidth(validationWidth);
+        validationRange2.setMinWidth(validationWidth);
+        validationRange3.setMinWidth(validationWidth);
+
+        stakeHoldRange1.setMinWidth(holdStakeWidth);
+        stakeHoldRange2.setMinWidth(holdStakeWidth);
+        stakeHoldRange3.setMinWidth(holdStakeWidth);
+
+        electionsRange1.setLayoutX(startXElectionsLine1);
+        pauseRange1.setLayoutX(startXPauseLine1);
+        validationRange1.setLayoutX(startXValidationLine1);
+        stakeHoldRange1.setLayoutX(startXHoldStakeLine1);
+
+        electionsRange2.setLayoutX(startXElectionsLine2);
+        pauseRange2.setLayoutX(startXPauseLine2);
+        validationRange2.setLayoutX(startXValidationLine2);
+        stakeHoldRange2.setLayoutX(startXHoldStakeLine2);
+
+        electionsRange3.setLayoutX(startXElectionsLine3);
+        pauseRange3.setLayoutX(startXPauseLine3);
+        validationRange3.setLayoutX(startXValidationLine3);
+        stakeHoldRange3.setLayoutX(startXHoldStakeLine3);
+
+    }
+
+    private void addLabelsToBars(ValidationParam v) {
+        long electionsDelta = v.getNextElections() - v.getStartElections();
+        long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
+        String elections1Duration;
+        String elections1ToolTip;
+        long pauseDurationInSeconds;
+        String pause1Duration;
+        long validationDurationInSeconds;
+        String validation1Duration;
+        long stakeHoldDurationInSeconds;
+        String stakeHold1Duration;
+
+        log.debug("0.addLabelsToBars, size {}", settings.electionsCounter.size());
+        //1
+        elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
+        elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getStartElections()), Utils.toLocal(v.getEndElections()), elections1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            log.debug("1.addLabelsToBars, size {}, globalSize {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size());
+            electionsRange1.setTooltip(new Tooltip(elections1ToolTip));
+        } else {
+            log.debug("2.addLabelsToBars, size {}, globalSize {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size());
+            String elections1Duration0 = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            String elections1ToolTip0 = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getStartElections() - electionsDelta), Utils.toLocal(v.getEndElections() - electionsDelta), elections1Duration0);
+            electionsRange1.setTooltip(new Tooltip(elections1ToolTip0));
+        }
+
+        pauseDurationInSeconds = v.getStartValidationCycle() - v.getEndElections();
+        pause1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
+        String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getEndElections()), Utils.toLocal(v.getStartValidationCycle()), pause1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            pauseRange1.setTooltip(new Tooltip(pause1ToolTip));
+        } else {
+            String pause1Duration0 = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            String pause1ToolTip0 = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getEndElections() - electionsDelta), Utils.toLocal(v.getStartValidationCycle() - electionsDelta), pause1Duration0);
+            pauseRange1.setTooltip(new Tooltip(pause1ToolTip0));
+        }
+
+        validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
+        validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
+        String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getStartValidationCycle()), Utils.toLocal(v.getEndValidationCycle()), validation1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            validationRange1.setTooltip(new Tooltip(validation1ToolTip));
+        } else {
+            String validation1Duration0 = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            String validation1ToolTip0 = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getStartValidationCycle() - electionsDelta), Utils.toLocal(v.getEndValidationCycle() - electionsDelta), validation1Duration0);
+            validationRange1.setTooltip(new Tooltip(validation1ToolTip0));
+        }
+
+        stakeHoldDurationInSeconds = v.getHoldPeriod();
+        stakeHold1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
+        String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getEndValidationCycle()), Utils.toLocal(java.time.Duration.ofSeconds(v.getEndValidationCycle()).plusSeconds(v.getHoldPeriod()).toSeconds()), stakeHold1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            stakeHoldRange1.setTooltip(new Tooltip(holdStake1ToolTip));
+        } else {
+            String stakeHold1Duration0 = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            String holdStake1ToolTip0 = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getEndValidationCycle() - electionsDelta), Utils.toLocal(java.time.Duration.ofSeconds(v.getEndValidationCycle() - electionsDelta).plusSeconds(v.getHoldPeriod()).toSeconds()), stakeHold1Duration0);
+            stakeHoldRange1.setTooltip(new Tooltip(holdStake1ToolTip0));
+        }
+
+        //2
+        long endElections2 = java.time.Duration.ofSeconds(v.getNextElections()).plusSeconds(electionDurationInSeconds).toSeconds();
+        String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getNextElections()), Utils.toLocal(endElections2), elections1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            electionsRange2.setTooltip(new Tooltip(elections2ToolTip));
+        } else {
+            electionsRange2.setTooltip(new Tooltip(elections1ToolTip));
+        }
+
+        long endPause2 = java.time.Duration.ofSeconds(endElections2).plusSeconds(pauseDurationInSeconds).toSeconds();
+        String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections2), Utils.toLocal(endPause2), pause1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            pauseRange2.setTooltip(new Tooltip(pause2ToolTip));
+        } else {
+            pauseRange2.setTooltip(new Tooltip(pause1ToolTip));
+        }
+
+        long endValidation2 = java.time.Duration.ofSeconds(endPause2).plusSeconds(validationDurationInSeconds).toSeconds();
+        String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause2), Utils.toLocal(endValidation2), validation1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            validationRange2.setTooltip(new Tooltip(validation2ToolTip));
+        } else {
+            validationRange2.setTooltip(new Tooltip(validation1ToolTip));
+        }
+
+        long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v.getHoldPeriod()).toSeconds();
+        String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            stakeHoldRange2.setTooltip(new Tooltip(holdStake2ToolTip));
+        } else {
+            stakeHoldRange2.setTooltip(new Tooltip(holdStake1ToolTip));
+        }
+
+        //3
+        long startElections3 = java.time.Duration.ofSeconds(v.getNextElections()).plusSeconds(electionsDelta).toSeconds();
+        long endElections3 = java.time.Duration.ofSeconds(v.getNextElections()).plusSeconds(electionDurationInSeconds + electionsDelta).toSeconds();
+        String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(startElections3), Utils.toLocal(endElections3), elections1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            electionsRange3.setTooltip(new Tooltip(elections3ToolTip));
+        } else {
+            electionsRange3.setTooltip(new Tooltip(elections2ToolTip));
+        }
+
+        long endPause3 = java.time.Duration.ofSeconds(endElections3).plusSeconds(pauseDurationInSeconds).toSeconds();
+        String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections3), Utils.toLocal(endPause3), pause1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            pauseRange3.setTooltip(new Tooltip(pause3ToolTip));
+        } else {
+            pauseRange3.setTooltip(new Tooltip(pause2ToolTip));
+        }
+
+        long endValidation3 = java.time.Duration.ofSeconds(endPause3).plusSeconds(validationDurationInSeconds).toSeconds();
+        String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause3), Utils.toLocal(endValidation3), validation1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            validationRange3.setTooltip(new Tooltip(validation3ToolTip));
+        } else {
+            validationRange3.setTooltip(new Tooltip(validation2ToolTip));
+        }
+
+        long endHoldStake3 = java.time.Duration.ofSeconds(endValidation3).plusSeconds(v.getHoldPeriod()).toSeconds();
+        String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation3), Utils.toLocal(endHoldStake3), stakeHold1Duration);
+        if (settings.electionsCounter.size() <= 3) {
+            stakeHoldRange3.setTooltip(new Tooltip(holdStake3ToolTip));
+            settings.setStakeHoldRange3End(endHoldStake3);
+        } else {
+            stakeHoldRange3.setTooltip(new Tooltip(holdStake2ToolTip));
+            settings.setStakeHoldRange3End(endHoldStake3);
+        }
+    }
+
+    public void validation1AdnlClicked(MouseEvent mouseEvent) {
+        String addr = validator1AdnlAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
+    }
+
+    public void validation1WalletAddrClicked(MouseEvent mouseEvent) {
+        String addr = validator1WalletAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
+    }
+
+    public void validation1PubKeyIntegerClicked(MouseEvent mouseEvent) {
+        String addr = validator1PubKeyInteger.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
+    }
+
+    public void validation1PubKeyHexClicked(MouseEvent mouseEvent) {
+        String addr = validator1PubKeyHex.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
+    }
+
+    public void validation1AdnlClickedNext(MouseEvent mouseEvent) {
+        String addr = validator1AdnlAddressNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
+    }
+
+    public void validation1PubKeyHexClickedNext(MouseEvent mouseEvent) {
+        String addr = validator1PubKeyHexNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
+    }
+
+    public void validation1PubKeyIntegerClickedNext(MouseEvent mouseEvent) {
+        String addr = validator1PubKeyIntegerNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        mouseEvent.consume();
+    }
+
+    public void copyElectionId(MouseEvent mouseEvent) {
+        String electionId = startElections.getText();
+        electionId = electionId.substring(electionId.indexOf("Election Id ") + 12);
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(electionId);
+        clipboard.setContent(content);
+        log.debug(electionId + " copied");
+        App.mainController.showInfoMsg(electionId + " copied to clipboard", 0.5);
+        mouseEvent.consume();
     }
 }

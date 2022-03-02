@@ -1,5 +1,6 @@
 package org.ton.executors.fift;
 
+import com.sun.javafx.PlatformUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
@@ -55,7 +56,14 @@ public class Fift {
             walletScript = "wallet.fif";
         }
 
-        log.debug("Sending using {}", walletScript);
+        log.info("{} sending using {}", sendToncoinsParam.getExecutionNode().getNodeName(), walletScript);
+        String attachedBoc;
+
+        if (PlatformUtil.isWindows()) {
+            attachedBoc = (isNull(sendToncoinsParam.getBocLocation())) ? "" : "-B\"" + sendToncoinsParam.getBocLocation().trim() + "\"";
+        } else {
+            attachedBoc = (isNull(sendToncoinsParam.getBocLocation())) ? "" : "-B" + sendToncoinsParam.getBocLocation().trim();
+        }
 
         result = new FiftExecutor().execute(sendToncoinsParam.getExecutionNode(),
                 "smartcont" + File.separator + walletScript,
@@ -66,18 +74,18 @@ public class Fift {
                 sendToncoinsParam.getAmount().toPlainString(),
                 (nonNull(sendToncoinsParam.getClearBounce()) && sendToncoinsParam.getClearBounce().equals(Boolean.TRUE)) ? "-n" : "",
                 (nonNull(sendToncoinsParam.getForceBounce()) && sendToncoinsParam.getForceBounce().equals(Boolean.TRUE)) ? "-b" : "",
-                (isNull(sendToncoinsParam.getBocLocation())) ? "" : "-B " + sendToncoinsParam.getBocLocation(),
-                (isNull(sendToncoinsParam.getComment())) ? "" : "-C " + sendToncoinsParam.getComment(),
+                (isNull(sendToncoinsParam.getComment())) ? "" : "-C " + sendToncoinsParam.getComment().trim(),
+                attachedBoc,
                 resultBocFileLocation);
 
         String resultStr = result.getRight().get();
         log.debug(resultStr);
 
         if (Files.exists(Paths.get(sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc"), LinkOption.NOFOLLOW_LINKS)) {
+            log.debug("prepared boc file {}", sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc");
             return sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc";
         } else {
-            //throw new Exception("Cannot send toincoins.");
-            log.error("Cannot send Toncoins");
+            log.error("Cannot send Toncoins. Stdout: {}", resultStr);
             return null;
         }
     }
@@ -337,13 +345,13 @@ public class Fift {
 
         String resultStr = result.getRight().get();
 
-        log.info(resultStr);
+        log.debug(resultStr);
 
         String[] array = resultStr.split(System.lineSeparator());
         String generatedMessageBase64 = array[array.length - 2].trim();
         String generatedMessageHex = array[array.length - 3].trim();
 
-        log.info("signing request by validator");
+        log.info("signing request by {}", node.getNodeName());
 
         //sign hex string and base64, 2nd line from bottom in output
         Pair<String, Process> signed = new ValidatorEngineConsoleExecutor().execute(node,
@@ -354,10 +362,11 @@ public class Fift {
                 "-rc",
                 "sign " + node.getValidationSigningKey() + " " + generatedMessageHex);
 
-        log.info(signed.getLeft()); // make debug
+        log.debug(signed.getLeft()); // make debug
 
         String signature = StringUtils.substring(signed.getLeft(), signed.getLeft().indexOf("signature") + 9).trim();
         log.info("signature {}", signature);
+        FileUtils.deleteQuietly(new File(node.getTonBinDir() + fileNameBase));
 
         return signature;
     }
@@ -370,20 +379,28 @@ public class Fift {
                 node.getWalletAddress().getBounceableAddressBase64url(),
                 String.valueOf(startElectionTime),
                 maxFactor.toPlainString(),
-                node.getValidationAndlKey(),
-                node.getValidationSigningPubKey(),
+                node.getValidationAndlKey(), // getValidatorAdnlAddrHex
+                node.getValidationSigningPubKey(), // getValidatorIdBase64
                 signatureFromElectionRequest);
 
         String resultStr = result.getRight().get();
-        log.info(resultStr); // make debug
+        log.debug(resultStr); // make debug
 
         resultStr = resultStr.replace("\r\n", SPACE).replace("\n", SPACE);
 
         String validatorPublicKeyHex = StringUtils.substringBetween(resultStr, "with validator public key ", SPACE).trim();
         BigInteger bigInt = new BigInteger(validatorPublicKeyHex, 16);
-
-        node.setValidationPubKeyHex(validatorPublicKeyHex);
+        log.info("{} signed adnl {} with validator pubkey (hex){}, (integer){}", node.getNodeName(), node.getValidationAndlKey(), validatorPublicKeyHex, bigInt);
+        node.setValidationPubKeyHex(validatorPublicKeyHex); // used only for monitoring
         node.setValidationPubKeyInteger(bigInt.toString());
+    }
 
+    public void createRecoverStake(Node node) throws ExecutionException, InterruptedException {
+        log.info("createRecoverStake {}", node.getNodeName());
+
+        Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "recover-stake.fif");
+
+        String resultStr = result.getRight().get();
+        log.debug(resultStr);
     }
 }

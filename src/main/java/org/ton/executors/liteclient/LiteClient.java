@@ -254,7 +254,9 @@ public class LiteClient {
 
     public String executeComputeReturnedStake(Node node, String electorAddr, String validatorWalletAddr) throws Exception {
         // parseRunMethodComputeReturnedStake
-        return executeRunMethod(node, electorAddr, "compute_returned_stake", validatorWalletAddr);
+        //final String command = String.format("runmethod %s %s 0x%s", electorAddr, "compute_returned_stake", validatorWalletAddr);
+        //log.info(command);
+        return executeRunMethod(node, electorAddr, "compute_returned_stake", "0x" + validatorWalletAddr.trim().toLowerCase());
     }
 
     public String executeGetMinMaxStake(Node node) throws Exception {

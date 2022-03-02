@@ -1,11 +1,23 @@
 ConfigParam(34) = (
-  cur_validators:(validators_ext utime_since:1619175079 utime_until:1619177079 total:1 main:1 total_weight:100
-    list:(hme_root
-      root:(hm_edge
-        label:(hml_same v:0 n:16)
-        node:(hmn_leaf
-          value:(validator
-            public_key:(ed25519_pubkey pubkey:x8374D2AD5FF8E09E69916E807720557F842D3956DA38708478A5AB1B6185C989) weight:100))))))
+   cur_validators:(validators_ext utime_since:1644343793 utime_until:1644344873 total:2 main:2 total_weight:1152921504606846976
+     list:(hme_root
+       root:(hm_edge
+         label:(hml_same v:0 n:15)
+         node:(hmn_fork
+           left:(hm_edge
+             label:(hml_short
+               len:unary_zero s:x)
+             node:(hmn_leaf
+               value:(validator_addr
+                 public_key:(ed25519_pubkey pubkey:xAABB1F151156B8A00ED517765A84B840183A498704B18022164EDB70D39BDC6C) weight:576460752303423488 adnl_addr:x3E9BD660320BCCC36013EB21E4D62C21A51A7EB94E110C437D096CADAE59A990)))
+           right:(hm_edge
+             label:(hml_short
+               len:unary_zero s:x)
+             node:(hmn_leaf
+               value:(validator_addr
+                 public_key:(ed25519_pubkey pubkey:xEB29AF49999DA686E80B0AC095ECC8F0E47E9163B2728E53801A7B76BB9E5FBE) weight:576460752303423488 adnl_addr:x3EF68F348E6EE6EA7EFDF8F1B578E7D19E8B83C7668305220A65EA1C5EEE55E9))))))))
 
-x{126082A6A76082AE77000100010000000000000064C_}
- x{D0538E81278A8374D2AD5FF8E09E69916E807720557F842D3956DA38708478A5AB1B6185C9890000000000000064}
+ x{126202B1F16202B629000200021000000000000000C_}
+  x{CF}
+   x{1CE3A049E2AAAEC7C54455AE2803B545DD96A12E10060E9261C12C60088593B6DC34E6F71B02000000000000000FA6F5980C82F330D804FAC879358B0869469FAE53844310DF425B2B6B966A642_}
+   x{1CE3A049E2BACA6BD2666769A1BA02C2B0257B323C391FA458EC9CA394E0069EDDAEE797EF82000000000000000FBDA3CD239BB9BA9FBF7E3C6D5E39F467A2E0F1D9A0C14882997A8717BB957A6_}

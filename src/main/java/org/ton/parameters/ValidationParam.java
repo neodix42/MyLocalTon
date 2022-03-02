@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.ton.executors.liteclient.api.ResultListParticipants;
+import org.ton.executors.liteclient.api.config.Validator;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -13,15 +15,17 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class ValidationParam {
+public class ValidationParam implements Serializable {
     Long totalNodes;
     Long validatorNodes;
     Long blockchainLaunchTime;
-    Long startCycle;
-    Long endCycle;
+    Long startValidationCycle;
+    Long endValidationCycle;
     Long startElections;
     Long endElections;
     Long nextElections;
+    Long startElectionsBefore;
+    Long endElectionsBefore;
     String minterAddr;
     String configAddr;
     String electorAddr;
@@ -31,4 +35,6 @@ public class ValidationParam {
     BigInteger minStake;
     BigInteger maxStake;
     List<ResultListParticipants> participants;
+    List<Validator> previousValidators;
+    List<Validator> currentValidators;
 }

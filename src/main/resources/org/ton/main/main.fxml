@@ -9,7 +9,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.WebView?>
 <?import java.net.URL?>
-<StackPane fx:id="superWindow" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.MainController">
+<StackPane fx:id="superWindow" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.MainController">
     <BorderPane id="main" fx:id="mainWindow" maxHeight="720.0" prefHeight="722.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1">
         <stylesheets>
             <URL value="@../css/global-font.css"/>
@@ -21,15 +21,16 @@
                         <Image url="@../images/logo.png"/>
                     </ImageView>
                     <VBox prefHeight="60.0" prefWidth="174.0" style="-fx-padding: 0 0 0 5;">
-                        <Label alignment="TOP_LEFT" prefHeight="28.0" prefWidth="191.0" style="-fx-text-fill: white; -fx-font-size: 18; -fx-padding: 0 0 0 10; -fx-text-alignment: center;"
-                               text="MyLocalTon"/>
-                        <Label alignment="TOP_LEFT" prefHeight="15.0" prefWidth="223.0" style="-fx-text-fill: white; -fx-font-size: 10; -fx-padding: 0 0 0 10; -fx-text-alignment: center;"
-                               text="The Open Network"/>
+                        <Label alignment="TOP_LEFT" prefHeight="28.0" prefWidth="191.0"
+                               style="-fx-text-fill: white; -fx-font-size: 18; -fx-padding: 0 0 0 10; -fx-text-alignment: center;" text="MyLocalTon"/>
+                        <Label alignment="TOP_LEFT" prefHeight="15.0" prefWidth="223.0"
+                               style="-fx-text-fill: white; -fx-font-size: 10; -fx-padding: 0 0 0 10; -fx-text-alignment: center;" text="The Open Network"/>
                     </VBox>
                 </HBox>
                 <VBox prefHeight="58.0" prefWidth="208.0">
                     <Label alignment="CENTER" prefHeight="28.0" prefWidth="208.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="CURRENT BLOCK" textAlignment="CENTER"/>
-                    <Label fx:id="currentBlockNum" alignment="CENTER" prefHeight="27.0" prefWidth="208.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="-" textAlignment="CENTER"/>
+                    <Label fx:id="currentBlockNum" alignment="CENTER" prefHeight="27.0" prefWidth="208.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="-"
+                           textAlignment="CENTER"/>
                 </VBox>
                 <VBox prefHeight="58.0" prefWidth="83.0">
 
@@ -47,19 +48,19 @@
                     <Label alignment="CENTER" prefHeight="28.0" prefWidth="100.0" style="-fx-text-fill: white; -fx-font-size: 18;" text="SIZE" textAlignment="CENTER"/>
                     <Label fx:id="dbSizeId" alignment="CENTER" prefHeight="27.0" prefWidth="100.0" style="-fx-text-fill: white; -fx-font-size: 14;" text="-"/>
                 </VBox>
-                <BorderPane prefHeight="58.0" prefWidth="390.0">
+                <BorderPane prefHeight="58.0" prefWidth="372.0">
                     <center>
-                        <JFXTextField fx:id="searchField" focusColor="#ebeae0" focusTraversable="false" labelFloat="true" prefHeight="18.0" prefWidth="390.0"
-                                      promptText="SEARCH BLOCKS, ACCOUNTS, TXs..." style="-fx-border-color: white; -fx-prompt-text-fill: white; -fx-text-inner-color: white;" unFocusColor="#393535"
-                                      BorderPane.alignment="CENTER">
+                        <JFXTextField fx:id="searchField" focusColor="#ebeae0" focusTraversable="false" labelFloat="true" prefHeight="18.0" prefWidth="369.0"
+                                      promptText="SEARCH BLOCKS, ACCOUNTS, TXs..." style="-fx-border-color: white; -fx-prompt-text-fill: white; -fx-text-inner-color: white;"
+                                      unFocusColor="#393535" BorderPane.alignment="CENTER">
                             <padding>
                                 <Insets left="5.0"/>
                             </padding>
                         </JFXTextField>
                     </center>
                 </BorderPane>
-                <VBox prefHeight="58.0" style="-fx-alignment: center-right; -fx-padding: 0 0 0 15;">
-                    <JFXButton fx:id="scrollBtn" focusTraversable="false" onAction="#scrollBtnAction" prefHeight="15.0" prefWidth="15.0">
+                <VBox prefHeight="58.0" prefWidth="65.0" style="-fx-alignment: center-right; -fx-padding: 0 0 0 18;">
+                    <JFXButton fx:id="scrollBtn" focusTraversable="false" onAction="#scrollBtnAction" opacity="0.98" prefHeight="28.0" prefWidth="64.0">
                         <graphic>
                             <ImageView fx:id="scrollBtnImageView" fitHeight="18.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                                 <Image url="@../images/scroll.png"/>
@@ -70,7 +71,8 @@
             </HBox>
         </top>
         <center>
-            <JFXTabPane fx:id="mainMenuTabs" rotateGraphic="true" side="LEFT" style="-fx-background-color: white;" stylesheets="@../css/font.css" xmlns:fx="http://javafx.com/fxml/1">
+            <JFXTabPane fx:id="mainMenuTabs" rotateGraphic="true" side="LEFT" style="-fx-background-color: white;" stylesheets="@../css/font.css"
+                        xmlns:fx="http://javafx.com/fxml/1">
                 <Tab fx:id="blocksTab">
                     <graphic>
                         <Group>
@@ -114,8 +116,8 @@
                                         <Label prefHeight="48.0" prefWidth="430.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FILE AND ROOT HASHES"/>
                                     </VBox>
                                 </HBox>
-                                <JFXListView fx:id="blockslistviewid" focusTraversable="false" maxHeight="-Infinity" onScroll="#blocksOnScroll" prefHeight="583.0" prefWidth="1079.0"
-                                             style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
+                                <JFXListView fx:id="blockslistviewid" focusTraversable="false" maxHeight="-Infinity" onScroll="#blocksOnScroll" prefHeight="583.0"
+                                             prefWidth="1079.0" style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
                                     <!-- add dynamic content here -->
                                 </JFXListView>
                             </VBox>
@@ -257,94 +259,138 @@
                     </graphic>
                     <JFXTabPane fx:id="validationTabs" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <Tab text="Info">
-                            <BorderPane>
-                                <top>
-                                    <ProgressBar fx:id="validationCountDown" minHeight="5.0" prefWidth="300" progress="1.0" visible="false"/>
-                                </top>
-                                <center>
-                                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
-                                        <padding>
-                                            <Insets bottom="25.0" left="25.0" right="25.0" top="15.0"/>
-                                        </padding>
-                                        <columnConstraints>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                            <ColumnConstraints/>
-                                        </columnConstraints>
-                                        <rowConstraints>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                            <RowConstraints/>
-                                        </rowConstraints>
+                            <GridPane hgap="10" prefHeight="567.0" prefWidth="1114.0" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                <padding>
+                                    <Insets bottom="25.0" left="25.0" right="25.0" top="60.0"/>
+                                </padding>
+                                <columnConstraints>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                    <ColumnConstraints/>
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                </rowConstraints>
 
-                                        <Label text="Total nodes" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                                        <Label fx:id="totalNodes" text="2" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                                        <Label text="Total validators" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                                        <Label fx:id="totalValidators" text="1" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                                        <Label text="Blockchain was launched" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                        <Label fx:id="blockchainLaunched" text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                                        <Label text="Start of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                        <Label fx:id="startCycle" text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                                        <Label text="End of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                                        <Label fx:id="endCycle" text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                                        <Label text="Start of elections" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                                        <Label fx:id="startElections" text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                                        <Label text="End of elections" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                                        <Label fx:id="endElections" text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                                        <Label text="Beginning of the next elections" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                                        <Label fx:id="nextElections" text="29.01.2019 13:44:15" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                                <Label text="Total validators" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <Label fx:id="totalValidators" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
-                                        <Label text="Minter address" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-                                        <Label fx:id="minterAddr" text="-1:0000000000000000000000000000000000000000000000000000000000" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
-                                        <Label text="Configurator address" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
-                                        <Label fx:id="configAddr" text="-1:33333333333333333333333333333333333333333333333333333333333" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
-                                        <Label text="Elector address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                                        <Label fx:id="electorAddr" text="-1:55555555555555555555555555555555555555555555555555555555555" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
-                                        <Label text="Validation period" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                                        <Label fx:id="validationPeriod" text="4000" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
-                                        <Label text="Duration of elections" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
-                                        <Label fx:id="electionPeriod" text="2000-500" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
-                                        <Label text="Hold period" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
-                                        <Label fx:id="holdPeriod" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="13"/>
-                                        <Label text="Minimum stake" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
-                                        <Label fx:id="minimumStake" text="10000" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
-                                        <Label text="Maximum stake" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
-                                        <Label fx:id="maximumStake" text="10000000" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
+                                <Label text="Total participants" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                <Label fx:id="totalParticipants" text="0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                <Label text="Blockchain was launched" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                <Label fx:id="blockchainLaunched" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <Label text="Start of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                <Label fx:id="startCycle" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                <Label text="End of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                                <Label fx:id="endCycle" text="" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                <Label text="Start of elections" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                <Label fx:id="startElections" onMouseClicked="#copyElectionId" text="" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                <Label text="End of elections" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                <Label fx:id="endElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                <Label text="Beginning of the next elections" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                <Label fx:id="nextElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                                        <JFXButton alignment="CENTER" onAction="#addValidator" prefWidth="150.0" text="Add validator" textAlignment="CENTER" GridPane.columnIndex="0"
-                                                   GridPane.rowIndex="17"/>
-                                        <JFXButton alignment="CENTER" onAction="#showConfiguration" prefWidth="150.0" text="Show all configs" textAlignment="CENTER" GridPane.columnIndex="0"
-                                                   GridPane.rowIndex="18"/>
-                                    </GridPane>
-                                </center>
-                            </BorderPane>
+                                <Label text="Minter address" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                                <Label fx:id="minterAddr" text="-1:00000000000000000000000000000000000000000000000000000000000" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                                <Label fx:id="minterBalance" text="0" GridPane.columnIndex="2" GridPane.rowIndex="8"/>
+                                <Label text="Configurator address" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+                                <Label fx:id="configAddr" text="-1:33333333333333333333333333333333333333333333333333333333333" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                                <Label fx:id="configBalance" text="0" GridPane.columnIndex="2" GridPane.rowIndex="9"/>
+                                <Label text="Elector address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
+                                <Label fx:id="electorAddr" text="-1:55555555555555555555555555555555555555555555555555555555555" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                                <Label fx:id="electorBalance" text="0" GridPane.columnIndex="2" GridPane.rowIndex="10"/>
+                                <Label text="Validation period" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
+                                <Label fx:id="validationPeriod" text="0" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                                <Label text="Duration of elections" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
+                                <Label fx:id="electionPeriod" text="0" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                                <Label text="Hold period" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
+                                <Label fx:id="holdPeriod" text="0" GridPane.columnIndex="1" GridPane.rowIndex="13"/>
+                                <Label text="Minimum stake" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
+                                <Label fx:id="minimumStake" text="0" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                                <Label text="Maximum stake" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
+                                <Label fx:id="maximumStake" text="0" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
+                                <Pane fx:id="electionsChartPane" minHeight="130" visible="false" GridPane.columnSpan="3" GridPane.rowIndex="16">
+
+                                    <Label fx:id="electionsRange1" layoutX="20" layoutY="20" minWidth="100"
+                                           style="-fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                    <Label fx:id="pauseRange1" layoutX="125" layoutY="20" minWidth="50"
+                                           style="-fx-background-color: radial-gradient(radius 180%, orange, derive(orange, -30%), derive(orange, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                    <Label fx:id="validationRange1" layoutX="180" layoutY="20" minWidth="200"
+                                           style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #F08080, derive(#F08080, -30%), derive(#F08080, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                    <Label fx:id="stakeHoldRange1" layoutX="385" layoutY="20" minWidth="50"
+                                           style="-fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+
+                                    <Label fx:id="electionsRange2" layoutX="150" layoutY="50" minWidth="100"
+                                           style="-fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                    <Label fx:id="pauseRange2" layoutX="260" layoutY="50" minWidth="50"
+                                           style="-fx-background-color: radial-gradient(radius 180%, orange, derive(orange, -30%), derive(orange, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                    <Label fx:id="validationRange2" layoutX="370" layoutY="50" minWidth="200"
+                                           style="-fx-background-color: radial-gradient(radius 180%, #F08080, derive(#F08080, -30%), derive(#F08080, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                    <Label fx:id="stakeHoldRange2" layoutX="480" layoutY="50" minWidth="50"
+                                           style="-fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+
+                                    <Label fx:id="electionsRange3" layoutX="420" layoutY="80" minWidth="100"
+                                           style="-fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                    <Label fx:id="pauseRange3" layoutX="520" layoutY="80" minWidth="50"
+                                           style="-fx-background-color: radial-gradient(radius 180%, orange, derive(orange, -30%), derive(orange, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                    <Label fx:id="validationRange3" layoutX="630" layoutY="80" minWidth="200"
+                                           style="-fx-background-color: radial-gradient(radius 180%, #F08080, derive(#F08080, -30%), derive(#F08080, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+                                    <Label fx:id="stakeHoldRange3" layoutX="740" layoutY="80" minWidth="50"
+                                           style="-fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
+
+                                    <Label fx:id="legendElections" layoutX="910" layoutY="20" minWidth="145.0"
+                                           style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
+                                           text="Elections"/>
+                                    <Label fx:id="legendPause" layoutX="910" layoutY="50" minWidth="145.0"
+                                           style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, orange, derive(orange, -30%), derive(orange, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
+                                           text="Break"/>
+                                    <Label fx:id="legendValidation" layoutX="910" layoutY="80" minWidth="145.0"
+                                           style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #F08080, derive(#F08080, -30%), derive(#F08080, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
+                                           text="Validation cycle"/>
+                                    <Label fx:id="legendHoldStake" layoutX="910" layoutY="110" minWidth="145.0"
+                                           style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
+                                           text="Stake Hold"/>
+                                    <Separator fx:id="timeLine" layoutX="67.0" layoutY="10.0" orientation="VERTICAL" prefHeight="97.0" prefWidth="0.0"/>
+                                </Pane>
+                                <!--
+                                                                <JFXButton alignment="CENTER" onAction="#testValidator" prefWidth="150.0" text="Test validation" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
+                                                                <JFXButton alignment="CENTER" onAction="#showConfiguration" prefWidth="150.0" text="Show all configs" textAlignment="CENTER" GridPane.columnIndex="2"
+                                                                           GridPane.rowIndex="6"/>
+                                                                <JFXButton alignment="CENTER" onAction="#drawElections" prefWidth="150.0" text="Draw elections" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="7"/>
+                                -->
+                                <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0" prefWidth="1990.0" GridPane.columnSpan="11" GridPane.rowIndex="17"/>
+                            </GridPane>
                         </Tab>
-                        <Tab fx:id="genesisnode1" text="Genesis validator 1">
+                        <Tab fx:id="genesisnode1" text="Validator">
                             <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                                 <padding>
                                     <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
@@ -367,6 +413,16 @@
                                     <RowConstraints/>
                                     <RowConstraints/>
                                     <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
                                 </rowConstraints>
 
                                 <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
@@ -375,18 +431,46 @@
                                 <Label fx:id="nodeConsolePort1" text="4441" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                                 <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
                                 <Label fx:id="liteServerPort1" text="4443" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                                <Label text="Status" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                <Label fx:id="nodeStatus1" text="synchronized 95 seconds ago" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                                <Label text="ADNL address of local validator" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                                <Label fx:id="validator1AdnlAddress" text="8512318543216584354986413541685132165132ACD34986413541685132121" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                                <Label text="Public key of local validator" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                                <Label fx:id="validator1PubKey" text="231654548964345613215641231564132351651321654131654654679845464" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                                <Label text="Local validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                                <Label fx:id="validator1WalletAddress" text="851231854321658435498641354168513216513413541685132161ADAASAAAAB" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                                <Label text="Local validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                                <Label fx:id="validator1WalletBalance" text="10000.00" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
-                                <Label text="Local validator database size" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-                                <Label fx:id="validator1DbSize" text="15GB" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                                <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                <Label fx:id="nodeStatus1" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+                                <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+
+                                <Label text="ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                <Label fx:id="validator1AdnlAddress" onMouseClicked="#validation1AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                <Label text="Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                <Label fx:id="validator1PubKeyHex" onMouseClicked="#validation1PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                <Label text="Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                <Label fx:id="validator1PubKeyInteger" onMouseClicked="#validation1PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+
+                                <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+
+                                <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+                                <Label text="ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
+                                <Label fx:id="validator1AdnlAddressNext" onMouseClicked="#validation1AdnlClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                                <Label text="Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
+                                <Label fx:id="validator1PubKeyHexNext" onMouseClicked="#validation1PubKeyHexClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                                <Label text="Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
+                                <Label fx:id="validator1PubKeyIntegerNext" onMouseClicked="#validation1PubKeyIntegerClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+
+                                <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
+
+                                <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
+                                <Label fx:id="validator1WalletAddress" onMouseClicked="#validation1WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                                <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
+                                <Label fx:id="validator1WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
+                                <Label text="Total collected" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
+                                <Label fx:id="validator1totalCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="16"/>
+                                <Label text="Last collected" GridPane.columnIndex="0" GridPane.rowIndex="17"/>
+                                <Label fx:id="validator1LastCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="17"/>
+                                <Label text="Total rewards (pure)" GridPane.columnIndex="0" GridPane.rowIndex="18"/>
+                                <Label fx:id="validator1TotalRewardsPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="18"/>
+                                <Label text="Last reward (pure)" GridPane.columnIndex="0" GridPane.rowIndex="19"/>
+                                <Label fx:id="validator1LastRewardPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="19"/>
+                                <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
+                                <Label fx:id="validator1AvgPureReward" text="0" GridPane.columnIndex="1" GridPane.rowIndex="20"/>
+                                <Label text="Participated times (ripped)" GridPane.columnIndex="0" GridPane.rowIndex="21"/>
+                                <Label fx:id="participatedInElections" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
 
                             </GridPane>
                         </Tab>
@@ -458,7 +542,8 @@
                                 </JFXButton>
 
                                 <Label text="MyLocalTon log file" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                <JFXTextField fx:id="myLocalTonLog" editable="false" minWidth="600.0" text="/home/alex/myLocalTon.log" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <JFXTextField fx:id="myLocalTonLog" editable="false" minWidth="600.0" text="/home/alex/myLocalTon.log" GridPane.columnIndex="1"
+                                              GridPane.rowIndex="2"/>
                                 <JFXButton onAction="#myLocalTonFileBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                     <graphic>
                                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
@@ -468,8 +553,10 @@
                                 </JFXButton>
 
                                 <Label text="MyLocalTon DB log directory" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                <JFXTextField fx:id="myLocalTonDbLogDir" editable="false" minWidth="600.0" text="/home/alex/myLocalTonDB/" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                                <JFXButton fx:id="myLocalTonDbDirBtn" onAction="#myLocalTonDbDirBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                <JFXTextField fx:id="myLocalTonDbLogDir" editable="false" minWidth="600.0" text="/home/alex/myLocalTonDB/" GridPane.columnIndex="1"
+                                              GridPane.rowIndex="3"/>
+                                <JFXButton fx:id="myLocalTonDbDirBtn" onAction="#myLocalTonDbDirBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2"
+                                           GridPane.rowIndex="3">
                                     <graphic>
                                         <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                             <Image url="@../images/folder.png"/>
@@ -528,8 +615,8 @@
                                 </rowConstraints>
 
                                 <Label prefHeight="35" text="Number of preinstalled wallets" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                                <JFXSlider fx:id="walletsNumber" blockIncrement="1.0" majorTickUnit="1.0" max="30" min="2" minorTickCount="0" snapToTicks="true" value="5" GridPane.columnIndex="1"
-                                           GridPane.rowIndex="0"/>
+                                <JFXSlider fx:id="walletsNumber" blockIncrement="1.0" majorTickUnit="1.0" max="30" min="2" minorTickCount="0" snapToTicks="true" value="5"
+                                           GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
                                 <Label prefHeight="35" text="Toncoins per wallet" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                                 <JFXTextField fx:id="coinsPerWallet" text="30000" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
@@ -564,7 +651,8 @@
                                 <JFXTextField fx:id="litesServerPort" maxWidth="50" text="4443" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                                 <Label text="DHT server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
                                 <JFXTextField fx:id="dhtServerPort" maxWidth="50" text="6302" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                                <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset" GridPane.columnSpan="3" GridPane.rowIndex="4"/>
+                                <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset" GridPane.columnSpan="3"
+                                       GridPane.rowIndex="4"/>
                             </GridPane>
                         </Tab>
                         <Tab text="UI">
@@ -644,33 +732,33 @@
                                         <JFXTextField fx:id="initialBalance" text="4999990000" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
                                         <Label text="max-validators" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                        <JFXTextField fx:id="maxValidators" disable="true" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="maxValidators" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 
                                         <Label text="max-main-validators" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                        <JFXTextField fx:id="maxMainValidators" disable="true" text="100" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                        <JFXTextField fx:id="maxMainValidators" text="100" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
                                         <Label text="min-validators" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                                        <JFXTextField fx:id="minValidators" disable="true" text="1" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                        <JFXTextField fx:id="minValidators" text="1" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
 
                                         <Label text="elected-for" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                                        <JFXTextField fx:id="electedFor" disable="true" text="1080" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="electedFor" text="1080" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                                         <Label text="min-stake" GridPane.columnIndex="2" GridPane.rowIndex="5"/>
-                                        <JFXTextField fx:id="minStake" disable="true" text="10000" GridPane.columnIndex="3" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="minStake" text="10000" GridPane.columnIndex="3" GridPane.rowIndex="5"/>
 
                                         <Label text="elect-start-before" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                                        <JFXTextField fx:id="electionStartBefore" disable="true" text="300" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="electionStartBefore" text="300" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                                         <Label text="max-stake" GridPane.columnIndex="2" GridPane.rowIndex="6"/>
-                                        <JFXTextField fx:id="maxStake" disable="true" text="10000000" GridPane.columnIndex="3" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="maxStake" text="10000000" GridPane.columnIndex="3" GridPane.rowIndex="6"/>
 
                                         <Label text="elect-end-before" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                                        <JFXTextField fx:id="electionEndBefore" disable="true" text="60" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                                        <JFXTextField fx:id="electionEndBefore" text="60" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
                                         <Label text="min-total-stake" GridPane.columnIndex="2" GridPane.rowIndex="7"/>
-                                        <JFXTextField fx:id="minTotalStake" disable="true" text="500000" GridPane.columnIndex="3" GridPane.rowIndex="7"/>
+                                        <JFXTextField fx:id="minTotalStake" text="10000" GridPane.columnIndex="3" GridPane.rowIndex="7"/>
 
                                         <Label text="stakes-frozen-for" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-                                        <JFXTextField fx:id="stakesFrozenFor" disable="true" text="120" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                                        <JFXTextField fx:id="stakesFrozenFor" text="120" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
                                         <Label text="max-factor" GridPane.columnIndex="2" GridPane.rowIndex="8"/>
-                                        <JFXTextField fx:id="maxFactor" disable="true" text="3" GridPane.columnIndex="3" GridPane.rowIndex="8"/>
+                                        <JFXTextField fx:id="maxFactor" text="3" GridPane.columnIndex="3" GridPane.rowIndex="8"/>
 
                                         <Label text="gas-price-wc" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                                         <JFXTextField fx:id="gasPrice" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
@@ -717,13 +805,12 @@
                                             </tooltip>
                                         </Label>
                                         <JFXTextField fx:id="nodeSyncBefore" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
-                                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset" GridPane.columnSpan="3"
-                                               GridPane.rowIndex="16"/>
+                                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                                               GridPane.columnSpan="3" GridPane.rowIndex="16"/>
                                         <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="4" GridPane.rowIndex="16">
-                                            <BorderPane.margin>
-                                                <Insets right="10.0"/>
-                                            </BorderPane.margin>
+                                            <!--
                                             <JFXButton alignment="CENTER" onAction="#transformAction" prefHeight="31.0" prefWidth="100.0" text="Transform" textAlignment="CENTER"/>
+                                            -->
                                             <JFXButton alignment="CENTER" onAction="#resetAction" prefHeight="31.0" prefWidth="100.0" text="Reset" textAlignment="CENTER"/>
                                         </HBox>
                                     </GridPane>
@@ -737,7 +824,6 @@
                                         <ImageView fx:id="aboutLogo" fitHeight="150.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
                                             <Image url="@../images/logo2.png"/>
                                         </ImageView>
-                                        <Label style="-fx-alignment: center; -fx-font-size: 16;" text="v1.0.6-alpha"/>
                                         <Label style="-fx-alignment: center; -fx-font-size: 16;" text="The Open Network"/>
                                         <Label style="-fx-alignment: center; -fx-font-size: 16;" text="Telegram @neodix"/>
                                         <BorderPane.margin>
