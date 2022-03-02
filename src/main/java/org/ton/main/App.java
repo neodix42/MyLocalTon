@@ -33,6 +33,7 @@ public class App extends Application {
     public static FXMLLoader fxmlLoader;
     public static MainController mainController;
     public static DbPool dbPool;
+    public static boolean firstAppLaunch = true;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -55,7 +56,8 @@ public class App extends Application {
         if (nonNull(MyLocalTon.getInstance().getMonitorExecutorService())) {
             MyLocalTon.getInstance().getMonitorExecutorService().shutdownNow();
         }
-        mainController.shutdown(); // saving settings
+
+        mainController.saveSettings();
         mainController.showShutdownMsg("Shutting down TON blockchain...", 5 * 60L);
     }
 
@@ -79,7 +81,7 @@ public class App extends Application {
         ge.registerFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, Objects.requireNonNull(App.class.getClassLoader().getResourceAsStream("org/ton/fonts/RobotoMono-Medium.ttf"))));
 
         MyLocalTon myLocalTon = MyLocalTon.getInstance();
-        myLocalTon.setSettings(new MyLocalTonSettings().loadSettings());
+        myLocalTon.setSettings(Utils.loadSettings());
         myLocalTon.saveSettingsToGson(); //create default config
 
         log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
@@ -114,6 +116,7 @@ public class App extends Application {
         myLocalTon.setGenesisValidatorProcess(validatorEngine.startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation()));
 
         Utils.waitForBlockchainReady(genesisNode);
+        Utils.waitForNodeSynchronized(genesisNode);
 
         myLocalTon.runBlockchainMonitor(genesisNode);
 
@@ -121,7 +124,7 @@ public class App extends Application {
         mainController.showSuccessMsg("TON blockchain is ready!", 2);
         Thread.sleep(3000);
 
-        //myLocalTon.createPreInstalledWallets(genesisNode);
+        myLocalTon.createPreInstalledWallets(genesisNode);
 
         myLocalTon.runBlockchainExplorer();
 
@@ -131,7 +134,5 @@ public class App extends Application {
         myLocalTon.runAccountsMonitor();
 
         myLocalTon.runValidationMonitor();
-
-        //myLocalTon.monitorParticipants(genesisNode);
     }
 }

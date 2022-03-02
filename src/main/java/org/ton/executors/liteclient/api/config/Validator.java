@@ -5,13 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
 @Builder
 @Getter
 @Setter
 @ToString
-public class Validator {
+public class Validator implements Serializable {
     String publicKey;
     String adnlAddress;
     BigInteger weight;

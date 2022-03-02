@@ -43,7 +43,6 @@ public class GenesisNode implements Serializable, Node {
     String validationAndlKey;
     String validationPubKeyHex;
     String validationPubKeyInteger;
-    Boolean validationParticipated = Boolean.FALSE;
     Boolean validationPubKeyAndAdnlCreated = Boolean.FALSE;
     BigDecimal totalRewardsCollected = BigDecimal.ZERO;
     BigDecimal lastRewardCollected = BigDecimal.ZERO;

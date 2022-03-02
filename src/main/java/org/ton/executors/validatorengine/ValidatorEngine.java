@@ -155,7 +155,7 @@ public class ValidatorEngine {
         settings.setZeroStateRootHashBase64(Base64.encodeBase64String(zerostateRootHashFile));
 
         log.debug(settings.toString());
-        MyLocalTon.getInstance().getSettings().saveSettingsToGson(settings);
+        Utils.saveSettingsToGson(settings);
 
         //mv zerostate.boc ../db/static/$ZEROSTATE_FILEHASH
         Files.move(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.boc"), Paths.get(node.getTonDbStaticDir() + settings.getZeroStateFileHashHex()), StandardCopyOption.REPLACE_EXISTING);
@@ -331,7 +331,7 @@ public class ValidatorEngine {
         node.setValidatorPubKeyHex(Hex.encodeHexString(removed4bytes));
         node.setValidatorPubKeyBase64(Base64.encodeBase64String(validatorPubKey)); // move to  createGenesisValidator ? todo
 
-        MyLocalTon.getInstance().getSettings().saveSettingsToGson(MyLocalTon.getInstance().getSettings());
+        Utils.saveSettingsToGson(MyLocalTon.getInstance().getSettings());
 
         // create validator-keys-1.pub
         Files.write(Paths.get(node.getValidatorKeyPubLocation()), Hex.decodeHex(node.getValidatorPubKeyHex()), StandardOpenOption.CREATE); // "validator-keys-1.pub"

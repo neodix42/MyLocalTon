@@ -61,11 +61,7 @@ public interface Node {
 
     void setValidationPubKeyInteger(String validatorMonitoringPubKeyInteger);
 
-    void setValidationParticipated(Boolean participated);
-
     void setValidationPubKeyAndAdnlCreated(Boolean pubKeyAndAdnlCreated);
-
-    Boolean getValidationParticipated();
 
     Boolean getValidationPubKeyAndAdnlCreated();
 

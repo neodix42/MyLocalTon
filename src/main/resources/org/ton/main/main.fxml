@@ -311,7 +311,7 @@
                                 <Label text="End of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                                 <Label fx:id="endCycle" text="" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                                 <Label text="Start of elections" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                                <Label fx:id="startElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                <Label fx:id="startElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="5" onMouseClicked="#copyElectionId"/>
                                 <Label text="End of elections" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
                                 <Label fx:id="endElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                                 <Label text="Beginning of the next elections" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
@@ -365,16 +365,16 @@
                                     <Label fx:id="stakeHoldRange3" layoutX="740" layoutY="80" minWidth="50"
                                            style="-fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
 
-                                    <Label fx:id="legendElections" layoutX="910" layoutY="20" minWidth="140.0"
+                                    <Label fx:id="legendElections" layoutX="910" layoutY="20" minWidth="145.0"
                                            style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                            text="Elections"/>
-                                    <Label fx:id="legendPause" layoutX="910" layoutY="50" minWidth="140.0"
+                                    <Label fx:id="legendPause" layoutX="910" layoutY="50" minWidth="145.0"
                                            style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, orange, derive(orange, -30%), derive(orange, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
-                                           text="Pause"/>
-                                    <Label fx:id="legendValidation" layoutX="910" layoutY="80" minWidth="140.0"
+                                           text="Break"/>
+                                    <Label fx:id="legendValidation" layoutX="910" layoutY="80" minWidth="145.0"
                                            style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #F08080, derive(#F08080, -30%), derive(#F08080, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                            text="Validation cycle"/>
-                                    <Label fx:id="legendHoldStake" layoutX="910" layoutY="110" minWidth="140.0"
+                                    <Label fx:id="legendHoldStake" layoutX="910" layoutY="110" minWidth="145.0"
                                            style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                            text="Stake Hold"/>
                                     <Separator fx:id="timeLine" layoutX="67.0" layoutY="10.0" orientation="VERTICAL" prefHeight="97.0" prefWidth="0.0"/>
@@ -385,7 +385,7 @@
                                                                            GridPane.rowIndex="6"/>
                                                                 <JFXButton alignment="CENTER" onAction="#drawElections" prefWidth="150.0" text="Draw elections" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="7"/>
                                 -->
-                                <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0" prefWidth="1200.0" GridPane.columnSpan="11" GridPane.rowIndex="17"/>
+                                <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0" prefWidth="1990.0" GridPane.columnSpan="11" GridPane.rowIndex="17"/>
                             </GridPane>
                         </Tab>
                         <Tab fx:id="genesisnode1" text="Validator">
@@ -461,6 +461,8 @@
                                 <Label fx:id="validator1LastRewardPure" GridPane.columnIndex="1" GridPane.rowIndex="19" text="0"/>
                                 <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
                                 <Label fx:id="validator1AvgPureReward" GridPane.columnIndex="1" GridPane.rowIndex="20" text="0"/>
+                                <Label text="Participated times (ripped)" GridPane.columnIndex="0" GridPane.rowIndex="21"/>
+                                <Label fx:id="participatedInElections" GridPane.columnIndex="1" GridPane.rowIndex="21" text="0"/>
 
                             </GridPane>
                         </Tab>

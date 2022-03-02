@@ -1,31 +1,19 @@
 package org.ton.settings;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.ton.enums.TransformationStatus;
 import org.ton.parameters.ValidationParam;
 import org.ton.wallet.WalletVersion;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Getter
 @Setter
@@ -75,8 +63,6 @@ public class MyLocalTonSettings implements Serializable {
     //name- status (active, filled)
     Map<String, String> dbPool;
 
-    TransformationStatus transformationStatus = TransformationStatus.NOT_TRANSFORMED;
-
     GenesisNode genesisNode;
     Node2 node2;
     Node3 node3;
@@ -122,15 +108,18 @@ public class MyLocalTonSettings implements Serializable {
     String zeroStateFileHashHuman;
     String zeroStateFileHashBase64;
 
-    //Long lastStartValidationCycle;
-    Long startElectionIdEvery3Cycles;
+    Long stakeHoldRange3End;
     ValidationParam lastValidationParam;
     ValidationParam lastValidationParamEvery3Cycles;
     Double timeLineScale;
-    public HashMap<Long, Integer> electionsCounter = new HashMap<>();
+    public Map<Long, Long> electionsCounter = new HashMap<>();
+    public Map<Long, Boolean> electionsCounterGlobal = new HashMap<>();
+    public BigDecimal electionsRipped = BigDecimal.ZERO;
     int cycleMod = 3;
     int cycleModEquals = 1;
     BigDecimal defaultStake = new BigDecimal(10001);
+    BigDecimal defaultValidatorBalance = new BigDecimal(50005);
+    Boolean veryFirstElections = Boolean.TRUE;
 
     //options - logs
     @Getter
@@ -145,7 +134,7 @@ public class MyLocalTonSettings implements Serializable {
     @Setter
     public static class WalletSettings implements Serializable {
         Long numberOfPreinstalledWallets = 4L;
-        Long initialAmount = 778L;
+        BigDecimal initialAmount = new BigDecimal("778");
         WalletVersion walletVersion = WalletVersion.V3;
         Long defaultWorkChain = 0L;
         long defaultSubWalletId = 1L;
@@ -172,11 +161,11 @@ public class MyLocalTonSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 3 * 60L; // 3 * 60L;//365 * 24 * 60 * 60L; // 1080=18min
-        Long electionStartBefore = 2 * 60L; //8 * 60L; //5
-        Long electionEndBefore = 1 * 60L;//2 * 60L; //1
-        Long electionStakesFrozenFor = 30L;// 2 * 60L; //2
-        Long originalValidatorSetValidFor = 3 * 60L; //7 * 60L;//365 * 24 * 60 * 60L; // 480=8min
+        Long electedFor = 60 * 60L; // 3 min, 60
+        Long electionStartBefore = 50 * 60L; // 2 min, 50
+        Long electionEndBefore = 20 * 60L;// 1 min, 20
+        Long electionStakesFrozenFor = 20 * 60L;// 30 sec, 20
+        Long originalValidatorSetValidFor = 50 * 60L; // 3 min, 50
 
         Long validatorStateTtl = 31536000L; // 1 year
         Long validatorBlockTtl = 31536000L;
@@ -204,40 +193,6 @@ public class MyLocalTonSettings implements Serializable {
 
     Boolean initiallyElected = false;
     String externalMsgLocation;
-
-    public MyLocalTonSettings loadSettings() {
-        try {
-            if (Files.exists(Paths.get(SETTINGS_FILE), LinkOption.NOFOLLOW_LINKS)) {
-                return new Gson().fromJson(new FileReader(new File(SETTINGS_FILE)), MyLocalTonSettings.class);
-            } else {
-                log.info("No settings.json found. Very first launch with default settings.");
-                return new MyLocalTonSettings();
-            }
-        } catch (Exception e) {
-            log.error("Can't load settings file: {}", SETTINGS_FILE);
-            return null;
-        }
-    }
-
-    public void saveSettingsToGson(MyLocalTonSettings settings) {
-        try {
-            ExecutorService service = Executors.newSingleThreadExecutor();
-            service.submit(() -> saveSettingsToGsonSynchronized(settings));
-            service.shutdown();
-            Thread.sleep(30);
-        } catch (Exception e) {
-            log.error("Cannot save settings. Error:  {}", e.getMessage());
-        }
-    }
-
-    private synchronized void saveSettingsToGsonSynchronized(MyLocalTonSettings settings) {
-        try {
-            String abJson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(settings);
-            FileUtils.writeStringToFile(new File(SETTINGS_FILE), abJson, StandardCharsets.UTF_8);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public Node getNode(Node node) {
         return node;

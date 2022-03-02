@@ -32,7 +32,10 @@ import org.ton.executors.dhtserver.DhtServer;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.*;
+import org.ton.executors.liteclient.api.AccountState;
+import org.ton.executors.liteclient.api.ResultComputeReturnStake;
+import org.ton.executors.liteclient.api.ResultLastBlock;
+import org.ton.executors.liteclient.api.ResultListBlockTransactions;
 import org.ton.executors.liteclient.api.block.Address;
 import org.ton.executors.liteclient.api.block.Message;
 import org.ton.executors.liteclient.api.block.Transaction;
@@ -73,8 +76,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.ton.main.App.fxmlLoader;
-import static org.ton.main.App.mainController;
+import static org.ton.main.App.*;
 
 @Slf4j
 @Getter
@@ -274,7 +276,7 @@ public class MyLocalTon {
         return result;
     }
 
-    public WalletEntity createWalletWithFundsAndSmartContract(Node fromNode, Node toNode, long workchain, long subWalletId, long amount) throws Exception {
+    public WalletEntity createWalletWithFundsAndSmartContract(Node fromNode, Node toNode, long workchain, long subWalletId, BigDecimal amount) throws Exception {
         Wallet wallet = new Wallet();
         WalletVersion walletVersion = settings.getWalletSettings().getWalletVersion();
         log.debug("createWalletWithFundsAndSmartContract, default wallet version {}", walletVersion.getValue());
@@ -310,7 +312,7 @@ public class MyLocalTon {
                 .fromWalletVersion(WalletVersion.V1)
                 .fromSubWalletId(-1L)
                 .destAddr(walletAddress.getNonBounceableAddressBase64Url())
-                .amount(BigDecimal.valueOf(amount))
+                .amount(amount)
                 .build();
 
         wallet.sendTonCoins(sendToncoinsParam);
@@ -368,7 +370,7 @@ public class MyLocalTon {
         }
     }
 
-    public WalletEntity createWalletEntity(Node node, String fileBaseName, long workchain, long subWalletid, long amount) {
+    public WalletEntity createWalletEntity(Node node, String fileBaseName, long workchain, long subWalletid, BigDecimal amount) {
 
         try {
             WalletEntity wallet;
@@ -431,51 +433,69 @@ public class MyLocalTon {
 
                     ValidationParam v = Utils.getConfig(settings.getGenesisNode());
                     log.debug("validation parameters {}", v);
+                    long currentTime = Utils.getCurrentTimeSeconds();
+                    long electionsDelta = v.getNextElections() - v.getStartElections();
+                    log.debug("currTime - getStartElections = {} > {}", currentTime - v.getStartElections(), electionsDelta * 3);
 
-                    if (v.getStartValidationCycle() > YEAR_1971) {
-                        log.info("adding new election id {}", v.getStartValidationCycle());
-                        settings.electionsCounter.put(v.getStartValidationCycle(), 1);
+                    if (((v.getStartValidationCycle() > YEAR_1971) && ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections() - 10))) // 10 sec to process
+                            || ((v.getStartValidationCycle() > YEAR_1971) && ((currentTime - v.getStartElections()) > (electionsDelta * 3)))) {
+
+                        log.debug("current active election id {} {}", v.getStartValidationCycle(), Utils.toLocal(v.getStartValidationCycle()));
+
+                        log.info("ELECTIONS OPENED");
+
+                        if (firstAppLaunch && !settings.getVeryFirstElections()) {
+                            log.debug("A. First app launch and not the first elections");
+                            firstAppLaunch = false;
+                            //always draw elections bars from the beginning
+                            settings.electionsCounter.clear();
+                            settings.electionsCounter.put(1L, null);
+                            settings.electionsCounter.put(2L, null);
+                            settings.electionsCounter.put(3L, null);
+                        }
+                        settings.electionsCounter.put(v.getStartValidationCycle(), v.getStartValidationCycle());
+
                         settings.setLastValidationParam(v);
-                    } else {// active election id not available
-                        log.info("taking old election id {}", settings.getLastValidationParam().getStartValidationCycle());
-                        v = settings.getLastValidationParam();
-                    }
 
-                    saveSettingsToGson();
+                        saveSettingsToGson();
+
+                        Main.inElections.set(true);
+
+                        Utils.participate(settings.getGenesisNode(), v); // loop for other nodes IN PARALLEL
+
+                    } else { // active election id is not available
+
+                        v = settings.getLastValidationParam();
+                        if (isNull(v)) {
+                            log.info("neither active nor previous election ids are available, waiting for the elections to be opened");
+                            return;
+                        }
+
+                        log.info("ELECTIONS CLOSED");
+
+                        log.debug("taking old election id {} {}", settings.getLastValidationParam().getStartValidationCycle(), Utils.toLocal(settings.getLastValidationParam().getStartValidationCycle()));
+
+                        if (firstAppLaunch && !settings.getVeryFirstElections()) {
+                            log.debug("B. First app launch and not the first elections");
+                            firstAppLaunch = false;
+                            //always draw elections bars from the beginning
+                            settings.electionsCounter.clear();
+                            settings.electionsCounter.put(1L, null);
+                            settings.electionsCounter.put(2L, null);
+                            settings.electionsCounter.put(3L, null);
+                            settings.electionsCounter.put(v.getStartValidationCycle(), v.getStartValidationCycle());
+                        }
+
+                        saveSettingsToGson();
+                    }
 
                     ValidationParam finalV = v;
 
-                    long currentTime = Utils.getCurrentTimeSeconds();
-
-                    if ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections())) {
-                        log.info("ELECTIONS OPENED");
-                        Utils.participate(settings.getGenesisNode(), v); // loop for other nodes IN PARALLEL
-                        mainController.drawElections(finalV); // once in elections enough (bars and labels)
-                    } else {
-                        log.info("ELECTIONS CLOSED");
-                        settings.getGenesisNode().setValidationParticipated(false);
-                    }
-
-                    Platform.runLater(() -> {
-                        try {
-
-                            mainController.updateValidationTabInfo(finalV);
-
-                            mainController.drawTimeLine(finalV);
-
-                            mainController.electionsChartPane.setVisible(true);
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            log.error(ExceptionUtils.getStackTrace(e));
-                        }
-                    });
-
-                    log.debug("previous validator {}", LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(settings.getGenesisNode())).getValidators().getTotal());
-                    log.debug("current validator {}", LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(settings.getGenesisNode())).getValidators().getTotal());
-                    log.debug("next validator {}", LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(settings.getGenesisNode())).getValidators().getTotal());
+                    mainController.drawElections(finalV);
 
                     reap(settings.getGenesisNode());
+
+                    Main.inElections.set(false);
 
                 } catch (Exception e) {
                     log.error("Error getting blockchain configuration! Error {}", e.getMessage());
@@ -514,9 +534,8 @@ public class MyLocalTon {
                     executorService.execute(() -> {
                         Thread.currentThread().setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
                         log.debug("Get last block");
-                        ResultLastBlock lastBlock;
-
-                        lastBlock = LiteClientParser.parseLast(liteClient.executeLast(node));
+                        //Main.parsingBlocks.set(true);
+                        ResultLastBlock lastBlock = LiteClientParser.parseLast(liteClient.executeLast(node));
 
                         if (nonNull(lastBlock)) {
 
@@ -532,6 +551,7 @@ public class MyLocalTon {
                         } else {
                             log.debug("last block is null");
                         }
+                        //Main.parsingBlocks.set(false);
                         log.debug("Thread is done {}", Thread.currentThread().getName());
                     });
 
@@ -540,6 +560,7 @@ public class MyLocalTon {
                     Thread.sleep(1000);
 
                 } catch (Exception e) {
+                    //Main.parsingBlocks.set(false);
                     e.printStackTrace();
                     log.error(e.getMessage());
                 }
@@ -1393,45 +1414,6 @@ public class MyLocalTon {
         App.dbPool.insertBlock(block);
     }
 
-    public void monitorParticipants(Node node) {
-
-        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
-
-            Thread.currentThread().setName("MyLocalTon - Accounts Monitor");
-            if (nonNull(node.getWalletAddress())) {
-                try {
-                    String stdout = new LiteClient().executeGetParticipantList(node, settings.getElectorSmcAddrHex());
-                    List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(stdout);
-                    log.info("AMOUNT OF PARTICIPANTS: {}", participants.size());
-
-                    AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
-                    log.info("{} ({}) balance: {}", settings.getGenesisNode().getNodeName(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
-
-                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
-                    log.info("{} ({}) balance: {}", "main-wallet", settings.getMainWalletAddrFull(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
-
-                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
-                    log.info("{} ({}) balance: {}", "config-wallet", settings.getConfigSmcAddrHex(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
-
-                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
-                    log.info("{} ({}) balance: {}", "elector-smc", settings.getElectorSmcAddrHex(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
-
-//                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getNode2(), settings.getNode2().getWalletAddress().getFullWalletAddress()));
-//                    log.info("{} ({}) balance: {}", settings.getNode2().getNodeName(), settings.getNode2().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
-
-//                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getNode3(), settings.getNode3().getWalletAddress().getFullWalletAddress()));
-//                    log.info("{} ({}) balance: {}", settings.getNode3().getNodeName(), settings.getNode3().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
-//
-//                    accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(settings.getNode4(), settings.getNode4().getWalletAddress().getFullWalletAddress()));
-//                    log.info("{} ({}) balance: {}", settings.getNode4().getNodeName(), settings.getNode4().getWalletAddress().getFullWalletAddress(), accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(1000000000L), 9, RoundingMode.CEILING));
-
-                } catch (Exception e) {
-                    log.error("Error in monitorParticipants(), " + e.getMessage());
-                }
-            }
-        }, 60L, 30L, TimeUnit.SECONDS);
-    }
-
     public void runAccountsMonitor() {
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Accounts Monitor");
@@ -1474,9 +1456,9 @@ public class MyLocalTon {
         log.debug("reap amount {}", result.getStake());
 
         if (result.getStake().compareTo(BigDecimal.ZERO) > 0) {
-            log.info("{} stake is greater than 0, send request for stake recovery", node.getNodeName());
+            log.info("Reaping rewards. {} reward size is greater than 0, send request for stake recovery", node.getNodeName());
 
-            //create recover-query.boc
+            // create recover-query.boc
             new Fift().createRecoverStake(node);
 
             // send stake and validator-query.boc to elector
@@ -1493,24 +1475,28 @@ public class MyLocalTon {
 
             new Wallet().sendTonCoins(sendToncoinsParam);
 
+            // Basic rewards statistics. Better to fetch from the DB actual values, since recover stake may fail e.g.
+
             settings.getNode(node).setLastRewardCollected(result.getStake());
             settings.getNode(node).setTotalRewardsCollected(settings.getNode(node).getTotalRewardsCollected().add(result.getStake()));
             settings.getNode(node).setLastPureRewardCollected(result.getStake().subtract(settings.getDefaultStake().multiply(BigDecimal.valueOf(ONE_BLN))));
             settings.getNode(node).setTotalPureRewardsCollected(settings.getNode(node).getTotalPureRewardsCollected().add(settings.getNode(node).getLastPureRewardCollected()));
-            settings.getNode(node).setAvgPureRewardCollected(settings.getNode(node).getTotalPureRewardsCollected().divide(new BigDecimal(settings.electionsCounter.size() - 1), 9, RoundingMode.CEILING));
+            settings.electionsRipped = settings.electionsRipped.add(BigDecimal.ONE);
+            settings.getNode(node).setAvgPureRewardCollected(settings.getNode(node).getTotalPureRewardsCollected().divide(settings.electionsRipped, 9, RoundingMode.CEILING));
 
             saveSettingsToGson();
 
             Platform.runLater(() -> {
-                log.info("updating reaped values {}", String.format("%,.9f", settings.getNode(node).getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                log.info("Updating reaped values {}", String.format("%,.9f", settings.getNode(node).getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
                 mainController.validator1totalCollected.setText(String.format("%,.9f", settings.getNode(node).getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
                 mainController.validator1LastCollected.setText(String.format("%,.9f", settings.getNode(node).getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
                 mainController.validator1TotalRewardsPure.setText(String.format("%,.9f", settings.getNode(node).getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
                 mainController.validator1LastRewardPure.setText(String.format("%,.9f", settings.getNode(node).getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
                 mainController.validator1AvgPureReward.setText(String.format("%,.9f", settings.getNode(node).getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                mainController.participatedInElections.setText(settings.electionsCounterGlobal.size() + " (" + settings.electionsRipped + ")");
             });
         } else {
-            log.info("{} stake is {}, nothing to reap", node.getNodeName(), result.getStake());
+            log.info("Reaping rewards. {} reward size is {}, nothing to reap.", node.getNodeName(), result.getStake());
         }
     }
 

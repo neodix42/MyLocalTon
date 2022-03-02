@@ -82,10 +82,9 @@ public class Fift {
         log.debug(resultStr);
 
         if (Files.exists(Paths.get(sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc"), LinkOption.NOFOLLOW_LINKS)) {
-            log.info("prepared boc file {}", sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc");
+            log.debug("prepared boc file {}", sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc");
             return sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc";
         } else {
-            //throw new Exception("Cannot send toincoins.");
             log.error("Cannot send Toncoins. Stdout: {}", resultStr);
             return null;
         }
@@ -367,6 +366,7 @@ public class Fift {
 
         String signature = StringUtils.substring(signed.getLeft(), signed.getLeft().indexOf("signature") + 9).trim();
         log.info("signature {}", signature);
+        FileUtils.deleteQuietly(new File(node.getTonBinDir() + fileNameBase));
 
         return signature;
     }

@@ -2,10 +2,13 @@ package org.ton.utils;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import javafx.application.Platform;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -32,6 +35,7 @@ import org.ton.wallet.Wallet;
 import org.ton.wallet.WalletVersion;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -41,6 +45,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.security.CodeSource;
@@ -52,6 +57,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -60,6 +67,7 @@ import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.executors.liteclient.LiteClientParser.*;
+import static org.ton.settings.MyLocalTonSettings.SETTINGS_FILE;
 
 @Slf4j
 public class Utils {
@@ -290,13 +298,19 @@ public class Utils {
 
     public static boolean doShutdown() {
         try {
+
+            while (Main.inElections.get()) {
+                Thread.sleep(500);
+                log.info("waiting for operations to be finished");
+            }
+
             if (Main.appActive.get()) {
                 log.debug("Do shutdown");
                 Main.appActive.set(false);
                 App.dbPool.closeDbs();
                 Main.fileLock.release();
                 Main.randomAccessFile.close();
-                Main.file.delete();
+                FileUtils.deleteQuietly(Main.file);
                 log.info("Destroying external processes...");
 
                 MyLocalTon.getInstance().getDhtServerProcess().destroy();
@@ -543,21 +557,30 @@ public class Utils {
                 .build();
     }
 
+    private static boolean hasParticipated(long electionId) {
+        return MyLocalTon.getInstance().getSettings().electionsCounterGlobal.getOrDefault(electionId, false);
+    }
+
     public static void participate(Node node, ValidationParam v) {
 
         try {
             long electionId = v.getStartValidationCycle();
-            MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
-            if (node.getValidationParticipated()) {
+            if (hasParticipated(electionId)) { // TODO actually we need to track participation per node, but for now it's ok
                 log.info("{} has already sent request for elections", node.getNodeName());
-                return;
+                if (electionId < Utils.getCurrentTimeSeconds()) {
+                    log.info("electionId is outdated");
+                } else {
+                    return;
+                }
             }
+
+            MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
             // if it's a genesis node it has a wallet already - main-wallet.pk
             if (isNull(node.getWalletAddress())) {
                 log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
-                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), 50005L);
+                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), settings.getDefaultValidatorBalance());
                 node.setWalletAddress(walletEntity.getWallet());
                 Thread.sleep(5 * 1000); //10 sec
             } else {
@@ -579,22 +602,57 @@ public class Utils {
             SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                     .executionNode(node)
                     .fromWallet(node.getWalletAddress())
-                    .fromWalletVersion(WalletVersion.V3) // todo wallet version
+                    .fromWalletVersion(WalletVersion.V3)
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
                     .amount(settings.getDefaultStake())
-                    // .comment("validator-request")
+                    .comment("validator-request-send-stake")
                     .bocLocation(node.getTonBinDir() + "validator-query.boc")
                     .build();
 
             new Wallet().sendTonCoins(sendToncoinsParam);
 
-            node.setValidationParticipated(true);
+            //node.setValidationParticipated(true);
+            settings.electionsCounterGlobal.put(v.getStartValidationCycle(), true);
 
-            settings.saveSettingsToGson(settings);
+            saveSettingsToGson(settings);
         } catch (Exception e) {
             log.error("Error participating in elections! Error {}", e.getMessage());
             log.error(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+    public static MyLocalTonSettings loadSettings() {
+        try {
+            if (Files.exists(Paths.get(SETTINGS_FILE), LinkOption.NOFOLLOW_LINKS)) {
+                return new Gson().fromJson(new FileReader(new File(SETTINGS_FILE)), MyLocalTonSettings.class);
+            } else {
+                log.info("No settings.json found. Very first launch with default settings.");
+                return new MyLocalTonSettings();
+            }
+        } catch (Exception e) {
+            log.error("Can't load settings file: {}", SETTINGS_FILE);
+            return null;
+        }
+    }
+
+    public static void saveSettingsToGson(MyLocalTonSettings settings) {
+        try {
+            ExecutorService service = Executors.newSingleThreadExecutor();
+            service.submit(() -> saveSettingsToGsonSynchronized(settings));
+            service.shutdown();
+            Thread.sleep(30);
+        } catch (Exception e) {
+            log.error("Cannot save settings. Error:  {}", e.getMessage());
+        }
+    }
+
+    private static synchronized void saveSettingsToGsonSynchronized(MyLocalTonSettings settings) {
+        try {
+            String abJson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create().toJson(settings);
+            FileUtils.writeStringToFile(new File(SETTINGS_FILE), abJson, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

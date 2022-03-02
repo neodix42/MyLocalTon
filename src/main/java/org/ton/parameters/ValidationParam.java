@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.ton.executors.liteclient.api.ResultListParticipants;
 import org.ton.executors.liteclient.api.config.Validator;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class ValidationParam {
+public class ValidationParam implements Serializable {
     Long totalNodes;
     Long validatorNodes;
     Long blockchainLaunchTime;
