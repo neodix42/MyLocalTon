@@ -125,8 +125,8 @@ public class MyLocalTonSettings implements Serializable {
     @Getter
     @Setter
     public static class LogSettings implements Serializable {
-        String myLocalTonLogLevel = "ERROR";
-        String tonLogLevel = "INFO";
+        String myLocalTonLogLevel = "INFO";
+        String tonLogLevel = "ERROR";
     }
 
     //options - account and keys
