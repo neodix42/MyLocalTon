@@ -150,7 +150,13 @@ public class YesNoController implements Initializable {
                 long chain = Long.parseLong(StringUtils.isEmpty(workchain.getText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultWorkChain()) : workchain.getText());
                 long walletId = Long.parseLong(StringUtils.isEmpty(subWalletId.getText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultSubWalletId()) : subWalletId.getText());
 
-                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(MyLocalTon.getInstance().getSettings().getGenesisNode(), null, chain, walletId);
+                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(
+                        MyLocalTon.getInstance().getSettings().getGenesisNode(),
+                        null,
+                        chain,
+                        walletId,
+                        MyLocalTon.getInstance().getSettings().getWalletSettings().getInitialAmount());
+                
                 if (nonNull(walletEntity)) {
                     App.mainController.showSuccessMsg("Wallet " + walletEntity.getFullAddress() + " created", 3);
                 }

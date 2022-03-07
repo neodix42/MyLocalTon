@@ -3,6 +3,7 @@ package org.ton.liteclient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,10 +17,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -125,6 +123,19 @@ public class UtilsTest {
         log.info("{}", LocalDateTime.ofEpochSecond(millis / 1000, 0, ZoneOffset.UTC));
         log.info("{}", LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()));
         assertTrue(true);
+    }
+
+    @Test
+    public void TestFormatDuration() {
+        Duration d1 = Duration.ofDays(0);
+        d1 = d1.plusHours(0);
+        d1 = d1.plusMinutes(0);
+        d1 = d1.plusSeconds(0);
+        d1 = d1.plusMillis(360 * 1000);
+
+        String d = DurationFormatUtils.formatDuration(Duration.ofSeconds(360).toMillis(), "HH:mm:ss", true);
+        //Duration elections1Duration = Duration.between(v.getEndElections() - v.getStartElections());
+        log.info(d);
     }
 
     @Test
