@@ -126,7 +126,7 @@ public class MyLocalTonSettings implements Serializable {
     @Setter
     public static class LogSettings implements Serializable {
         String myLocalTonLogLevel = "INFO";
-        String tonLogLevel = "ERROR";
+        String tonLogLevel = "INFO";
     }
 
     //options - account and keys
@@ -165,7 +165,7 @@ public class MyLocalTonSettings implements Serializable {
         Long electionStartBefore = 50 * 60L; // 2 min, 50
         Long electionEndBefore = 20 * 60L;// 1 min, 20
         Long electionStakesFrozenFor = 20 * 60L;// 30 sec, 20
-        Long originalValidatorSetValidFor = 50 * 60L; // 3 min, 50
+        Long originalValidatorSetValidFor = 50 * 60L; // 2 min, 50
 
         Long validatorStateTtl = 31536000L; // 1 year
         Long validatorBlockTtl = 31536000L;

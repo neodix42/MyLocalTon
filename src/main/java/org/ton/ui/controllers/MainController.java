@@ -1489,6 +1489,7 @@ public class MainController implements Initializable {
 
     public void drawBarsAndLabels(ValidationParam v) {
         log.debug("draw drawBarsAndLabels");
+        log.debug("size {}, globalSize {}, cycleMod {}, cycleModEqual {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size(), settings.getCycleMod(), settings.getCycleModEquals());
 
         try {
 
@@ -1496,7 +1497,6 @@ public class MainController implements Initializable {
                 settings.setCycleMod(2);
                 settings.setCycleModEquals(0);
                 settings.setVeryFirstElections(Boolean.FALSE);
-                log.debug("size {}, globalSize {}, cycleMod {}, cycleModEqual {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size(), settings.getCycleMod(), settings.getCycleModEquals());
             }
 
             long electionsDelta = v.getNextElections() - v.getStartElections();

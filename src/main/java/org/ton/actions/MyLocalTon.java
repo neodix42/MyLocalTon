@@ -444,15 +444,26 @@ public class MyLocalTon {
 
                         log.info("ELECTIONS OPENED");
 
-                        if (firstAppLaunch && !settings.getVeryFirstElections()) {
-                            log.debug("A. First app launch and not the first elections");
+                        if (firstAppLaunch) {
                             firstAppLaunch = false;
-                            //always draw elections bars from the beginning
-                            settings.electionsCounter.clear();
-                            settings.electionsCounter.put(1L, null);
-                            settings.electionsCounter.put(2L, null);
-                            settings.electionsCounter.put(3L, null);
+                            if (!settings.getVeryFirstElections()) {
+                                log.debug("A. First app launch and not the first elections");
+                                //always draw elections bars from the beginning
+                                settings.electionsCounter.clear();
+                                settings.electionsCounter.put(1L, null);
+                                settings.electionsCounter.put(2L, null);
+                                settings.electionsCounter.put(3L, null);
+                            } else {
+                                if (nonNull(settings.getLastValidationParamEvery3Cycles())) {
+                                    log.debug("currTime - getLastValidationParamEvery3Cycles().getStartElections = {} > {}", currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections(), electionsDelta * 3);
+                                    if ((currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections()) > (electionsDelta * 3)) {
+                                        log.debug("too old previous start date of elections");
+                                        settings.electionsCounter.clear();
+                                    }
+                                }
+                            }
                         }
+
                         settings.electionsCounter.put(v.getStartValidationCycle(), v.getStartValidationCycle());
 
                         settings.setLastValidationParam(v);
