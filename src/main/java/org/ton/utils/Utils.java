@@ -21,6 +21,7 @@ import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
+import org.ton.enums.LiteClientEnum;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
@@ -478,7 +479,7 @@ public class Utils {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
+            lastBlock = LiteClientParser.parseLast(new LiteClient(LiteClientEnum.LOCAL).executeLast(node));
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
     }
 
@@ -486,7 +487,7 @@ public class Utils {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
+            lastBlock = LiteClientParser.parseLast(new LiteClient(LiteClientEnum.LOCAL).executeLast(node));
             log.info("{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
         } while (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0 && lastBlock.getSyncedSecondsAgo() > 10);
     }
@@ -497,39 +498,41 @@ public class Utils {
 
     public static ValidationParam getConfig(org.ton.settings.Node node) throws Exception {
 
-        ResultConfig12 config12 = LiteClientParser.parseConfig12(new LiteClient().executeBlockchainInfo(node));
+        LiteClient liteClient = new LiteClient(LiteClientEnum.GLOBAL);
+
+        ResultConfig12 config12 = LiteClientParser.parseConfig12(liteClient.executeBlockchainInfo(node));
         log.debug("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
 
-        long activeElectionId = new LiteClient().executeGetActiveElectionId(node, MyLocalTon.getInstance().getSettings().getElectorSmcAddrHex());
+        long activeElectionId = liteClient.executeGetActiveElectionId(node, MyLocalTon.getInstance().getSettings().getElectorSmcAddrHex());
         log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
 
-        ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
+        ResultConfig15 config15 = LiteClientParser.parseConfig15(liteClient.executeGetElections(node));
         log.debug("current elections params {}", config15);
 
-        ResultConfig17 config17 = LiteClientParser.parseConfig17(new LiteClient().executeGetMinMaxStake(node));
+        ResultConfig17 config17 = LiteClientParser.parseConfig17(liteClient.executeGetMinMaxStake(node));
         log.debug("min/max stake {}", config17);
 
-        ResultConfig34 config34 = LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(node));
+        ResultConfig34 config34 = LiteClientParser.parseConfig34(liteClient.executeGetCurrentValidators(node));
         log.debug("current validators {}", config34);
 
         log.debug("start work time since {}, until {}", Utils.toLocal(config34.getValidators().getSince()), Utils.toLocal(config34.getValidators().getUntil()));
 
-        ResultConfig32 config32 = LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(node));
+        ResultConfig32 config32 = LiteClientParser.parseConfig32(liteClient.executeGetPreviousValidators(node));
         log.info("previous validators {}", config32);
 
-        ResultConfig36 config36 = LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(node));
+        ResultConfig36 config36 = LiteClientParser.parseConfig36(liteClient.executeGetNextValidators(node));
         log.info("next validators {}", config36);
 
-        ResultConfig0 config0 = LiteClientParser.parseConfig0(new LiteClient().executeGetConfigSmcAddress(node));
+        ResultConfig0 config0 = LiteClientParser.parseConfig0(liteClient.executeGetConfigSmcAddress(node));
         log.debug("config address {}", config0.getConfigSmcAddr());
 
-        ResultConfig1 config1 = LiteClientParser.parseConfig1(new LiteClient().executeGetElectorSmcAddress(node));
+        ResultConfig1 config1 = LiteClientParser.parseConfig1(liteClient.executeGetElectorSmcAddress(node));
         log.debug("elector address {}", config1.getElectorSmcAddress());
 
-        ResultConfig2 config2 = LiteClientParser.parseConfig2(new LiteClient().executeGetMinterSmcAddress(node));
+        ResultConfig2 config2 = LiteClientParser.parseConfig2(liteClient.executeGetMinterSmcAddress(node));
         log.debug("minter address {}", config2.getMinterSmcAddress());
 
-        List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(node, config1.getElectorSmcAddress()));
+        List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(liteClient.executeGetParticipantList(node, config1.getElectorSmcAddress()));
         log.info("participants {}", participants);
 
         return ValidationParam.builder()

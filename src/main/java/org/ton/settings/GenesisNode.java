@@ -55,6 +55,7 @@ public class GenesisNode implements Serializable, Node {
     transient Process dhtServerProcess;
     transient Process blockchainExplorerProcess;
     String nodeGlobalConfigLocation = getTonDbDir() + "my-ton-global.config.json";
+    String nodeLocalConfigLocation = getTonDbDir() + "my-ton-local.config.json";
     String nodeForkedGlobalConfigLocation = getTonDbDir() + "my-ton-forked.config.json";
 
     @Override

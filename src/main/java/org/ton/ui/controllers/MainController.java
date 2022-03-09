@@ -36,6 +36,7 @@ import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
+import org.ton.enums.LiteClientEnum;
 import org.ton.executors.blockchainexplorer.BlockchainExplorer;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
@@ -769,7 +770,7 @@ public class MainController implements Initializable {
 
                         LongStream.range(1, lastSeqno).forEach(i -> { // TODO for loop big integer
                             try {
-                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClient().executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
+                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClient(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
                                 log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
                                 MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), block, false);
                             } catch (Exception e) {
@@ -876,7 +877,7 @@ public class MainController implements Initializable {
 
                         LongStream.range(1, blockShortSeqno.getSeqno().longValue()).forEach(i -> {
                             try {
-                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClient().executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
+                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClient(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
                                 log.debug("load missing block {}: {}", i, block.getFullBlockSeqno());
                                 MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), block, false);
                             } catch (Exception e) {
@@ -1202,7 +1203,7 @@ public class MainController implements Initializable {
     }
 
     public void liteServerClicked() throws IOException {
-        String lastCommand = new LiteClient().getLastCommand(MyLocalTon.getInstance().getSettings().getGenesisNode());
+        String lastCommand = new LiteClient(LiteClientEnum.GLOBAL).getLastCommand(MyLocalTon.getInstance().getSettings().getGenesisNode());
         log.info("show console with last command, {}", lastCommand);
 
         if (isWindows()) {
@@ -1397,7 +1398,7 @@ public class MainController implements Initializable {
             //every 30 sec
             //MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
-            LiteClient liteClient = new LiteClient();
+            LiteClient liteClient = new LiteClient(LiteClientEnum.GLOBAL);
 
             AccountState accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
             minterBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));

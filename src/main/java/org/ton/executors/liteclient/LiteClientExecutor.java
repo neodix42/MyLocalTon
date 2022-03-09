@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.ton.enums.LiteClientEnum;
 import org.ton.main.Main;
 import org.ton.settings.Node;
 
@@ -21,21 +22,35 @@ public class LiteClientExecutor {
 
     private static final String LITE_CLIENT_EXE = "lite-client.exe";
     private static final String LITE_CLIENT = "lite-client";
-    private boolean forked = false;
+    private LiteClientEnum config;
 
-    public LiteClientExecutor() {
+    private LiteClientExecutor() {
 
     }
 
-    public LiteClientExecutor(boolean forked) {
-        this.forked = forked;
+    public LiteClientExecutor(LiteClientEnum config) {
+        this.config = config;
     }
 
     public Pair<Process, Future<String>> execute(Node node, String... command) {
 
         String binaryPath = node.getTonBinDir() + (isWindows() ? LITE_CLIENT_EXE : LITE_CLIENT);
+        String[] withBinaryCommand;
+        switch (config) {
+            case GLOBAL:
+                withBinaryCommand = new String[]{binaryPath, "-C", node.getNodeGlobalConfigLocation(), "-c"};
+                break;
+            case LOCAL:
+                withBinaryCommand = new String[]{binaryPath, "-C", node.getNodeLocalConfigLocation(), "-c"};
+                break;
+            case FORKED:
+                withBinaryCommand = new String[]{binaryPath, "-C", node.getNodeForkedGlobalConfigLocation(), "-c"};
+                break;
+            default:
+                withBinaryCommand = new String[]{binaryPath, "-C", node.getNodeGlobalConfigLocation(), "-c"};
+        }
 
-        String[] withBinaryCommand = {binaryPath, "-C", forked ? node.getNodeForkedGlobalConfigLocation() : node.getNodeGlobalConfigLocation(), "-c"};
+        //String[] withBinaryCommand = {binaryPath, "-C", forked ? node.getNodeForkedGlobalConfigLocation() : node.getNodeGlobalConfigLocation(), "-c"};
         withBinaryCommand = ArrayUtils.addAll(withBinaryCommand, command);
 
         try {

@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
+import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.main.App;
 import org.ton.utils.Utils;
@@ -129,7 +130,7 @@ public class YesNoController implements Initializable {
 
         log.info("run method {} against {} with parameters {}", methodId, smcAddress, parameters);
         try {
-            stdout = new LiteClient().executeRunMethod(MyLocalTon.getInstance().getSettings().getGenesisNode(), smcAddress, methodId, parameters);
+            stdout = new LiteClient(LiteClientEnum.GLOBAL).executeRunMethod(MyLocalTon.getInstance().getSettings().getGenesisNode(), smcAddress, methodId, parameters);
             if (stdout.contains("arguments")) {
                 stdout = stdout.substring(stdout.indexOf("arguments")).trim();
             }
@@ -156,7 +157,7 @@ public class YesNoController implements Initializable {
                         chain,
                         walletId,
                         MyLocalTon.getInstance().getSettings().getWalletSettings().getInitialAmount());
-                
+
                 if (nonNull(walletEntity)) {
                     App.mainController.showSuccessMsg("Wallet " + walletEntity.getFullAddress() + " created", 3);
                 }

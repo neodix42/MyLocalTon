@@ -2,6 +2,7 @@ package org.ton.wallet;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.ton.enums.LiteClientEnum;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
@@ -21,7 +22,7 @@ public class Wallet {
     private final LiteClient liteClient;
 
     public Wallet() {
-        liteClient = new LiteClient();
+        liteClient = new LiteClient(LiteClientEnum.GLOBAL);
     }
 
     public static final BigDecimal BLN1 = BigDecimal.valueOf(1000000000);

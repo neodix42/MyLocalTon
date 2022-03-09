@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.ResultLastBlock;
@@ -37,7 +38,7 @@ public class LiteClientExecutorThreadsTest {
         InputStream TESTNET_CONFIG = IOUtils.toBufferedInputStream(getClass().getResourceAsStream("/testnet-global.config.json"));
         Files.copy(TESTNET_CONFIG, Paths.get(TESTNET_CONFIG_LOCATION), StandardCopyOption.REPLACE_EXISTING);
 
-        liteClient = new LiteClient();
+        liteClient = new LiteClient(LiteClientEnum.GLOBAL);
 
         testNode = new GenesisNode();
         testNode.extractBinaries();

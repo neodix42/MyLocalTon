@@ -28,6 +28,7 @@ import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
+import org.ton.enums.LiteClientEnum;
 import org.ton.executors.dhtserver.DhtServer;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
@@ -63,6 +64,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -222,6 +224,7 @@ public class MyLocalTon {
         }
     }
 
+    // TODO rename -
     public Process createGenesisValidator(Node node, String myGlobalConfig) throws Exception {
 
         if (Files.exists(Paths.get(node.getTonDbDir() + File.separator + "validatorGenesis"))) {
@@ -418,12 +421,12 @@ public class MyLocalTon {
     public void runValidationMonitor() throws Exception {
         log.info("Starting validation monitor");
 
-//        log.info("starting node 2");
-//        org.ton.settings.Node node2 = settings.getNode2();
-//        MyLocalTon.getInstance().createFullnode(node2, true, true); //     add true to create wallet
-//        Utils.waitForBlockchainReady(node2);
-//        Utils.waitForNodeSynchronized(node2);
-//        saveSettingsToGson();
+        log.info("starting node 2");
+        org.ton.settings.Node node2 = settings.getNode2();
+        createFullnode(node2, true, true); //     add true to create wallet
+        Utils.waitForBlockchainReady(node2);
+        Utils.waitForNodeSynchronized(node2);
+        saveSettingsToGson();
 
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Validation Monitor");
@@ -540,7 +543,7 @@ public class MyLocalTon {
             while (Main.appActive.get()) {
                 try {
                     executorService = Executors.newSingleThreadExecutor(); // smells
-                    LiteClient liteClient = new LiteClient();
+                    LiteClient liteClient = new LiteClient(LiteClientEnum.GLOBAL);
 
                     executorService.execute(() -> {
                         Thread.currentThread().setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
@@ -588,7 +591,7 @@ public class MyLocalTon {
             updateBlocksTabGui(lastBlock);
         }
 
-        List<ResultLastBlock> shardsInBlock = new LiteClient().getShardsFromBlock(node, lastBlock); // txs from basechain shards
+        List<ResultLastBlock> shardsInBlock = new LiteClient(LiteClientEnum.GLOBAL).getShardsFromBlock(node, lastBlock); // txs from basechain shards
 
         for (ResultLastBlock shard : shardsInBlock) {
             log.info(shard.getShortBlockSeqno());
@@ -609,7 +612,7 @@ public class MyLocalTon {
 
     public void dumpBlockTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
 
-        LiteClient liteClient = new LiteClient();
+        LiteClient liteClient = new LiteClient(LiteClientEnum.GLOBAL);
         List<ResultListBlockTransactions> txs = LiteClientParser.parseListBlockTrans(liteClient.executeListblocktrans(node, lastBlock, 0));
         log.debug("found {} transactions in block {}", txs.size(), lastBlock.getShortBlockSeqno());
 
@@ -1431,7 +1434,7 @@ public class MyLocalTon {
             try {
                 for (WalletEntity wallet : App.dbPool.getAllWallets()) {
                     if (Main.appActive.get()) {
-                        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress()));
+                        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress()));
                         if (nonNull(accountState.getBalance())) {
 
                             Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress());
@@ -1450,9 +1453,9 @@ public class MyLocalTon {
     }
 
     Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) {
-        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient().executeGetAccount(node, address));
+        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(node, address));
         if (nonNull(accountState.getBalance())) {
-            long seqno = new LiteClient().executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
+            long seqno = new LiteClient(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
             return Pair.of(accountState, seqno);
         }
         return Pair.of(null, -1L);
@@ -1462,7 +1465,7 @@ public class MyLocalTon {
 
         log.debug("reap");
 
-        ResultComputeReturnStake result = LiteClientParser.parseRunMethodComputeReturnStake(new LiteClient().executeComputeReturnedStake(node, settings.getElectorSmcAddrHex(), settings.getGenesisNode().getWalletAddress().getHexWalletAddress()));
+        ResultComputeReturnStake result = LiteClientParser.parseRunMethodComputeReturnStake(new LiteClient(LiteClientEnum.GLOBAL).executeComputeReturnedStake(node, settings.getElectorSmcAddrHex(), settings.getGenesisNode().getWalletAddress().getHexWalletAddress()));
 
         log.debug("reap amount {}", result.getStake());
 
@@ -1561,7 +1564,16 @@ public class MyLocalTon {
         node.extractBinaries();
 
         ValidatorEngine validatorEngine = new ValidatorEngine();
+        validatorEngine.generateValidatorKeys(node, false);
         validatorEngine.initFullnode(node, settings.getGenesisNode().getNodeGlobalConfigLocation());
+        //Process validatorGenesisProcess = createGenesisValidator(node, node.getNodeGlobalConfigLocation()); // actually done in participate()
+
+        //work around for window
+        if (!node.getNodeName().contains("genesis")) {
+            //copy static/*
+            Files.copy(Paths.get(settings.getGenesisNode().getTonDbStaticDir() + settings.getZeroStateFileHashHex()), Paths.get(node.getTonDbStaticDir() + settings.getZeroStateFileHashHex()), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(Paths.get(settings.getGenesisNode().getTonDbStaticDir() + settings.getBaseStateFileHashHex()), Paths.get(node.getTonDbStaticDir() + settings.getBaseStateFileHashHex()), StandardCopyOption.REPLACE_EXISTING);
+        }
 
         Thread.sleep(2000);
 
@@ -1573,6 +1585,7 @@ public class MyLocalTon {
             validatorEngine.startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
         }
     }
+
 /*
         public void elections(Node genesisNode, Node node2, Node node3, Node node4, Node node5, Node node6) throws Exception {
             if (settings.getInitiallyElected()) {

@@ -113,7 +113,11 @@ public interface Node {
 
     String getNodeGlobalConfigLocation();
 
-    void setNodeGlobalConfigLocation(String nodeGlobalConfigLocation);
+    void setNodeGlobalConfigLocation(String nodeLocalConfigLocation);
+
+    String getNodeLocalConfigLocation();
+
+    void setNodeLocalConfigLocation(String nodeLocalConfigLocation);
 
     String getNodeForkedGlobalConfigLocation();
 

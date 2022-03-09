@@ -79,12 +79,6 @@ public class ValidatorEngine {
             log.info("Initializing node validator, create keyrings and config.json...");
 
             Files.copy(Paths.get(sharedGlobalConfig), Paths.get(node.getNodeGlobalConfigLocation()), StandardCopyOption.REPLACE_EXISTING);
-//
-//            ValidatorEngineExecutor validator = new ValidatorEngineExecutor();
-//            Pair<Process, Future<String>> validatorGenesisInit = validator.execute(node,
-//                    "-C", node.getNodeGlobalConfigLocation(),
-//                    "--db", node.getTonDbDir(),
-//                    "--ip", node.getPublicIp() + ":" + node.getPublicPort());
 
             Pair<Process, Future<String>> validatorGenesisInit = startValidatorWithoutParams(node, sharedGlobalConfig);
 
@@ -119,22 +113,30 @@ public class ValidatorEngine {
             String existingLiteservers = "\"liteservers\" : " + Utils.sbb(configJson, "\"liteservers\" : [");
             String configJsonNew = StringUtils.replace(configJson, existingLiteservers, liteServers + "\n]");
             FileUtils.writeStringToFile(new File(node.getTonDbDir() + "config.json"), configJsonNew, StandardCharsets.UTF_8);
+            // done with config.json
 
             String myGlobalTonConfig = FileUtils.readFileToString(new File(myGlobalConfig), StandardCharsets.UTF_8);
             String myGlobalTonConfigNew;
             String liteServerConfigNew;
+            String liteServerConfigBoth;
 
             if (myGlobalTonConfig.contains("liteservers")) {
-                //replace exiting lite-servers in global config
+                //add new lite-server to the global config
                 String existingLiteserver = Utils.sbb(myGlobalTonConfig, "\"liteservers\":[");
-                liteServerConfigNew = "[{\"id\":{\"key\":\"" + liteserverPubkeyBase64 + "\", \"@type\":\"pub.ed25519\"}, \"port\": " + node.getLiteServerPort() + ", \"ip\": " + publicIpNum + "}\n]";
-                myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, existingLiteserver, liteServerConfigNew);
-                FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
+                liteServerConfigNew = "{\"id\":{\"key\":\"" + liteserverPubkeyBase64 + "\", \"@type\":\"pub.ed25519\"}, \"port\": " + node.getLiteServerPort() + ", \"ip\": " + publicIpNum + "}\n]";
+                //liteServerConfigBoth = StringUtils.substring(existingLiteserver, 0, -1) + "," + liteServerConfigNew;
+                //myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, existingLiteserver, liteServerConfigBoth);
+                //FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
+
+                //replace and create new config
+                myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, existingLiteserver, "[" + liteServerConfigNew);
+                FileUtils.writeStringToFile(new File(node.getNodeLocalConfigLocation()), myGlobalTonConfigNew, StandardCharsets.UTF_8);
             } else {
                 // add new lite servers around "validator":{
                 liteServerConfigNew = "\"liteservers\":[{\"id\":{\"key\":\"" + liteserverPubkeyBase64 + "\", \"@type\":\"pub.ed25519\"}, \"port\": " + node.getLiteServerPort() + ", \"ip\": " + publicIpNum + "}\n],\n \"validator\": {";
                 myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, "\"validator\": {", liteServerConfigNew);
                 FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
+                FileUtils.writeStringToFile(new File(node.getNodeLocalConfigLocation()), myGlobalTonConfigNew, StandardCharsets.UTF_8);
             }
             log.info("lite-server enabled");
         }
@@ -329,7 +331,7 @@ public class ValidatorEngine {
         node.setValidatorPrvKeyHex(validatorPrvKeyHex);
         node.setValidatorPrvKeyBase64(validatorPrvKeyBase64);
         node.setValidatorPubKeyHex(Hex.encodeHexString(removed4bytes));
-        node.setValidatorPubKeyBase64(Base64.encodeBase64String(validatorPubKey)); // move to  createGenesisValidator ? todo
+        node.setValidatorPubKeyBase64(Base64.encodeBase64String(validatorPubKey));
 
         Utils.saveSettingsToGson(MyLocalTon.getInstance().getSettings());
 
@@ -337,8 +339,7 @@ public class ValidatorEngine {
         Files.write(Paths.get(node.getValidatorKeyPubLocation()), Hex.decodeHex(node.getValidatorPubKeyHex()), StandardOpenOption.CREATE); // "validator-keys-1.pub"
 
         if (updateGenZeroStateFif) {
-            // make full node validator
-            // replace path to validator-key.pub in gen-zerostate.fif
+            // replace path to validator-key-1.pub in gen-zerostate.fif
             String genZeroStateFif = FileUtils.readFileToString(new File(node.getGenesisGenZeroStateFifLocation()), StandardCharsets.UTF_8);
             String genZeroStateFifNew = StringUtils.replace(genZeroStateFif, "// \"path_to_" + node.getNodeName() + "_pub_key\"", "\"" + node.getValidatorKeyPubLocation() + "\"");
             genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), MyLocalTon.getInstance().getSettings().getBlockchainSettings().getInitialStake().toString());
