@@ -33,6 +33,8 @@ public class Node7 implements Serializable, Node {
     Integer dhtOutPort = 3277;
     Integer dhtForkedOutPort = 3287;
     Integer outPort = 3277;
+    String status;
+
     String validatorMonitoringPubKeyHex;
     String validatorMonitoringPubKeyInteger;
     String validatorPrvKeyHex;

@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -51,6 +52,7 @@ import org.ton.settings.MyLocalTonSettings;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -60,6 +62,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -176,37 +179,10 @@ public class MainController implements Initializable {
     public JFXTabPane validationTabs;
 
     @FXML
-    public JFXTextField nodePublicPort2;
-
-    @FXML
-    public JFXTextField nodeConsolePort2;
-
-    @FXML
-    public JFXTextField liteServerPort2;
-
-    @FXML
-    public Tab fullnode2;
-
-    @FXML
-    public Tab fullnode3;
-
-    @FXML
-    public JFXTextField nodePublicPort3;
-
-    @FXML
-    public JFXTextField nodeConsolePort3;
-
-    @FXML
-    public JFXTextField liteServerPort3;
-
-    @FXML
     public Label nodeStatus2;
 
     @FXML
     public Label nodeStatus3;
-
-    @FXML
-    public Tab genesisnode1;
 
     @FXML
     public Label nodePublicPort1;
@@ -390,6 +366,360 @@ public class MainController implements Initializable {
 
     @FXML
     public Label participatedInElections;
+
+    @FXML
+    public JFXButton addValidatorBtn;
+
+    @FXML
+    public Tab genesisnode1;
+
+    @FXML
+    public Tab validator2tab;
+
+    @FXML
+    public Tab validator3tab;
+
+    @FXML
+    public Tab validator4tab;
+
+    @FXML
+    public Tab validator5tab;
+
+    @FXML
+    public Tab validator6tab;
+
+    @FXML
+    public Tab validator7tab;
+
+    @FXML
+    public Label nodePublicPort2;
+
+    @FXML
+    public Label nodeConsolePort2;
+
+    @FXML
+    public Label liteServerPort2;
+
+    @FXML
+    public Label validator2AdnlAddress;
+
+    @FXML
+    public Label validator2PubKeyHex;
+
+    @FXML
+    public Label validator2PubKeyInteger;
+
+    @FXML
+    public Label validator2AdnlAddressNext;
+
+    @FXML
+    public Label validator2PubKeyIntegerNext;
+
+    @FXML
+    public Label validator2PubKeyHexNext;
+
+    @FXML
+    public Label validator2WalletAddress;
+
+    @FXML
+    public Label validator2WalletBalance;
+
+    @FXML
+    public Label validator2totalCollected;
+
+    @FXML
+    public Label validator2LastCollected;
+
+    @FXML
+    public Label validator2TotalRewardsPure;
+
+    @FXML
+    public Label validator2LastRewardPure;
+
+    @FXML
+    public Label validator2AvgPureReward;
+
+    @FXML
+    public Label participatedInElections2;
+
+    @FXML
+    public JFXButton deleteValidatorBtn2;
+
+    @FXML
+    public Label nodePublicPort3;
+
+    @FXML
+    public Label nodeConsolePort3;
+
+    @FXML
+    public Label liteServerPort3;
+
+    @FXML
+    public Label validator3AdnlAddress;
+
+    @FXML
+    public Label validator3PubKeyHex;
+
+    @FXML
+    public Label validator3PubKeyInteger;
+
+    @FXML
+    public Label validator3AdnlAddressNext;
+
+    @FXML
+    public Label validator3PubKeyHexNext;
+
+    @FXML
+    public Label validator3PubKeyIntegerNext;
+
+    @FXML
+    public Label validator3WalletAddress;
+
+    @FXML
+    public Label validator3WalletBalance;
+
+    @FXML
+    public Label validator3totalCollected;
+
+    @FXML
+    public Label validator3TotalRewardsPure;
+
+    @FXML
+    public Label validator3LastCollected;
+
+    @FXML
+    public Label validator3LastRewardPure;
+
+    @FXML
+    public Label validator3AvgPureReward;
+
+    @FXML
+    public Label participatedInElections3;
+
+    @FXML
+    public JFXButton deleteValidatorBtn3;
+
+    @FXML
+    public Label nodeStatus4;
+
+    @FXML
+    public Label nodePublicPort4;
+
+    @FXML
+    public Label nodeConsolePort4;
+
+    @FXML
+    public Label liteServerPort4;
+
+    @FXML
+    public Label validator4AdnlAddress;
+
+    @FXML
+    public Label validator4AdnlAddressNext;
+
+    @FXML
+    public Label validator4PubKeyHexNext;
+
+    @FXML
+    public Label validator4PubKeyIntegerNext;
+
+    @FXML
+    public Label validator4WalletAddress;
+
+    @FXML
+    public Label validator4WalletBalance;
+
+    @FXML
+    public Label validator4totalCollected;
+
+    @FXML
+    public Label validator4LastCollected;
+
+    @FXML
+    public Label validator4TotalRewardsPure;
+
+    @FXML
+    public Label validator4LastRewardPure;
+
+    @FXML
+    public Label validator4AvgPureReward;
+
+    @FXML
+    public Label participatedInElections4;
+
+    @FXML
+    public JFXButton deleteValidatorBtn4;
+
+    @FXML
+    public Label nodeStatus5;
+
+    @FXML
+    public Label nodePublicPort5;
+
+    @FXML
+    public Label nodeConsolePort5;
+
+    @FXML
+    public Label liteServerPort5;
+
+    @FXML
+    public Label validator5AdnlAddress;
+
+    @FXML
+    public Label validator5PubKeyHex;
+
+    @FXML
+    public Label validator5PubKeyInteger;
+
+    @FXML
+    public Label validator5AdnlAddressNext;
+
+    @FXML
+    public Label validator5PubKeyHexNext;
+
+    @FXML
+    public Label validator5PubKeyIntegerNext;
+
+    @FXML
+    public Label validator5WalletAddress;
+
+    @FXML
+    public Label validator5WalletBalance;
+
+    @FXML
+    public Label validator5totalCollected;
+
+    @FXML
+    public Label validator5LastCollected;
+
+    @FXML
+    public Label validator5TotalRewardsPure;
+
+    @FXML
+    public Label validator5LastRewardPure;
+
+    @FXML
+    public Label validator5AvgPureReward;
+
+    @FXML
+    public Label participatedInElections5;
+
+    @FXML
+    public JFXButton deleteValidatorBtn5;
+
+    @FXML
+    public Label nodeStatus6;
+
+    @FXML
+    public Label nodePublicPort6;
+
+    @FXML
+    public Label nodeConsolePort6;
+
+    @FXML
+    public Label liteServerPort6;
+
+    @FXML
+    public Label validator6AdnlAddress;
+
+    @FXML
+    public Label validator6PubKeyHex;
+
+    @FXML
+    public Label validator6PubKeyInteger;
+
+    @FXML
+    public Label validator6AdnlAddressNext;
+
+    @FXML
+    public Label validator6PubKeyHexNext;
+
+    @FXML
+    public Label validator6PubKeyIntegerNext;
+
+    @FXML
+    public Label validator6WalletAddress;
+
+    @FXML
+    public Label validator6WalletBalance;
+
+    @FXML
+    public Label validator6totalCollected;
+
+    @FXML
+    public Label validator6LastCollected;
+
+    @FXML
+    public Label validator6TotalRewardsPure;
+
+    @FXML
+    public Label validator6LastRewardPure;
+
+    @FXML
+    public Label validator6AvgPureReward;
+
+    @FXML
+    public Label participatedInElections6;
+
+    @FXML
+    public JFXButton deleteValidatorBtn6;
+
+    @FXML
+    public Label nodeStatus7;
+
+    @FXML
+    public Label nodePublicPort7;
+
+    @FXML
+    public Label nodeConsolePort7;
+
+    @FXML
+    public Label liteServerPort7;
+
+    @FXML
+    public Label validator7AdnlAddress;
+
+    @FXML
+    public Label validator7PubKeyHex;
+
+    @FXML
+    public Label validator7PubKeyInteger;
+
+    @FXML
+    public Label validator7AdnlAddressNext;
+
+    @FXML
+    public Label validator7PubKeyHexNext;
+
+    @FXML
+    public Label validator7PubKeyIntegerNext;
+
+    @FXML
+    public Label validator7WalletAddress;
+
+    @FXML
+    public Label validator7WalletBalance;
+
+    @FXML
+    public Label validator7totalCollected;
+
+    @FXML
+    public Label validator7LastCollected;
+
+    @FXML
+    public Label validator7TotalRewardsPure;
+
+    @FXML
+    public Label validator7LastRewardPure;
+
+    @FXML
+    public Label validator7AvgPureReward;
+
+    @FXML
+    public Label participatedInElections7;
+
+    @FXML
+    public JFXButton deleteValidatorBtn7;
 
     @FXML
     JFXCheckBox shardStateCheckbox;
@@ -1080,6 +1410,7 @@ public class MainController implements Initializable {
         myLogLevel.getItems().add("ERROR");
         myLogLevel.getSelectionModel().select(settings.getLogSettings().getMyLocalTonLogLevel());
 
+        // blockchain-explorer tab
         enableBlockchainExplorer.setVisible(false);
         enableBlockchainExplorerLabel.setVisible(false);
         mainMenuTabs.getTabs().remove(explorerTab);
@@ -1096,6 +1427,41 @@ public class MainController implements Initializable {
             } else {
                 mainMenuTabs.getTabs().remove(explorerTab);
             }
+        }
+
+        // validator-tabs
+        validationTabs.getTabs().remove(validator2tab);
+        validationTabs.getTabs().remove(validator3tab);
+        validationTabs.getTabs().remove(validator4tab);
+        validationTabs.getTabs().remove(validator5tab);
+        validationTabs.getTabs().remove(validator6tab);
+        validationTabs.getTabs().remove(validator7tab);
+
+        for (String nodeName : settings.getActiveNodes()) {
+            if (!nodeName.contains("genesis")) {
+                validationTabs.getTabs().add(getNodeTabByName(nodeName));
+            }
+        }
+    }
+
+    public Tab getNodeTabByName(String nodeName) {
+        switch (nodeName) {
+            case "genesis":
+                return genesisnode1;
+            case "node2":
+                return validator2tab;
+            case "node3":
+                return validator3tab;
+            case "node4":
+                return validator4tab;
+            case "node5":
+                return validator5tab;
+            case "node6":
+                return validator6tab;
+            case "node7":
+                return validator7tab;
+            default:
+                return null;
         }
     }
 
@@ -1255,6 +1621,69 @@ public class MainController implements Initializable {
         yesNoDialog.show();
     }
 
+    public void showDialogMessage(String header, String body) {
+        Platform.runLater(() -> {
+            try {
+                Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
+
+                parent.lookup("#inputFields").setVisible(false);
+                parent.lookup("#body").setVisible(true);
+                parent.lookup("#header").setVisible(true);
+                //((Label) parent.lookup("#action")).setText("reset"); // no action, simple dialog box
+                ((Label) parent.lookup("#header")).setText(header);
+                ((Label) parent.lookup("#body")).setText(body);
+                parent.lookup("#okBtn").setDisable(false);
+
+                JFXDialogLayout content = new JFXDialogLayout();
+                content.setBody(parent);
+
+                yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
+                yesNoDialog.setOnKeyPressed(keyEvent -> {
+                            if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                                yesNoDialog.close();
+                            }
+                        }
+                );
+                yesNoDialog.show();
+            } catch (IOException e) {
+                log.error("Cannot load resource org/ton/main/yesnodialog.fxml");
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void showDialogConfirmDeleteNode(org.ton.settings.Node node) {
+        Platform.runLater(() -> {
+            try {
+                Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
+
+                parent.lookup("#inputFields").setVisible(false);
+                parent.lookup("#body").setVisible(true);
+                parent.lookup("#header").setVisible(true);
+                ((Label) parent.lookup("#action")).setText("delnode"); // no action, simple dialog box
+                ((Label) parent.lookup("#header")).setText("Confirmation");
+                ((Label) parent.lookup("#address")).setText(node.getNodeName()); // just reuse address field
+                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete selected validator? All data will be lost and validator will be removed from elections.");
+                parent.lookup("#okBtn").setDisable(false);
+
+                JFXDialogLayout content = new JFXDialogLayout();
+                content.setBody(parent);
+
+                yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
+                yesNoDialog.setOnKeyPressed(keyEvent -> {
+                            if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                                yesNoDialog.close();
+                            }
+                        }
+                );
+                yesNoDialog.show();
+            } catch (IOException e) {
+                log.error("Cannot load resource org/ton/main/yesnodialog.fxml");
+                e.printStackTrace();
+            }
+        });
+    }
+
     /*
     public void transformAction() throws IOException {
 
@@ -1411,25 +1840,50 @@ public class MainController implements Initializable {
 
             totalParticipants.setText(String.valueOf(LiteClientParser.parseRunMethodParticipantList(liteClient.executeGetParticipantList(settings.getGenesisNode(), settings.getElectorSmcAddrHex())).size()));
 
-            // validator page
-            validator1AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
-            validator1PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
-            validator1PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
-
-            accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
-            validator1AdnlAddressNext.setText(settings.getGenesisNode().getValidationAndlKey());
-            validator1PubKeyHexNext.setText(settings.getGenesisNode().getValidationPubKeyHex());
-            validator1PubKeyIntegerNext.setText(settings.getGenesisNode().getValidationPubKeyInteger() + " (used in participants list)");
-            validator1WalletAddress.setText(settings.getGenesisNode().getWalletAddress().getFullWalletAddress());
-            validator1WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-            nodePublicPort1.setText(settings.getGenesisNode().getPublicPort().toString());
-            nodeConsolePort1.setText(settings.getGenesisNode().getConsolePort().toString());
-            liteServerPort1.setText(settings.getGenesisNode().getLiteServerPort().toString());
+            // validator pages
+            updateValidator1TabPage(v);
+            updateValidator2TabPage(v);
 
         } catch (Exception e) {
             log.error("Error updating validation tab GUI! Error {}", e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void updateValidator1TabPage(ValidationParam v) {
+
+        validator1AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
+        validator1PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
+        validator1PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+
+        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
+        validator1AdnlAddressNext.setText(settings.getGenesisNode().getValidationAndlKey());
+        validator1PubKeyHexNext.setText(settings.getGenesisNode().getValidationPubKeyHex());
+        validator1PubKeyIntegerNext.setText(settings.getGenesisNode().getValidationPubKeyInteger() + " (used in participants list)");
+        validator1WalletAddress.setText(settings.getGenesisNode().getWalletAddress().getFullWalletAddress());
+        validator1WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+        nodePublicPort1.setText(settings.getGenesisNode().getPublicPort().toString());
+        nodeConsolePort1.setText(settings.getGenesisNode().getConsolePort().toString());
+        liteServerPort1.setText(settings.getGenesisNode().getLiteServerPort().toString());
+        nodeStatus1.setText(settings.getGenesisNode().getStatus());
+    }
+
+    private void updateValidator2TabPage(ValidationParam v) {
+
+//        validator2AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
+//        validator2PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
+//        validator2PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+//
+//        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), settings.getNode2().getWalletAddress().getFullWalletAddress()));
+//        validator2AdnlAddressNext.setText(settings.getNode2().getValidationAndlKey());
+//        validator2PubKeyHexNext.setText(settings.getNode2().getValidationPubKeyHex());
+//        validator2PubKeyIntegerNext.setText(settings.getNode2().getValidationPubKeyInteger() + " (used in participants list)");
+//        validator2WalletAddress.setText(settings.getNode2().getWalletAddress().getFullWalletAddress());
+//        validator2WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+        nodePublicPort2.setText(settings.getNode2().getPublicPort().toString());
+        nodeConsolePort2.setText(settings.getNode2().getConsolePort().toString());
+        liteServerPort2.setText(settings.getNode2().getLiteServerPort().toString());
+        nodeStatus2.setText(settings.getNode2().getStatus());
     }
 
     private void colorValidationTiming(ValidationParam v) {
@@ -1472,6 +1926,7 @@ public class MainController implements Initializable {
 
         Platform.runLater(() -> {
             try {
+                //mainController.addValidatorBtn.setDisable(false);
 
                 mainController.drawBarsAndLabels(v); // once in elections enough (bars and labels)
 
@@ -1490,7 +1945,7 @@ public class MainController implements Initializable {
 
     public void drawBarsAndLabels(ValidationParam v) {
         log.debug("draw drawBarsAndLabels");
-        log.debug("size {}, globalSize {}, cycleMod {}, cycleModEqual {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size(), settings.getCycleMod(), settings.getCycleModEquals());
+        log.info("size {}, globalSize {}, cycleMod {}, cycleModEqual {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size(), settings.getCycleMod(), settings.getCycleModEquals());
 
         try {
 
@@ -1552,7 +2007,7 @@ public class MainController implements Initializable {
 
             log.debug("Current StartElectionIdEvery3Cycles {}, size {} global {}", Utils.toLocal(settings.getLastValidationParamEvery3Cycles().getStartElections()), settings.electionsCounter.size(), settings.electionsCounterGlobal.size());
 
-            x = currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections();//settings.getStartElectionIdEvery3Cycles(); // delta in seconds from start 2000
+            x = currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections();
             double scaleFactor = (double) 200 / v.getValidationDuration();
             long electionsDelta = v.getNextElections() - v.getStartElections();
             long electionsDeltaWidth = (long) (electionsDelta * scaleFactor);
@@ -1850,5 +2305,77 @@ public class MainController implements Initializable {
         log.debug(electionId + " copied");
         App.mainController.showInfoMsg(electionId + " copied to clipboard", 0.5);
         mouseEvent.consume();
+    }
+
+    public void createNewNodeBtn() {
+
+        ExecutorService newNodeExecutorService = Executors.newSingleThreadExecutor();
+
+        newNodeExecutorService.execute(() -> {
+            Thread.currentThread().setName("MyLocalTon - Creating validator");
+            org.ton.settings.Node node = null;
+            try {
+                mainController.addValidatorBtn.setDisable(true);
+                node = Utils.getNewNode();
+                if (nonNull(node)) {
+                    log.info("creating validator {}", node.getNodeName());
+
+                    //delete unfinished node creation
+                    FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
+
+                    MyLocalTon.getInstance().createFullnode(node, true, true);
+                    Utils.waitForBlockchainReady(node);
+                    Utils.waitForNodeSynchronized(node);
+
+                    Tab newTab = Utils.getNewNodeTab();
+                    Platform.runLater(() -> {
+                        validationTabs.getTabs().add(newTab);
+                    });
+
+                    settings.getActiveNodes().add(node.getNodeName());
+                    MyLocalTon.getInstance().saveSettingsToGson();
+
+                    App.mainController.showInfoMsg("Validator " + node.getNodeName() + " has been created successfully", 5);
+                } else {
+                    showDialogMessage("The limit has been reached", "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");
+                }
+            } catch (Exception e) {
+                log.error("Error creating validator: {}", e.getMessage());
+                App.mainController.showErrorMsg("Error creating validator", 3);
+            } finally {
+                mainController.addValidatorBtn.setDisable(false);
+            }
+        });
+        newNodeExecutorService.shutdown();
+    }
+
+    public void deleteValidator2Btn() {
+        log.info("delete 2 validator");
+        showDialogConfirmDeleteNode(settings.getNode2());
+    }
+
+    public void deleteValidator3Btn() {
+        log.info("delete 3 validator");
+        showDialogConfirmDeleteNode(settings.getNode3());
+    }
+
+    public void deleteValidator4Btn() {
+        log.info("delete 4 validator");
+        showDialogConfirmDeleteNode(settings.getNode4());
+    }
+
+    public void deleteValidator5Btn() {
+        log.info("delete 5 validator");
+        showDialogConfirmDeleteNode(settings.getNode5());
+    }
+
+    public void deleteValidator6Btn() {
+        log.info("delete 6 validator");
+        showDialogConfirmDeleteNode(settings.getNode6());
+    }
+
+    public void deleteValidator7Btn() {
+        log.info("delete 7 validator");
+        showDialogConfirmDeleteNode(settings.getNode7());
     }
 }

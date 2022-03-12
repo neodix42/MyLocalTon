@@ -11,7 +11,9 @@ import org.ton.wallet.WalletVersion;
 import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,6 +51,7 @@ public class MyLocalTonSettings implements Serializable {
         logSettings = new LogSettings();
 
         dbPool = new ConcurrentHashMap<>();
+        activeNodes = new ArrayList<>();
     }
 
     /*
@@ -70,6 +73,7 @@ public class MyLocalTonSettings implements Serializable {
     Node5 node5;
     Node6 node6;
     Node7 node7;
+    List<String> activeNodes;
 
     WalletSettings walletSettings;
     UiSettings uiSettings;
@@ -196,5 +200,26 @@ public class MyLocalTonSettings implements Serializable {
 
     public Node getNode(Node node) {
         return node;
+    }
+
+    public Node getNodeByName(String nodeName) {
+        switch (nodeName) {
+            case "genesis":
+                return genesisNode;
+            case "node2":
+                return node2;
+            case "node3":
+                return node3;
+            case "node4":
+                return node4;
+            case "node5":
+                return node5;
+            case "node6":
+                return node6;
+            case "node7":
+                return node7;
+            default:
+                return genesisNode;
+        }
     }
 }

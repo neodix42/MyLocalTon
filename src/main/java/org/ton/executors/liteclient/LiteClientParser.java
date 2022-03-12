@@ -50,12 +50,12 @@ public class LiteClientParser {
         }
 
         if (StringUtils.contains(stdout, "adnl query timeout")) {
-            log.error("Blockchain node is not ready");
+            log.debug("Blockchain node is not ready");
             return null;
         }
 
         if (StringUtils.contains(stdout, "server appears to be out of sync")) {
-            log.info("Blockchain node is out of sync");
+            log.debug("Blockchain node is out of sync");
         }
 
         try {

@@ -1,9 +1,14 @@
 package org.ton.settings;
 
+import org.apache.commons.io.FileUtils;
 import org.ton.wallet.WalletAddress;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+
+import static com.sun.javafx.PlatformUtil.isWindows;
+import static java.util.Objects.nonNull;
 
 public interface Node {
 
@@ -40,6 +45,10 @@ public interface Node {
     Integer getOutPort();
 
     Integer getLiteServerPort();
+
+    String getStatus();
+
+    void setStatus(String status);
 
     String getNodeName();
 
@@ -139,4 +148,31 @@ public interface Node {
 
     String getValidationAndlKey();
 
+    default boolean nodeShutdownAndDelete() {
+
+        String nodeName = this.getNodeName();
+        long nodePid = 0;
+        if (nonNull(this.getNodeProcess())) {
+            nodePid = this.getNodeProcess().pid();
+        }
+
+        System.out.println("nodeShutdown " + nodeName + ", process " + nodePid);
+
+        try {
+            if (isWindows()) {
+                Runtime.getRuntime().exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + nodePid);
+            } else {
+                Runtime.getRuntime().exec("kill -2 " + nodePid);
+            }
+            System.out.println("validator-engine with pid " + nodePid + " killed");
+
+            FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + nodeName));
+
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("cannot shutdown node " + nodeName + ". Error " + e.getMessage());
+            return false;
+        }
+    }
 }

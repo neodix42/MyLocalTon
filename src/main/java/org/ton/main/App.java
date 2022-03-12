@@ -83,9 +83,10 @@ public class App extends Application {
         MyLocalTon myLocalTon = MyLocalTon.getInstance();
         myLocalTon.setSettings(Utils.loadSettings());
         myLocalTon.saveSettingsToGson(); //create default config
-
+        MyLocalTonSettings settings = myLocalTon.getSettings();
         log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
-        Utils.setMyLocalTonLogLevel(myLocalTon.getSettings().getLogSettings().getMyLocalTonLogLevel());
+
+        Utils.setMyLocalTonLogLevel(settings.getLogSettings().getMyLocalTonLogLevel());
 
         System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
         System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
@@ -93,11 +94,11 @@ public class App extends Application {
         // start GUI
         Executors.newSingleThreadExecutor().execute(Application::launch);
 
-        Node genesisNode = myLocalTon.getSettings().getGenesisNode();
+        Node genesisNode = settings.getGenesisNode();
         genesisNode.extractBinaries();
 
         // initialize DB
-        dbPool = new DbPool(myLocalTon.getSettings());
+        dbPool = new DbPool(settings);
 
         Process validatorGenesisProcess = myLocalTon.initGenesis(genesisNode);
 
@@ -118,7 +119,17 @@ public class App extends Application {
         Utils.waitForBlockchainReady(genesisNode);
         Utils.waitForNodeSynchronized(genesisNode);
 
+        // start other validators
+        for (String nodeName : settings.getActiveNodes()) {
+            if (!nodeName.contains("genesis")) {
+                long pid = validatorEngine.startValidator(settings.getNodeByName(nodeName), genesisNode.getNodeGlobalConfigLocation()).pid();
+                log.info("started validator {} with pid {}", nodeName, pid);
+            }
+        }
+
         myLocalTon.runBlockchainMonitor(genesisNode);
+
+        myLocalTon.runNodesMonitor();
 
         myLocalTon.runBlockchainSizeMonitor();
         mainController.showSuccessMsg("TON blockchain is ready!", 2);
@@ -134,5 +145,7 @@ public class App extends Application {
         myLocalTon.runAccountsMonitor();
 
         myLocalTon.runValidationMonitor();
+
+        mainController.addValidatorBtn.setDisable(false);
     }
 }

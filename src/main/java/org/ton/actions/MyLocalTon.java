@@ -154,6 +154,27 @@ public class MyLocalTon {
         Platform.runLater(() -> mainController.startWeb());
     }
 
+    public void runNodesMonitor() {
+        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
+            Thread.currentThread().setName("MyLocalTon - Nodes Monitor");
+            try {
+                for (String nodeName : settings.getActiveNodes()) {
+                    Node node = settings.getNodeByName(nodeName);
+                    ResultLastBlock lastBlock = LiteClientParser.parseLast(new LiteClient(LiteClientEnum.LOCAL).executeLast(node));
+                    if (isNull(lastBlock)) {
+                        node.setStatus("not ready");
+                        log.info("{} is not ready", nodeName);
+                    } else {
+                        node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
+                        log.info("{} is out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error in runNodesMonitor(), " + e.getMessage());
+            }
+        }, 0L, 15L, TimeUnit.SECONDS);
+    }
+
     public static final class AtomicBigInteger {
 
         private final AtomicReference<BigInteger> valueHolder = new AtomicReference<>();
@@ -197,6 +218,8 @@ public class MyLocalTon {
             Process validatorGenesisProcess = createGenesisValidator(node, node.getNodeGlobalConfigLocation());
 
             validatorEngine.enableLiteServer(node, node.getNodeGlobalConfigLocation(), false);
+
+            settings.getActiveNodes().add(node.getNodeName());
 
             return validatorGenesisProcess;
         } else {
@@ -418,15 +441,8 @@ public class MyLocalTon {
         }, 0L, 15L, TimeUnit.SECONDS);
     }
 
-    public void runValidationMonitor() throws Exception {
+    public void runValidationMonitor() {
         log.info("Starting validation monitor");
-
-        log.info("starting node 2");
-        org.ton.settings.Node node2 = settings.getNode2();
-        createFullnode(node2, true, true); //     add true to create wallet
-        Utils.waitForBlockchainReady(node2);
-        Utils.waitForNodeSynchronized(node2);
-        saveSettingsToGson();
 
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Validation Monitor");
@@ -458,7 +474,7 @@ public class MyLocalTon {
                                 settings.electionsCounter.put(3L, null);
                             } else {
                                 if (nonNull(settings.getLastValidationParamEvery3Cycles())) {
-                                    log.debug("currTime - getLastValidationParamEvery3Cycles().getStartElections = {} > {}", currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections(), electionsDelta * 3);
+                                    log.info("Y. currTime - getLastValidationParamEvery3Cycles().getStartElections = {} > {}", currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections(), electionsDelta * 3);
                                     if ((currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections()) > (electionsDelta * 3)) {
                                         log.debug("too old previous start date of elections");
                                         settings.electionsCounter.clear();
@@ -487,17 +503,32 @@ public class MyLocalTon {
 
                         log.info("ELECTIONS CLOSED");
 
-                        log.debug("taking old election id {} {}", settings.getLastValidationParam().getStartValidationCycle(), Utils.toLocal(settings.getLastValidationParam().getStartValidationCycle()));
+                        log.info("using old election id {} {}", settings.getLastValidationParam().getStartValidationCycle(), Utils.toLocal(settings.getLastValidationParam().getStartValidationCycle()));
 
-                        if (firstAppLaunch && !settings.getVeryFirstElections()) {
-                            log.debug("B. First app launch and not the first elections");
+                        if (firstAppLaunch) {
                             firstAppLaunch = false;
-                            //always draw elections bars from the beginning
-                            settings.electionsCounter.clear();
-                            settings.electionsCounter.put(1L, null);
-                            settings.electionsCounter.put(2L, null);
-                            settings.electionsCounter.put(3L, null);
-                            settings.electionsCounter.put(v.getStartValidationCycle(), v.getStartValidationCycle());
+                            if (!settings.getVeryFirstElections()) {
+                                log.debug("B. First app launch and not the first elections");
+                                firstAppLaunch = false;
+                                //always draw elections bars from the beginning
+                                settings.electionsCounter.clear();
+                                settings.electionsCounter.put(1L, null);
+                                settings.electionsCounter.put(2L, null);
+                                settings.electionsCounter.put(3L, null);
+                                settings.electionsCounter.put(v.getStartValidationCycle(), v.getStartValidationCycle());
+                            } else {
+                                if (nonNull(settings.getLastValidationParamEvery3Cycles())) {
+                                    log.info("X. currTime - getLastValidationParamEvery3Cycles().getStartElections = {} > {}", currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections(), electionsDelta * 3);
+                                    if ((currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections()) > (electionsDelta * 3)) {
+                                        log.info("X. too old previous start date of elections");
+                                        settings.electionsCounter.clear();
+                                        settings.electionsCounter.put(1L, null);
+                                        settings.electionsCounter.put(2L, null);
+                                        //settings.electionsCounter.put(3L, null);
+                                        settings.electionsCounter.put(settings.getLastValidationParamEvery3Cycles().getStartValidationCycle(), settings.getLastValidationParamEvery3Cycles().getStartValidationCycle());
+                                    }
+                                }
+                            }
                         }
 
                         saveSettingsToGson();

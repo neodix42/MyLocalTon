@@ -5,6 +5,7 @@ import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.application.Platform;
+import javafx.scene.control.Tab;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -68,6 +69,7 @@ import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.executors.liteclient.LiteClientParser.*;
+import static org.ton.main.App.mainController;
 import static org.ton.settings.MyLocalTonSettings.SETTINGS_FILE;
 
 @Slf4j
@@ -341,13 +343,12 @@ public class Utils {
                                 int pid = Integer.parseInt(StringUtils.substringBetween(resultInput, "validator-engine.exe", "Console").trim());
                                 boolean success = JProcesses.killProcess(pid).isSuccess();
                                 log.debug("validator-engine with pid " + pid + " killed " + success);
-
                             }
                         }
                     } while (resultInput.contains("validator-engine"));
                 } else {
                     rt.exec("killall -9 " + "lite-client");
-                    rt.exec("killall -2 " + "validator-engine"); // TODO look up for the shutdown order
+                    rt.exec("killall -2 " + "validator-engine"); // TODO look up for the shutdown order when multiple nodes are active
                 }
 
                 log.debug("Waiting for processes to be killed...");
@@ -360,6 +361,10 @@ public class Utils {
             log.error("Unable to shutdown gracefully, error: {}", e.getMessage());
             return false;
         }
+    }
+
+    public static void killNode(Node node) {
+
     }
 
     public static ResultLastBlock fullBlockSeqno2Result(String fullBlockSeqno) {
@@ -480,6 +485,7 @@ public class Utils {
         do {
             Thread.sleep(5000);
             lastBlock = LiteClientParser.parseLast(new LiteClient(LiteClientEnum.LOCAL).executeLast(node));
+            log.error("{} is not ready", node.getNodeName());
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
     }
 
@@ -489,6 +495,7 @@ public class Utils {
             Thread.sleep(5000);
             lastBlock = LiteClientParser.parseLast(new LiteClient(LiteClientEnum.LOCAL).executeLast(node));
             log.info("{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
+            node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
         } while (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0 && lastBlock.getSyncedSecondsAgo() > 10);
     }
 
@@ -656,6 +663,73 @@ public class Utils {
             FileUtils.writeStringToFile(new File(SETTINGS_FILE), abJson, StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static Node getNewNode() {
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+        int size = settings.getActiveNodes().size();
+        switch (size) {
+            case 0:
+                return settings.getGenesisNode();
+            case 1:
+                return settings.getNode2();
+            case 2:
+                return settings.getNode3();
+            case 3:
+                return settings.getNode4();
+            case 4:
+                return settings.getNode5();
+            case 5:
+                return settings.getNode6();
+            case 6:
+                return settings.getNode7();
+            default:
+                return null;
+        }
+    }
+
+    public static Tab getNewNodeTab() {
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+        int size = settings.getActiveNodes().size();
+        switch (size) {
+            case 0:
+                return mainController.genesisnode1;
+            case 1:
+                return mainController.validator2tab;
+            case 2:
+                return mainController.validator3tab;
+            case 3:
+                return mainController.validator4tab;
+            case 4:
+                return mainController.validator5tab;
+            case 5:
+                return mainController.validator6tab;
+            case 6:
+                return mainController.validator7tab;
+            default:
+                return null;
+        }
+    }
+
+    public static Tab getNodeTabByName(String nodeName) {
+        switch (nodeName) {
+            case "genesis":
+                return mainController.genesisnode1;
+            case "node2":
+                return mainController.validator2tab;
+            case "node3":
+                return mainController.validator3tab;
+            case "node4":
+                return mainController.validator4tab;
+            case "node5":
+                return mainController.validator5tab;
+            case "node6":
+                return mainController.validator6tab;
+            case "node7":
+                return mainController.validator7tab;
+            default:
+                return null;
         }
     }
 }

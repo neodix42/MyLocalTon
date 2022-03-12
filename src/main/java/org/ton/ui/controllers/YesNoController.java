@@ -15,6 +15,7 @@ import org.ton.db.entities.WalletEntity;
 import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.main.App;
+import org.ton.settings.Node;
 import org.ton.utils.Utils;
 
 import java.net.URL;
@@ -25,6 +26,7 @@ import java.util.concurrent.Executors;
 import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.nonNull;
 import static org.ton.main.App.fxmlLoader;
+import static org.ton.main.App.mainController;
 
 @Slf4j
 public class YesNoController implements Initializable {
@@ -108,9 +110,26 @@ public class YesNoController implements Initializable {
                 log.debug("showmsg");
                 mainController.yesNoDialog.close();
                 break;
+            case "delnode":
+                log.debug("delnode");
+                mainController.yesNoDialog.close();
+                doDelete();
+                break;
             default:
                 log.debug("no action");
                 mainController.yesNoDialog.close();
+        }
+    }
+
+    private void doDelete() {
+        String nodeName = address.getText();
+        log.info("do delete {}", nodeName);
+        Node node = MyLocalTon.getInstance().getSettings().getNodeByName(nodeName);
+        if (node.nodeShutdownAndDelete()) {
+            mainController.validationTabs.getTabs().remove(mainController.getNodeTabByName(nodeName));
+            MyLocalTon.getInstance().getSettings().getActiveNodes().remove(nodeName);
+        } else {
+            App.mainController.showErrorMsg("Error deleting validator " + nodeName, 3);
         }
     }
 
