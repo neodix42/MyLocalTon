@@ -60,6 +60,7 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -1437,11 +1438,16 @@ public class MainController implements Initializable {
         validationTabs.getTabs().remove(validator6tab);
         validationTabs.getTabs().remove(validator7tab);
 
-        for (String nodeName : settings.getActiveNodes()) {
-            if (!nodeName.contains("genesis")) {
-                validationTabs.getTabs().add(getNodeTabByName(nodeName));
+        for (String n : Arrays.asList("node2", "node3", "node4", "node5", "node6", "node7")) {
+            if (settings.getActiveNodes().contains(n)) {
+                validationTabs.getTabs().add(getNodeTabByName(n));
             }
         }
+//        for (String nodeName : settings.getActiveNodes()) {
+//            if (!nodeName.contains("genesis")) {
+//                validationTabs.getTabs().add(getNodeTabByName(nodeName));
+//            }
+//        }
     }
 
     public Tab getNodeTabByName(String nodeName) {
@@ -1843,6 +1849,11 @@ public class MainController implements Initializable {
             // validator pages
             updateValidator1TabPage(v);
             updateValidator2TabPage(v);
+            updateValidator3TabPage(v);
+            updateValidator4TabPage(v);
+            updateValidator5TabPage(v);
+            updateValidator6TabPage(v);
+            updateValidator7TabPage(v);
 
         } catch (Exception e) {
             log.error("Error updating validation tab GUI! Error {}", e.getMessage());
@@ -1884,6 +1895,96 @@ public class MainController implements Initializable {
         nodeConsolePort2.setText(settings.getNode2().getConsolePort().toString());
         liteServerPort2.setText(settings.getNode2().getLiteServerPort().toString());
         nodeStatus2.setText(settings.getNode2().getStatus());
+    }
+
+    private void updateValidator3TabPage(ValidationParam v) {
+
+//        validator2AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
+//        validator2PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
+//        validator2PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+//
+//        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), settings.getNode2().getWalletAddress().getFullWalletAddress()));
+//        validator2AdnlAddressNext.setText(settings.getNode2().getValidationAndlKey());
+//        validator2PubKeyHexNext.setText(settings.getNode2().getValidationPubKeyHex());
+//        validator2PubKeyIntegerNext.setText(settings.getNode2().getValidationPubKeyInteger() + " (used in participants list)");
+//        validator2WalletAddress.setText(settings.getNode2().getWalletAddress().getFullWalletAddress());
+//        validator2WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+        nodePublicPort3.setText(settings.getNode3().getPublicPort().toString());
+        nodeConsolePort3.setText(settings.getNode3().getConsolePort().toString());
+        liteServerPort3.setText(settings.getNode3().getLiteServerPort().toString());
+        nodeStatus3.setText(settings.getNode3().getStatus());
+    }
+
+    private void updateValidator4TabPage(ValidationParam v) {
+
+//        validator2AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
+//        validator2PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
+//        validator2PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+//
+//        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), settings.getNode2().getWalletAddress().getFullWalletAddress()));
+//        validator2AdnlAddressNext.setText(settings.getNode2().getValidationAndlKey());
+//        validator2PubKeyHexNext.setText(settings.getNode2().getValidationPubKeyHex());
+//        validator2PubKeyIntegerNext.setText(settings.getNode2().getValidationPubKeyInteger() + " (used in participants list)");
+//        validator2WalletAddress.setText(settings.getNode2().getWalletAddress().getFullWalletAddress());
+//        validator2WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+        nodePublicPort4.setText(settings.getNode4().getPublicPort().toString());
+        nodeConsolePort4.setText(settings.getNode4().getConsolePort().toString());
+        liteServerPort4.setText(settings.getNode4().getLiteServerPort().toString());
+        nodeStatus4.setText(settings.getNode4().getStatus());
+    }
+
+    private void updateValidator5TabPage(ValidationParam v) {
+
+//        validator2AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
+//        validator2PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
+//        validator2PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+//
+//        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), settings.getNode2().getWalletAddress().getFullWalletAddress()));
+//        validator2AdnlAddressNext.setText(settings.getNode2().getValidationAndlKey());
+//        validator2PubKeyHexNext.setText(settings.getNode2().getValidationPubKeyHex());
+//        validator2PubKeyIntegerNext.setText(settings.getNode2().getValidationPubKeyInteger() + " (used in participants list)");
+//        validator2WalletAddress.setText(settings.getNode2().getWalletAddress().getFullWalletAddress());
+//        validator2WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+        nodePublicPort5.setText(settings.getNode5().getPublicPort().toString());
+        nodeConsolePort5.setText(settings.getNode5().getConsolePort().toString());
+        liteServerPort5.setText(settings.getNode5().getLiteServerPort().toString());
+        nodeStatus5.setText(settings.getNode5().getStatus());
+    }
+
+    private void updateValidator6TabPage(ValidationParam v) {
+
+//        validator2AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
+//        validator2PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
+//        validator2PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+//
+//        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), settings.getNode2().getWalletAddress().getFullWalletAddress()));
+//        validator2AdnlAddressNext.setText(settings.getNode2().getValidationAndlKey());
+//        validator2PubKeyHexNext.setText(settings.getNode2().getValidationPubKeyHex());
+//        validator2PubKeyIntegerNext.setText(settings.getNode2().getValidationPubKeyInteger() + " (used in participants list)");
+//        validator2WalletAddress.setText(settings.getNode2().getWalletAddress().getFullWalletAddress());
+//        validator2WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+        nodePublicPort6.setText(settings.getNode6().getPublicPort().toString());
+        nodeConsolePort6.setText(settings.getNode6().getConsolePort().toString());
+        liteServerPort6.setText(settings.getNode6().getLiteServerPort().toString());
+        nodeStatus6.setText(settings.getNode6().getStatus());
+    }
+
+    private void updateValidator7TabPage(ValidationParam v) {
+
+//        validator2AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
+//        validator2PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
+//        validator2PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+//
+//        AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), settings.getNode2().getWalletAddress().getFullWalletAddress()));
+//        validator2AdnlAddressNext.setText(settings.getNode2().getValidationAndlKey());
+//        validator2PubKeyHexNext.setText(settings.getNode2().getValidationPubKeyHex());
+//        validator2PubKeyIntegerNext.setText(settings.getNode2().getValidationPubKeyInteger() + " (used in participants list)");
+//        validator2WalletAddress.setText(settings.getNode2().getWalletAddress().getFullWalletAddress());
+//        validator2WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+        nodePublicPort7.setText(settings.getNode7().getPublicPort().toString());
+        nodeConsolePort7.setText(settings.getNode7().getConsolePort().toString());
+        liteServerPort7.setText(settings.getNode7().getLiteServerPort().toString());
+        nodeStatus7.setText(settings.getNode7().getStatus());
     }
 
     private void colorValidationTiming(ValidationParam v) {
@@ -2316,14 +2417,21 @@ public class MainController implements Initializable {
             org.ton.settings.Node node = null;
             try {
                 mainController.addValidatorBtn.setDisable(true);
+
                 node = Utils.getNewNode();
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
+                    App.mainController.showInfoMsg("Creating validator " + node.getNodeName() + ". You will be infored once it's finished.", 8);
 
                     //delete unfinished node creation
                     FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
 
                     MyLocalTon.getInstance().createFullnode(node, true, true);
+
+                    settings.getActiveNodes().add(node.getNodeName());
+                    MyLocalTon.getInstance().saveSettingsToGson();
+                    mainController.addValidatorBtn.setDisable(false);
+
                     Utils.waitForBlockchainReady(node);
                     Utils.waitForNodeSynchronized(node);
 
@@ -2332,10 +2440,9 @@ public class MainController implements Initializable {
                         validationTabs.getTabs().add(newTab);
                     });
 
-                    settings.getActiveNodes().add(node.getNodeName());
-                    MyLocalTon.getInstance().saveSettingsToGson();
 
-                    App.mainController.showInfoMsg("Validator " + node.getNodeName() + " has been created successfully", 5);
+                    App.mainController.showInfoMsg("Validator " + node.getNodeName() + " has been successfully created", 5);
+                    showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created and synchronized. Once elections will be opened it will participate in them.");
                 } else {
                     showDialogMessage("The limit has been reached", "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");
                 }

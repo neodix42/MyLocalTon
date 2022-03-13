@@ -41,7 +41,7 @@ public class ValidatorEngine {
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
                 "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
-                "-t", "1",
+                "-t", "4",
                 "-C", myGlobalConfig,
                 "--db", node.getTonDbDir(),
                 "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
@@ -61,7 +61,7 @@ public class ValidatorEngine {
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
                 "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
-                "-t", "1",
+                "-t", "4",
                 "-C", myGlobalConfig,
                 "--db", node.getTonDbDir(),
                 "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),

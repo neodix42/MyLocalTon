@@ -668,68 +668,57 @@ public class Utils {
 
     public static Node getNewNode() {
         MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
-        int size = settings.getActiveNodes().size();
-        switch (size) {
-            case 0:
-                return settings.getGenesisNode();
-            case 1:
-                return settings.getNode2();
-            case 2:
-                return settings.getNode3();
-            case 3:
-                return settings.getNode4();
-            case 4:
-                return settings.getNode5();
-            case 5:
-                return settings.getNode6();
-            case 6:
-                return settings.getNode7();
-            default:
-                return null;
+
+        for (String n : Arrays.asList("genesis", "node2", "node3", "node4", "node5", "node6", "node7")) {
+            if (!settings.getActiveNodes().contains(n)) {
+                switch (n) {
+                    case "genesis":
+                        return settings.getGenesisNode();
+                    case "node2":
+                        return settings.getNode2();
+                    case "node3":
+                        return settings.getNode3();
+                    case "node4":
+                        return settings.getNode4();
+                    case "node5":
+                        return settings.getNode5();
+                    case "node6":
+                        return settings.getNode6();
+                    case "node7":
+                        return settings.getNode7();
+                    default:
+                        return null;
+                }
+            }
         }
+        return null;
     }
 
     public static Tab getNewNodeTab() {
         MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
-        int size = settings.getActiveNodes().size();
-        switch (size) {
-            case 0:
-                return mainController.genesisnode1;
-            case 1:
-                return mainController.validator2tab;
-            case 2:
-                return mainController.validator3tab;
-            case 3:
-                return mainController.validator4tab;
-            case 4:
-                return mainController.validator5tab;
-            case 5:
-                return mainController.validator6tab;
-            case 6:
-                return mainController.validator7tab;
-            default:
-                return null;
-        }
-    }
 
-    public static Tab getNodeTabByName(String nodeName) {
-        switch (nodeName) {
-            case "genesis":
-                return mainController.genesisnode1;
-            case "node2":
-                return mainController.validator2tab;
-            case "node3":
-                return mainController.validator3tab;
-            case "node4":
-                return mainController.validator4tab;
-            case "node5":
-                return mainController.validator5tab;
-            case "node6":
-                return mainController.validator6tab;
-            case "node7":
-                return mainController.validator7tab;
-            default:
-                return null;
+        for (String n : Arrays.asList("genesis", "node2", "node3", "node4", "node5", "node6", "node7")) {
+            if (!settings.getActiveNodes().contains(n)) {
+                switch (n) {
+                    case "genesis":
+                        return mainController.genesisnode1;
+                    case "node2":
+                        return mainController.validator2tab;
+                    case "node3":
+                        return mainController.validator3tab;
+                    case "node4":
+                        return mainController.validator4tab;
+                    case "node5":
+                        return mainController.validator5tab;
+                    case "node6":
+                        return mainController.validator6tab;
+                    case "node7":
+                        return mainController.validator7tab;
+                    default:
+                        return null;
+                }
+            }
         }
+        return null;
     }
 }

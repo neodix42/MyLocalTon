@@ -1599,12 +1599,15 @@ public class MyLocalTon {
         validatorEngine.initFullnode(node, settings.getGenesisNode().getNodeGlobalConfigLocation());
         //Process validatorGenesisProcess = createGenesisValidator(node, node.getNodeGlobalConfigLocation()); // actually done in participate()
 
-        //work around for window
+        //work around for windows
         if (!node.getNodeName().contains("genesis")) {
             //copy static/*
             Files.copy(Paths.get(settings.getGenesisNode().getTonDbStaticDir() + settings.getZeroStateFileHashHex()), Paths.get(node.getTonDbStaticDir() + settings.getZeroStateFileHashHex()), StandardCopyOption.REPLACE_EXISTING);
             Files.copy(Paths.get(settings.getGenesisNode().getTonDbStaticDir() + settings.getBaseStateFileHashHex()), Paths.get(node.getTonDbStaticDir() + settings.getBaseStateFileHashHex()), StandardCopyOption.REPLACE_EXISTING);
         }
+
+        // TODO speed up sync process
+        // copy archive, catchain, files and celldb directories
 
         Thread.sleep(2000);
 
