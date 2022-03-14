@@ -48,10 +48,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.security.CodeSource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -331,6 +328,12 @@ public class Utils {
                     //double knockout
                     log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
                     rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+
+                    MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+                    for (String nodeName : settings.getActiveNodes()) {
+                        Node node = settings.getNodeByName(nodeName);
+                        rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + node.getNodeProcess().pid());
+                    }
 
                     // triple knockout
                     String resultInput = "";
@@ -724,6 +727,48 @@ public class Utils {
         return null;
     }
 
+    public static Tab getNodeTabByName(String nodeName) {
+        switch (nodeName) {
+            case "genesis":
+                return mainController.genesisnode1;
+            case "node2":
+                return mainController.validator2tab;
+            case "node3":
+                return mainController.validator3tab;
+            case "node4":
+                return mainController.validator4tab;
+            case "node5":
+                return mainController.validator5tab;
+            case "node6":
+                return mainController.validator6tab;
+            case "node7":
+                return mainController.validator7tab;
+            default:
+                return mainController.genesisnode1;
+        }
+    }
+
+    public static Label getNodeStatusLabelByName(String nodeName) {
+        switch (nodeName) {
+            case "genesis":
+                return mainController.nodeStatus1;
+            case "node2":
+                return mainController.nodeStatus2;
+            case "node3":
+                return mainController.nodeStatus3;
+            case "node4":
+                return mainController.nodeStatus4;
+            case "node5":
+                return mainController.nodeStatus5;
+            case "node6":
+                return mainController.nodeStatus6;
+            case "node7":
+                return mainController.nodeStatus7;
+            default:
+                return mainController.nodeStatus1;
+        }
+    }
+
     public static void showNodeStatus(Node node, Label nodeStatusLabel, Tab tab) {
 
         if (node.getStatus().contains("not ready")) {
@@ -741,6 +786,24 @@ public class Utils {
                 nodeStatusLabel.setTextFill(Color.FORESTGREEN);
                 tab.setStyle("-fx-background-color: forestgreen;");
             }
+        }
+    }
+
+    public static void copyDirectory(String src, String dest) {
+        Path srcDir = Paths.get(src);
+        try {
+            Files.walk(srcDir)
+                    .forEach(sourcePath -> {
+                        try {
+                            Path targetPath = Paths.get(dest).resolve(srcDir.relativize(sourcePath));
+                            log.debug("Copying {}} to {}", sourcePath, targetPath);
+                            Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                        } catch (IOException ex) {
+                            log.error("I/O error: {}", ex.getMessage());
+                        }
+                    });
+        } catch (Exception e) {
+            log.error("cannot copy directory");
         }
     }
 }

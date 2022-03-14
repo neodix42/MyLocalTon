@@ -2420,11 +2420,10 @@ public class MainController implements Initializable {
 
         newNodeExecutorService.execute(() -> {
             Thread.currentThread().setName("MyLocalTon - Creating validator");
-            org.ton.settings.Node node = null;
             try {
                 mainController.addValidatorBtn.setDisable(true);
 
-                node = Utils.getNewNode();
+                org.ton.settings.Node node = Utils.getNewNode();
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
                     //App.mainController.showInfoMsg("Creating validator " + node.getNodeName() + ". You will be infored once it's finished.", 8);

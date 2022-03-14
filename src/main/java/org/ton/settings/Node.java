@@ -1,6 +1,7 @@
 package org.ton.settings;
 
 import org.apache.commons.io.FileUtils;
+import org.jutils.jprocesses.JProcesses;
 import org.ton.utils.Extractor;
 import org.ton.wallet.WalletAddress;
 
@@ -72,7 +73,6 @@ public interface Node {
         return getTonBinDir() + "smartcont" + File.separator + "validator-keys-1.pub";
     }
 
-
     default void extractBinaries() throws IOException {
         new Extractor(this.getNodeName());
     }
@@ -84,9 +84,9 @@ public interface Node {
     default boolean nodeShutdownAndDelete() {
 
         String nodeName = this.getNodeName();
-        long nodePid = 0;
+        int nodePid = 0;
         if (nonNull(this.getNodeProcess())) {
-            nodePid = this.getNodeProcess().pid();
+            nodePid = (int) this.getNodeProcess().pid();
         }
 
         System.out.println("nodeShutdown " + nodeName + ", process " + nodePid);
@@ -94,6 +94,9 @@ public interface Node {
         try {
             if (isWindows()) {
                 Runtime.getRuntime().exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + nodePid);
+                Thread.sleep(1000);
+                System.out.println("validator-engine with pid " + nodePid + " killed " + JProcesses.killProcess(nodePid).isSuccess());
+                Thread.sleep(1000);
             } else {
                 Runtime.getRuntime().exec("kill -2 " + nodePid);
             }
@@ -109,21 +112,34 @@ public interface Node {
         }
     }
 
-//    String getTonDbDir();
-//
-//    String getTonBinDir();
-//
-//    String getTonLogDir();
+    default boolean nodeShutdown() {
 
-//    String getTonDbKeyringDir();
-//
-//    String getTonDbStaticDir();
-//
-//    String getDhtServerDir();
-//
-//    String getDhtServerKeyringDir();
-//
-//    String getTonCertsDir();
+        String nodeName = this.getNodeName();
+        int nodePid = 0;
+        if (nonNull(this.getNodeProcess())) {
+            nodePid = (int) this.getNodeProcess().pid();
+        }
+
+        System.out.println("nodeShutdown " + nodeName + ", process " + nodePid);
+
+        try {
+            if (isWindows()) {
+                Runtime.getRuntime().exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + nodePid);
+                Thread.sleep(1000);
+                System.out.println("validator-engine with pid " + nodePid + " killed " + JProcesses.killProcess(nodePid).isSuccess());
+                Thread.sleep(1000);
+            } else {
+                Runtime.getRuntime().exec("kill -2 " + nodePid);
+            }
+            System.out.println("validator-engine with pid " + nodePid + " killed");
+
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("cannot shutdown node " + nodeName + ". Error " + e.getMessage());
+            return false;
+        }
+    }
 
     String getPublicIp();
 
@@ -169,8 +185,6 @@ public interface Node {
 
     void setValidationPubKeyAndAdnlCreated(Boolean pubKeyAndAdnlCreated);
 
-    Boolean getValidationPubKeyAndAdnlCreated();
-
     String getValidatorPrvKeyHex();
 
     String getValidatorPrvKeyBase64();
@@ -215,8 +229,6 @@ public interface Node {
 
     String getValidatorAdnlAddrHex();
 
-    //String getValidatorKeyPubLocation();
-
     String getNodeGlobalConfigLocation();
 
     void setNodeGlobalConfigLocation(String nodeLocalConfigLocation);
@@ -229,10 +241,6 @@ public interface Node {
 
     void setNodeForkedGlobalConfigLocation(String nodeForkedGlobalConfigLocation);
 
-//    void extractBinaries() throws IOException;
-//
-//    String getGenesisGenZeroStateFifLocation();
-
     void setValidationSigningKey(String validationSigningKey);
 
     void setValidationSigningPubKey(String validationSigningPubKey);
@@ -244,5 +252,4 @@ public interface Node {
     String getValidationSigningPubKey();
 
     String getValidationAndlKey();
-
 }

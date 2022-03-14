@@ -74,6 +74,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -154,32 +155,34 @@ public class MyLocalTon {
     }
 
     public void runNodesMonitor() {
-        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
-            Thread.currentThread().setName("MyLocalTon - Nodes Monitor");
-            try {
-                for (String nodeName : settings.getActiveNodes()) {
-                    Node node = settings.getNodeByName(nodeName);
-                    ResultLastBlock lastBlock = LiteClientParser.parseLast(new LiteClient(LiteClientEnum.LOCAL).executeLast(node));
-                    if (isNull(lastBlock)) {
-                        node.setStatus("not ready");
-                        log.info("{} is not ready", nodeName);
-                    } else {
-                        node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
-                        log.info("{} is out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
-                    }
-                }
-                Platform.runLater(() -> {
-                    Utils.showNodeStatus(settings.getGenesisNode(), mainController.nodeStatus1, mainController.genesisnode1);
-                    Utils.showNodeStatus(settings.getNode2(), mainController.nodeStatus2, mainController.validator2tab);
-                    Utils.showNodeStatus(settings.getNode3(), mainController.nodeStatus3, mainController.validator3tab);
-                    Utils.showNodeStatus(settings.getNode4(), mainController.nodeStatus4, mainController.validator4tab);
-                    Utils.showNodeStatus(settings.getNode5(), mainController.nodeStatus5, mainController.validator5tab);
-                    Utils.showNodeStatus(settings.getNode6(), mainController.nodeStatus6, mainController.validator6tab);
-                    Utils.showNodeStatus(settings.getNode7(), mainController.nodeStatus7, mainController.validator7tab);
-                });
 
-            } catch (Exception e) {
-                log.error("Error in runNodesMonitor(), " + e.getMessage());
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            Thread.currentThread().setName("MyLocalTon - Nodes Monitor");
+
+            for (String nodeName : settings.getActiveNodes()) {
+
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    Thread.currentThread().setName("MyLocalTon - " + nodeName + " Monitor");
+                    try {
+
+                        Node node = settings.getNodeByName(nodeName);
+                        ResultLastBlock lastBlock = LiteClientParser.parseLast(new LiteClient(LiteClientEnum.LOCAL).executeLast(node));
+                        if (isNull(lastBlock)) {
+                            node.setStatus("not ready");
+                            log.info("{} is not ready", nodeName);
+                        } else {
+                            node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
+                            log.info("{} is out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
+                        }
+
+                        Platform.runLater(() -> {
+                            Utils.showNodeStatus(settings.getNodeByName(nodeName), Utils.getNodeStatusLabelByName(nodeName), Utils.getNodeTabByName(nodeName));
+                        });
+
+                    } catch (Exception e) {
+                        log.error("Error in runNodesMonitor(), " + e.getMessage());
+                    }
+                });
             }
         }, 0L, 15L, TimeUnit.SECONDS);
     }
@@ -1607,17 +1610,45 @@ public class MyLocalTon {
         ValidatorEngine validatorEngine = new ValidatorEngine();
         validatorEngine.generateValidatorKeys(node, false);
         validatorEngine.initFullnode(node, settings.getGenesisNode().getNodeGlobalConfigLocation());
-        //Process validatorGenesisProcess = createGenesisValidator(node, node.getNodeGlobalConfigLocation()); // actually done in participate()
 
-        //work around for windows
         if (!node.getNodeName().contains("genesis")) {
-            // speed up synchronization - copy archive, catchains, files, state and celldb directories
-            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
-            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbArchiveDir()), new File(node.getTonDbArchiveDir()));
-            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCatchainsDir()), new File(node.getTonDbCatchainsDir()));
-            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCellDbDir()), new File(node.getTonDbCellDbDir()));
-            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbFilesDir()), new File(node.getTonDbFilesDir()));
-            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStateDir()), new File(node.getTonDbStateDir()));
+            if (isWindows()) {
+//                log.info("shutting down genesis node...");
+//                settings.getGenesisNode().nodeShutdown();
+
+                //FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
+
+                Utils.copyDirectory(settings.getGenesisNode().getTonDbStaticDir(), node.getTonDbStaticDir());
+
+//                Utils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir());
+//                Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir());
+//                Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir());
+//                Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
+
+                //Utils.copyDirectory(settings.getGenesisNode().getTonDbStateDir(), node.getTonDbStateDir());
+
+//                // speed up synchronization - copy archive, catchains, files, state and celldb directories
+
+//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
+//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbArchiveDir()), new File(node.getTonDbArchiveDir()));
+//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCatchainsDir()), new File(node.getTonDbCatchainsDir()));
+//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCellDbDir()), new File(node.getTonDbCellDbDir()));
+//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbFilesDir()), new File(node.getTonDbFilesDir()));
+//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStateDir()), new File(node.getTonDbStateDir()));
+
+//                log.info("launching genesis node...");
+//                validatorEngine.startValidator(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation());
+//                Utils.waitForBlockchainReady(settings.getGenesisNode());
+//                Utils.waitForNodeSynchronized(settings.getGenesisNode());
+            } else {
+                // speed up synchronization - copy archive, catchains, files, state and celldb directories
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbArchiveDir()), new File(node.getTonDbArchiveDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCatchainsDir()), new File(node.getTonDbCatchainsDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCellDbDir()), new File(node.getTonDbCellDbDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbFilesDir()), new File(node.getTonDbFilesDir()));
+                //FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStateDir()), new File(node.getTonDbStateDir()));
+            }
         }
 
         if (enableLiteServer) {
