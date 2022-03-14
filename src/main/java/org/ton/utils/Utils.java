@@ -315,7 +315,7 @@ public class Utils {
                 FileUtils.deleteQuietly(Main.file);
                 log.info("Destroying external processes...");
 
-                MyLocalTon.getInstance().getDhtServerProcess().destroy();
+                MyLocalTon.getInstance().getDhtServerProcess().destroy(); // TODO check the order
 
                 Thread.sleep(1000);
 
@@ -799,11 +799,29 @@ public class Utils {
                             log.debug("Copying {}} to {}", sourcePath, targetPath);
                             Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
                         } catch (IOException ex) {
-                            log.error("I/O error: {}", ex.getMessage());
+                            log.warn("I/O error: {}", ex.getMessage());
                         }
                     });
         } catch (Exception e) {
-            log.error("cannot copy directory");
+            log.warn("cannot copy directory {}", src);
+        }
+    }
+
+    public static void syncWithGenesis() throws IOException {
+
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+        for (String nodeName : settings.getActiveNodes()) {
+            if (!nodeName.contains("genesis")) {
+                log.info("synchronizing {}", nodeName);
+                Node node = settings.getNodeByName(nodeName);
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbArchiveDir()), new File(node.getTonDbArchiveDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCatchainsDir()), new File(node.getTonDbCatchainsDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCellDbDir()), new File(node.getTonDbCellDbDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbFilesDir()), new File(node.getTonDbFilesDir()));
+                //FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStateDir()), new File(node.getTonDbStateDir()));
+            }
         }
     }
 }

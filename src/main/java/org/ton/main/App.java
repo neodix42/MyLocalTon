@@ -113,6 +113,9 @@ public class App extends Application {
         //ResultLastBlock newBlock = myLocalTon.generateNewBlock(genesisNode, forkFromBlock, "");
         //myLocalTon.addHardForkEntryIntoMyGlobalConfig(genesisNode, genesisNode.getNodeGlobalConfigLocation(), newBlock);
 
+        //before starting genesis node - let's synchronize all other nodes with it, by copying content in offline mode
+        //Utils.syncWithGenesis();
+
         ValidatorEngine validatorEngine = new ValidatorEngine();
         myLocalTon.setGenesisValidatorProcess(validatorEngine.startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation()));
 
@@ -135,7 +138,8 @@ public class App extends Application {
         mainController.showSuccessMsg("TON blockchain is ready!", 2);
         Thread.sleep(3000);
 
-        myLocalTon.createPreInstalledWallets(genesisNode);
+        // TODO
+        // myLocalTon.createPreInstalledWallets(genesisNode);
 
         myLocalTon.runBlockchainExplorer();
 

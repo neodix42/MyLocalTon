@@ -1613,28 +1613,23 @@ public class MyLocalTon {
 
         if (!node.getNodeName().contains("genesis")) {
             if (isWindows()) {
+                // on windows locked files cannot be copied. As an option, we can shut down genesis node, copy the files and start it again.
+                // but there is a connection issue with this on Windows
 //                log.info("shutting down genesis node...");
 //                settings.getGenesisNode().nodeShutdown();
 
-                //FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
+                // if we copy only db/static dir, it works, but requires full synchronization that takes long time,
+                // in comparison to linux systems where copy of all directories makes almost instant synchronization
 
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbStaticDir(), node.getTonDbStaticDir());
+//              copy ignoring locked files
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
+                Utils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir()); // if only this dir, then fails with "Check `ptr && "deferencing null Ref"` failed"
+                Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
+                Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
+                //Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
 
-//                Utils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir());
-//                Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir());
-//                Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir());
-//                Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
-
-                //Utils.copyDirectory(settings.getGenesisNode().getTonDbStateDir(), node.getTonDbStateDir());
-
-//                // speed up synchronization - copy archive, catchains, files, state and celldb directories
-
-//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
-//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbArchiveDir()), new File(node.getTonDbArchiveDir()));
-//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCatchainsDir()), new File(node.getTonDbCatchainsDir()));
-//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCellDbDir()), new File(node.getTonDbCellDbDir()));
-//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbFilesDir()), new File(node.getTonDbFilesDir()));
-//                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStateDir()), new File(node.getTonDbStateDir()));
+//
+//                Utils.copyDirectory(settings.getGenesisNode().getTonDbStateDir(), node.getTonDbStateDir());
 
 //                log.info("launching genesis node...");
 //                validatorEngine.startValidator(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation());

@@ -94,9 +94,9 @@ public interface Node {
         try {
             if (isWindows()) {
                 Runtime.getRuntime().exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + nodePid);
-                Thread.sleep(1000);
+                Thread.sleep(2000);
                 System.out.println("validator-engine with pid " + nodePid + " killed " + JProcesses.killProcess(nodePid).isSuccess());
-                Thread.sleep(1000);
+                Thread.sleep(2000);
             } else {
                 Runtime.getRuntime().exec("kill -2 " + nodePid);
             }
