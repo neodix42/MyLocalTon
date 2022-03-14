@@ -723,6 +723,12 @@ public class MainController implements Initializable {
     public JFXButton deleteValidatorBtn7;
 
     @FXML
+    public Label validator4PubKeyHex;
+
+    @FXML
+    public Label validator4PubKeyInteger;
+
+    @FXML
     JFXCheckBox shardStateCheckbox;
 
     @FXML
@@ -1876,7 +1882,7 @@ public class MainController implements Initializable {
         nodePublicPort1.setText(settings.getGenesisNode().getPublicPort().toString());
         nodeConsolePort1.setText(settings.getGenesisNode().getConsolePort().toString());
         liteServerPort1.setText(settings.getGenesisNode().getLiteServerPort().toString());
-        nodeStatus1.setText(settings.getGenesisNode().getStatus());
+//        nodeStatus1.setText(settings.getGenesisNode().getStatus());
     }
 
     private void updateValidator2TabPage(ValidationParam v) {
@@ -1894,7 +1900,7 @@ public class MainController implements Initializable {
         nodePublicPort2.setText(settings.getNode2().getPublicPort().toString());
         nodeConsolePort2.setText(settings.getNode2().getConsolePort().toString());
         liteServerPort2.setText(settings.getNode2().getLiteServerPort().toString());
-        nodeStatus2.setText(settings.getNode2().getStatus());
+//        nodeStatus2.setText(settings.getNode2().getStatus());
     }
 
     private void updateValidator3TabPage(ValidationParam v) {
@@ -1912,7 +1918,7 @@ public class MainController implements Initializable {
         nodePublicPort3.setText(settings.getNode3().getPublicPort().toString());
         nodeConsolePort3.setText(settings.getNode3().getConsolePort().toString());
         liteServerPort3.setText(settings.getNode3().getLiteServerPort().toString());
-        nodeStatus3.setText(settings.getNode3().getStatus());
+//        nodeStatus3.setText(settings.getNode3().getStatus());
     }
 
     private void updateValidator4TabPage(ValidationParam v) {
@@ -1930,7 +1936,7 @@ public class MainController implements Initializable {
         nodePublicPort4.setText(settings.getNode4().getPublicPort().toString());
         nodeConsolePort4.setText(settings.getNode4().getConsolePort().toString());
         liteServerPort4.setText(settings.getNode4().getLiteServerPort().toString());
-        nodeStatus4.setText(settings.getNode4().getStatus());
+//        nodeStatus4.setText(settings.getNode4().getStatus());
     }
 
     private void updateValidator5TabPage(ValidationParam v) {
@@ -1948,7 +1954,7 @@ public class MainController implements Initializable {
         nodePublicPort5.setText(settings.getNode5().getPublicPort().toString());
         nodeConsolePort5.setText(settings.getNode5().getConsolePort().toString());
         liteServerPort5.setText(settings.getNode5().getLiteServerPort().toString());
-        nodeStatus5.setText(settings.getNode5().getStatus());
+//        nodeStatus5.setText(settings.getNode5().getStatus());
     }
 
     private void updateValidator6TabPage(ValidationParam v) {
@@ -1966,7 +1972,7 @@ public class MainController implements Initializable {
         nodePublicPort6.setText(settings.getNode6().getPublicPort().toString());
         nodeConsolePort6.setText(settings.getNode6().getConsolePort().toString());
         liteServerPort6.setText(settings.getNode6().getLiteServerPort().toString());
-        nodeStatus6.setText(settings.getNode6().getStatus());
+//        nodeStatus6.setText(settings.getNode6().getStatus());
     }
 
     private void updateValidator7TabPage(ValidationParam v) {
@@ -1984,7 +1990,7 @@ public class MainController implements Initializable {
         nodePublicPort7.setText(settings.getNode7().getPublicPort().toString());
         nodeConsolePort7.setText(settings.getNode7().getConsolePort().toString());
         liteServerPort7.setText(settings.getNode7().getLiteServerPort().toString());
-        nodeStatus7.setText(settings.getNode7().getStatus());
+//        nodeStatus7.setText(settings.getNode7().getStatus());
     }
 
     private void colorValidationTiming(ValidationParam v) {
@@ -2421,28 +2427,26 @@ public class MainController implements Initializable {
                 node = Utils.getNewNode();
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
-                    App.mainController.showInfoMsg("Creating validator " + node.getNodeName() + ". You will be infored once it's finished.", 8);
+                    //App.mainController.showInfoMsg("Creating validator " + node.getNodeName() + ". You will be infored once it's finished.", 8);
 
                     //delete unfinished node creation
                     FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
 
                     MyLocalTon.getInstance().createFullnode(node, true, true);
 
-                    settings.getActiveNodes().add(node.getNodeName());
-                    MyLocalTon.getInstance().saveSettingsToGson();
-                    mainController.addValidatorBtn.setDisable(false);
-
-                    Utils.waitForBlockchainReady(node);
-                    Utils.waitForNodeSynchronized(node);
-
                     Tab newTab = Utils.getNewNodeTab();
                     Platform.runLater(() -> {
                         validationTabs.getTabs().add(newTab);
                     });
 
+                    settings.getActiveNodes().add(node.getNodeName());
+                    MyLocalTon.getInstance().saveSettingsToGson();
+                    mainController.addValidatorBtn.setDisable(false);
 
-                    App.mainController.showInfoMsg("Validator " + node.getNodeName() + " has been successfully created", 5);
-                    showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created and synchronized. Once elections will be opened it will participate in them.");
+                    // status of all nodes reported back from the thread "Node Monitor" and shown on a corresponding tab
+
+                    //App.mainController.showInfoMsg("Validator " + node.getNodeName() + " has been successfully created", 5);
+                    showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created, now synchronizing. Once elections will be opened it will take part in them.");
                 } else {
                     showDialogMessage("The limit has been reached", "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");
                 }

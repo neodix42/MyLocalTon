@@ -169,6 +169,16 @@ public class MyLocalTon {
                         log.info("{} is out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
                     }
                 }
+                Platform.runLater(() -> {
+                    Utils.showNodeStatus(settings.getGenesisNode(), mainController.nodeStatus1, mainController.genesisnode1);
+                    Utils.showNodeStatus(settings.getNode2(), mainController.nodeStatus2, mainController.validator2tab);
+                    Utils.showNodeStatus(settings.getNode3(), mainController.nodeStatus3, mainController.validator3tab);
+                    Utils.showNodeStatus(settings.getNode4(), mainController.nodeStatus4, mainController.validator4tab);
+                    Utils.showNodeStatus(settings.getNode5(), mainController.nodeStatus5, mainController.validator5tab);
+                    Utils.showNodeStatus(settings.getNode6(), mainController.nodeStatus6, mainController.validator6tab);
+                    Utils.showNodeStatus(settings.getNode7(), mainController.nodeStatus7, mainController.validator7tab);
+                });
+
             } catch (Exception e) {
                 log.error("Error in runNodesMonitor(), " + e.getMessage());
             }
@@ -827,7 +837,8 @@ public class MyLocalTon {
         }
     }
 
-    private void showInGuiOnlyUniqueTxs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails, MainController c, TxEntity txE, javafx.scene.Node txRow) {
+    private void showInGuiOnlyUniqueTxs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails, MainController c, TxEntity txE, javafx.scene.Node
+            txRow) {
         String uniqueKey = lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg() + txE.getTxHash();
         log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
         if (isNull(concurrentTxsHashMap.get(uniqueKey))) {

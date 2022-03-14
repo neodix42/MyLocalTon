@@ -5,7 +5,9 @@ import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
+import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -720,5 +722,25 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    public static void showNodeStatus(Node node, Label nodeStatusLabel, Tab tab) {
+
+        if (node.getStatus().contains("not ready")) {
+            nodeStatusLabel.setText(node.getStatus());
+            nodeStatusLabel.setTextFill(Color.FIREBRICK);
+            tab.setStyle("-fx-background-color: firebrick;");
+        } else if (node.getStatus().matches(".*\\d.*")) {
+            nodeStatusLabel.setText(node.getStatus());
+            int seconds = Integer.parseInt(node.getStatus().replaceAll("[^0-9]", ""));
+            if (seconds > 10) {
+                nodeStatusLabel.setTextFill(Color.DARKORANGE);
+                tab.setStyle("-fx-background-color: darkorange;");
+            } else {
+                nodeStatusLabel.setText("ready");
+                nodeStatusLabel.setTextFill(Color.FORESTGREEN);
+                tab.setStyle("-fx-background-color: forestgreen;");
+            }
+        }
     }
 }
