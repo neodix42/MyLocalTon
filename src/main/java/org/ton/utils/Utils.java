@@ -799,7 +799,7 @@ public class Utils {
                             log.debug("Copying {}} to {}", sourcePath, targetPath);
                             Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
                         } catch (IOException ex) {
-                            log.warn("I/O error: {}", ex.getMessage());
+                            log.debug("I/O error: {}", ex.getMessage());
                         }
                     });
         } catch (Exception e) {

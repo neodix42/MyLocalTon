@@ -2426,12 +2426,17 @@ public class MainController implements Initializable {
                 org.ton.settings.Node node = Utils.getNewNode();
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
-                    //App.mainController.showInfoMsg("Creating validator " + node.getNodeName() + ". You will be infored once it's finished.", 8);
+                    App.mainController.showInfoMsg("Creating validator " + node.getNodeName() + ". You will be informed once it's finished.", 8);
 
                     //delete unfinished node creation
                     FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
 
                     MyLocalTon.getInstance().createFullnode(node, true, true);
+
+                    if (isWindows()) {
+                        Utils.waitForBlockchainReady(node);
+                        Utils.waitForNodeSynchronized(node);
+                    }
 
                     Tab newTab = Utils.getNewNodeTab();
                     Platform.runLater(() -> {
@@ -2442,7 +2447,7 @@ public class MainController implements Initializable {
                     MyLocalTon.getInstance().saveSettingsToGson();
                     mainController.addValidatorBtn.setDisable(false);
 
-                    // status of all nodes reported back from the thread "Node Monitor" and shown on a corresponding tab
+                    // FYI. Status of all nodes reported back from the thread "Node Monitor" and shown on a corresponding tab
 
                     //App.mainController.showInfoMsg("Validator " + node.getNodeName() + " has been successfully created", 5);
                     showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created, now synchronizing. Once elections will be opened it will take part in them.");

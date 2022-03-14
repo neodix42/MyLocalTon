@@ -125,9 +125,9 @@ public class YesNoController implements Initializable {
         String nodeName = address.getText();
         log.info("do delete {}", nodeName);
         Node node = MyLocalTon.getInstance().getSettings().getNodeByName(nodeName);
+        MyLocalTon.getInstance().getSettings().getActiveNodes().remove(nodeName);
         if (node.nodeShutdownAndDelete()) {
             mainController.validationTabs.getTabs().remove(mainController.getNodeTabByName(nodeName));
-            MyLocalTon.getInstance().getSettings().getActiveNodes().remove(nodeName);
         } else {
             App.mainController.showErrorMsg("Error deleting validator " + nodeName, 3);
         }

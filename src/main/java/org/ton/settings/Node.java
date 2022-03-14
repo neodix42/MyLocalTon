@@ -93,11 +93,18 @@ public interface Node {
 
         try {
             if (isWindows()) {
+                //kill all lite-client processes of the particular node
+                Runtime.getRuntime().exec("WMIC PROCESS WHERE \"COMMANDLINE LIKE '%" + nodeName + "%lite-client%'\" CALL TERMINATE");
+                Thread.sleep(1000);
+                Runtime.getRuntime().exec("WMIC PROCESS WHERE \"COMMANDLINE LIKE '%" + nodeName + "%lite-client%'\" CALL TERMINATE");
+
                 Runtime.getRuntime().exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + nodePid);
                 Thread.sleep(2000);
                 System.out.println("validator-engine with pid " + nodePid + " killed " + JProcesses.killProcess(nodePid).isSuccess());
                 Thread.sleep(2000);
             } else {
+                // kill all lite-client processes of the particular node
+                //Runtime.getRuntime().exec("killall -9 " + "lite-client"); // TODO
                 Runtime.getRuntime().exec("kill -2 " + nodePid);
             }
             System.out.println("validator-engine with pid " + nodePid + " killed");
