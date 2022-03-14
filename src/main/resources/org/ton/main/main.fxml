@@ -1156,7 +1156,7 @@
 
                                 <Label prefHeight="28.0" text="MyLocalTon log level" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                                 <JFXComboBox fx:id="myLogLevel" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                                <Label prefHeight="28.0" text="Genesis node log level" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                <Label prefHeight="28.0" text="Node log level" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
                                 <JFXComboBox fx:id="tonLogLevel" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                             </GridPane>
                         </Tab>

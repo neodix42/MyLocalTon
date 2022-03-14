@@ -64,7 +64,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -1612,15 +1611,14 @@ public class MyLocalTon {
 
         //work around for windows
         if (!node.getNodeName().contains("genesis")) {
-            //copy static/*
-            Files.copy(Paths.get(settings.getGenesisNode().getTonDbStaticDir() + settings.getZeroStateFileHashHex()), Paths.get(node.getTonDbStaticDir() + settings.getZeroStateFileHashHex()), StandardCopyOption.REPLACE_EXISTING);
-            Files.copy(Paths.get(settings.getGenesisNode().getTonDbStaticDir() + settings.getBaseStateFileHashHex()), Paths.get(node.getTonDbStaticDir() + settings.getBaseStateFileHashHex()), StandardCopyOption.REPLACE_EXISTING);
+            // speed up synchronization - copy archive, catchains, files, state and celldb directories
+            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
+            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbArchiveDir()), new File(node.getTonDbArchiveDir()));
+            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCatchainsDir()), new File(node.getTonDbCatchainsDir()));
+            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCellDbDir()), new File(node.getTonDbCellDbDir()));
+            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbFilesDir()), new File(node.getTonDbFilesDir()));
+            FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStateDir()), new File(node.getTonDbStateDir()));
         }
-
-        // TODO speed up sync process
-        // copy archive, catchain, files and celldb directories
-
-        Thread.sleep(2000);
 
         if (enableLiteServer) {
             validatorEngine.enableLiteServer(node, node.getNodeGlobalConfigLocation(), false);
@@ -1630,217 +1628,4 @@ public class MyLocalTon {
             validatorEngine.startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
         }
     }
-
-/*
-        public void elections(Node genesisNode, Node node2, Node node3, Node node4, Node node5, Node node6) throws Exception {
-            if (settings.getInitiallyElected()) {
-                log.info("All four full nodes are validators, skipping elections.");
-            } else {
-                log.info("ELECTIONS STARTED");
-                String stdout = new LiteClientExecutor().executeGetElections(genesisNode);
-                log.debug(stdout);
-                ResultConfig15 config15 = LiteClientParser.parseConfig15(stdout);
-                log.info("elections {}", config15);
-                //(validatorsElectedFor=3600, electionsStartBefore=180, electionsEndBefore=600, stakeHeldFor=900)
-
-                stdout = new LiteClientExecutor().executeGetCurrentValidators(genesisNode);
-                log.debug(stdout);
-                // cur_validators:(validators_ext utime_since:1618912225 utime_until:1618914225 total:1 main:1 total_weight:10002
-
-                settings.setCurrentValidatorSetSince(Long.parseLong(StringUtils.substringBetween(stdout, "utime_since:", " ").trim()));
-                settings.setCurrentValidatorSetUntil(Long.parseLong(StringUtils.substringBetween(stdout, "utime_until:", " ").trim()));
-                saveSettingsToGson();
-                log.info("start work time: {}", toUTC(settings.getCurrentValidatorSetSince()));
-
-                while (true) {
-                    long electionId = new LiteClientExecutor().executeGetActiveElectionId(genesisNode, settings.getElectorSmcAddrHex());
-                    log.info(toUTC(electionId));
-                    if (electionId != 0) break;
-                    Thread.sleep(10 * 1000L);
-                }
-
-                long electionId = new LiteClientExecutor().executeGetActiveElectionId(genesisNode, settings.getElectorSmcAddrHex());
-                long valEndSet = settings.getCurrentValidatorSetSince() + settings.getBlockchainSettings().getOriginalValidatorSetValidFor();
-
-                log.info("work time   : {}", toUTC(settings.getCurrentValidatorSetSince()));
-                log.info("el start    : {}", toUTC(valEndSet - config15.getElectionsStartBefore()));
-                log.info("el end      : {}", toUTC(valEndSet - config15.getElectionsEndBefore()));
-                log.info("valSetSince : {}", toUTC(settings.getCurrentValidatorSetSince()));
-                log.info("valSetUntil : {}", toUTC(settings.getCurrentValidatorSetUntil()));
-                log.info("electionId  : {}", toUTC(electionId));
-                log.info("el nextStart: {}", toUTC(electionId + settings.getBlockchainSettings().getElectedFor() - config15.getElectionsStartBefore()));
-
-    //            log.info("work time   : {}", toUTC(settings.getCurrentValidatorSetSince()));
-    //            log.info("el start    : {}", toUTC(settings.getCurrentValidatorSetSince() - config15.getElectionsStartBefore()));
-    //            log.info("el end      : {}", toUTC(settings.getCurrentValidatorSetSince() - config15.getElectionsEndBefore()));
-    //            log.info("startValidation : {}", toUTC(settings.getCurrentValidatorSetSince()));
-    //            log.info("endValidation : {}", toUTC(settings.getCurrentValidatorSetSince() + settings.getElectedFor()));
-    //            log.info("electionId  : {}", toUTC(electionId));
-    //            log.info("el nextStart: {}", toUTC(electionId + settings.getElectedFor() - config15.getElectionsStartBefore()));
-
-                WalletEntity walletEntity = createWalletWithFundsAndSmartContract(genesisNode, genesisNode, -1L, -1L, 30003L);
-                settings.getNode(genesisNode).setWalletAddress(walletEntity.getWallet());
-                walletEntity = createWalletWithFundsAndSmartContract(genesisNode, node2, -1L, -1L, 30003L);
-                settings.getNode(node2).setWalletAddress(walletEntity.getWallet());
-                walletEntity = createWalletWithFundsAndSmartContract(genesisNode, node3, -1L, -1L, 30003L);
-                settings.getNode(node3).setWalletAddress(walletEntity.getWallet());
-                walletEntity = createWalletWithFundsAndSmartContract(genesisNode, node4, -1L, -1L, 30003L);
-                settings.getNode(node4).setWalletAddress(walletEntity.getWallet());
-    //            walletAddress = createControllingSmartContract(genesisNode, node5, -1L);
-    //            settings.getNode(node5).setWalletAddress(walletAddress);
-    //            walletAddress = createControllingSmartContract(genesisNode, node6, -1L);
-    //            settings.getNode(node6).setWalletAddress(walletAddress);
-
-                Thread.sleep(6000);
-
-                log.info("{} balance: {}", genesisNode.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(genesisNode, genesisNode.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
-                log.info("{} balance: {}", node2.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(node2, node2.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
-                log.info("{} balance: {}", node3.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(node3, node3.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
-                log.info("{} balance: {}", node4.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(node4, node4.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
-    //            log.info("{} balance: {}", node5.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor2().executeGetAccount(node5, node5.getWalletAddress().getFullWalletAddress())).getAccountBalance());
-    //            log.info("{} balance: {}", node6.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor2().executeGetAccount(node6, node6.getWalletAddress().getFullWalletAddress())).getAccountBalance());
-
-                participate(genesisNode, electionId);
-                participate(node2, electionId);
-                participate(node3, electionId);
-                participate(node4, electionId);
-    //            participate(node5, electionId);
-    //            participate(node6, electionId);
-
-                SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
-                        .executionNode(genesisNode)
-                        .fromWallet(genesisNode.getWalletAddress())
-                        .fromWalletVersion(WalletVersion.V1)
-                        .fromSubWalletId(-1L)
-                        .destAddr(settings.getElectorSmcAddrHex())
-                        .amount(BigDecimal.valueOf(10002L))
-                        .bocLocation(genesisNode.getTonBinDir() + "wallets" + File.separator + "validator-query.boc")
-                        //add bounce flags
-                        .build();
-
-                new Wallet().sendTonCoins(sendToncoinsParam); // TODO
-
-                SendToncoinsParam sendToncoinsParam2 = SendToncoinsParam.builder()
-                        .executionNode(node2)
-                        .fromWallet(node2.getWalletAddress())
-                        .fromWalletVersion(WalletVersion.V1)
-                        .fromSubWalletId(-1L)
-                        .destAddr(settings.getElectorSmcAddrHex())
-                        .amount(BigDecimal.valueOf(10002L))
-                        .bocLocation(node2.getTonBinDir() + "validator-query.boc")
-                        .build();
-
-                new Wallet().sendTonCoins(sendToncoinsParam2);
-
-                SendToncoinsParam sendToncoinsParam3 = SendToncoinsParam.builder()
-                        .executionNode(node3)
-                        .fromWallet(node3.getWalletAddress())
-                        .fromWalletVersion(WalletVersion.V1)
-                        .fromSubWalletId(-1L)
-                        .destAddr(settings.getElectorSmcAddrHex())
-                        .amount(BigDecimal.valueOf(10002L))
-                        .bocLocation(node3.getTonBinDir() + "validator-query.boc")
-                        .build();
-
-                new Wallet().sendTonCoins(sendToncoinsParam3);
-
-                SendToncoinsParam sendToncoinsParam4 = SendToncoinsParam.builder()
-                        .executionNode(node4)
-                        .fromWallet(node4.getWalletAddress())
-                        .fromWalletVersion(WalletVersion.V1)
-                        .fromSubWalletId(-1L)
-                        .destAddr(settings.getElectorSmcAddrHex())
-                        .amount(BigDecimal.valueOf(10002L))
-                        .bocLocation(node4.getTonBinDir() + "validator-query.boc")
-                        .build();
-                new Wallet().sendTonCoins(sendToncoinsParam4);
-    //            new Wallet().sendGrams(node5, node5.getWalletAddress(), settings.getElectorSmcAddrHex(), BigDecimal.valueOf(10002L), node5.getTonBinDir() + "validator-query.boc");
-    //            new Wallet().sendGrams(node6, node6.getWalletAddress(), settings.getElectorSmcAddrHex(), BigDecimal.valueOf(10002L), node6.getTonBinDir() + "validator-query.boc");
-                Thread.sleep(7000);
-
-                stdout = new LiteClientExecutor().executeGetParticipantList(genesisNode, settings.getElectorSmcAddrHex());
-                log.debug(stdout);
-
-                Thread.sleep(2000);
-
-                while (!LiteClientParser.parseRunMethodParticipantList(stdout).isEmpty()) {
-                    stdout = new LiteClientExecutor().executeGetParticipantList(genesisNode, settings.getElectorSmcAddrHex());
-                    List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(stdout);
-                    log.info("PARTICIPANTS: {}", participants.size());
-
-                    log.info("{} balance: {}", genesisNode.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(genesisNode, genesisNode.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
-                    log.info("{} balance: {}", node2.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(node2, node2.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
-                    log.info("{} balance: {}", node3.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(node3, node3.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
-                    log.info("{} balance: {}", node4.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(node4, node4.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
-
-                    log.info("sleep 15sec");
-                    Thread.sleep(15 * 1000L);
-                }
-
-                stdout = new LiteClientExecutor().executeGetCurrentValidators(genesisNode);
-                log.debug(stdout);
-                while (Long.parseLong(StringUtils.substringBetween(stdout, "total:", " ").trim()) != 4) {
-                    stdout = new LiteClientExecutor().executeGetCurrentValidators(genesisNode);
-                    log.info("sleep 10sec");
-                    Thread.sleep(10 * 1000L);
-                }
-                settings.setInitiallyElected(true);
-                saveSettingsToGson();
-                log.info("Up and running 4 validators");
-            }
-        }
-
-
-    //    public String createExternalMessage(Node node, Node toNode) throws Exception {
-    //        WalletAddress fromWalletAddress = settings.getNode(node).getWalletAddress();
-    //        String externalMsgLocation = new Wallet().getSeqNoAndPrepareBoc(node, fromWalletAddress, toNode.getWalletAddress().getBounceableAddress(), new BigDecimal(123L), null);
-    //        settings.setExternalMsgLocation(externalMsgLocation);
-    //        saveSettingsToGson();
-    //        return externalMsgLocation;
-    //    }
-
-        private void recreateLocalConfigJsonAndValidatorAccess(Node node, String myGlobalConfig) throws Exception {
-            //1. just delete config.json
-            FileUtils.deleteQuietly(new File(node.getTonDbDir() + "config.json"));
-            FileUtils.deleteQuietly(new File(node.getTonDbDir() + "server"));
-            FileUtils.deleteQuietly(new File(node.getTonDbDir() + "server.pub"));
-            FileUtils.deleteQuietly(new File(node.getTonDbDir() + "client"));
-            FileUtils.deleteQuietly(new File(node.getTonDbDir() + "client.pub"));
-
-            //recreate initial local configuration config.json
-            startValidator(node, myGlobalConfig);
-
-            Thread.sleep(1000);
-            //1. full node should not be started - passed ok
-            replaceOutPortInConfigJson(node.getTonDbDir(), node.getOutPort());
-            //enable access to full node from validator-engine-console - required if you want to become validator later
-            String serverIdBase64 = generateServerCertificate(node);
-            generateClientCertificate(node, serverIdBase64);
-        }
-
-
-        private void recreateLiteServer(Node node) throws Exception {
-            log.info("recreate lite-server");
-            Files.deleteIfExists(Paths.get(node.getTonDbKeyringDir() + LITESERVER));
-            Files.deleteIfExists(Paths.get(node.getTonDbKeyringDir() + "liteserver.pub"));
-            installLiteServer(node, node.getTonDbDir() + MY_TON_FORKED_CONFIG_JSON, true); //not needed actually?
-        }
-
-        public ResultLastBlock getLastBlock(Node node) throws InterruptedException, java.util.concurrent.ExecutionException {
-            Pair<Process, Future<String>> liteClientOutput = new LiteClientExecutor().execute(node, "last");
-            String stdout = liteClientOutput.getRight().get();
-            ResultLastBlock lastBlock = LiteClientParser.parseLast(stdout);
-            log.debug("parsed last block {}", lastBlock);
-            return lastBlock;
-        }
-
-        public ResultLastBlock getLastBlockFromForked(Node node) throws InterruptedException, java.util.concurrent.ExecutionException {
-            Pair<Process, Future<String>> liteClientOutput = new LiteClientExecutor(true).execute(node, "last");
-            String stdout = liteClientOutput.getRight().get();
-            ResultLastBlock lastBlock = LiteClientParser.parseLast(stdout);
-            log.debug("parsed last block {}", lastBlock);
-            return lastBlock;
-        }
-    */
-
 }

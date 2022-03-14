@@ -1,6 +1,7 @@
 package org.ton.settings;
 
 import org.apache.commons.io.FileUtils;
+import org.ton.utils.Extractor;
 import org.ton.wallet.WalletAddress;
 
 import java.io.File;
@@ -12,21 +13,117 @@ import static java.util.Objects.nonNull;
 
 public interface Node {
 
-    String getTonDbDir();
+    String CURRENT_DIR = System.getProperty("user.dir");
+    String MY_LOCAL_TON = "myLocalTon";
 
-    String getTonBinDir();
+    default String getTonDbDir() {
+        return CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + this.getNodeName() + File.separator + "db" + File.separator;
+    }
 
-    String getTonLogDir();
+    default String getTonBinDir() {
+        return CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + this.getNodeName() + File.separator + "bin" + File.separator;
+    }
 
-    String getTonDbKeyringDir();
+    default String getTonLogDir() {
+        return getTonDbDir() + "log" + File.separator;
+    }
 
-    String getTonDbStaticDir();
+    default String getTonDbArchiveDir() {
+        return getTonDbDir() + "archive" + File.separator;
+    }
 
-    String getDhtServerDir();
+    default String getTonDbCatchainsDir() {
+        return getTonDbDir() + "catchains" + File.separator;
+    }
 
-    String getDhtServerKeyringDir();
+    default String getTonDbCellDbDir() {
+        return getTonDbDir() + "celldb" + File.separator;
+    }
 
-    String getTonCertsDir();
+    default String getTonDbStateDir() {
+        return getTonDbDir() + "state" + File.separator;
+    }
+
+    default String getTonDbFilesDir() {
+        return getTonDbDir() + "files" + File.separator;
+    }
+
+    default String getTonDbKeyringDir() {
+        return getTonDbDir() + "keyring" + File.separator;
+    }
+
+    default String getTonDbStaticDir() {
+        return getTonDbDir() + "static" + File.separator;
+    }
+
+    default String getDhtServerDir() {
+        return getTonDbDir() + "dht-server" + File.separator;
+    }
+
+    default String getDhtServerKeyringDir() {
+        return getDhtServerDir() + "keyring" + File.separator;
+    }
+
+    default String getTonCertsDir() {
+        return getTonBinDir() + "certs" + File.separator;
+    }
+
+    default String getValidatorKeyPubLocation() {
+        return getTonBinDir() + "smartcont" + File.separator + "validator-keys-1.pub";
+    }
+
+
+    default void extractBinaries() throws IOException {
+        new Extractor(this.getNodeName());
+    }
+
+    default String getGenesisGenZeroStateFifLocation() {
+        return getTonBinDir() + "smartcont" + File.separator + "gen-zerostate.fif";
+    }
+
+    default boolean nodeShutdownAndDelete() {
+
+        String nodeName = this.getNodeName();
+        long nodePid = 0;
+        if (nonNull(this.getNodeProcess())) {
+            nodePid = this.getNodeProcess().pid();
+        }
+
+        System.out.println("nodeShutdown " + nodeName + ", process " + nodePid);
+
+        try {
+            if (isWindows()) {
+                Runtime.getRuntime().exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + nodePid);
+            } else {
+                Runtime.getRuntime().exec("kill -2 " + nodePid);
+            }
+            System.out.println("validator-engine with pid " + nodePid + " killed");
+
+            FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + nodeName));
+
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("cannot shutdown node " + nodeName + ". Error " + e.getMessage());
+            return false;
+        }
+    }
+
+//    String getTonDbDir();
+//
+//    String getTonBinDir();
+//
+//    String getTonLogDir();
+
+//    String getTonDbKeyringDir();
+//
+//    String getTonDbStaticDir();
+//
+//    String getDhtServerDir();
+//
+//    String getDhtServerKeyringDir();
+//
+//    String getTonCertsDir();
 
     String getPublicIp();
 
@@ -118,7 +215,7 @@ public interface Node {
 
     String getValidatorAdnlAddrHex();
 
-    String getValidatorKeyPubLocation();
+    //String getValidatorKeyPubLocation();
 
     String getNodeGlobalConfigLocation();
 
@@ -132,9 +229,9 @@ public interface Node {
 
     void setNodeForkedGlobalConfigLocation(String nodeForkedGlobalConfigLocation);
 
-    void extractBinaries() throws IOException;
-
-    String getGenesisGenZeroStateFifLocation();
+//    void extractBinaries() throws IOException;
+//
+//    String getGenesisGenZeroStateFifLocation();
 
     void setValidationSigningKey(String validationSigningKey);
 
@@ -148,31 +245,4 @@ public interface Node {
 
     String getValidationAndlKey();
 
-    default boolean nodeShutdownAndDelete() {
-
-        String nodeName = this.getNodeName();
-        long nodePid = 0;
-        if (nonNull(this.getNodeProcess())) {
-            nodePid = this.getNodeProcess().pid();
-        }
-
-        System.out.println("nodeShutdown " + nodeName + ", process " + nodePid);
-
-        try {
-            if (isWindows()) {
-                Runtime.getRuntime().exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + nodePid);
-            } else {
-                Runtime.getRuntime().exec("kill -2 " + nodePid);
-            }
-            System.out.println("validator-engine with pid " + nodePid + " killed");
-
-            FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + nodeName));
-
-            return true;
-
-        } catch (Exception e) {
-            System.out.println("cannot shutdown node " + nodeName + ". Error " + e.getMessage());
-            return false;
-        }
-    }
 }

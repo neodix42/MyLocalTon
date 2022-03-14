@@ -1675,7 +1675,7 @@ public class MainController implements Initializable {
                 ((Label) parent.lookup("#action")).setText("delnode"); // no action, simple dialog box
                 ((Label) parent.lookup("#header")).setText("Confirmation");
                 ((Label) parent.lookup("#address")).setText(node.getNodeName()); // just reuse address field
-                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete selected validator? All data will be lost and validator will be removed from elections.");
+                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete validator " + node.getNodeName() + "? All data will be lost and validator will be removed from elections.");
                 parent.lookup("#okBtn").setDisable(false);
 
                 JFXDialogLayout content = new JFXDialogLayout();
