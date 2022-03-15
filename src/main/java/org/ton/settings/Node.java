@@ -104,7 +104,7 @@ public interface Node {
                 Thread.sleep(2000);
             } else {
                 // kill all lite-client processes of the particular node
-                //Runtime.getRuntime().exec("killall -9 " + "lite-client"); // TODO
+                Runtime.getRuntime().exec("ps ax | grep " + nodeName + " | grep lite-client | awk '{print $1}' | xargs kill -9");
                 Runtime.getRuntime().exec("kill -2 " + nodePid);
             }
             System.out.println("validator-engine with pid " + nodePid + " killed");
