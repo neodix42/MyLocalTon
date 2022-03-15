@@ -64,3 +64,11 @@ bool Collator::create_mc_state_extra() {
     LOG(INFO) << "cancelling creation of mc state due to positive shutdown flag";
     return false;
   }
+
+in order to avoid node not synched on windows patch the following in manager.cpp:
+-  if (!started_) {
++  /*if (!started_) {
+     promise.set_error(td::Status::Error(ErrorCode::notready, "node not synced"));
+     return;
+-  }
++  }*/

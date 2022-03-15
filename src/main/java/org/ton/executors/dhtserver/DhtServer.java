@@ -33,7 +33,7 @@ public class DhtServer {
         log.info("genesis dht-server started at {}", node.getPublicIp() + ":" + node.getDhtPort());
         Pair<Process, Future<String>> dhtServer = new DhtServerExecutor().execute(node,
                 "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
-                "-t", "1",
+                "-t", "2",
                 "-C", globalConfigFile,
                 "-l", node.getDhtServerDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
                 "-D", node.getDhtServerDir(),
