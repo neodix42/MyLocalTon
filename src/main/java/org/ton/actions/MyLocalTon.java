@@ -29,7 +29,6 @@ import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.enums.LiteClientEnum;
-import org.ton.executors.dhtserver.DhtServer;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
@@ -126,8 +125,6 @@ public class MyLocalTon {
     public static final int VALIDATION_GUI_REFRESH_SECONDS = 30;
 
     ScheduledExecutorService monitorExecutorService;
-    Process dhtServerProcess;
-    Process genesisValidatorProcess;
     private MyLocalTonSettings settings;
 
     private MyLocalTon() {
@@ -206,7 +203,7 @@ public class MyLocalTon {
         }
     }
 
-    public Process initGenesis(Node node) throws Exception {
+    public void initGenesis(Node node) throws Exception {
 
         if (!Files.exists(Paths.get(node.getTonDbDir() + "state"), LinkOption.NOFOLLOW_LINKS)) {
             log.info("Initializing genesis network");
@@ -220,25 +217,16 @@ public class MyLocalTon {
             validatorEngine.createZeroState(node);
             //result: created tonDbDir + File.separator + MY_TON_GLOBAL_CONFIG_JSON with replace FILE_HASH and ROOT_HASH, still to fill [NODES]
 
-            DhtServer dhtServer = new DhtServer();
-            dhtServer.initDhtServer(node, EXAMPLE_GLOBAL_CONFIG, node.getNodeGlobalConfigLocation());  // result: generated dht-server/config.json
-            dhtServerProcess = dhtServer.startDhtServer(node, node.getNodeGlobalConfigLocation());
-
-            //run nodeInit.sh, run validator very first time
+            //run validator very first time
             validatorEngine.initFullnode(node, node.getNodeGlobalConfigLocation());
 
-            Process validatorGenesisProcess = createGenesisValidator(node, node.getNodeGlobalConfigLocation());
+            createGenesisValidator(node, node.getNodeGlobalConfigLocation());
 
             validatorEngine.enableLiteServer(node, node.getNodeGlobalConfigLocation(), false);
 
             settings.getActiveNodes().add(node.getNodeName());
-
-            return validatorGenesisProcess;
         } else {
             log.info("Found non-empty state; Skip genesis initialization.");
-            dhtServerProcess = new DhtServer().startDhtServer(node, node.getNodeGlobalConfigLocation());
-            Thread.sleep(100);
-            return null;
         }
     }
 
@@ -259,50 +247,51 @@ public class MyLocalTon {
         }
     }
 
-    // TODO rename -
-    public Process createGenesisValidator(Node node, String myGlobalConfig) throws Exception {
+    /**
+     * start validator for a short time in order to execute commands via validator-engine-console
+     *
+     * @param node
+     * @param myGlobalConfig
+     * @throws Exception
+     */
+    public void createGenesisValidator(Node node, String myGlobalConfig) throws Exception {
 
-        if (Files.exists(Paths.get(node.getTonDbDir() + File.separator + "validatorGenesis"))) {
-            log.info("Found non-empty state of genesis validator.");
-            return null;
-        } else {
-            String validatorPrvKeyHex = node.getValidatorPrvKeyHex();
-            log.info("{} validatorIdHex {}", node.getNodeName(), node.getValidatorPrvKeyHex());
-            //shortly start validator
-            log.info("Starting temporary full-node...");
-            Pair<Process, Future<String>> validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig);
+        String validatorPrvKeyHex = node.getValidatorPrvKeyHex();
+        log.info("{} validatorIdHex {}", node.getNodeName(), node.getValidatorPrvKeyHex());
 
-            log.debug("sleep 5sec");
-            Thread.sleep(5000);
-            ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
+        log.info("Starting temporary full-node...");
+        Pair<Process, Future<String>> validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig);
 
-            String newNodeKey = validatorEngineConsole.generateNewNodeKey(node);
-            String newNodePubKey = validatorEngineConsole.exportPubKey(node, newNodeKey);
-            String newValAdnl = validatorEngineConsole.generateNewNodeKey(node);
+        log.debug("sleep 5sec");
+        Thread.sleep(5000);
+        ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
 
-            log.info("newNodeKey {}, newNodePubKey {}, newValAdnl {}", newNodeKey, newNodePubKey, newValAdnl);
+        String newNodeKey = validatorEngineConsole.generateNewNodeKey(node);
+        String newNodePubKey = validatorEngineConsole.exportPubKey(node, newNodeKey);
+        String newValAdnl = validatorEngineConsole.generateNewNodeKey(node);
 
-            node.setValidatorPubKeyBase64(newNodePubKey);
-            node.setValidatorAdnlAddrHex(newValAdnl);
+        log.info("newNodeKey {}, newNodePubKey {}, newValAdnl {}", newNodeKey, newNodePubKey, newValAdnl);
 
-            long startWorkTime = Instant.now().getEpochSecond();
-            long electionId = 0L;
-            long electionEnd = startWorkTime + YEAR;
+        node.setValidatorPubKeyBase64(newNodePubKey);
+        node.setValidatorAdnlAddrHex(newValAdnl);
 
-            validatorEngineConsole.addPermKey(node, validatorPrvKeyHex, electionId, electionEnd);
-            validatorEngineConsole.addTempKey(node, validatorPrvKeyHex, electionEnd);
-            validatorEngineConsole.addAdnl(node, newValAdnl);
-            validatorEngineConsole.addAdnl(node, validatorPrvKeyHex);
-            validatorEngineConsole.addValidatorAddr(node, validatorPrvKeyHex, newValAdnl, electionEnd);
+        long startWorkTime = Instant.now().getEpochSecond();
+        long electionId = 0L;
+        long electionEnd = startWorkTime + YEAR;
 
-            validatorEngineConsole.addAdnl(node, newNodeKey);
-            validatorEngineConsole.changeFullNodeAddr(node, newNodeKey);
-            validatorEngineConsole.importF(node, validatorPrvKeyHex);
+        validatorEngineConsole.addPermKey(node, validatorPrvKeyHex, electionId, electionEnd);
+        validatorEngineConsole.addTempKey(node, validatorPrvKeyHex, electionEnd);
+        validatorEngineConsole.addAdnl(node, newValAdnl);
+        validatorEngineConsole.addAdnl(node, validatorPrvKeyHex);
+        validatorEngineConsole.addValidatorAddr(node, validatorPrvKeyHex, newValAdnl, electionEnd);
 
-            saveSettingsToGson();
+        validatorEngineConsole.addAdnl(node, newNodeKey);
+        validatorEngineConsole.changeFullNodeAddr(node, newNodeKey);
+        validatorEngineConsole.importF(node, validatorPrvKeyHex);
 
-            return isNull(validatorProcess) ? null : validatorProcess.getLeft();
-        }
+        saveSettingsToGson();
+
+        validatorProcess.getLeft().destroy();
     }
 
     private static int parseIp(String address) {
@@ -1613,20 +1602,20 @@ public class MyLocalTon {
 
         if (!node.getNodeName().contains("genesis")) {
             if (isWindows()) {
-                // on windows locked files cannot be copied. As an option, we can shut down genesis node, copy the files and start it again.
-                // but there is a connection issue with this on Windows
-//                log.info("shutting down genesis node...");
-//                settings.getGenesisNode().nodeShutdown();
+//               on windows locked files cannot be copied. As an option, we can shut down genesis node, copy the files and start it again.
+//               but there is a connection issue with this on Windows
+//               log.info("shutting down genesis node...");
+//               settings.getGenesisNode().nodeShutdown();
 
-                // if we copy only db/static dir, it works, but requires full synchronization that takes long time,
-                // in comparison to linux systems where copy of all directories makes almost instant synchronization
+//               if we copy only db/static dir, it works, but requires full synchronization that takes long time,
+//               in comparison to linux systems where copy of all directories makes almost instant synchronization
 
-//              copy ignoring locked files
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir()); // if only this dir, then fails with "Check `ptr && "deferencing null Ref"` failed"
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
-                //Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
+//              copy ignoring locked files
+//                Utils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir()); // if only this dir, then fails with "Check `ptr && "deferencing null Ref"` failed"
+//                Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
+//                Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
+//                Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
 
 //
 //                Utils.copyDirectory(settings.getGenesisNode().getTonDbStateDir(), node.getTonDbStateDir());

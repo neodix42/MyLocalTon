@@ -20,11 +20,11 @@ public class GenesisNode implements Serializable, Node {
     Integer consolePort = 4441;
     Integer publicPort = 4442;
     Integer liteServerPort = 4443;
-    Integer outPort = 3278;
+    Integer outPort = 3272;
     Integer dhtPort = 6302;
     Integer dhtForkedPort = 6382;
-    Integer dhtOutPort = 3278;
-    Integer dhtForkedOutPort = 3288;
+    Integer dhtOutPort = 3272;
+    Integer dhtForkedOutPort = 3282;
     transient String status = "not ready";
 
     String validatorPrvKeyHex;

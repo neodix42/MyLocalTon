@@ -315,24 +315,39 @@ public class Utils {
                 FileUtils.deleteQuietly(Main.file);
                 log.info("Destroying external processes...");
 
-                MyLocalTon.getInstance().getDhtServerProcess().destroy(); // TODO check the order
-
                 Thread.sleep(1000);
 
                 Runtime rt = Runtime.getRuntime();
                 if (isWindows()) {
                     rt.exec("taskkill /F /IM " + "lite-client.exe");
-                    log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
-                    rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
-                    Thread.sleep(4000);
-                    //double knockout
-                    log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
-                    rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
-
+                    rt.exec("taskkill /F /IM " + "dht-server.exe");
+                    /*
+                    if (nonNull(MyLocalTon.getInstance().getGenesisValidatorProcess())) {
+                        log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+                        rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+                        Thread.sleep(4000);
+                        //double knockout
+                        log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+                        rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+                    }
+                    */
                     MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
                     for (String nodeName : settings.getActiveNodes()) {
                         Node node = settings.getNodeByName(nodeName);
-                        rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + node.getNodeProcess().pid());
+                        if (nonNull(node.getNodeProcess())) {
+                            log.info("killing {} with pid {}", node.getNodeName(), node.getNodeProcess().pid());
+                            rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + node.getNodeProcess().pid());
+                            Thread.sleep(200);
+                        }
+                    }
+                    Thread.sleep(4000);
+                    for (String nodeName : settings.getActiveNodes()) {
+                        Node node = settings.getNodeByName(nodeName);
+                        if (nonNull(node.getNodeProcess())) {
+                            log.info("killing {} with pid {}", node.getNodeName(), node.getNodeProcess().pid());
+                            rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + node.getNodeProcess().pid());
+                            Thread.sleep(200);
+                        }
                     }
 
                     // triple knockout
@@ -353,6 +368,7 @@ public class Utils {
                     } while (resultInput.contains("validator-engine"));
                 } else {
                     rt.exec("killall -9 " + "lite-client");
+                    rt.exec("killall -9 " + "dht-server");
                     rt.exec("killall -2 " + "validator-engine"); // TODO look up for the shutdown order when multiple nodes are active
                 }
 
@@ -364,6 +380,7 @@ public class Utils {
             }
         } catch (Exception e) {
             log.error("Unable to shutdown gracefully, error: {}", e.getMessage());
+            log.error(ExceptionUtils.getStackTrace(e));
             return false;
         }
     }

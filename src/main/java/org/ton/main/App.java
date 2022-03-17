@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.DbPool;
+import org.ton.executors.dhtserver.DhtServer;
 import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
@@ -20,10 +21,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -78,8 +79,7 @@ public class App extends Application {
             FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "myLocalTon.log"));
         }
 
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        ge.registerFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, Objects.requireNonNull(App.class.getClassLoader().getResourceAsStream("org/ton/fonts/RobotoMono-Medium.ttf"))));
+        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, Objects.requireNonNull(App.class.getClassLoader().getResourceAsStream("org/ton/fonts/RobotoMono-Medium.ttf"))));
 
         MyLocalTon myLocalTon = MyLocalTon.getInstance();
         myLocalTon.setSettings(Utils.loadSettings());
@@ -101,24 +101,28 @@ public class App extends Application {
         // initialize DB
         dbPool = new DbPool(settings);
 
-        Process validatorGenesisProcess = myLocalTon.initGenesis(genesisNode);
+        DhtServer dhtServer = new DhtServer();
 
-        Thread.sleep(4000);
-        if (nonNull(validatorGenesisProcess)) {
-            validatorGenesisProcess.destroy();
-        } else {
-            mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L);
-        }
+        List<String> dhtNodes = dhtServer.initDhtServer(genesisNode);
+
+        myLocalTon.initGenesis(genesisNode);
+
+        dhtServer.addDhtNodesToGlobalConfig(dhtNodes, genesisNode.getNodeGlobalConfigLocation());
+
+        dhtServer.startDhtServer(genesisNode, genesisNode.getNodeGlobalConfigLocation());
+
+        Thread.sleep(3000);
+
+        mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L);
 
         //create hardfork
         //ResultLastBlock newBlock = myLocalTon.generateNewBlock(genesisNode, forkFromBlock, "");
         //myLocalTon.addHardForkEntryIntoMyGlobalConfig(genesisNode, genesisNode.getNodeGlobalConfigLocation(), newBlock);
 
-        //before starting genesis node - let's synchronize all other nodes with it, by copying content in offline mode
+        //before starting genesis node - let's synchronize all other nodes with it, by copying db in offline mode
         //Utils.syncWithGenesis();
 
-        ValidatorEngine validatorEngine = new ValidatorEngine();
-        myLocalTon.setGenesisValidatorProcess(validatorEngine.startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation()));
+        new ValidatorEngine().startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation());
 
         Utils.waitForBlockchainReady(genesisNode);
         Utils.waitForNodeSynchronized(genesisNode);
@@ -132,13 +136,13 @@ public class App extends Application {
         // start other validators
         for (String nodeName : settings.getActiveNodes()) {
             if (!nodeName.contains("genesis")) {
-                long pid = validatorEngine.startValidator(settings.getNodeByName(nodeName), genesisNode.getNodeGlobalConfigLocation()).pid();
+                long pid = new ValidatorEngine().startValidator(settings.getNodeByName(nodeName), genesisNode.getNodeGlobalConfigLocation()).pid();
                 log.info("started validator {} with pid {}", nodeName, pid);
 
-                if (isWindows()) {
-                    Utils.waitForBlockchainReady(settings.getNodeByName(nodeName));
-                    Utils.waitForNodeSynchronized(settings.getNodeByName(nodeName));
-                }
+//                if (isWindows()) {
+//                    Utils.waitForBlockchainReady(settings.getNodeByName(nodeName));
+//                    Utils.waitForNodeSynchronized(settings.getNodeByName(nodeName));
+//                }
             }
         }
 

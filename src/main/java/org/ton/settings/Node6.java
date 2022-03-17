@@ -20,11 +20,11 @@ public class Node6 implements Serializable, Node {
     Integer consolePort = 4456;
     Integer publicPort = 4457;
     Integer liteServerPort = 4458;
-    Integer dhtPort = 6307;
-    Integer dhtForkedPort = 6387;
-    Integer dhtOutPort = 3276;
-    Integer dhtForkedOutPort = 3286;
-    Integer outPort = 3276;
+    Integer outPort = 3277;
+    Integer dhtPort = 3307;
+    Integer dhtForkedPort = 3387;
+    Integer dhtOutPort = 3277;
+    Integer dhtForkedOutPort = 3287;
     transient String status = "not ready";
 
     String validatorMonitoringPubKeyHex;

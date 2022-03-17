@@ -71,8 +71,14 @@ public class ValidatorEngine {
         return validator;
     }
 
+    /**
+     * run full-node very first time
+     *
+     * @param node
+     * @param sharedGlobalConfig
+     * @throws Exception
+     */
     public void initFullnode(Node node, String sharedGlobalConfig) throws Exception {
-        //run full node very first time
         if (Files.exists(Paths.get(node.getTonDbDir() + "state"))) {
             log.info("Found non-empty state; Skip initialization!");
         } else {
