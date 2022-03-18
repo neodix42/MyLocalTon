@@ -48,6 +48,8 @@ public class DhtServer {
     public List<String> initDhtServer(Node node) throws Exception {
         if (!Files.exists(Paths.get(node.getDhtServerDir()), LinkOption.NOFOLLOW_LINKS)) {
 
+            node.extractBinaries();
+
             int publicIpNum = Utils.getIntegerIp(node.getPublicIp());
             log.debug("publicIpNum {}", publicIpNum);
 
@@ -93,8 +95,7 @@ public class DhtServer {
         } else { // modify existing
             log.debug("Replace current list of dht nodes with a new one");
             String existingNodes = Utils.sbb(globalConfigContent, "\"nodes\": [");
-            String backToTemplate = StringUtils.replace(globalConfigContent, existingNodes, "[NODES]");
-            String replacedLocalConfig = StringUtils.replace(backToTemplate, "NODES", String.join(",", dhtNodes));
+            String replacedLocalConfig = StringUtils.replace(globalConfigContent, existingNodes, StringUtils.substring(existingNodes, 0, -1) + "," + String.join(",", dhtNodes) + "]");
             FileUtils.writeStringToFile(new File(myGlobalConfig), replacedLocalConfig, StandardCharsets.UTF_8);
             log.debug("dht-nodes updated: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
         }

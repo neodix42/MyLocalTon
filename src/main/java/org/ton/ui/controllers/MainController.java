@@ -1436,6 +1436,10 @@ public class MainController implements Initializable {
             }
         }
 
+        if (isLinux() || isMac()) {
+            addValidatorBtn.setVisible(true);
+        }
+
         // validator-tabs
         validationTabs.getTabs().remove(validator2tab);
         validationTabs.getTabs().remove(validator3tab);
@@ -2415,51 +2419,52 @@ public class MainController implements Initializable {
 
         newNodeExecutorService.execute(() -> {
             Thread.currentThread().setName("MyLocalTon - Creating validator");
-            if (Long.parseLong(mainController.currentBlockNum.getText()) > 120) {
-                try {
-                    mainController.addValidatorBtn.setDisable(true);
+//            if (Long.parseLong(mainController.currentBlockNum.getText()) < 120) {
+//                showDialogMessage("Too early", "Please wait for 120 blocks to be generated. At least one validator group should be rotated.");
+//            return;
+//            }
+            try {
+                mainController.addValidatorBtn.setDisable(true);
 
-                    org.ton.settings.Node node = Utils.getNewNode();
-                    if (nonNull(node)) {
-                        log.info("creating validator {}", node.getNodeName());
-                        App.mainController.showInfoMsg("Creating validator " + node.getNodeName() + ". You will be informed once it's finished.", 8);
-                        Thread.sleep(500);
+                org.ton.settings.Node node = Utils.getNewNode();
+                if (nonNull(node)) {
+                    log.info("creating validator {}", node.getNodeName());
+                    App.mainController.showInfoMsg("Creating validator " + node.getNodeName() + ". You will be informed once it's finished.", 8);
+                    Thread.sleep(500);
 
-                        //delete unfinished node creation
-                        FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
+                    //delete unfinished node creation
+                    FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
 
-                        MyLocalTon.getInstance().createFullnode(node, true, true);
+                    MyLocalTon.getInstance().createFullnode(node, true, true);
 
-                        if (isWindows()) {
-                            Utils.waitForBlockchainReady(node);
-                            Utils.waitForNodeSynchronized(node);
-                        }
-
-                        Tab newTab = Utils.getNewNodeTab();
-                        Platform.runLater(() -> {
-                            validationTabs.getTabs().add(newTab);
-                        });
-
-                        settings.getActiveNodes().add(node.getNodeName());
-                        MyLocalTon.getInstance().saveSettingsToGson();
-                        mainController.addValidatorBtn.setDisable(false);
-
-                        // FYI. Status of all nodes reported back from the thread "Node Monitor" and shown on a corresponding tab
-
-                        //App.mainController.showInfoMsg("Validator " + node.getNodeName() + " has been successfully created", 5);
-                        showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created, now synchronizing. Once elections will be opened it will take part in them.");
-                    } else {
-                        showDialogMessage("The limit has been reached", "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");
+                    if (isWindows()) {
+                        Utils.waitForBlockchainReady(node);
+                        Utils.waitForNodeSynchronized(node);
                     }
-                } catch (Exception e) {
-                    log.error("Error creating validator: {}", e.getMessage());
-                    App.mainController.showErrorMsg("Error creating validator", 3);
-                } finally {
+
+                    Tab newTab = Utils.getNewNodeTab();
+                    Platform.runLater(() -> {
+                        validationTabs.getTabs().add(newTab);
+                    });
+
+                    settings.getActiveNodes().add(node.getNodeName());
+                    MyLocalTon.getInstance().saveSettingsToGson();
                     mainController.addValidatorBtn.setDisable(false);
+
+                    // FYI. Status of all nodes reported back from the thread "Node Monitor" and shown on a corresponding tab
+
+                    //App.mainController.showInfoMsg("Validator " + node.getNodeName() + " has been successfully created", 5);
+                    showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created, now synchronizing. Once elections will be opened it will take part in them.");
+                } else {
+                    showDialogMessage("The limit has been reached", "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");
                 }
-            } else {
-                showDialogMessage("Too early", "Please wait for 120 blocks to be generated. At least one validator group should be rotated.");
+            } catch (Exception e) {
+                log.error("Error creating validator: {}", e.getMessage());
+                App.mainController.showErrorMsg("Error creating validator", 3);
+            } finally {
+                mainController.addValidatorBtn.setDisable(false);
             }
+
         });
         newNodeExecutorService.shutdown();
     }

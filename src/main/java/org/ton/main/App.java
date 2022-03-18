@@ -111,6 +111,11 @@ public class App extends Application {
 
         dhtServer.startDhtServer(genesisNode, genesisNode.getNodeGlobalConfigLocation());
 
+        // start 2nd DHT server
+//        List<String> dhtNodes2 = dhtServer.initDhtServer(settings.getNode2());
+//        dhtServer.addDhtNodesToGlobalConfig(dhtNodes2, genesisNode.getNodeGlobalConfigLocation());
+//        dhtServer.startDhtServer(settings.getNode2(), genesisNode.getNodeGlobalConfigLocation());
+
         Thread.sleep(3000);
 
         mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L);
@@ -138,7 +143,6 @@ public class App extends Application {
             if (!nodeName.contains("genesis")) {
                 long pid = new ValidatorEngine().startValidator(settings.getNodeByName(nodeName), genesisNode.getNodeGlobalConfigLocation()).pid();
                 log.info("started validator {} with pid {}", nodeName, pid);
-
 //                if (isWindows()) {
 //                    Utils.waitForBlockchainReady(settings.getNodeByName(nodeName));
 //                    Utils.waitForNodeSynchronized(settings.getNodeByName(nodeName));
@@ -147,7 +151,7 @@ public class App extends Application {
         }
 
         mainController.showSuccessMsg("TON blockchain is ready!", 2);
-        Thread.sleep(3000);
+        Thread.sleep(2000);
 
         // TODO
         // myLocalTon.createPreInstalledWallets(genesisNode);

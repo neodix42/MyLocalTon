@@ -1586,7 +1586,7 @@ public class MyLocalTon {
     }
 
     public void createFullnode(Node node, boolean enableLiteServer, boolean start) throws Exception {
-        if (Files.exists(Paths.get(node.getTonBinDir()))) {
+        if (Files.exists(Paths.get(node.getTonDbArchiveDir()))) {
             log.info("{} already created, just start it", node.getNodeName());
             if (start) {
                 new ValidatorEngine().startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
@@ -1602,24 +1602,21 @@ public class MyLocalTon {
 
         if (!node.getNodeName().contains("genesis")) {
             if (isWindows()) {
-//               on windows locked files cannot be copied. As an option, we can shut down genesis node, copy the files and start it again.
+//               on Windows locked files cannot be copied. As an option, we can shut down genesis node, copy the files and start it again.
 //               but there is a connection issue with this on Windows
 //               log.info("shutting down genesis node...");
 //               settings.getGenesisNode().nodeShutdown();
 
 //               if we copy only db/static dir, it works, but requires full synchronization that takes long time,
 //               in comparison to linux systems where copy of all directories makes almost instant synchronization
-
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
 //              copy ignoring locked files
-//                Utils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir()); // if only this dir, then fails with "Check `ptr && "deferencing null Ref"` failed"
-//                Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
-//                Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
-//                Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
-
-//
+                Utils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir()); // if only this dir, then fails with "Check `ptr && "deferencing null Ref"` failed"
+                Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
+                Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
+                Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
+                
 //                Utils.copyDirectory(settings.getGenesisNode().getTonDbStateDir(), node.getTonDbStateDir());
-
 //                log.info("launching genesis node...");
 //                validatorEngine.startValidator(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation());
 //                Utils.waitForBlockchainReady(settings.getGenesisNode());
