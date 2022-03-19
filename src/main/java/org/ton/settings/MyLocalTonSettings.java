@@ -171,11 +171,11 @@ public class MyLocalTonSettings implements Serializable {
         Long electionStakesFrozenFor = 20 * 60L;// 30 sec, 20
         Long originalValidatorSetValidFor = 50 * 60L; // 2 min, 50
 
-        Long validatorStateTtl = 31536000L; // 1 year
-        Long validatorBlockTtl = 31536000L;
-        Long validatorArchiveTtl = 31536000L;
-        Long validatorKeyProofTtl = 315360000L; // 10 years
-        Long validatorSyncBefore = 31536000L;
+        Long validatorStateTtl = 365 * 86400L; // 1 year, state will be gc'd after this time (in seconds) default=3600, 1 hour
+        Long validatorBlockTtl = 365 * 86400L; // 1 year, blocks will be gc'd after this time (in seconds) default=7*86400, 7 days
+        Long validatorArchiveTtl = 365 * 86400L; //1 year, archived blocks will be deleted after this time (in seconds) default=365*86400, 1 year
+        Long validatorKeyProofTtl = 10 * 365 * 86400L; // 10 years, key blocks will be deleted after this time (in seconds) default=365*86400*10, 10 years
+        Long validatorSyncBefore = 2 * 60L; //2 minutes, in initial sync download all blocks for last given seconds default=3600, 1 hour
 
         Long globalId = -239L;
         Long initialBalance = 4999990000L;

@@ -71,6 +71,24 @@ public class ValidatorEngine {
         return validator;
     }
 
+    public Pair<Process, Future<String>> startValidatorRestore(Node node, String myGlobalConfig) {
+        log.info("starting validator-engine without params {}", node.getNodeName());
+
+        Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
+                "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
+                "-t", "2",
+                "-C", myGlobalConfig,
+                "--db", node.getTonDbDir(),
+                "-U", "0",
+                "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
+                "--ip", node.getPublicIp() + ":" + node.getPublicPort());
+
+        node.setNodeProcess(validator.getLeft());
+        //wait for start to finish
+
+        return validator;
+    }
+
     /**
      * run full-node very first time
      *
@@ -86,9 +104,10 @@ public class ValidatorEngine {
 
             Files.copy(Paths.get(sharedGlobalConfig), Paths.get(node.getNodeGlobalConfigLocation()), StandardCopyOption.REPLACE_EXISTING);
 
-            Pair<Process, Future<String>> validatorGenesisInit = startValidatorWithoutParams(node, sharedGlobalConfig);
+            String s = startValidatorWithoutParams(node, sharedGlobalConfig).getRight().get();
+            //startValidator(node, sharedGlobalConfig);
 
-            log.debug("Initialized {} validator, result {}", node.getNodeName(), validatorGenesisInit.getRight().get());
+            //log.debug("Initialized {} validator, result {}", node.getNodeName(), validatorGenesisInit.getRight().get());
 
             Utils.replaceOutPortInConfigJson(node.getTonDbDir(), node.getOutPort());
 
