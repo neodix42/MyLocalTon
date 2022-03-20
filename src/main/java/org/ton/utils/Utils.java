@@ -542,7 +542,7 @@ public class Utils {
         log.debug("min/max stake {}", config17);
 
         ResultConfig34 config34 = LiteClientParser.parseConfig34(liteClient.executeGetCurrentValidators(node));
-        log.debug("current validators {}", config34);
+        log.info("current validators {}", config34);
 
         log.debug("start work time since {}, until {}", Utils.toLocal(config34.getValidators().getSince()), Utils.toLocal(config34.getValidators().getUntil()));
 
@@ -566,7 +566,7 @@ public class Utils {
 
         return ValidationParam.builder()
                 .totalNodes(1L) // not used
-                .validatorNodes(config34.getValidators().getTotal())
+//                .validatorNodes(config34.getValidators().getTotal())
                 .blockchainLaunchTime(config12.getEnabledSince())
                 .startValidationCycle(activeElectionId) // same as config34.getValidators().getSince()
                 .endValidationCycle(activeElectionId + config15.getValidatorsElectedFor())
@@ -586,11 +586,13 @@ public class Utils {
                 .participants(participants)
                 .previousValidators(config32.getValidators().getValidators())
                 .currentValidators(config34.getValidators().getValidators())
+                .nextValidators(config36.getValidators().getValidators())
                 .build();
     }
 
-    private static boolean hasParticipated(long electionId) {
-        return MyLocalTon.getInstance().getSettings().electionsCounterGlobal.getOrDefault(electionId, false);
+    private static Boolean hasParticipated(Node node, long electionId) {
+        //return MyLocalTon.getInstance().getSettings().electionsCounterGlobal.getOrDefault(electionId, false);
+        return node.getElectionRequestSent();
     }
 
     public static void participate(Node node, ValidationParam v) {
@@ -598,7 +600,7 @@ public class Utils {
         try {
             long electionId = v.getStartValidationCycle();
 
-            if (hasParticipated(electionId)) { // TODO actually we need to track participation per node, but for now it's ok
+            if (hasParticipated(node, electionId)) {
                 log.info("{} has already sent request for elections", node.getNodeName());
                 if (electionId < Utils.getCurrentTimeSeconds()) {
                     log.info("electionId is outdated");
@@ -638,18 +640,19 @@ public class Utils {
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
                     .amount(settings.getDefaultStake())
-                    .comment("validator-request-send-stake")
+                    .comment("validator-request-send-stake") // TODO check if comment is visible
                     .bocLocation(node.getTonBinDir() + "validator-query.boc")
                     .build();
 
             new Wallet().sendTonCoins(sendToncoinsParam);
 
-            //node.setValidationParticipated(true);
-            settings.electionsCounterGlobal.put(v.getStartValidationCycle(), true);
+            node.setElectionRequestSent(true);
 
+            settings.electionsCounterGlobal.put(v.getStartValidationCycle(), true);
             saveSettingsToGson(settings);
+
         } catch (Exception e) {
-            log.error("Error participating in elections! Error {}", e.getMessage());
+            log.error("Error by {} in participation of elections! Error {}", node.getNodeName(), e.getMessage());
             log.error(ExceptionUtils.getStackTrace(e));
         }
     }

@@ -37,10 +37,17 @@ public class Node4 implements Serializable, Node {
 
     String validationSigningKey;
     String validationSigningPubKey;
+
     String validationAndlKey;
     String validationPubKeyHex;
     String validationPubKeyInteger;
+    String prevValidationAndlKey;
+    String prevValidationPubKeyHex;
+    String prevValidationPubKeyInteger;
+    
     Boolean validationPubKeyAndAdnlCreated = Boolean.FALSE;
+    Boolean electionRequestSent = Boolean.FALSE;
+    BigDecimal electionsRipped = BigDecimal.ZERO;
     BigDecimal totalRewardsCollected = BigDecimal.ZERO;
     BigDecimal lastRewardCollected = BigDecimal.ZERO;
     BigDecimal totalPureRewardsCollected = BigDecimal.ZERO;

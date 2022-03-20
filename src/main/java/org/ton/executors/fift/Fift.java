@@ -391,7 +391,12 @@ public class Fift {
         String validatorPublicKeyHex = StringUtils.substringBetween(resultStr, "with validator public key ", SPACE).trim();
         BigInteger bigInt = new BigInteger(validatorPublicKeyHex, 16);
         log.info("{} signed adnl {} with validator pubkey (hex){}, (integer){}", node.getNodeName(), node.getValidationAndlKey(), validatorPublicKeyHex, bigInt);
-        node.setValidationPubKeyHex(validatorPublicKeyHex); // used only for monitoring
+
+        // used only for monitoring
+        node.setPrevValidationPubKeyHex(node.getPrevValidationPubKeyHex());
+        node.setValidationPubKeyHex(validatorPublicKeyHex);
+
+        node.setPrevValidationPubKeyInteger(node.getPrevValidationPubKeyInteger());
         node.setValidationPubKeyInteger(bigInt.toString());
     }
 

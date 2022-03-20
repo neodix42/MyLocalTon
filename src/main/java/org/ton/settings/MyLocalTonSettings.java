@@ -118,7 +118,7 @@ public class MyLocalTonSettings implements Serializable {
     Double timeLineScale;
     public Map<Long, Long> electionsCounter = new HashMap<>();
     public Map<Long, Boolean> electionsCounterGlobal = new HashMap<>();
-    public BigDecimal electionsRipped = BigDecimal.ZERO;
+
     int cycleMod = 3;
     int cycleModEquals = 1;
     BigDecimal defaultStake = new BigDecimal(10001);
@@ -165,11 +165,11 @@ public class MyLocalTonSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 60 * 60L; // 3 min, 60
-        Long electionStartBefore = 50 * 60L; // 2 min, 50
-        Long electionEndBefore = 20 * 60L;// 1 min, 20
-        Long electionStakesFrozenFor = 20 * 60L;// 30 sec, 20
-        Long originalValidatorSetValidFor = 50 * 60L; // 2 min, 50
+        Long electedFor = 5 * 60L; // 3 min, 60
+        Long electionStartBefore = 4 * 60L; // 2 min, 50
+        Long electionEndBefore = 1 * 60L;// 1 min, 20
+        Long electionStakesFrozenFor = 1 * 60L;// 30 sec, 20
+        Long originalValidatorSetValidFor = 4 * 60L; // 2 min, 50
 
         Long validatorStateTtl = 365 * 86400L; // 1 year, state will be gc'd after this time (in seconds) default=3600, 1 hour
         Long validatorBlockTtl = 365 * 86400L; // 1 year, blocks will be gc'd after this time (in seconds) default=7*86400, 7 days

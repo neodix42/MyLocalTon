@@ -184,14 +184,23 @@ public interface Node {
 
     String getValidationPubKeyHex();
 
-    String getValidationPubKeyInteger();
-
     void setValidationPubKeyHex(String validationPubKeyHex);
+
+    String getValidationPubKeyInteger();
 
     void setValidationPubKeyInteger(String validatorMonitoringPubKeyInteger);
 
+    String getPrevValidationPubKeyHex();
+
+    void setPrevValidationPubKeyHex(String prevValidationPubKeyHex);
+
+    String getPrevValidationPubKeyInteger();
+
+    void setPrevValidationPubKeyInteger(String prevValidatorMonitoringPubKeyInteger);
+
     void setValidationPubKeyAndAdnlCreated(Boolean pubKeyAndAdnlCreated);
 
+    //outdated?
     String getValidatorPrvKeyHex();
 
     String getValidatorPrvKeyBase64();
@@ -199,6 +208,7 @@ public interface Node {
     String getValidatorPubKeyHex();
 
     String getValidatorPubKeyBase64();
+    //---
 
     void setWalletAddress(WalletAddress walletAddress);
 
@@ -252,11 +262,23 @@ public interface Node {
 
     void setValidationSigningPubKey(String validationSigningPubKey);
 
-    void setValidationAndlKey(String validationAndlKey);
+    String getValidationAndlKey();
+
+    void setValidationAndlKey(String prevValidationAndlKey);
+
+    String getPrevValidationAndlKey();
+
+    void setPrevValidationAndlKey(String prevValidationAndlKey);
 
     String getValidationSigningKey();
 
     String getValidationSigningPubKey();
 
-    String getValidationAndlKey();
+    Boolean getElectionRequestSent();
+
+    void setElectionRequestSent(Boolean flag);
+
+    BigDecimal getElectionsRipped();
+
+    void setElectionsRipped(BigDecimal number);
 }

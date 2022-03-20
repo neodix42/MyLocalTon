@@ -129,8 +129,8 @@ public class App extends Application {
 
         new ValidatorEngine().startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation());
 
-        Utils.waitForBlockchainReady(genesisNode);
-        Utils.waitForNodeSynchronized(genesisNode);
+//        Utils.waitForBlockchainReady(genesisNode);
+//        Utils.waitForNodeSynchronized(genesisNode);
 
         myLocalTon.runBlockchainMonitor(genesisNode);
 
@@ -149,6 +149,10 @@ public class App extends Application {
 //                }
             }
         }
+
+        Utils.waitForBlockchainReady(genesisNode);
+        Utils.waitForNodeSynchronized(genesisNode);
+
 
         mainController.showSuccessMsg("TON blockchain is ready!", 2);
         Thread.sleep(2000);

@@ -302,7 +302,7 @@
                                         <RowConstraints/>
                                     </rowConstraints>
 
-                                    <Label text="Total validators" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                    <Label text="Validators prev/current/next" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
                                     <Label fx:id="totalValidators" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
                                     <Label text="Total participants" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
@@ -317,7 +317,7 @@
                                     <Label fx:id="startElections" onMouseClicked="#copyElectionId" text="" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                                     <Label text="End of elections" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
                                     <Label fx:id="endElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-                                    <Label text="Beginning of the next elections" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                    <Label text="Start of the next elections" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
                                     <Label fx:id="nextElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                                     <Label text="Minter address" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
@@ -386,7 +386,8 @@
                                     <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0" prefWidth="1990.0" GridPane.columnSpan="11"
                                                  GridPane.rowIndex="17"/>
                                 </GridPane>
-                                <JFXButton fx:id="addValidatorBtn" disable="true" visible="false" layoutX="1030.0" layoutY="20.0" onAction="#createNewNodeBtn" prefHeight="48.0" prefWidth="73.0">
+                                <JFXButton fx:id="addValidatorBtn" disable="true" visible="false" layoutX="1030.0" layoutY="20.0" onAction="#createNewNodeBtn" prefHeight="48.0"
+                                           prefWidth="73.0">
                                     <graphic>
                                         <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
                                             <Image url="@../images/addaccount.png"/>
@@ -478,7 +479,7 @@
                                 <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
                                 <Label fx:id="validator1AvgPureReward" text="0" GridPane.columnIndex="1" GridPane.rowIndex="20"/>
                                 <Label text="Participated times (ripped)" GridPane.columnIndex="0" GridPane.rowIndex="21"/>
-                                <Label fx:id="participatedInElections" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
+                                <Label fx:id="participatedInElections1" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
 
                             </GridPane>
                         </Tab>
