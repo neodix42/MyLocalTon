@@ -303,7 +303,7 @@ public class Utils {
 
             while (Main.inElections.get()) {
                 Thread.sleep(500);
-                log.info("waiting for operations to be finished");
+                log.info("waiting for requests in elections to be processed");
             }
 
             if (Main.appActive.get()) {
@@ -506,7 +506,7 @@ public class Utils {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(new LiteClient(LiteClientEnum.LOCAL).executeLast(node));
+            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
             log.error("{} is not ready", node.getNodeName());
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
     }
@@ -515,7 +515,7 @@ public class Utils {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(new LiteClient(LiteClientEnum.LOCAL).executeLast(node));
+            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
             log.info("{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
             node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
         } while (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0 && lastBlock.getSyncedSecondsAgo() > 10);
@@ -527,7 +527,7 @@ public class Utils {
 
     public static ValidationParam getConfig(org.ton.settings.Node node) throws Exception {
 
-        LiteClient liteClient = new LiteClient(LiteClientEnum.GLOBAL);
+        LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
         ResultConfig12 config12 = LiteClientParser.parseConfig12(liteClient.executeBlockchainInfo(node));
         log.debug("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
@@ -590,21 +590,18 @@ public class Utils {
                 .build();
     }
 
-    private static Boolean hasParticipated(Node node, long electionId) {
-        //return MyLocalTon.getInstance().getSettings().electionsCounterGlobal.getOrDefault(electionId, false);
-        return node.getElectionRequestSent();
-    }
-
     public static void participate(Node node, ValidationParam v) {
 
         try {
             long electionId = v.getStartValidationCycle();
 
-            if (hasParticipated(node, electionId)) {
+            if (node.getElectionsCounter().getOrDefault(electionId, -1L) > YEAR_1971) {
+                //if (hasParticipated(node, electionId)) {
                 log.info("{} has already sent request for elections", node.getNodeName());
                 if (electionId < Utils.getCurrentTimeSeconds()) {
                     log.info("electionId is outdated");
                 } else {
+                    log.info("electionId XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
                     return;
                 }
             }
@@ -614,7 +611,7 @@ public class Utils {
             // if it's a genesis node it has a wallet already - main-wallet.pk
             if (isNull(node.getWalletAddress())) {
                 log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
-                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), settings.getDefaultValidatorBalance());
+                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount());
                 node.setWalletAddress(walletEntity.getWallet());
                 Thread.sleep(5 * 1000); //10 sec
             } else {
@@ -639,18 +636,20 @@ public class Utils {
                     .fromWalletVersion(WalletVersion.V3)
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
-                    .amount(settings.getDefaultStake())
+                    .amount(node.getDefaultValidatorStake())
                     .comment("validator-request-send-stake") // TODO check if comment is visible
                     .bocLocation(node.getTonBinDir() + "validator-query.boc")
                     .build();
 
-            new Wallet().sendTonCoins(sendToncoinsParam);
-
-            node.setElectionRequestSent(true);
-
-            settings.electionsCounterGlobal.put(v.getStartValidationCycle(), true);
-            saveSettingsToGson(settings);
-
+            boolean sentOK = new Wallet().sendTonCoins(sendToncoinsParam);
+            if (sentOK) {
+                settings.electionsCounterGlobal.put(v.getStartValidationCycle(), true);
+                node.getElectionsCounter().put(v.getStartValidationCycle(), v.getStartValidationCycle());
+                saveSettingsToGson(settings);
+            } else {
+                log.error("Participation error. Failed to send {} Toncoins to {}", node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex());
+                App.mainController.showErrorMsg(String.format("Participation error. Failed to send %s Toncoins to %s", node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex()), 3);
+            }
         } catch (Exception e) {
             log.error("Error by {} in participation of elections! Error {}", node.getNodeName(), e.getMessage());
             log.error(ExceptionUtils.getStackTrace(e));
@@ -798,7 +797,7 @@ public class Utils {
         } else if (node.getStatus().matches(".*\\d.*")) {
             nodeStatusLabel.setText(node.getStatus());
             int seconds = Integer.parseInt(node.getStatus().replaceAll("[^0-9]", ""));
-            if (seconds > 10) {
+            if (seconds > 15) {
                 nodeStatusLabel.setTextFill(Color.DARKORANGE);
                 tab.setStyle("-fx-background-color: darkorange;");
             } else {

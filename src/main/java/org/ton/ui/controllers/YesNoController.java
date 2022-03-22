@@ -149,7 +149,7 @@ public class YesNoController implements Initializable {
 
         log.info("run method {} against {} with parameters {}", methodId, smcAddress, parameters);
         try {
-            stdout = new LiteClient(LiteClientEnum.GLOBAL).executeRunMethod(MyLocalTon.getInstance().getSettings().getGenesisNode(), smcAddress, methodId, parameters);
+            stdout = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeRunMethod(MyLocalTon.getInstance().getSettings().getGenesisNode(), smcAddress, methodId, parameters);
             if (stdout.contains("arguments")) {
                 stdout = stdout.substring(stdout.indexOf("arguments")).trim();
             }

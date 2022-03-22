@@ -90,14 +90,17 @@ public class SendController implements Initializable {
                         .forceBounce(forceBounceFlag.isSelected())
                         .comment(comment.getText())
                         .build();
-                String bocLocation = new Wallet().sendTonCoins(sendToncoinsParam);
 
-                log.debug("Sending {} to {}, resulting boc file {}", amount, hiddenWalletAddr.getText(), bocLocation);
+                boolean sentOK = new Wallet().sendTonCoins(sendToncoinsParam);
 
                 MainController c = fxmlLoader.getController();
                 c.sendDialog.close();
 
-                App.mainController.showSuccessMsg(String.format("Sent %s Toncoins to %s", sendAmount.getText(), destAddress), 3);
+                if (sentOK) {
+                    App.mainController.showSuccessMsg(String.format("Sent %s Toncoins to %s", sendAmount.getText(), destAddress), 3);
+                } else {
+                    App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", sendAmount.getText(), destAddress), 3);
+                }
             } else {
                 log.error("Sending error, wrong address");
                 App.mainController.showErrorMsg("Wrong address length! Should be 48 or of format wc:addr", 5);

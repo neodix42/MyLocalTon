@@ -21,7 +21,7 @@ import java.util.concurrent.Future;
 public class Hardfork {
 
     private static final String MY_TON_FORKED_CONFIG_JSON = "my-ton-forked.config.json";
-    
+
     //public void createHardFork(Node node, ResultLastBlock lastBlock, String externalMsgLocation) {
     public void createHardFork(Node forkedNode, Node toNode) {
         /*
@@ -58,7 +58,7 @@ public class Hardfork {
         new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
         Thread.sleep(3 * 1000L);
 
-        log.info("**************** {} balance before: {}", forkedNode.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor().executeGetAccount(forkedNode, toNode.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
+        log.info("**************** {} balance before: {}", forkedNode.getNodeName(), LiteClientParser.parseGetAccount(LiteClientExecutor.getInstance().executeGetAccount(forkedNode, toNode.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
 
         //get last block id
         ResultLastBlock forkFromBlock = getLastBlock(forkedNode);
@@ -104,7 +104,7 @@ public class Hardfork {
         //        settings.getNode6().getNodeProcess().destroy();
         //        settings.getNode7().getNodeProcess().destroy();
 
-        log.info(new LiteClientExecutor().executeGetCurrentValidators(forkedNode)); // TODO PARSING
+        log.info(LiteClientExecutor.getInstance().executeGetCurrentValidators(forkedNode)); // TODO PARSING
         //stop instance
         forkedNode.getNodeProcess().destroy();
         //newNode1.getNodeProcess().destroy();
@@ -214,11 +214,11 @@ public class Hardfork {
                 log.info("last from {}          {}", settings.getNode2().getNodeName(), getLastBlockFromForked(settings.getNode2()));
                 log.info("last from {}          {}", settings.getNode3().getNodeName(), getLastBlockFromForked(settings.getNode3()));
                 log.info("last from {}          {}", forkedNode.getNodeName(), getLastBlockFromForked(forkedNode));
-                log.info("**************** {} balance after: {}", forkedNode.getNodeName(), LiteClientParser.parseGetAccount(new LiteClientExecutor(true).executeGetAccount(forkedNode, toNode.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
+                log.info("**************** {} balance after: {}", forkedNode.getNodeName(), LiteClientParser.parseGetAccount(LiteClientExecutor.getInstance(true).executeGetAccount(forkedNode, toNode.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
 
-                log.info("hashes on {} {}", settings.getNode2(), new LiteClientExecutor(true).executeBySeqno(settings.getNode2(), block.getWc(), block.getShard(), block.getSeqno()));
-                log.info("hashes on {} {}", settings.getNode3(), new LiteClientExecutor(true).executeBySeqno(settings.getNode3(), block.getWc(), block.getShard(), block.getSeqno()));
-                log.info("hashes on {} {}", forkedNode.getNodeName(), new LiteClientExecutor(true).executeBySeqno(forkedNode, block.getWc(), block.getShard(), block.getSeqno()));
+                log.info("hashes on {} {}", settings.getNode2(), LiteClientExecutor.getInstance(true).executeBySeqno(settings.getNode2(), block.getWc(), block.getShard(), block.getSeqno()));
+                log.info("hashes on {} {}", settings.getNode3(), LiteClientExecutor.getInstance(true).executeBySeqno(settings.getNode3(), block.getWc(), block.getShard(), block.getSeqno()));
+                log.info("hashes on {} {}", forkedNode.getNodeName(), LiteClientExecutor.getInstance(true).executeBySeqno(forkedNode, block.getWc(), block.getShard(), block.getSeqno()));
 
                 Thread.sleep(10 * 1000L);
             }

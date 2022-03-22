@@ -7,6 +7,8 @@ import org.ton.wallet.WalletAddress;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -27,6 +29,19 @@ public class GenesisNode implements Serializable, Node {
     Integer dhtForkedOutPort = 3282;
     transient String status = "not ready";
 
+    BigDecimal initialValidatorWalletAmount = new BigDecimal("50005");
+    BigDecimal defaultValidatorStake = new BigDecimal("10001");
+    //startup settings, individual per node
+    Long validatorStateTtl = 365 * 86400L; // 1 year, state will be gc'd after this time (in seconds) default=3600, 1 hour
+    Long validatorBlockTtl = 365 * 86400L; // 1 year, blocks will be gc'd after this time (in seconds) default=7*86400, 7 days
+    Long validatorArchiveTtl = 365 * 86400L; //1 year, archived blocks will be deleted after this time (in seconds) default=365*86400, 1 year
+    Long validatorKeyProofTtl = 10 * 365 * 86400L; // 10 years, key blocks will be deleted after this time (in seconds) default=365*86400*10, 10 years
+    Long validatorSyncBefore = 365 * 86400L; //1 year, initial sync download all blocks for last given seconds default=3600, 1 hour
+
+    String tonLogLevel = "ERROR";
+    public String myLocalTonLogLevel = "INFO";
+
+
     String validatorPrvKeyHex;
     String validatorPrvKeyBase64;
     String validatorPubKeyHex;
@@ -44,7 +59,8 @@ public class GenesisNode implements Serializable, Node {
     String prevValidationPubKeyInteger;
 
     Boolean validationPubKeyAndAdnlCreated = Boolean.FALSE;
-    Boolean electionRequestSent = Boolean.FALSE;
+
+    Map<Long, Long> electionsCounter = new HashMap<>();
     BigDecimal electionsRipped = BigDecimal.ZERO;
     BigDecimal totalRewardsCollected = BigDecimal.ZERO;
     BigDecimal lastRewardCollected = BigDecimal.ZERO;

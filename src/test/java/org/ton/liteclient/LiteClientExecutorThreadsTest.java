@@ -38,7 +38,7 @@ public class LiteClientExecutorThreadsTest {
         InputStream TESTNET_CONFIG = IOUtils.toBufferedInputStream(getClass().getResourceAsStream("/testnet-global.config.json"));
         Files.copy(TESTNET_CONFIG, Paths.get(TESTNET_CONFIG_LOCATION), StandardCopyOption.REPLACE_EXISTING);
 
-        liteClient = new LiteClient(LiteClientEnum.GLOBAL);
+        liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
         testNode = new GenesisNode();
         testNode.extractBinaries();

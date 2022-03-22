@@ -46,7 +46,7 @@ public class LiteClientExecutorTest {
         InputStream TESTNET_CONFIG = IOUtils.toBufferedInputStream(LiteClientExecutorTest.class.getResourceAsStream("/testnet-global.config.json"));
         Files.copy(TESTNET_CONFIG, Paths.get(TESTNET_CONFIG_LOCATION), StandardCopyOption.REPLACE_EXISTING);
 
-        liteClient = new LiteClient(LiteClientEnum.GLOBAL); //new LiteClientExecutor(nodes.toArray(new String[0]));
+        liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL); //LiteClientExecutor.getInstance(nodes.toArray(new String[0]));
 
         testNode = new GenesisNode();
         testNode.extractBinaries();

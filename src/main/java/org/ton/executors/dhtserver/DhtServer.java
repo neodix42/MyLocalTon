@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.ton.actions.MyLocalTon;
 import org.ton.executors.generaterandomid.RandomIdExecutor;
 import org.ton.settings.Node;
 import org.ton.utils.Utils;
@@ -33,7 +32,7 @@ public class DhtServer {
     public void startDhtServer(Node node, String globalConfigFile) {
         log.info("{} dht-server started at {}", node.getNodeName(), node.getPublicIp() + ":" + node.getDhtPort());
         Pair<Process, Future<String>> dhtServer = new DhtServerExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
+                "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
                 "-t", "2",
                 "-C", globalConfigFile,
                 "-l", node.getDhtServerDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
@@ -57,7 +56,7 @@ public class DhtServer {
 
             log.info("Initializing DHT server"); // creating key in dht-server/keyring/hex and config.json
             Pair<Process, Future<String>> dhtServerInit = new DhtServerExecutor().execute(node,
-                    "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
+                    "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
                     "-C", EXAMPLE_GLOBAL_CONFIG,
                     "-D", node.getDhtServerDir(),
                     "-I", node.getPublicIp() + ":" + node.getDhtPort());

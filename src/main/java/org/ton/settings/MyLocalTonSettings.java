@@ -48,7 +48,6 @@ public class MyLocalTonSettings implements Serializable {
         walletSettings = new WalletSettings();
         uiSettings = new UiSettings();
         blockchainSettings = new BlockchainSettings();
-        logSettings = new LogSettings();
 
         dbPool = new ConcurrentHashMap<>();
         activeNodes = new ArrayList<>();
@@ -78,7 +77,6 @@ public class MyLocalTonSettings implements Serializable {
     WalletSettings walletSettings;
     UiSettings uiSettings;
     BlockchainSettings blockchainSettings;
-    LogSettings logSettings;
 
     String mainWalletAddrBase64;
     String mainWalletAddrFull;
@@ -121,17 +119,17 @@ public class MyLocalTonSettings implements Serializable {
 
     int cycleMod = 3;
     int cycleModEquals = 1;
-    BigDecimal defaultStake = new BigDecimal(10001);
-    BigDecimal defaultValidatorBalance = new BigDecimal(50005);
+    //BigDecimal defaultStake = new BigDecimal(10001);
+    //BigDecimal defaultValidatorBalance = new BigDecimal(50005);
     Boolean veryFirstElections = Boolean.TRUE;
 
     //options - logs
-    @Getter
-    @Setter
-    public static class LogSettings implements Serializable {
-        String myLocalTonLogLevel = "INFO";
-        String tonLogLevel = "INFO";
-    }
+//    @Getter
+//    @Setter
+//    public static class LogSettings implements Serializable {
+//        String myLocalTonLogLevel = "INFO";
+//        //String tonLogLevel = "ERROR"; // TODO REMOVE
+//    }
 
     //options - account and keys
     @Getter
@@ -171,11 +169,11 @@ public class MyLocalTonSettings implements Serializable {
         Long electionStakesFrozenFor = 1 * 60L;// 30 sec, 20
         Long originalValidatorSetValidFor = 4 * 60L; // 2 min, 50
 
-        Long validatorStateTtl = 365 * 86400L; // 1 year, state will be gc'd after this time (in seconds) default=3600, 1 hour
-        Long validatorBlockTtl = 365 * 86400L; // 1 year, blocks will be gc'd after this time (in seconds) default=7*86400, 7 days
-        Long validatorArchiveTtl = 365 * 86400L; //1 year, archived blocks will be deleted after this time (in seconds) default=365*86400, 1 year
-        Long validatorKeyProofTtl = 10 * 365 * 86400L; // 10 years, key blocks will be deleted after this time (in seconds) default=365*86400*10, 10 years
-        Long validatorSyncBefore = 2 * 60L; //2 minutes, in initial sync download all blocks for last given seconds default=3600, 1 hour
+//        Long validatorStateTtl = 365 * 86400L; // 1 year, state will be gc'd after this time (in seconds) default=3600, 1 hour
+//        Long validatorBlockTtl = 365 * 86400L; // 1 year, blocks will be gc'd after this time (in seconds) default=7*86400, 7 days
+//        Long validatorArchiveTtl = 365 * 86400L; //1 year, archived blocks will be deleted after this time (in seconds) default=365*86400, 1 year
+//        Long validatorKeyProofTtl = 10 * 365 * 86400L; // 10 years, key blocks will be deleted after this time (in seconds) default=365*86400*10, 10 years
+//        Long validatorSyncBefore = 2 * 60L; //2 minutes, in initial sync download all blocks for last given seconds default=3600, 1 hour
 
         Long globalId = -239L;
         Long initialBalance = 4999990000L;

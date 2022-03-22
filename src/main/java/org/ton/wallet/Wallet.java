@@ -22,7 +22,7 @@ public class Wallet {
     private final LiteClient liteClient;
 
     public Wallet() {
-        liteClient = new LiteClient(LiteClientEnum.GLOBAL);
+        liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
     }
 
     public static final BigDecimal BLN1 = BigDecimal.valueOf(1000000000);
@@ -72,7 +72,7 @@ public class Wallet {
     /**
      * Used to send toncoins from one-time-wallet, where do we have prvkey, which is used in fift script
      */
-    public String sendTonCoins(SendToncoinsParam sendToncoinsParam) throws Exception {
+    public Boolean sendTonCoins(SendToncoinsParam sendToncoinsParam) throws Exception {
 
         long seqno = liteClient.executeGetSeqno(sendToncoinsParam.getExecutionNode(), sendToncoinsParam.getFromWallet().getFullWalletAddress());
 
@@ -100,7 +100,7 @@ public class Wallet {
             Thread.sleep(3 * 1000);
             long newSeqno = liteClient.executeGetSeqno(sendToncoinsParam.getExecutionNode(), sendToncoinsParam.getFromWallet().getFullWalletAddress());
             if (newSeqno > seqno) {
-                break;
+                return true;
             }
             log.info("{} waiting for wallet to update seqno. Old seqno {}, new seqno {}", sendToncoinsParam.getExecutionNode().getNodeName(), seqno, newSeqno);
             counter++;
@@ -108,9 +108,15 @@ public class Wallet {
                 log.info("resending external message {}", externalMsgLocation);
                 log.info(liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
             }
+            if (counter > 30) {
+                log.error("ERROR sending {} Toncoins by {} from {} to {}.",
+                        sendToncoinsParam.getAmount(),
+                        sendToncoinsParam.getExecutionNode().getNodeName(),
+                        sendToncoinsParam.getFromWallet().getFullWalletAddress(),
+                        sendToncoinsParam.getDestAddr());
+                return false;
+            }
         }
-
-        return externalMsgLocation;
     }
 
     public WalletAddress createWallet(Node node, WalletVersion version, long workchain, long subWalletId) throws Exception {

@@ -1067,102 +1067,6 @@
                         </Tab>
                     </JFXTabPane>
                 </Tab>
-                <Tab fx:id="logsTab">
-                    <graphic>
-                        <Group>
-                            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="209.0" rotate="90.0">
-                                <!--
-                               <ImageView fitHeight="48.0" fitWidth="76.0" pickOnBounds="true" preserveRatio="true">
-                                   <HBox.margin>
-                                       <Insets left="5.0"/>
-                                   </HBox.margin>
-
-                                   <Image url="@../images/logs.png"/>
-
-                               </ImageView>
-                               -->
-                                <Label text="LOGS" textFill="WHITE">
-                                    <font>
-                                        <Font size="19.0"/>
-                                    </font>
-                                    <HBox.margin>
-                                        <Insets left="10.0"/>
-                                    </HBox.margin>
-                                </Label>
-                            </HBox>
-                        </Group>
-                    </graphic>
-                    <JFXTabPane>
-                        <Tab text="Logs">
-                            <GridPane hgap="10" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
-                                <padding>
-                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
-                                </padding>
-                                <columnConstraints>
-                                    <ColumnConstraints/>
-                                    <ColumnConstraints/>
-                                    <ColumnConstraints/>
-                                </columnConstraints>
-                                <rowConstraints>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                </rowConstraints>
-
-                                <Label text="Genesis node logs directory" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                                <JFXTextField fx:id="valLogDir" editable="false" text="/home/alex/validator/" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                                <JFXButton onAction="#valLogDirBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
-                                    <graphic>
-                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                            <Image url="@../images/folder.png"/>
-                                        </ImageView>
-                                    </graphic>
-                                </JFXButton>
-
-                                <Label text="DHT server log directory" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                                <JFXTextField fx:id="dhtLogDir" editable="false" text="/home/alex/dht-server.log" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                                <JFXButton onAction="#dhtLogDirBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
-                                    <graphic>
-                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                            <Image url="@../images/folder.png"/>
-                                        </ImageView>
-                                    </graphic>
-                                </JFXButton>
-
-                                <Label text="MyLocalTon log file" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                <JFXTextField fx:id="myLocalTonLog" editable="false" minWidth="600.0" text="/home/alex/myLocalTon.log" GridPane.columnIndex="1"
-                                              GridPane.rowIndex="2"/>
-                                <JFXButton onAction="#myLocalTonFileBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
-                                    <graphic>
-                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                            <Image url="@../images/folder.png"/>
-                                        </ImageView>
-                                    </graphic>
-                                </JFXButton>
-
-                                <Label text="MyLocalTon DB log directory" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                <JFXTextField fx:id="myLocalTonDbLogDir" editable="false" minWidth="600.0" text="/home/alex/myLocalTonDB/" GridPane.columnIndex="1"
-                                              GridPane.rowIndex="3"/>
-                                <JFXButton fx:id="myLocalTonDbDirBtn" onAction="#myLocalTonDbDirBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2"
-                                           GridPane.rowIndex="3">
-                                    <graphic>
-                                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
-                                            <Image url="@../images/folder.png"/>
-                                        </ImageView>
-                                    </graphic>
-                                </JFXButton>
-
-                                <Label prefHeight="28.0" text="MyLocalTon log level" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                                <JFXComboBox fx:id="myLogLevel" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                                <Label prefHeight="28.0" text="Node log level" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                                <JFXComboBox fx:id="tonLogLevel" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-                            </GridPane>
-                        </Tab>
-                    </JFXTabPane>
-                </Tab>
                 <Tab fx:id="settingsTab">
                     <graphic>
                         <Group>
@@ -1209,43 +1113,576 @@
                                 <JFXSlider fx:id="walletsNumber" blockIncrement="1.0" majorTickUnit="1.0" max="30" min="2" minorTickCount="0" snapToTicks="true" value="5"
                                            GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-                                <Label prefHeight="35" text="Toncoins per wallet" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                <Label prefHeight="35" text="Toncoins per wallet" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                    <tooltip>
+                                        <Tooltip text="Used when wallet is created"/>
+                                    </tooltip>
+                                </Label>
                                 <JFXTextField fx:id="coinsPerWallet" text="30000" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 
                                 <Label prefHeight="35" text="Wallet type" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
                                 <JFXComboBox fx:id="walletVersion" minWidth="100.0" promptText="Wallet V1" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                             </GridPane>
                         </Tab>
-                        <Tab text="Network">
-                            <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
-                                <padding>
-                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
-                                </padding>
-                                <columnConstraints>
-                                    <ColumnConstraints/>
-                                    <ColumnConstraints/>
-                                    <ColumnConstraints/>
-                                </columnConstraints>
-                                <rowConstraints>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                    <RowConstraints/>
-                                </rowConstraints>
+                        <Tab text="Validators">
+                            <JFXTabPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <Tab text="Validator 1">
+                                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
 
-                                <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                                <JFXTextField fx:id="nodePublicPort" maxWidth="50" text="4442" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                                <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                                <JFXTextField fx:id="nodeConsolePort" maxWidth="50" text="4441" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                                <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                                <JFXTextField fx:id="litesServerPort" maxWidth="50" text="4443" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                                <Label text="DHT server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                                <JFXTextField fx:id="dhtServerPort" maxWidth="50" text="6302" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                                <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset" GridPane.columnSpan="3"
-                                       GridPane.rowIndex="4"/>
-                            </GridPane>
+                                        <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="configNodeConsolePort1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                        <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXTextField fx:id="configNodePublicPort1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                        <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="configLiteServerPort1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                        <Label text="DHT server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                        <JFXTextField fx:id="configDhtServerPort1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                                               GridPane.columnSpan="3" GridPane.rowIndex="4"/>
+
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+
+                                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="validatorWalletDeposit1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                                        <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                                        <JFXTextField fx:id="validatorDefaultStake1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+
+                                        <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
+                                            <tooltip>
+                                                <Tooltip text="State will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeStateTtl1" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="9"/>
+
+                                        <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="10">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeBlockTtl1" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+
+                                        <Label text="Node archive TTL" GridPane.columnIndex="0" GridPane.rowIndex="11">
+                                            <tooltip>
+                                                <Tooltip text="Archived blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeArchiveTtl1" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+
+                                        <Label text="Node key proof TTL" GridPane.columnIndex="0" GridPane.rowIndex="12">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeKeyProofTtl1" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+
+                                        <Label text="Node sync before" GridPane.columnIndex="0" GridPane.rowIndex="13">
+                                            <tooltip>
+                                                <Tooltip text="In initial sync download all blocks for last given seconds"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeSyncBefore1" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="13"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 2">
+                                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="configNodeConsolePort2" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                        <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXTextField fx:id="configNodePublicPort2" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                        <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="configLiteServerPort2" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                                               GridPane.columnSpan="3" GridPane.rowIndex="3"/>
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+
+                                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="validatorWalletDeposit2" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                        <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="validatorDefaultStake2" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+
+                                        <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="8">
+                                            <tooltip>
+                                                <Tooltip text="State will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeStateTtl2" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="8"/>
+
+                                        <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeBlockTtl2" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+
+                                        <Label text="Node archive TTL" GridPane.columnIndex="0" GridPane.rowIndex="10">
+                                            <tooltip>
+                                                <Tooltip text="Archived blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeArchiveTtl2" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+
+                                        <Label text="Node key proof TTL" GridPane.columnIndex="0" GridPane.rowIndex="11">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeKeyProofTtl2" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+
+                                        <Label text="Node sync before" GridPane.columnIndex="0" GridPane.rowIndex="12">
+                                            <tooltip>
+                                                <Tooltip text="In initial sync download all blocks for last given seconds"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeSyncBefore2" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 3">
+                                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="configNodeConsolePort3" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                        <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXTextField fx:id="configNodePublicPort3" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                        <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="configLiteServerPort3" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                                               GridPane.columnSpan="3" GridPane.rowIndex="3"/>
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+
+                                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="validatorWalletDeposit3" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                        <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="validatorDefaultStake3" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+
+                                        <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="8">
+                                            <tooltip>
+                                                <Tooltip text="State will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeStateTtl3" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="8"/>
+
+                                        <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeBlockTtl3" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+
+                                        <Label text="Node archive TTL" GridPane.columnIndex="0" GridPane.rowIndex="10">
+                                            <tooltip>
+                                                <Tooltip text="Archived blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeArchiveTtl3" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+
+                                        <Label text="Node key proof TTL" GridPane.columnIndex="0" GridPane.rowIndex="11">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeKeyProofTtl3" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+
+                                        <Label text="Node sync before" GridPane.columnIndex="0" GridPane.rowIndex="12">
+                                            <tooltip>
+                                                <Tooltip text="In initial sync download all blocks for last given seconds"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeSyncBefore3" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 4">
+                                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="configNodeConsolePort4" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                        <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXTextField fx:id="configNodePublicPort4" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                        <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="configLiteServerPort4" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                                               GridPane.columnSpan="3" GridPane.rowIndex="3"/>
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+
+                                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="validatorWalletDeposit4" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                        <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="validatorDefaultStake4" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+
+                                        <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="8">
+                                            <tooltip>
+                                                <Tooltip text="State will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeStateTtl4" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="8"/>
+
+                                        <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeBlockTtl4" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+
+                                        <Label text="Node archive TTL" GridPane.columnIndex="0" GridPane.rowIndex="10">
+                                            <tooltip>
+                                                <Tooltip text="Archived blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeArchiveTtl4" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+
+                                        <Label text="Node key proof TTL" GridPane.columnIndex="0" GridPane.rowIndex="11">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeKeyProofTtl4" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+
+                                        <Label text="Node sync before" GridPane.columnIndex="0" GridPane.rowIndex="12">
+                                            <tooltip>
+                                                <Tooltip text="In initial sync download all blocks for last given seconds"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeSyncBefore4" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 5">
+                                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="configNodeConsolePort5" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                        <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXTextField fx:id="configNodePublicPort5" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                        <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="configLiteServerPort5" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                                               GridPane.columnSpan="3" GridPane.rowIndex="3"/>
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+
+                                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="validatorWalletDeposit5" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                        <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="validatorDefaultStake5" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+
+                                        <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="8">
+                                            <tooltip>
+                                                <Tooltip text="State will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeStateTtl5" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="8"/>
+
+                                        <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeBlockTtl5" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+
+                                        <Label text="Node archive TTL" GridPane.columnIndex="0" GridPane.rowIndex="10">
+                                            <tooltip>
+                                                <Tooltip text="Archived blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeArchiveTtl5" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+
+                                        <Label text="Node key proof TTL" GridPane.columnIndex="0" GridPane.rowIndex="11">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeKeyProofTtl5" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+
+                                        <Label text="Node sync before" GridPane.columnIndex="0" GridPane.rowIndex="12">
+                                            <tooltip>
+                                                <Tooltip text="In initial sync download all blocks for last given seconds"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeSyncBefore5" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 6">
+                                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="configNodeConsolePort6" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                        <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXTextField fx:id="configNodePublicPort6" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                        <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="configLiteServerPort6" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                                               GridPane.columnSpan="3" GridPane.rowIndex="3"/>
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+
+                                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="validatorWalletDeposit6" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                        <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="validatorDefaultStake6" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+
+                                        <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="8">
+                                            <tooltip>
+                                                <Tooltip text="State will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeStateTtl6" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="8"/>
+
+                                        <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeBlockTtl6" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+
+                                        <Label text="Node archive TTL" GridPane.columnIndex="0" GridPane.rowIndex="10">
+                                            <tooltip>
+                                                <Tooltip text="Archived blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeArchiveTtl6" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+
+                                        <Label text="Node key proof TTL" GridPane.columnIndex="0" GridPane.rowIndex="11">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeKeyProofTtl6" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+
+                                        <Label text="Node sync before" GridPane.columnIndex="0" GridPane.rowIndex="12">
+                                            <tooltip>
+                                                <Tooltip text="In initial sync download all blocks for last given seconds"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeSyncBefore6" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 7">
+                                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="configNodeConsolePort7" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                        <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXTextField fx:id="configNodePublicPort7" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                        <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="configLiteServerPort7" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                                               GridPane.columnSpan="3" GridPane.rowIndex="3"/>
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+
+                                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                                        <JFXTextField fx:id="validatorWalletDeposit7" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                        <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+                                        <JFXTextField fx:id="validatorDefaultStake7" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+
+                                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+
+                                        <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="8">
+                                            <tooltip>
+                                                <Tooltip text="State will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeStateTtl7" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="8"/>
+
+                                        <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be gc'd after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeBlockTtl7" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+
+                                        <Label text="Node archive TTL" GridPane.columnIndex="0" GridPane.rowIndex="10">
+                                            <tooltip>
+                                                <Tooltip text="Archived blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeArchiveTtl7" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+
+                                        <Label text="Node key proof TTL" GridPane.columnIndex="0" GridPane.rowIndex="11">
+                                            <tooltip>
+                                                <Tooltip text="Blocks will be deleted after this time (in seconds)"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeKeyProofTtl7" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+
+                                        <Label text="Node sync before" GridPane.columnIndex="0" GridPane.rowIndex="12">
+                                            <tooltip>
+                                                <Tooltip text="In initial sync download all blocks for last given seconds"/>
+                                            </tooltip>
+                                        </Label>
+                                        <JFXTextField fx:id="nodeSyncBefore7" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                                    </GridPane>
+                                </Tab>
+                            </JFXTabPane>
                         </Tab>
+
                         <Tab text="UI">
                             <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                                 <padding>
@@ -1361,52 +1798,274 @@
                                         <Label text="cell-price-mc" GridPane.columnIndex="2" GridPane.rowIndex="10"/>
                                         <JFXTextField fx:id="cellPriceMc" text="1000000" GridPane.columnIndex="3" GridPane.rowIndex="10"/>
 
-                                        <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="11">
-                                            <tooltip>
-                                                <Tooltip text="State will be gc'd after this time (in seconds)"/>
-                                            </tooltip>
-                                        </Label>
-                                        <JFXTextField fx:id="nodeStateTtl" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
-                                                      GridPane.rowIndex="11"/>
 
-                                        <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="12">
-                                            <tooltip>
-                                                <Tooltip text="Blocks will be gc'd after this time (in seconds)"/>
-                                            </tooltip>
-                                        </Label>
-                                        <JFXTextField fx:id="nodeBlockTtl" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
-
-                                        <Label text="Node archive TTL" GridPane.columnIndex="0" GridPane.rowIndex="13">
-                                            <tooltip>
-                                                <Tooltip text="Archived blocks will be deleted after this time (in seconds)"/>
-                                            </tooltip>
-                                        </Label>
-                                        <JFXTextField fx:id="nodeArchiveTtl" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="13"/>
-
-                                        <Label text="Node key proof TTL" GridPane.columnIndex="0" GridPane.rowIndex="14">
-                                            <tooltip>
-                                                <Tooltip text="Blocks will be deleted after this time (in seconds)"/>
-                                            </tooltip>
-                                        </Label>
-                                        <JFXTextField fx:id="nodeKeyProofTtl" text="315360000" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
-
-                                        <Label text="Node sync before" GridPane.columnIndex="0" GridPane.rowIndex="15">
-                                            <tooltip>
-                                                <Tooltip text="In initial sync download all blocks for last given seconds"/>
-                                            </tooltip>
-                                        </Label>
-                                        <JFXTextField fx:id="nodeSyncBefore" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
                                         <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
                                                GridPane.columnSpan="3" GridPane.rowIndex="16"/>
                                         <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="4" GridPane.rowIndex="16">
-                                            <!--
-                                            <JFXButton alignment="CENTER" onAction="#transformAction" prefHeight="31.0" prefWidth="100.0" text="Transform" textAlignment="CENTER"/>
-                                            -->
                                             <JFXButton alignment="CENTER" onAction="#resetAction" prefHeight="31.0" prefWidth="100.0" text="Reset" textAlignment="CENTER"/>
                                         </HBox>
                                     </GridPane>
                                 </center>
                             </BorderPane>
+                        </Tab>
+                        <Tab text="Logs">
+                            <JFXTabPane fx:id="subLogsTabs" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <Tab fx:id="settingsLogsValidator1Tab" text="Validator 1">
+                                    <GridPane hgap="10" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node logs directory" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="validatorLogDir1" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                                        <JFXButton onAction="#valLogDirBtnAction1" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <Image url="@../images/folder.png"/>
+                                                </ImageView>
+                                            </graphic>
+                                        </JFXButton>
+
+                                        <Label text="DHT server log directory" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXTextField fx:id="dhtLogDir1" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                        <JFXButton onAction="#dhtLogDirBtnAction1" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <Image url="@../images/folder.png"/>
+                                                </ImageView>
+                                            </graphic>
+                                        </JFXButton>
+
+                                        <Label text="MyLocalTon log file" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                                        <JFXTextField fx:id="myLocalTonLog" editable="false" minWidth="600.0" text="/home/alex/myLocalTon.log" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="2"/>
+                                        <JFXButton onAction="#myLocalTonFileBtnAction" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2"
+                                                   GridPane.rowIndex="2">
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <Image url="@../images/folder.png"/>
+                                                </ImageView>
+                                            </graphic>
+                                        </JFXButton>
+
+                                        <Label prefHeight="28.0" text="MyLocalTon log level" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                                        <JFXComboBox fx:id="myLogLevel" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                        <Label prefHeight="28.0" text="Node log level" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                                        <JFXComboBox fx:id="tonLogLevel" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 2">
+                                    <GridPane hgap="10" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node logs directory" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="validatorLogDir2" editable="false" text="/home/alex/validator/" minWidth="600.0" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="0"/>
+                                        <JFXButton onAction="#valLogDirBtnAction2" userData="2" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <Image url="@../images/folder.png"/>
+                                                </ImageView>
+                                            </graphic>
+                                        </JFXButton>
+                                        <Label prefHeight="28.0" text="Node log level" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXComboBox fx:id="tonLogLevel2" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 3">
+                                    <GridPane hgap="10" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node logs directory" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="validatorLogDir3" editable="false" text="/home/alex/validator/" minWidth="600.0" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="0"/>
+                                        <JFXButton onAction="#valLogDirBtnAction3" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <Image url="@../images/folder.png"/>
+                                                </ImageView>
+                                            </graphic>
+                                        </JFXButton>
+                                        <Label prefHeight="28.0" text="Node log level" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXComboBox fx:id="tonLogLevel3" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 4">
+                                    <GridPane hgap="10" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node logs directory" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="validatorLogDir4" editable="false" text="/home/alex/validator/" minWidth="600.0" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="0"/>
+                                        <JFXButton onAction="#valLogDirBtnAction4" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <Image url="@../images/folder.png"/>
+                                                </ImageView>
+                                            </graphic>
+                                        </JFXButton>
+                                        <Label prefHeight="28.0" text="Node log level" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXComboBox fx:id="tonLogLevel4" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 5">
+                                    <GridPane hgap="10" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node logs directory" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="validatorLogDir5" editable="false" text="/home/alex/validator/" minWidth="600.0" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="0"/>
+                                        <JFXButton onAction="#valLogDirBtnAction5" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <Image url="@../images/folder.png"/>
+                                                </ImageView>
+                                            </graphic>
+                                        </JFXButton>
+                                        <Label prefHeight="28.0" text="Node log level" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXComboBox fx:id="tonLogLevel5" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 6">
+                                    <GridPane hgap="10" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node logs directory" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="validatorLogDir6" editable="false" text="/home/alex/validator/" minWidth="600.0" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="0"/>
+                                        <JFXButton onAction="#valLogDirBtnAction6" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <Image url="@../images/folder.png"/>
+                                                </ImageView>
+                                            </graphic>
+                                        </JFXButton>
+                                        <Label prefHeight="28.0" text="Node log level" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXComboBox fx:id="tonLogLevel6" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                    </GridPane>
+                                </Tab>
+                                <Tab text="Validator 7">
+                                    <GridPane hgap="10" vgap="10.0" xmlns:fx="http://javafx.com/fxml">
+                                        <padding>
+                                            <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
+                                        </padding>
+                                        <columnConstraints>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                            <ColumnConstraints/>
+                                        </columnConstraints>
+                                        <rowConstraints>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                            <RowConstraints/>
+                                        </rowConstraints>
+
+                                        <Label text="Node logs directory" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                                        <JFXTextField fx:id="validatorLogDir7" editable="false" text="/home/alex/validator/" minWidth="600.0" GridPane.columnIndex="1"
+                                                      GridPane.rowIndex="0"/>
+                                        <JFXButton onAction="#valLogDirBtnAction7" prefHeight="20.0" prefWidth="20.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                                            <graphic>
+                                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                                    <Image url="@../images/folder.png"/>
+                                                </ImageView>
+                                            </graphic>
+                                        </JFXButton>
+                                        <Label prefHeight="28.0" text="Node log level" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                                        <JFXComboBox fx:id="tonLogLevel7" minWidth="100.0" promptText="INFO" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                    </GridPane>
+                                </Tab>
+                            </JFXTabPane>
                         </Tab>
                         <Tab text="About">
                             <BorderPane>
@@ -1426,6 +2085,7 @@
                         </Tab>
                     </JFXTabPane>
                 </Tab>
+
                 <Tab fx:id="explorerTab">
                     <graphic>
                         <Group>

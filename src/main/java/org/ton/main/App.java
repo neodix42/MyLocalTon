@@ -87,7 +87,7 @@ public class App extends Application {
         MyLocalTonSettings settings = myLocalTon.getSettings();
         log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
 
-        Utils.setMyLocalTonLogLevel(settings.getLogSettings().getMyLocalTonLogLevel());
+        Utils.setMyLocalTonLogLevel(settings.getGenesisNode().getMyLocalTonLogLevel());
 
         System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
         System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
@@ -132,17 +132,11 @@ public class App extends Application {
 //        Utils.waitForBlockchainReady(genesisNode);
 //        Utils.waitForNodeSynchronized(genesisNode);
 
-        myLocalTon.runBlockchainMonitor(genesisNode);
-
-        myLocalTon.runNodesMonitor();
-
-        myLocalTon.runBlockchainSizeMonitor();
-
         // start other validators
         for (String nodeName : settings.getActiveNodes()) {
             if (!nodeName.contains("genesis")) {
                 long pid = new ValidatorEngine().startValidator(settings.getNodeByName(nodeName), genesisNode.getNodeGlobalConfigLocation()).pid();
-                log.info("started validator {} with pid {}", nodeName, pid);
+                log.info("started validator {} with pid {}", nodeName, pid); // todo check if non blocking
 //                if (isWindows()) {
 //                    Utils.waitForBlockchainReady(settings.getNodeByName(nodeName));
 //                    Utils.waitForNodeSynchronized(settings.getNodeByName(nodeName));
@@ -150,8 +144,15 @@ public class App extends Application {
             }
         }
 
+        myLocalTon.runNodesMonitor();
+
         Utils.waitForBlockchainReady(genesisNode);
         Utils.waitForNodeSynchronized(genesisNode);
+
+        myLocalTon.runBlockchainMonitor(genesisNode);
+
+
+        myLocalTon.runBlockchainSizeMonitor();
 
 
         mainController.showSuccessMsg("TON blockchain is ready!", 2);

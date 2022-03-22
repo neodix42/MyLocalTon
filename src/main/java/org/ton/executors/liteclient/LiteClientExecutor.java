@@ -16,20 +16,28 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
+import static java.util.Objects.isNull;
 
 @Slf4j
 public class LiteClientExecutor {
 
     private static final String LITE_CLIENT_EXE = "lite-client.exe";
     private static final String LITE_CLIENT = "lite-client";
-    private LiteClientEnum config;
+    private static LiteClientEnum config;
+
+    private static LiteClientExecutor singleInstance = null;
 
     private LiteClientExecutor() {
 
     }
 
-    public LiteClientExecutor(LiteClientEnum config) {
-        this.config = config;
+    public static LiteClientExecutor getInstance(LiteClientEnum pConfig) {
+        if (isNull(singleInstance)) {
+            config = pConfig;
+            singleInstance = new LiteClientExecutor();
+        }
+
+        return singleInstance;
     }
 
     public Pair<Process, Future<String>> execute(Node node, String... command) {
@@ -38,16 +46,16 @@ public class LiteClientExecutor {
         String[] withBinaryCommand;
         switch (config) {
             case GLOBAL:
-                withBinaryCommand = new String[]{binaryPath, "-C", node.getNodeGlobalConfigLocation(), "-c"};
+                withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeGlobalConfigLocation(), "-c"};
                 break;
             case LOCAL:
-                withBinaryCommand = new String[]{binaryPath, "-C", node.getNodeLocalConfigLocation(), "-c"};
+                withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeLocalConfigLocation(), "-c"};
                 break;
             case FORKED:
-                withBinaryCommand = new String[]{binaryPath, "-C", node.getNodeForkedGlobalConfigLocation(), "-c"};
+                withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeForkedGlobalConfigLocation(), "-c"};
                 break;
             default:
-                withBinaryCommand = new String[]{binaryPath, "-C", node.getNodeGlobalConfigLocation(), "-c"};
+                withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeGlobalConfigLocation(), "-c"};
         }
 
         //String[] withBinaryCommand = {binaryPath, "-C", forked ? node.getNodeForkedGlobalConfigLocation() : node.getNodeGlobalConfigLocation(), "-c"};

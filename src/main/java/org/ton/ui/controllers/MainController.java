@@ -142,19 +142,19 @@ public class MainController implements Initializable {
     public TextField cellPrice;
 
     @FXML
-    public TextField nodeStateTtl;
+    public TextField nodeStateTtl1;
 
     @FXML
-    public TextField nodeBlockTtl;
+    public TextField nodeBlockTtl1;
 
     @FXML
-    public TextField nodeArchiveTtl;
+    public TextField nodeArchiveTtl1;
 
     @FXML
-    public TextField nodeKeyProofTtl;
+    public TextField nodeKeyProofTtl1;
 
     @FXML
-    public TextField nodeSyncBefore;
+    public TextField nodeSyncBefore1;
 
     @FXML
     public Tab settingsTab;
@@ -727,6 +727,234 @@ public class MainController implements Initializable {
     public Label validator4PubKeyInteger;
 
     @FXML
+    public Tab settingsLogsValidator1Tab;
+
+    @FXML
+    public JFXTabPane subLogsTabs;
+
+    @FXML
+    public JFXTextField validatorLogDir2;
+
+    @FXML
+    public JFXComboBox<String> tonLogLevel2;
+
+    @FXML
+    public JFXTextField validatorLogDir3;
+
+    @FXML
+    public JFXComboBox<String> tonLogLevel3;
+
+    @FXML
+    public JFXTextField validatorLogDir4;
+
+    @FXML
+    public JFXComboBox<String> tonLogLevel4;
+
+    @FXML
+    public JFXTextField validatorLogDir5;
+
+    @FXML
+    public JFXComboBox<String> tonLogLevel5;
+
+    @FXML
+    public JFXTextField validatorLogDir6;
+
+    @FXML
+    public JFXComboBox<String> tonLogLevel6;
+
+    @FXML
+    public JFXTextField validatorLogDir7;
+
+    @FXML
+    public JFXComboBox<String> tonLogLevel7;
+
+    @FXML
+    public JFXTextField nodeStateTtl2;
+
+    @FXML
+    public JFXTextField nodeBlockTtl2;
+
+    @FXML
+    public JFXTextField nodeArchiveTtl2;
+
+    @FXML
+    public JFXTextField nodeKeyProofTtl2;
+
+    @FXML
+    public JFXTextField nodeSyncBefore2;
+
+    @FXML
+    public JFXTextField configNodePublicPort2;
+
+    @FXML
+    public JFXTextField configNodeConsolePort2;
+
+    @FXML
+    public JFXTextField configLiteServerPort2;
+
+    @FXML
+    public JFXTextField validatorWalletDeposit2;
+
+    @FXML
+    public JFXTextField validatorDefaultStake2;
+
+    @FXML
+    public JFXTextField validatorWalletDeposit1;
+
+    @FXML
+    public JFXTextField validatorDefaultStake1;
+
+    @FXML
+    public JFXTextField nodeSyncBefore3;
+
+    @FXML
+    public JFXTextField nodeKeyProofTtl3;
+
+    @FXML
+    public JFXTextField nodeArchiveTtl3;
+
+    @FXML
+    public JFXTextField nodeBlockTtl3;
+
+    @FXML
+    public JFXTextField nodeStateTtl3;
+
+    @FXML
+    public JFXTextField validatorDefaultStake3;
+
+    @FXML
+    public JFXTextField validatorWalletDeposit3;
+
+    @FXML
+    public JFXTextField configLiteServerPort3;
+
+    @FXML
+    public JFXTextField configNodePublicPort3;
+
+    @FXML
+    public JFXTextField configNodeConsolePort3;
+
+    @FXML
+    public JFXTextField configNodeConsolePort4;
+
+    @FXML
+    public JFXTextField configNodePublicPort4;
+
+    @FXML
+    public JFXTextField configLiteServerPort4;
+
+    @FXML
+    public JFXTextField validatorWalletDeposit4;
+
+    @FXML
+    public JFXTextField validatorDefaultStake4;
+
+    @FXML
+    public JFXTextField nodeStateTtl4;
+
+    @FXML
+    public JFXTextField nodeBlockTtl4;
+
+    @FXML
+    public JFXTextField nodeArchiveTtl4;
+
+    @FXML
+    public JFXTextField nodeKeyProofTtl4;
+
+    @FXML
+    public JFXTextField nodeSyncBefore4;
+
+    @FXML
+    public JFXTextField configNodeConsolePort5;
+
+    @FXML
+    public JFXTextField configNodePublicPort5;
+
+    @FXML
+    public JFXTextField configLiteServerPort5;
+
+    @FXML
+    public JFXTextField validatorWalletDeposit5;
+
+    @FXML
+    public JFXTextField validatorDefaultStake5;
+
+    @FXML
+    public JFXTextField nodeStateTtl5;
+
+    @FXML
+    public JFXTextField nodeBlockTtl5;
+
+    @FXML
+    public JFXTextField nodeArchiveTtl5;
+
+    @FXML
+    public JFXTextField nodeKeyProofTtl5;
+
+    @FXML
+    public JFXTextField nodeSyncBefore5;
+
+    @FXML
+    public JFXTextField configNodeConsolePort6;
+
+    @FXML
+    public JFXTextField configNodePublicPort6;
+
+    @FXML
+    public JFXTextField configLiteServerPort6;
+
+    @FXML
+    public JFXTextField validatorWalletDeposit6;
+
+    @FXML
+    public JFXTextField validatorDefaultStake6;
+
+    @FXML
+    public JFXTextField nodeStateTtl6;
+
+    @FXML
+    public JFXTextField nodeBlockTtl6;
+
+    @FXML
+    public JFXTextField nodeArchiveTtl6;
+
+    @FXML
+    public JFXTextField nodeKeyProofTtl6;
+
+    @FXML
+    public JFXTextField nodeSyncBefore6;
+
+    @FXML
+    public JFXTextField configNodeConsolePort7;
+
+    @FXML
+    public JFXTextField configNodePublicPort7;
+
+    @FXML
+    public JFXTextField configLiteServerPort7;
+
+    @FXML
+    public JFXTextField validatorWalletDeposit7;
+
+    @FXML
+    public JFXTextField validatorDefaultStake7;
+
+    @FXML
+    public JFXTextField nodeStateTtl7;
+
+    @FXML
+    public JFXTextField nodeBlockTtl7;
+
+    @FXML
+    public JFXTextField nodeArchiveTtl7;
+
+    @FXML
+    public JFXTextField nodeKeyProofTtl7;
+
+    @FXML
+    public JFXTextField nodeSyncBefore7;
+
+    @FXML
     JFXCheckBox shardStateCheckbox;
 
     @FXML
@@ -766,16 +994,16 @@ public class MainController implements Initializable {
     public Tab blocksTab;
 
     @FXML
-    TextField nodePublicPort;
+    TextField configNodePublicPort1;
 
     @FXML
-    TextField nodeConsolePort;
+    TextField configNodeConsolePort1;
 
     @FXML
-    TextField litesServerPort;
+    TextField configLiteServerPort1;
 
     @FXML
-    TextField dhtServerPort;
+    TextField configDhtServerPort1;
 
     @FXML
     ImageView aboutLogo;
@@ -814,10 +1042,10 @@ public class MainController implements Initializable {
     private TextField coinsPerWallet;
 
     @FXML
-    private TextField valLogDir;
+    private TextField validatorLogDir1;
 
     @FXML
-    private TextField dhtLogDir;
+    private TextField dhtLogDir1;
 
     @FXML
     private TextField minValidators;
@@ -830,9 +1058,6 @@ public class MainController implements Initializable {
 
     @FXML
     private TextField myLocalTonLog;
-
-    @FXML
-    private TextField myLocalTonDbLogDir;
 
     @FXML
     public JFXCheckBox tickTockCheckBox;
@@ -1008,32 +1233,22 @@ public class MainController implements Initializable {
     }
 
     @FXML
-    void myLocalTonDbDirBtnAction() throws IOException {
-        log.debug("open mylocalton db dir {}", myLocalTonDbLogDir.getText().trim());
+    void dhtLogDirBtnAction1() throws IOException {
+        log.debug("open dht dir {}", dhtLogDir1.getText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + myLocalTonDbLogDir.getText());
+            Runtime.getRuntime().exec("cmd /c start " + dhtLogDir1.getText());
         } else {
-            Runtime.getRuntime().exec("gio open " + myLocalTonDbLogDir.getText());
+            Runtime.getRuntime().exec("gio open " + dhtLogDir1.getText());
         }
     }
 
     @FXML
-    void dhtLogDirBtnAction() throws IOException {
-        log.debug("open dht dir {}", dhtLogDir.getText().trim());
+    void valLogDirBtnAction1() throws IOException {
+        log.debug("open validator log dir {}", validatorLogDir1.getText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + dhtLogDir.getText());
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir1.getText());
         } else {
-            Runtime.getRuntime().exec("gio open " + dhtLogDir.getText());
-        }
-    }
-
-    @FXML
-    void valLogDirBtnAction() throws IOException {
-        log.debug("open validator log dir {}", valLogDir.getText().trim());
-        if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + valLogDir.getText());
-        } else {
-            Runtime.getRuntime().exec("gio open " + valLogDir.getText());
+            Runtime.getRuntime().exec("gio open " + validatorLogDir1.getText());
         }
     }
 
@@ -1105,7 +1320,7 @@ public class MainController implements Initializable {
 
                         LongStream.range(1, lastSeqno).forEach(i -> { // TODO for loop big integer
                             try {
-                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClient(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
+                                ResultLastBlock block = LiteClientParser.parseBySeqno(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
                                 log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
                                 MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), block, false);
                             } catch (Exception e) {
@@ -1212,7 +1427,7 @@ public class MainController implements Initializable {
 
                         LongStream.range(1, blockShortSeqno.getSeqno().longValue()).forEach(i -> {
                             try {
-                                ResultLastBlock block = LiteClientParser.parseBySeqno(new LiteClient(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
+                                ResultLastBlock block = LiteClientParser.parseBySeqno(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
                                 log.debug("load missing block {}: {}", i, block.getFullBlockSeqno());
                                 MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), block, false);
                             } catch (Exception e) {
@@ -1275,7 +1490,7 @@ public class MainController implements Initializable {
         });
 
         mainMenuTabs.getSelectionModel().selectedItemProperty().addListener(e -> {
-            log.debug("main menu changed, save settings");
+            log.info("main menu changed, save settings");
             saveSettings();
         });
 
@@ -1287,10 +1502,83 @@ public class MainController implements Initializable {
 
         coinsPerWallet.setOnKeyTyped(onlyDigits);
 
-        nodePublicPort.setOnKeyTyped(onlyDigits);
-        nodeConsolePort.setOnKeyTyped(onlyDigits);
-        litesServerPort.setOnKeyTyped(onlyDigits);
-        dhtServerPort.setOnKeyTyped(onlyDigits);
+        configNodePublicPort1.setOnKeyTyped(onlyDigits);
+        configNodeConsolePort1.setOnKeyTyped(onlyDigits);
+        configLiteServerPort1.setOnKeyTyped(onlyDigits);
+        configDhtServerPort1.setOnKeyTyped(onlyDigits);
+        validatorWalletDeposit1.setOnKeyTyped(onlyDigits);
+        validatorDefaultStake1.setOnKeyTyped(onlyDigits);
+        nodeStateTtl1.setOnKeyTyped(onlyDigits);
+        nodeBlockTtl1.setOnKeyTyped(onlyDigits);
+        nodeArchiveTtl1.setOnKeyTyped(onlyDigits);
+        nodeKeyProofTtl1.setOnKeyTyped(onlyDigits);
+        nodeSyncBefore1.setOnKeyTyped(onlyDigits);
+
+        configNodePublicPort2.setOnKeyTyped(onlyDigits);
+        configNodeConsolePort2.setOnKeyTyped(onlyDigits);
+        configLiteServerPort2.setOnKeyTyped(onlyDigits);
+        validatorWalletDeposit2.setOnKeyTyped(onlyDigits);
+        validatorDefaultStake2.setOnKeyTyped(onlyDigits);
+        nodeStateTtl2.setOnKeyTyped(onlyDigits);
+        nodeBlockTtl2.setOnKeyTyped(onlyDigits);
+        nodeArchiveTtl2.setOnKeyTyped(onlyDigits);
+        nodeKeyProofTtl2.setOnKeyTyped(onlyDigits);
+        nodeSyncBefore2.setOnKeyTyped(onlyDigits);
+
+        configNodePublicPort3.setOnKeyTyped(onlyDigits);
+        configNodeConsolePort3.setOnKeyTyped(onlyDigits);
+        configLiteServerPort3.setOnKeyTyped(onlyDigits);
+        validatorWalletDeposit3.setOnKeyTyped(onlyDigits);
+        validatorDefaultStake3.setOnKeyTyped(onlyDigits);
+        nodeStateTtl3.setOnKeyTyped(onlyDigits);
+        nodeBlockTtl3.setOnKeyTyped(onlyDigits);
+        nodeArchiveTtl3.setOnKeyTyped(onlyDigits);
+        nodeKeyProofTtl3.setOnKeyTyped(onlyDigits);
+        nodeSyncBefore3.setOnKeyTyped(onlyDigits);
+
+        configNodePublicPort4.setOnKeyTyped(onlyDigits);
+        configNodeConsolePort4.setOnKeyTyped(onlyDigits);
+        configLiteServerPort4.setOnKeyTyped(onlyDigits);
+        validatorWalletDeposit4.setOnKeyTyped(onlyDigits);
+        validatorDefaultStake4.setOnKeyTyped(onlyDigits);
+        nodeStateTtl4.setOnKeyTyped(onlyDigits);
+        nodeBlockTtl4.setOnKeyTyped(onlyDigits);
+        nodeArchiveTtl4.setOnKeyTyped(onlyDigits);
+        nodeKeyProofTtl4.setOnKeyTyped(onlyDigits);
+        nodeSyncBefore4.setOnKeyTyped(onlyDigits);
+
+        configNodePublicPort5.setOnKeyTyped(onlyDigits);
+        configNodeConsolePort5.setOnKeyTyped(onlyDigits);
+        configLiteServerPort5.setOnKeyTyped(onlyDigits);
+        validatorWalletDeposit5.setOnKeyTyped(onlyDigits);
+        validatorDefaultStake5.setOnKeyTyped(onlyDigits);
+        nodeStateTtl5.setOnKeyTyped(onlyDigits);
+        nodeBlockTtl5.setOnKeyTyped(onlyDigits);
+        nodeArchiveTtl5.setOnKeyTyped(onlyDigits);
+        nodeKeyProofTtl5.setOnKeyTyped(onlyDigits);
+        nodeSyncBefore5.setOnKeyTyped(onlyDigits);
+
+        configNodePublicPort6.setOnKeyTyped(onlyDigits);
+        configNodeConsolePort6.setOnKeyTyped(onlyDigits);
+        configLiteServerPort6.setOnKeyTyped(onlyDigits);
+        validatorWalletDeposit6.setOnKeyTyped(onlyDigits);
+        validatorDefaultStake6.setOnKeyTyped(onlyDigits);
+        nodeStateTtl6.setOnKeyTyped(onlyDigits);
+        nodeBlockTtl6.setOnKeyTyped(onlyDigits);
+        nodeArchiveTtl6.setOnKeyTyped(onlyDigits);
+        nodeKeyProofTtl6.setOnKeyTyped(onlyDigits);
+        nodeSyncBefore6.setOnKeyTyped(onlyDigits);
+
+        configNodePublicPort7.setOnKeyTyped(onlyDigits);
+        configNodeConsolePort7.setOnKeyTyped(onlyDigits);
+        configLiteServerPort7.setOnKeyTyped(onlyDigits);
+        validatorWalletDeposit7.setOnKeyTyped(onlyDigits);
+        validatorDefaultStake7.setOnKeyTyped(onlyDigits);
+        nodeStateTtl7.setOnKeyTyped(onlyDigits);
+        nodeBlockTtl7.setOnKeyTyped(onlyDigits);
+        nodeArchiveTtl7.setOnKeyTyped(onlyDigits);
+        nodeKeyProofTtl7.setOnKeyTyped(onlyDigits);
+        nodeSyncBefore7.setOnKeyTyped(onlyDigits);
 
         globalId.setOnKeyTyped(onlyDigits);
         initialBalance.setOnKeyTyped(onlyDigits);
@@ -1310,11 +1598,6 @@ public class MainController implements Initializable {
         minTotalStake.setOnKeyTyped(onlyDigits);
         maxFactor.setOnKeyTyped(onlyDigits);
         electionEndBefore.setOnKeyTyped(onlyDigits);
-        nodeStateTtl.setOnKeyTyped(onlyDigits);
-        nodeBlockTtl.setOnKeyTyped(onlyDigits);
-        nodeArchiveTtl.setOnKeyTyped(onlyDigits);
-        nodeKeyProofTtl.setOnKeyTyped(onlyDigits);
-        nodeSyncBefore.setOnKeyTyped(onlyDigits);
 
         searchField.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
@@ -1366,10 +1649,16 @@ public class MainController implements Initializable {
         walletVersion.getItems().add(WalletVersion.V3.getValue());
         walletVersion.getSelectionModel().select(settings.getWalletSettings().getWalletVersion().getValue());
 
-        valLogDir.setText(settings.getGenesisNode().getTonDbDir());
+        validatorLogDir1.setText(settings.getGenesisNode().getTonLogDir());
         myLocalTonLog.setText(settings.LOG_FILE);
-        myLocalTonDbLogDir.setText(settings.DB_DIR);
-        dhtLogDir.setText(settings.getGenesisNode().getDhtServerDir());
+        dhtLogDir1.setText(settings.getGenesisNode().getDhtServerDir());
+
+        validatorLogDir2.setText(settings.getNode2().getTonLogDir());
+        validatorLogDir3.setText(settings.getNode3().getTonLogDir());
+        validatorLogDir4.setText(settings.getNode4().getTonLogDir());
+        validatorLogDir5.setText(settings.getNode5().getTonLogDir());
+        validatorLogDir6.setText(settings.getNode6().getTonLogDir());
+        validatorLogDir7.setText(settings.getNode7().getTonLogDir());
 
         minValidators.setText(settings.getBlockchainSettings().getMinValidators().toString());
         maxValidators.setText(settings.getBlockchainSettings().getMaxValidators().toString());
@@ -1392,28 +1681,137 @@ public class MainController implements Initializable {
         minTotalStake.setText(settings.getBlockchainSettings().getMinTotalValidatorStake().toString());
         maxFactor.setText(settings.getBlockchainSettings().getMaxFactor().toString());
 
-        nodeBlockTtl.setText(settings.getBlockchainSettings().getValidatorBlockTtl().toString());
-        nodeArchiveTtl.setText(settings.getBlockchainSettings().getValidatorArchiveTtl().toString());
-        nodeKeyProofTtl.setText(settings.getBlockchainSettings().getValidatorKeyProofTtl().toString());
-        nodeStateTtl.setText(settings.getBlockchainSettings().getValidatorStateTtl().toString());
-        nodeSyncBefore.setText(settings.getBlockchainSettings().getValidatorSyncBefore().toString());
+        nodeBlockTtl1.setText(settings.getGenesisNode().getValidatorBlockTtl().toString());
+        nodeArchiveTtl1.setText(settings.getGenesisNode().getValidatorArchiveTtl().toString());
+        nodeKeyProofTtl1.setText(settings.getGenesisNode().getValidatorKeyProofTtl().toString());
+        nodeStateTtl1.setText(settings.getGenesisNode().getValidatorStateTtl().toString());
+        nodeSyncBefore1.setText(settings.getGenesisNode().getValidatorSyncBefore().toString());
+        configNodePublicPort1.setText(settings.getGenesisNode().getPublicPort().toString());
+        configNodeConsolePort1.setText(settings.getGenesisNode().getConsolePort().toString());
+        configLiteServerPort1.setText(settings.getGenesisNode().getLiteServerPort().toString());
+        configDhtServerPort1.setText(settings.getGenesisNode().getDhtPort().toString());
+        validatorWalletDeposit1.setText(settings.getGenesisNode().getInitialValidatorWalletAmount().toString());
+        validatorDefaultStake1.setText(settings.getGenesisNode().getDefaultValidatorStake().toString());
 
-        nodePublicPort.setText(settings.getGenesisNode().getPublicPort().toString());
-        nodeConsolePort.setText(settings.getGenesisNode().getConsolePort().toString());
-        litesServerPort.setText(settings.getGenesisNode().getLiteServerPort().toString());
-        dhtServerPort.setText(settings.getGenesisNode().getDhtPort().toString());
+        nodeBlockTtl2.setText(settings.getNode2().getValidatorBlockTtl().toString());
+        nodeArchiveTtl2.setText(settings.getNode2().getValidatorArchiveTtl().toString());
+        nodeKeyProofTtl2.setText(settings.getNode2().getValidatorKeyProofTtl().toString());
+        nodeStateTtl2.setText(settings.getNode2().getValidatorStateTtl().toString());
+        nodeSyncBefore2.setText(settings.getNode2().getValidatorSyncBefore().toString());
+        configNodePublicPort2.setText(settings.getNode2().getPublicPort().toString());
+        configNodeConsolePort2.setText(settings.getNode2().getConsolePort().toString());
+        configLiteServerPort2.setText(settings.getNode2().getLiteServerPort().toString());
+        validatorWalletDeposit2.setText(settings.getNode2().getInitialValidatorWalletAmount().toString());
+        validatorDefaultStake2.setText(settings.getNode2().getDefaultValidatorStake().toString());
+
+        nodeBlockTtl3.setText(settings.getNode3().getValidatorBlockTtl().toString());
+        nodeArchiveTtl3.setText(settings.getNode3().getValidatorArchiveTtl().toString());
+        nodeKeyProofTtl3.setText(settings.getNode3().getValidatorKeyProofTtl().toString());
+        nodeStateTtl3.setText(settings.getNode3().getValidatorStateTtl().toString());
+        nodeSyncBefore3.setText(settings.getNode3().getValidatorSyncBefore().toString());
+        configNodePublicPort3.setText(settings.getNode3().getPublicPort().toString());
+        configNodeConsolePort3.setText(settings.getNode3().getConsolePort().toString());
+        configLiteServerPort3.setText(settings.getNode3().getLiteServerPort().toString());
+        validatorWalletDeposit3.setText(settings.getNode3().getInitialValidatorWalletAmount().toString());
+        validatorDefaultStake3.setText(settings.getNode3().getDefaultValidatorStake().toString());
+
+        nodeBlockTtl4.setText(settings.getNode4().getValidatorBlockTtl().toString());
+        nodeArchiveTtl4.setText(settings.getNode4().getValidatorArchiveTtl().toString());
+        nodeKeyProofTtl4.setText(settings.getNode4().getValidatorKeyProofTtl().toString());
+        nodeStateTtl4.setText(settings.getNode4().getValidatorStateTtl().toString());
+        nodeSyncBefore4.setText(settings.getNode4().getValidatorSyncBefore().toString());
+        configNodePublicPort4.setText(settings.getNode4().getPublicPort().toString());
+        configNodeConsolePort4.setText(settings.getNode4().getConsolePort().toString());
+        configLiteServerPort4.setText(settings.getNode4().getLiteServerPort().toString());
+        validatorWalletDeposit4.setText(settings.getNode4().getInitialValidatorWalletAmount().toString());
+        validatorDefaultStake4.setText(settings.getNode4().getDefaultValidatorStake().toString());
+
+        nodeBlockTtl5.setText(settings.getNode5().getValidatorBlockTtl().toString());
+        nodeArchiveTtl5.setText(settings.getNode5().getValidatorArchiveTtl().toString());
+        nodeKeyProofTtl5.setText(settings.getNode5().getValidatorKeyProofTtl().toString());
+        nodeStateTtl5.setText(settings.getNode5().getValidatorStateTtl().toString());
+        nodeSyncBefore5.setText(settings.getNode5().getValidatorSyncBefore().toString());
+        configNodePublicPort5.setText(settings.getNode5().getPublicPort().toString());
+        configNodeConsolePort5.setText(settings.getNode5().getConsolePort().toString());
+        configLiteServerPort5.setText(settings.getNode5().getLiteServerPort().toString());
+        validatorWalletDeposit5.setText(settings.getNode5().getInitialValidatorWalletAmount().toString());
+        validatorDefaultStake5.setText(settings.getNode5().getDefaultValidatorStake().toString());
+
+        nodeBlockTtl6.setText(settings.getNode6().getValidatorBlockTtl().toString());
+        nodeArchiveTtl6.setText(settings.getNode6().getValidatorArchiveTtl().toString());
+        nodeKeyProofTtl6.setText(settings.getNode6().getValidatorKeyProofTtl().toString());
+        nodeStateTtl6.setText(settings.getNode6().getValidatorStateTtl().toString());
+        nodeSyncBefore6.setText(settings.getNode6().getValidatorSyncBefore().toString());
+        configNodePublicPort6.setText(settings.getNode6().getPublicPort().toString());
+        configNodeConsolePort6.setText(settings.getNode6().getConsolePort().toString());
+        configLiteServerPort6.setText(settings.getNode6().getLiteServerPort().toString());
+        validatorWalletDeposit6.setText(settings.getNode6().getInitialValidatorWalletAmount().toString());
+        validatorDefaultStake6.setText(settings.getNode6().getDefaultValidatorStake().toString());
+
+        nodeBlockTtl7.setText(settings.getNode7().getValidatorBlockTtl().toString());
+        nodeArchiveTtl7.setText(settings.getNode7().getValidatorArchiveTtl().toString());
+        nodeKeyProofTtl7.setText(settings.getNode7().getValidatorKeyProofTtl().toString());
+        nodeStateTtl7.setText(settings.getNode7().getValidatorStateTtl().toString());
+        nodeSyncBefore7.setText(settings.getNode7().getValidatorSyncBefore().toString());
+        configNodePublicPort7.setText(settings.getNode7().getPublicPort().toString());
+        configNodeConsolePort7.setText(settings.getNode7().getConsolePort().toString());
+        configLiteServerPort7.setText(settings.getNode7().getLiteServerPort().toString());
+        validatorWalletDeposit7.setText(settings.getNode7().getInitialValidatorWalletAmount().toString());
+        validatorDefaultStake7.setText(settings.getNode7().getDefaultValidatorStake().toString());
 
         tonLogLevel.getItems().add("DEBUG");
         tonLogLevel.getItems().add("WARNING");
         tonLogLevel.getItems().add("INFO");
         tonLogLevel.getItems().add("ERROR");
         tonLogLevel.getItems().add("FATAL");
-        tonLogLevel.getSelectionModel().select(settings.getLogSettings().getTonLogLevel());
+        tonLogLevel.getSelectionModel().select(settings.getGenesisNode().getTonLogLevel());
+
+        tonLogLevel2.getItems().add("DEBUG");
+        tonLogLevel2.getItems().add("WARNING");
+        tonLogLevel2.getItems().add("INFO");
+        tonLogLevel2.getItems().add("ERROR");
+        tonLogLevel2.getItems().add("FATAL");
+        tonLogLevel2.getSelectionModel().select(settings.getNode2().getTonLogLevel());
+
+        tonLogLevel3.getItems().add("DEBUG");
+        tonLogLevel3.getItems().add("WARNING");
+        tonLogLevel3.getItems().add("INFO");
+        tonLogLevel3.getItems().add("ERROR");
+        tonLogLevel3.getItems().add("FATAL");
+        tonLogLevel3.getSelectionModel().select(settings.getNode3().getTonLogLevel());
+
+        tonLogLevel4.getItems().add("DEBUG");
+        tonLogLevel4.getItems().add("WARNING");
+        tonLogLevel4.getItems().add("INFO");
+        tonLogLevel4.getItems().add("ERROR");
+        tonLogLevel4.getItems().add("FATAL");
+        tonLogLevel4.getSelectionModel().select(settings.getNode4().getTonLogLevel());
+
+        tonLogLevel5.getItems().add("DEBUG");
+        tonLogLevel5.getItems().add("WARNING");
+        tonLogLevel5.getItems().add("INFO");
+        tonLogLevel5.getItems().add("ERROR");
+        tonLogLevel5.getItems().add("FATAL");
+        tonLogLevel5.getSelectionModel().select(settings.getNode5().getTonLogLevel());
+
+        tonLogLevel6.getItems().add("DEBUG");
+        tonLogLevel6.getItems().add("WARNING");
+        tonLogLevel6.getItems().add("INFO");
+        tonLogLevel6.getItems().add("ERROR");
+        tonLogLevel6.getItems().add("FATAL");
+        tonLogLevel6.getSelectionModel().select(settings.getNode6().getTonLogLevel());
+
+        tonLogLevel7.getItems().add("DEBUG");
+        tonLogLevel7.getItems().add("WARNING");
+        tonLogLevel7.getItems().add("INFO");
+        tonLogLevel7.getItems().add("ERROR");
+        tonLogLevel7.getItems().add("FATAL");
+        tonLogLevel7.getSelectionModel().select(settings.getNode7().getTonLogLevel());
 
         myLogLevel.getItems().add("INFO");
         myLogLevel.getItems().add("DEBUG");
         myLogLevel.getItems().add("ERROR");
-        myLogLevel.getSelectionModel().select(settings.getLogSettings().getMyLocalTonLogLevel());
+        myLogLevel.getSelectionModel().select(settings.getGenesisNode().getMyLocalTonLogLevel());
 
         // blockchain-explorer tab
         enableBlockchainExplorer.setVisible(false);
@@ -1548,19 +1946,90 @@ public class MainController implements Initializable {
         settings.getBlockchainSettings().setMinTotalValidatorStake(Long.valueOf(minTotalStake.getText()));
         settings.getBlockchainSettings().setMaxFactor(new BigDecimal(maxFactor.getText()));
 
-        settings.getBlockchainSettings().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl.getText()));
-        settings.getBlockchainSettings().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl.getText()));
-        settings.getBlockchainSettings().setValidatorKeyProofTtl(Long.valueOf(nodeKeyProofTtl.getText()));
-        settings.getBlockchainSettings().setValidatorStateTtl(Long.valueOf(nodeStateTtl.getText()));
-        settings.getBlockchainSettings().setValidatorSyncBefore(Long.valueOf(nodeSyncBefore.getText()));
+        settings.getGenesisNode().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl1.getText()));
+        settings.getGenesisNode().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl1.getText()));
+        settings.getGenesisNode().setValidatorKeyProofTtl(Long.valueOf(nodeKeyProofTtl1.getText()));
+        settings.getGenesisNode().setValidatorStateTtl(Long.valueOf(nodeStateTtl1.getText()));
+        settings.getGenesisNode().setValidatorSyncBefore(Long.valueOf(nodeSyncBefore1.getText()));
+        settings.getGenesisNode().setMyLocalTonLogLevel(myLogLevel.getValue());
+        settings.getGenesisNode().setPublicPort(Integer.valueOf(configNodePublicPort1.getText()));
+        settings.getGenesisNode().setConsolePort(Integer.valueOf(configNodeConsolePort1.getText()));
+        settings.getGenesisNode().setLiteServerPort(Integer.valueOf(configLiteServerPort1.getText()));
+        settings.getGenesisNode().setDhtPort(Integer.valueOf(configDhtServerPort1.getText()));
+        settings.getGenesisNode().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit1.getText()));
+        settings.getGenesisNode().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake1.getText()));
 
-        settings.getLogSettings().setTonLogLevel(tonLogLevel.getValue());
-        settings.getLogSettings().setMyLocalTonLogLevel(myLogLevel.getValue());
+        settings.getNode2().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl2.getText()));
+        settings.getNode2().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl2.getText()));
+        settings.getNode2().setValidatorKeyProofTtl(Long.valueOf(nodeKeyProofTtl2.getText()));
+        settings.getNode2().setValidatorStateTtl(Long.valueOf(nodeStateTtl2.getText()));
+        settings.getNode2().setValidatorSyncBefore(Long.valueOf(nodeSyncBefore2.getText()));
+        settings.getNode2().setPublicPort(Integer.valueOf(configNodePublicPort2.getText()));
+        settings.getNode2().setConsolePort(Integer.valueOf(configNodeConsolePort2.getText()));
+        settings.getNode2().setLiteServerPort(Integer.valueOf(configLiteServerPort2.getText()));
+        settings.getNode2().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit2.getText()));
+        settings.getNode2().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake2.getText()));
+        settings.getNode2().setTonLogLevel(tonLogLevel2.getValue());
 
-        settings.getGenesisNode().setPublicPort(Integer.valueOf(nodePublicPort.getText()));
-        settings.getGenesisNode().setConsolePort(Integer.valueOf(nodeConsolePort.getText()));
-        settings.getGenesisNode().setLiteServerPort(Integer.valueOf(litesServerPort.getText()));
-        settings.getGenesisNode().setDhtPort(Integer.valueOf(dhtServerPort.getText()));
+        settings.getNode3().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl3.getText()));
+        settings.getNode3().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl3.getText()));
+        settings.getNode3().setValidatorKeyProofTtl(Long.valueOf(nodeKeyProofTtl3.getText()));
+        settings.getNode3().setValidatorStateTtl(Long.valueOf(nodeStateTtl3.getText()));
+        settings.getNode3().setValidatorSyncBefore(Long.valueOf(nodeSyncBefore3.getText()));
+        settings.getNode3().setPublicPort(Integer.valueOf(configNodePublicPort3.getText()));
+        settings.getNode3().setConsolePort(Integer.valueOf(configNodeConsolePort3.getText()));
+        settings.getNode3().setLiteServerPort(Integer.valueOf(configLiteServerPort3.getText()));
+        settings.getNode3().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit3.getText()));
+        settings.getNode3().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake3.getText()));
+        settings.getNode3().setTonLogLevel(tonLogLevel3.getValue());
+
+        settings.getNode4().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl4.getText()));
+        settings.getNode4().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl4.getText()));
+        settings.getNode4().setValidatorKeyProofTtl(Long.valueOf(nodeKeyProofTtl4.getText()));
+        settings.getNode4().setValidatorStateTtl(Long.valueOf(nodeStateTtl4.getText()));
+        settings.getNode4().setValidatorSyncBefore(Long.valueOf(nodeSyncBefore4.getText()));
+        settings.getNode4().setPublicPort(Integer.valueOf(configNodePublicPort4.getText()));
+        settings.getNode4().setConsolePort(Integer.valueOf(configNodeConsolePort4.getText()));
+        settings.getNode4().setLiteServerPort(Integer.valueOf(configLiteServerPort4.getText()));
+        settings.getNode4().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit4.getText()));
+        settings.getNode4().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake4.getText()));
+        settings.getNode4().setTonLogLevel(tonLogLevel4.getValue());
+
+        settings.getNode5().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl5.getText()));
+        settings.getNode5().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl5.getText()));
+        settings.getNode5().setValidatorKeyProofTtl(Long.valueOf(nodeKeyProofTtl5.getText()));
+        settings.getNode5().setValidatorStateTtl(Long.valueOf(nodeStateTtl5.getText()));
+        settings.getNode5().setValidatorSyncBefore(Long.valueOf(nodeSyncBefore5.getText()));
+        settings.getNode5().setPublicPort(Integer.valueOf(configNodePublicPort5.getText()));
+        settings.getNode5().setConsolePort(Integer.valueOf(configNodeConsolePort5.getText()));
+        settings.getNode5().setLiteServerPort(Integer.valueOf(configLiteServerPort5.getText()));
+        settings.getNode5().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit5.getText()));
+        settings.getNode5().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake5.getText()));
+        settings.getNode5().setTonLogLevel(tonLogLevel5.getValue());
+
+        settings.getNode6().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl6.getText()));
+        settings.getNode6().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl6.getText()));
+        settings.getNode6().setValidatorKeyProofTtl(Long.valueOf(nodeKeyProofTtl6.getText()));
+        settings.getNode6().setValidatorStateTtl(Long.valueOf(nodeStateTtl6.getText()));
+        settings.getNode6().setValidatorSyncBefore(Long.valueOf(nodeSyncBefore6.getText()));
+        settings.getNode6().setPublicPort(Integer.valueOf(configNodePublicPort6.getText()));
+        settings.getNode6().setConsolePort(Integer.valueOf(configNodeConsolePort6.getText()));
+        settings.getNode6().setLiteServerPort(Integer.valueOf(configLiteServerPort6.getText()));
+        settings.getNode6().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit6.getText()));
+        settings.getNode6().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake6.getText()));
+        settings.getNode6().setTonLogLevel(tonLogLevel6.getValue());
+
+        settings.getNode7().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl7.getText()));
+        settings.getNode7().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl7.getText()));
+        settings.getNode7().setValidatorKeyProofTtl(Long.valueOf(nodeKeyProofTtl7.getText()));
+        settings.getNode7().setValidatorStateTtl(Long.valueOf(nodeStateTtl7.getText()));
+        settings.getNode7().setValidatorSyncBefore(Long.valueOf(nodeSyncBefore7.getText()));
+        settings.getNode7().setPublicPort(Integer.valueOf(configNodePublicPort7.getText()));
+        settings.getNode7().setConsolePort(Integer.valueOf(configNodeConsolePort7.getText()));
+        settings.getNode7().setLiteServerPort(Integer.valueOf(configLiteServerPort7.getText()));
+        settings.getNode7().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit7.getText()));
+        settings.getNode7().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake7.getText()));
+        settings.getNode7().setTonLogLevel(tonLogLevel7.getValue());
 
         Utils.saveSettingsToGson(settings);
     }
@@ -1578,7 +2047,7 @@ public class MainController implements Initializable {
     }
 
     public void liteServerClicked() throws IOException {
-        String lastCommand = new LiteClient(LiteClientEnum.GLOBAL).getLastCommand(MyLocalTon.getInstance().getSettings().getGenesisNode());
+        String lastCommand = LiteClient.getInstance(LiteClientEnum.GLOBAL).getLastCommand(MyLocalTon.getInstance().getSettings().getGenesisNode());
         log.info("show console with last command, {}", lastCommand);
 
         if (isWindows()) {
@@ -1672,7 +2141,7 @@ public class MainController implements Initializable {
                 ((Label) parent.lookup("#action")).setText("delnode"); // no action, simple dialog box
                 ((Label) parent.lookup("#header")).setText("Confirmation");
                 ((Label) parent.lookup("#address")).setText(node.getNodeName()); // just reuse address field
-                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete validator " + node.getNodeName() + "? All data will be lost and validator will be removed from elections.");
+                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete validator " + node.getNodeName() + "? All data will be lost and validator will be removed from elections. Also check if this validator has collected all validation rewards. By the way, if you remove more than 1/3 of all nodes your blockchain will stop working.");
                 parent.lookup("#okBtn").setDisable(false);
 
                 JFXDialogLayout content = new JFXDialogLayout();
@@ -1784,7 +2253,7 @@ public class MainController implements Initializable {
 
     public void updateValidationTabInfo(ValidationParam v) {
         try {
-            LiteClient liteClient = new LiteClient(LiteClientEnum.GLOBAL);
+            LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
             ResultConfig34 config34 = LiteClientParser.parseConfig34(liteClient.executeGetCurrentValidators(settings.getGenesisNode()));
             ResultConfig32 config32 = LiteClientParser.parseConfig32(liteClient.executeGetPreviousValidators(settings.getGenesisNode()));
             ResultConfig36 config36 = LiteClientParser.parseConfig36(liteClient.executeGetNextValidators(settings.getGenesisNode()));
@@ -1883,7 +2352,7 @@ public class MainController implements Initializable {
                 validator1PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
             } else { // in a list of current validators we must find an entry from previous next validators
                 for (Validator validator : v.getCurrentValidators()) {
-                    if (validator.getAdnlAddress().equals(settings.getGenesisNode().getPrevValidationAndlKey())) {
+                    if (validator.getPublicKey().equals(settings.getGenesisNode().getPrevValidationPubKeyHex())) {
                         validator1AdnlAddress.setText(validator.getAdnlAddress());
                         validator1PubKeyHex.setText(validator.getPublicKey());
                         validator1PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
@@ -1891,7 +2360,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
+            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
             validator1AdnlAddressNext.setText(settings.getGenesisNode().getValidationAndlKey());
             validator1PubKeyHexNext.setText(settings.getGenesisNode().getValidationPubKeyHex());
             validator1PubKeyIntegerNext.setText(settings.getGenesisNode().getValidationPubKeyInteger());
@@ -1916,7 +2385,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node2.getWalletAddress().getFullWalletAddress()));
+            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node2.getWalletAddress().getFullWalletAddress()));
             validator2AdnlAddressNext.setText(node2.getValidationAndlKey());
             validator2PubKeyHexNext.setText(node2.getValidationPubKeyHex());
             validator2PubKeyIntegerNext.setText(node2.getValidationPubKeyInteger());
@@ -1941,7 +2410,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node3.getWalletAddress().getFullWalletAddress()));
+            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node3.getWalletAddress().getFullWalletAddress()));
             validator3AdnlAddressNext.setText(node3.getValidationAndlKey());
             validator3PubKeyHexNext.setText(node3.getValidationPubKeyHex());
             validator3PubKeyIntegerNext.setText(node3.getValidationPubKeyInteger());
@@ -1966,7 +2435,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node4.getWalletAddress().getFullWalletAddress()));
+            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node4.getWalletAddress().getFullWalletAddress()));
             validator4AdnlAddressNext.setText(node4.getValidationAndlKey());
             validator4PubKeyHexNext.setText(node4.getValidationPubKeyHex());
             validator4PubKeyIntegerNext.setText(node4.getValidationPubKeyInteger());
@@ -1991,7 +2460,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node5.getWalletAddress().getFullWalletAddress()));
+            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node5.getWalletAddress().getFullWalletAddress()));
             validator5AdnlAddressNext.setText(node5.getValidationAndlKey());
             validator5PubKeyHexNext.setText(node5.getValidationPubKeyHex());
             validator5PubKeyIntegerNext.setText(node5.getValidationPubKeyInteger());
@@ -2016,7 +2485,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node6.getWalletAddress().getFullWalletAddress()));
+            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node6.getWalletAddress().getFullWalletAddress()));
             validator6AdnlAddressNext.setText(node6.getValidationAndlKey());
             validator6PubKeyHexNext.setText(node6.getValidationPubKeyHex());
             validator6PubKeyIntegerNext.setText(node6.getValidationPubKeyInteger() + " (used in participants list)");
@@ -2041,7 +2510,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(new LiteClient(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node7.getWalletAddress().getFullWalletAddress()));
+            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node7.getWalletAddress().getFullWalletAddress()));
             validator7AdnlAddressNext.setText(node7.getValidationAndlKey());
             validator7PubKeyHexNext.setText(node7.getValidationPubKeyHex());
             validator7PubKeyIntegerNext.setText(node7.getValidationPubKeyInteger() + " (used in participants list)");
@@ -2089,8 +2558,6 @@ public class MainController implements Initializable {
     }
 
     public void drawElections(ValidationParam v) {
-        log.debug("draw drawBarsAndLabels");
-
         Platform.runLater(() -> {
             try {
                 mainController.drawBarsAndLabels(v); // once in elections enough (bars and labels)
@@ -2107,7 +2574,7 @@ public class MainController implements Initializable {
     }
 
     public void drawBarsAndLabels(ValidationParam v) {
-        log.debug("draw drawBarsAndLabels");
+        log.info("draw drawBarsAndLabels");
         log.info("size {}, globalSize {}, cycleMod {}, cycleModEqual {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size(), settings.getCycleMod(), settings.getCycleModEquals());
 
         try {
@@ -2122,13 +2589,13 @@ public class MainController implements Initializable {
             log.debug("currTime - startElections = {} > {} 3*delta", (Utils.getCurrentTimeSeconds() - v.getStartElections()), (electionsDelta * 3));
             // use case when mylocalton started after long pause and electionId was taken last one but the next one is way ahead in time
             if ((Utils.getCurrentTimeSeconds() - v.getStartElections()) > (electionsDelta * 3)) {
-                log.debug("A. setStartElectionIdEvery3Cycles {}", Utils.toLocal(v.getStartElections()));
+                log.info("A. setStartElectionIdEvery3Cycles {}", Utils.toLocal(v.getStartElections()));
                 settings.setLastValidationParamEvery3Cycles(v);
             }
 
             // use case to rotate labels each two elections (and after 3 elections very first time)
             if ((settings.electionsCounter.size() % settings.getCycleMod()) == settings.getCycleModEquals()) {
-                log.debug("B. setStartElectionIdEvery3Cycles {}", Utils.toLocal(v.getStartElections()));
+                log.info("B. setStartElectionIdEvery3Cycles {}", Utils.toLocal(v.getStartElections()));
                 settings.setLastValidationParamEvery3Cycles(v);
             }
 
@@ -2162,13 +2629,13 @@ public class MainController implements Initializable {
 
         if (nonNull(settings.getTimeLineScale())) {
 
-            log.debug("draw time-line");
+            log.info("draw time-line");
             // update time-line position
             long x;
             double xcoord;
             long currentTime = Utils.getCurrentTimeSeconds();
 
-            log.debug("Current StartElectionIdEvery3Cycles {}, size {} global {}", Utils.toLocal(settings.getLastValidationParamEvery3Cycles().getStartElections()), settings.electionsCounter.size(), settings.electionsCounterGlobal.size());
+            log.info("Current StartElectionIdEvery3Cycles {}, size {} global {}", Utils.toLocal(settings.getLastValidationParamEvery3Cycles().getStartElections()), settings.electionsCounter.size(), settings.electionsCounterGlobal.size());
 
             x = currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections();
             double scaleFactor = (double) 200 / v.getValidationDuration();
@@ -2554,5 +3021,59 @@ public class MainController implements Initializable {
     public void deleteValidator7Btn() {
         log.info("delete 7 validator");
         showDialogConfirmDeleteNode(settings.getNode7());
+    }
+
+    public void valLogDirBtnAction2() throws IOException {
+        log.info("open validator log dir {}", validatorLogDir2.getText().trim());
+        if (isWindows()) {
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir2.getText());
+        } else {
+            Runtime.getRuntime().exec("gio open " + validatorLogDir2.getText());
+        }
+    }
+
+    public void valLogDirBtnAction3() throws IOException {
+        log.debug("open validator log dir {}", validatorLogDir3.getText().trim());
+        if (isWindows()) {
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir3.getText());
+        } else {
+            Runtime.getRuntime().exec("gio open " + validatorLogDir3.getText());
+        }
+    }
+
+    public void valLogDirBtnAction4() throws IOException {
+        log.debug("open validator log dir {}", validatorLogDir4.getText().trim());
+        if (isWindows()) {
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir4.getText());
+        } else {
+            Runtime.getRuntime().exec("gio open " + validatorLogDir4.getText());
+        }
+    }
+
+    public void valLogDirBtnAction5() throws IOException {
+        log.debug("open validator log dir {}", validatorLogDir5.getText().trim());
+        if (isWindows()) {
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir5.getText());
+        } else {
+            Runtime.getRuntime().exec("gio open " + validatorLogDir5.getText());
+        }
+    }
+
+    public void valLogDirBtnAction6() throws IOException {
+        log.debug("open validator log dir {}", validatorLogDir6.getText().trim());
+        if (isWindows()) {
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir6.getText());
+        } else {
+            Runtime.getRuntime().exec("gio open " + validatorLogDir6.getText());
+        }
+    }
+
+    public void valLogDirBtnAction7() throws IOException {
+        log.debug("open validator log dir {}", validatorLogDir7.getText().trim());
+        if (isWindows()) {
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir7.getText());
+        } else {
+            Runtime.getRuntime().exec("gio open " + validatorLogDir7.getText());
+        }
     }
 }

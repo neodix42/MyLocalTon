@@ -8,6 +8,7 @@ import org.ton.wallet.WalletAddress;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Map;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.nonNull;
@@ -274,11 +275,33 @@ public interface Node {
 
     String getValidationSigningPubKey();
 
-    Boolean getElectionRequestSent();
-
-    void setElectionRequestSent(Boolean flag);
-
     BigDecimal getElectionsRipped();
 
     void setElectionsRipped(BigDecimal number);
+
+    Map<Long, Long> getElectionsCounter();
+
+    void setElectionsCounter(Map<Long, Long> elections);
+
+    String getTonLogLevel();
+
+    Long getValidatorSyncBefore();
+
+    Long getValidatorStateTtl();
+
+    Long getValidatorBlockTtl();
+
+    Long getValidatorArchiveTtl();
+
+    Long getValidatorKeyProofTtl();
+
+    BigDecimal getInitialValidatorWalletAmount();
+
+    void setInitialValidatorWalletAmount(BigDecimal amount);
+
+    BigDecimal getDefaultValidatorStake();
+
+    void setDefaultValidatorStake(BigDecimal amount);
+
+
 }

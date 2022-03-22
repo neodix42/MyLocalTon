@@ -113,7 +113,7 @@ public class BlockController {
     }
 
     private Block getBlockFromServerAndUpdateDb(Node node, BlockPk blockPk) throws Exception {
-        LiteClient liteClient = new LiteClient(LiteClientEnum.GLOBAL);
+        LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
         ResultLastBlock lightBlock = LiteClientParser.parseBySeqno(liteClient.executeBySeqno(node,
                 Long.parseLong(wc.getText()),
                 shard.getText(),

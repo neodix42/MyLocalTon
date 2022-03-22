@@ -86,7 +86,7 @@ public class LiteClientParser {
                     .build();
 
         } catch (Exception e) {
-            log.error("Error parsing lite-client's last command! Output: {}", stdout);
+            log.debug("Error parsing lite-client's last command! Output: {}", stdout);
             return null;
         }
     }
@@ -188,6 +188,9 @@ public class LiteClientParser {
     }
 
     public static Transaction parseDumpTrans(String stdout, boolean includeMessageBody) {
+        if (StringUtils.isEmpty(stdout)) {
+            return null;
+        }
         String blockdump = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
         return parseTransaction(blockdump, includeMessageBody);
     }
