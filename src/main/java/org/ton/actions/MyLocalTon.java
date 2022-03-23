@@ -167,10 +167,18 @@ public class MyLocalTon {
                         if (isNull(lastBlock)) {
                             node.setStatus("not ready");
                             log.info("{} is not ready", nodeName);
-                        } else {
+
+                        } else if (lastBlock.getSyncedSecondsAgo() > 15) {
                             node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
-                            log.info("{} is out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
+                            log.info("{} out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
+                        } else {
+                            node.setStatus("ready");
+                            log.info("{} is ready", nodeName);
                         }
+//                        else {
+//                            node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
+//                            log.info("{} is out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
+//                        }
 
                         Platform.runLater(() -> {
                             Utils.showNodeStatus(settings.getNodeByName(nodeName), Utils.getNodeStatusLabelByName(nodeName), Utils.getNodeTabByName(nodeName));
@@ -201,6 +209,7 @@ public class MyLocalTon {
         public BigInteger get() {
             return valueHolder.get();
         }
+
     }
 
     public void initGenesis(Node node) throws Exception {
@@ -413,6 +422,8 @@ public class MyLocalTon {
                 log.debug("read wallet address: {}", wallet.getHexAddress());
             }
 
+            node.setWalletAddress(wallet.getWallet());
+
             Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(node, wallet.getWc() + ":" + wallet.getHexAddress());
             log.info("on node {}, created wallet {} with balance {}", node.getNodeName(), wallet.getWc() + ":" + wallet.getHexAddress(), stateAndSeqno.getLeft().getBalance().getToncoins());
             App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
@@ -423,6 +434,7 @@ public class MyLocalTon {
             return wallet;
         } catch (Exception e) {
             log.error("Error creating wallet! Error {} ", e.getMessage());
+            log.error(ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
@@ -496,7 +508,7 @@ public class MyLocalTon {
 
                         Main.inElections.set(true);
 
-                        for (String nodeName : settings.getActiveNodes()) {
+                        for (String nodeName : settings.getActiveNodes()) {  // TODO concurrent impl
                             Node node = settings.getNodeByName(nodeName);
                             log.info("participating in elections {}", node.getNodeName());
                             Utils.participate(node, v); // TODO parallel
@@ -550,11 +562,11 @@ public class MyLocalTon {
                         reap(settings.getNodeByName(nodeName)); // TODO parallel
                     }
 
-                    Main.inElections.set(false);
-
                 } catch (Exception e) {
                     log.error("Error getting blockchain configuration! Error {}", e.getMessage());
                     log.error(ExceptionUtils.getStackTrace(e));
+                } finally {
+                    Main.inElections.set(false);
                 }
 
                 log.debug("refresh GUI, sleep 30 sec ");
@@ -620,7 +632,8 @@ public class MyLocalTon {
                     log.error(e.getMessage());
                 }
             }
-            blockchainMonitorExecutorService.shutdownNow();
+            blockchainMonitorExecutorService.shutdown();
+            log.info("Blockchain Monitor has stopped working");
         });
     }
 
@@ -753,10 +766,13 @@ public class MyLocalTon {
 
     public void populateAccountRowWithData(WalletEntity walletEntity, javafx.scene.Node accountRow, String searchFor) {
 
+        ((Label) accountRow.lookup("#hexAddrLabel")).setText(Utils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress()) + "Hex:");
+
         ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress());
         if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
             ((Label) accountRow.lookup("#hexAddr")).setTextFill(Color.GREEN);
         }
+
 
         ((Label) accountRow.lookup("#b64Addr")).setText(walletEntity.getWallet().getBounceableAddressBase64());
         ((Label) accountRow.lookup("#b64urlAddr")).setText(walletEntity.getWallet().getBounceableAddressBase64url());
@@ -1344,7 +1360,6 @@ public class MyLocalTon {
         MainController c = fxmlLoader.getController();
 
         tab.setOnClosed(e -> {
-            log.info("cls");
             if (c.foundTabs.getTabs().isEmpty()) {
                 c.mainMenuTabs.getTabs().remove(c.searchTab);
                 c.mainMenuTabs.getSelectionModel().selectFirst();

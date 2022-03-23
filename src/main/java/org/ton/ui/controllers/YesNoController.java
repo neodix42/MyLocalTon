@@ -82,7 +82,7 @@ public class YesNoController implements Initializable {
         });
     }
 
-    public void okBtnAction() {
+    public void okBtnAction() throws InterruptedException {
         log.debug("ok clicked, action {}", action.getText());
         MainController mainController = fxmlLoader.getController();
 
@@ -121,11 +121,18 @@ public class YesNoController implements Initializable {
         }
     }
 
-    private void doDelete() {
+    private void doDelete() throws InterruptedException {
         String nodeName = address.getText();
         log.info("do delete {}", nodeName);
+
         Node node = MyLocalTon.getInstance().getSettings().getNodeByName(nodeName);
         MyLocalTon.getInstance().getSettings().getActiveNodes().remove(nodeName);
+
+        // clean settings
+        Utils.resetNodeSettings(node.getNodeName());
+        // clean wallet db and UI
+        Utils.deleteWalletByFullAddress(node.getWalletAddress().getFullWalletAddress());
+
         if (node.nodeShutdownAndDelete()) {
             mainController.validationTabs.getTabs().remove(mainController.getNodeTabByName(nodeName));
         } else {

@@ -85,6 +85,10 @@ public class Wallet {
 
         String externalMsgLocation = new Fift().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
 
+        if (isNull(externalMsgLocation)) {
+            return false;
+        }
+
         log.debug(liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
 
         //FileUtils.deleteQuietly(new File(tempBocFileAbsolutePath)); // sure ?
@@ -106,7 +110,7 @@ public class Wallet {
             counter++;
             if ((counter % 10) == 0) {
                 log.info("resending external message {}", externalMsgLocation);
-                log.info(liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
+                log.debug(liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
             }
             if (counter > 30) {
                 log.error("ERROR sending {} Toncoins by {} from {} to {}.",

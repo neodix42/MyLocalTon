@@ -1490,7 +1490,7 @@ public class MainController implements Initializable {
         });
 
         mainMenuTabs.getSelectionModel().selectedItemProperty().addListener(e -> {
-            log.info("main menu changed, save settings");
+            log.debug("main menu changed, save settings");
             saveSettings();
         });
 
@@ -2135,13 +2135,21 @@ public class MainController implements Initializable {
             try {
                 Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
 
+                String stopsWokring = "";
+                MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+                int cutoff = (int) Math.ceil(settings.getActiveNodes().size() * 66 / 100.0);
+                log.info("total active nodes {} vs minimum required {}", settings.getActiveNodes().size(), cutoff);
+                if ((settings.getActiveNodes().size() - 1 < cutoff) || (settings.getActiveNodes().size() == 3 && cutoff == 2)) {
+                    stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive, i.e. stops working, since a two-thirds consensus of validators will not be reached.";
+                }
+
                 parent.lookup("#inputFields").setVisible(false);
                 parent.lookup("#body").setVisible(true);
                 parent.lookup("#header").setVisible(true);
                 ((Label) parent.lookup("#action")).setText("delnode"); // no action, simple dialog box
                 ((Label) parent.lookup("#header")).setText("Confirmation");
                 ((Label) parent.lookup("#address")).setText(node.getNodeName()); // just reuse address field
-                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete validator " + node.getNodeName() + "? All data will be lost and validator will be removed from elections. Also check if this validator has collected all validation rewards. By the way, if you remove more than 1/3 of all nodes your blockchain will stop working.");
+                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete selected validator? All data and funds will be lost and obviously validator will be removed from elections. Also check if this validator has collected all validation rewards." + stopsWokring);
                 parent.lookup("#okBtn").setDisable(false);
 
                 JFXDialogLayout content = new JFXDialogLayout();
@@ -2344,15 +2352,15 @@ public class MainController implements Initializable {
     }
 
     private void updateValidator1TabPage(ValidationParam v) {
-        if (nonNull(settings.getGenesisNode().getWalletAddress())) {
-
-            if (isNull(settings.getGenesisNode().getPrevValidationAndlKey())) { // very first elections, no previous validators yet
+        GenesisNode node1 = settings.getGenesisNode();
+        if (nonNull(node1.getWalletAddress())) {
+            if (isNull(node1.getPrevValidationAndlKey())) { // very first elections, no previous validators yet
                 validator1AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
                 validator1PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
                 validator1PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
             } else { // in a list of current validators we must find an entry from previous next validators
                 for (Validator validator : v.getCurrentValidators()) {
-                    if (validator.getPublicKey().equals(settings.getGenesisNode().getPrevValidationPubKeyHex())) {
+                    if (validator.getAdnlAddress().equals(node1.getPrevValidationAndlKey())) {
                         validator1AdnlAddress.setText(validator.getAdnlAddress());
                         validator1PubKeyHex.setText(validator.getPublicKey());
                         validator1PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
@@ -2360,15 +2368,15 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), settings.getGenesisNode().getWalletAddress().getFullWalletAddress()));
-            validator1AdnlAddressNext.setText(settings.getGenesisNode().getValidationAndlKey());
-            validator1PubKeyHexNext.setText(settings.getGenesisNode().getValidationPubKeyHex());
-            validator1PubKeyIntegerNext.setText(settings.getGenesisNode().getValidationPubKeyInteger());
-            validator1WalletAddress.setText(settings.getGenesisNode().getWalletAddress().getFullWalletAddress());
+            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node1.getWalletAddress().getFullWalletAddress()));
+            validator1AdnlAddressNext.setText(node1.getValidationAndlKey());
+            validator1PubKeyHexNext.setText(node1.getValidationPubKeyHex());
+            validator1PubKeyIntegerNext.setText(node1.getValidationPubKeyInteger());
+            validator1WalletAddress.setText(node1.getWalletAddress().getFullWalletAddress());
             validator1WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-            nodePublicPort1.setText(settings.getGenesisNode().getPublicPort().toString());
-            nodeConsolePort1.setText(settings.getGenesisNode().getConsolePort().toString());
-            liteServerPort1.setText(settings.getGenesisNode().getLiteServerPort().toString());
+            nodePublicPort1.setText(node1.getPublicPort().toString());
+            nodeConsolePort1.setText(node1.getConsolePort().toString());
+            liteServerPort1.setText(node1.getLiteServerPort().toString());
         }
     }
 

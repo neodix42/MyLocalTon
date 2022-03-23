@@ -24,6 +24,7 @@ import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
+import org.ton.db.entities.WalletPk;
 import org.ton.enums.LiteClientEnum;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
@@ -33,8 +34,8 @@ import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
 import org.ton.parameters.ValidationParam;
-import org.ton.settings.MyLocalTonSettings;
-import org.ton.settings.Node;
+import org.ton.settings.*;
+import org.ton.ui.controllers.MainController;
 import org.ton.wallet.Wallet;
 import org.ton.wallet.WalletVersion;
 
@@ -68,6 +69,7 @@ import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.executors.liteclient.LiteClientParser.*;
+import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
 import static org.ton.settings.MyLocalTonSettings.SETTINGS_FILE;
 
@@ -542,15 +544,15 @@ public class Utils {
         log.debug("min/max stake {}", config17);
 
         ResultConfig34 config34 = LiteClientParser.parseConfig34(liteClient.executeGetCurrentValidators(node));
-        log.info("current validators {}", config34);
+        log.debug("current validators {}", config34);
 
         log.debug("start work time since {}, until {}", Utils.toLocal(config34.getValidators().getSince()), Utils.toLocal(config34.getValidators().getUntil()));
 
         ResultConfig32 config32 = LiteClientParser.parseConfig32(liteClient.executeGetPreviousValidators(node));
-        log.info("previous validators {}", config32);
+        log.debug("previous validators {}", config32);
 
         ResultConfig36 config36 = LiteClientParser.parseConfig36(liteClient.executeGetNextValidators(node));
-        log.info("next validators {}", config36);
+        log.debug("next validators {}", config36);
 
         ResultConfig0 config0 = LiteClientParser.parseConfig0(liteClient.executeGetConfigSmcAddress(node));
         log.debug("config address {}", config0.getConfigSmcAddr());
@@ -596,12 +598,10 @@ public class Utils {
             long electionId = v.getStartValidationCycle();
 
             if (node.getElectionsCounter().getOrDefault(electionId, -1L) > YEAR_1971) {
-                //if (hasParticipated(node, electionId)) {
-                log.info("{} has already sent request for elections", node.getNodeName());
+                log.info("{} has already sent request ({}) for elections. Current time {}", node.getNodeName(), Utils.toLocal(electionId), Utils.toLocal(Utils.getCurrentTimeSeconds()));
                 if (electionId < Utils.getCurrentTimeSeconds()) {
                     log.info("electionId is outdated");
                 } else {
-                    log.info("electionId XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
                     return;
                 }
             }
@@ -718,6 +718,36 @@ public class Utils {
         return null;
     }
 
+    public static void resetNodeSettings(String nodeName) throws InterruptedException {
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+        switch (nodeName) {
+            case "genesis":
+                settings.setGenesisNode(new GenesisNode());
+                break;
+            case "node2":
+                settings.setNode2(new Node2());
+                break;
+            case "node3":
+                settings.setNode3(new Node3());
+                break;
+            case "node4":
+                settings.setNode4(new Node4());
+                break;
+            case "node5":
+                settings.setNode5(new Node5());
+                break;
+            case "node6":
+                settings.setNode6(new Node6());
+                break;
+            case "node7":
+                settings.setNode7(new Node7());
+                break;
+        }
+
+        MyLocalTon.getInstance().saveSettingsToGson();
+    }
+
     public static Tab getNewNodeTab() {
         MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
@@ -788,23 +818,40 @@ public class Utils {
         }
     }
 
+    public static String getNodeNameByWalletAddress(String walletAddress) {
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+        if (nonNull(settings.getGenesisNode().getWalletAddress()) && walletAddress.equals(settings.getGenesisNode().getWalletAddress().getFullWalletAddress())) {
+            return "Validator genesis, ";
+        } else if (nonNull(settings.getNode2().getWalletAddress()) && walletAddress.equals(settings.getNode2().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 2, ";
+        } else if (nonNull(settings.getNode3().getWalletAddress()) && walletAddress.equals(settings.getNode3().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 3, ";
+        } else if (nonNull(settings.getNode4().getWalletAddress()) && walletAddress.equals(settings.getNode4().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 4, ";
+        } else if (nonNull(settings.getNode5().getWalletAddress()) && walletAddress.equals(settings.getNode5().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 5, ";
+        } else if (nonNull(settings.getNode6().getWalletAddress()) && walletAddress.equals(settings.getNode6().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 6, ";
+        } else if (nonNull(settings.getNode7().getWalletAddress()) && walletAddress.equals(settings.getNode7().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 7, ";
+        }
+        return "";
+    }
+
     public static void showNodeStatus(Node node, Label nodeStatusLabel, Tab tab) {
 
         if (node.getStatus().contains("not ready")) {
             nodeStatusLabel.setText(node.getStatus());
             nodeStatusLabel.setTextFill(Color.FIREBRICK);
             tab.setStyle("-fx-background-color: firebrick;");
-        } else if (node.getStatus().matches(".*\\d.*")) {
+        } else if (node.getStatus().equals("ready")) {
             nodeStatusLabel.setText(node.getStatus());
-            int seconds = Integer.parseInt(node.getStatus().replaceAll("[^0-9]", ""));
-            if (seconds > 15) {
-                nodeStatusLabel.setTextFill(Color.DARKORANGE);
-                tab.setStyle("-fx-background-color: darkorange;");
-            } else {
-                nodeStatusLabel.setText("ready");
-                nodeStatusLabel.setTextFill(Color.FORESTGREEN);
-                tab.setStyle("-fx-background-color: forestgreen;");
-            }
+            nodeStatusLabel.setTextFill(Color.FORESTGREEN);
+            tab.setStyle("-fx-background-color: forestgreen;");
+        } else {
+            nodeStatusLabel.setText(node.getStatus());
+            nodeStatusLabel.setTextFill(Color.DARKORANGE);
+            tab.setStyle("-fx-background-color: darkorange;");
         }
     }
 
@@ -842,5 +889,33 @@ public class Utils {
                 //FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStateDir()), new File(node.getTonDbStateDir()));
             }
         }
+    }
+
+    public static void deleteWalletByFullAddress(String fullAddrress) {
+        String[] wcAddr = fullAddrress.split(":");
+        WalletPk walletPk = WalletPk.builder()
+                .wc(Long.parseLong(wcAddr[0]))
+                .hexAddress(wcAddr[1])
+                .build();
+
+        WalletEntity walletEntity = App.dbPool.findWallet(walletPk);
+        App.dbPool.deleteWallet(walletPk);
+
+        MainController c = fxmlLoader.getController();
+        javafx.scene.Node found = null;
+        for (javafx.scene.Node row : c.accountsvboxid.getItems()) {
+            if (((Label) row.lookup("#hexAddr")).getText().equals(fullAddrress)) {
+                log.debug("Remove from list {}", fullAddrress);
+                found = row;
+            }
+        }
+
+        if (nonNull(found)) {
+            c.accountsvboxid.getItems().remove(found);
+        }
+
+        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".pk"));
+        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".addr"));
+        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + "-query.boc"));
     }
 }

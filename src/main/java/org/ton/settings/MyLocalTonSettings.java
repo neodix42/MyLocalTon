@@ -11,11 +11,10 @@ import org.ton.wallet.WalletVersion;
 import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Getter
 @Setter
@@ -50,7 +49,8 @@ public class MyLocalTonSettings implements Serializable {
         blockchainSettings = new BlockchainSettings();
 
         dbPool = new ConcurrentHashMap<>();
-        activeNodes = new ArrayList<>();
+        //activeNodes = new ArrayList<>();
+        activeNodes = new ConcurrentLinkedQueue<>();
     }
 
     /*
@@ -72,7 +72,7 @@ public class MyLocalTonSettings implements Serializable {
     Node5 node5;
     Node6 node6;
     Node7 node7;
-    List<String> activeNodes;
+    Queue<String> activeNodes;
 
     WalletSettings walletSettings;
     UiSettings uiSettings;
@@ -114,8 +114,8 @@ public class MyLocalTonSettings implements Serializable {
     ValidationParam lastValidationParam;
     ValidationParam lastValidationParamEvery3Cycles;
     Double timeLineScale;
-    public Map<Long, Long> electionsCounter = new HashMap<>();
-    public Map<Long, Boolean> electionsCounterGlobal = new HashMap<>();
+    public Map<Long, Long> electionsCounter = new ConcurrentHashMap<>();
+    public Map<Long, Boolean> electionsCounterGlobal = new ConcurrentHashMap<>();
 
     int cycleMod = 3;
     int cycleModEquals = 1;
