@@ -78,8 +78,7 @@ import static org.ton.main.App.mainController;
 public class MainController implements Initializable {
 
     public static final String LIGHT_BLUE = "#dbedff";
-    public static final String ORANGE = "orange";
-    public static final int YEAR_1971 = 34131600;
+
     public static final long ONE_BLN = 1000000000L;
     @FXML
     public StackPane superWindow;
@@ -1146,7 +1145,7 @@ public class MainController implements Initializable {
         Platform.runLater(() -> {
             statusBar.setStyle("-fx-text-fill: black; -fx-background-color: orange");
             Rectangle rect = new Rectangle();
-            rect.setFill(Color.valueOf(ORANGE));
+            rect.setFill(Color.ORANGE);
             statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
             statusBar.setText(msg);
         });
@@ -1156,7 +1155,7 @@ public class MainController implements Initializable {
         Platform.runLater(() -> {
             statusBar.setStyle("-fx-text-fill: black; -fx-background-color: orange");
             Rectangle rect = new Rectangle();
-            rect.setFill(Color.valueOf(ORANGE));
+            rect.setFill(Color.ORANGE);
             statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
             statusBar.setText(msg);
 
@@ -2262,8 +2261,13 @@ public class MainController implements Initializable {
         yesNoDialog.show();
     }
 
-    public void updateValidationTabInfo(ValidationParam v) {
+    public void updateValidationTabInfo() {
         try {
+
+            ValidationParam v;
+            Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];  // get last element
+            v = settings.elections.get(lastKey);
+
             LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
             ResultConfig34 config34 = LiteClientParser.parseConfig34(liteClient.executeGetCurrentValidators(settings.getGenesisNode()));
             ResultConfig32 config32 = LiteClientParser.parseConfig32(liteClient.executeGetPreviousValidators(settings.getGenesisNode()));
@@ -2570,12 +2574,12 @@ public class MainController implements Initializable {
         }
     }
 
-    public void drawElections(ValidationParam v) {
+    public void drawElections() {
         Platform.runLater(() -> {
             try {
-                mainController.drawBarsAndLabels(v); // once in elections enough (bars and labels)
-                mainController.updateValidationTabInfo(v);
-                mainController.drawTimeLine(v);
+                mainController.drawBarsAndLabels(); // once in elections enough (bars and labels)
+                mainController.updateValidationTabInfo();
+                mainController.drawTimeLine();
 
                 mainController.electionsChartPane.setVisible(true);
 
@@ -2586,50 +2590,19 @@ public class MainController implements Initializable {
         });
     }
 
-    public void drawBarsAndLabels(ValidationParam v) {
+    public void drawBarsAndLabels() {
         log.info("draw drawBarsAndLabels");
-        log.info("size {}, globalSize {}, cycleMod {}, cycleModEqual {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size(), settings.getCycleMod(), settings.getCycleModEquals());
 
         try {
+            Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];
+            ValidationParam v = settings.elections.get(lastKey);
 
-            if (settings.electionsCounter.size() > 3) {
-                settings.setCycleMod(2);
-                settings.setCycleModEquals(0);
-                settings.setVeryFirstElections(Boolean.FALSE);
-            }
+            positionBars(v);
 
-            long electionsDelta = v.getNextElections() - v.getStartElections();
-            log.info("currTime - startElections = {} > {} 3*delta", (Utils.getCurrentTimeSeconds() - v.getStartElections()), (electionsDelta * 3));
-            // use case when mylocalton started after long pause and electionId was taken last one but the next one is way ahead in time
-            if ((Utils.getCurrentTimeSeconds() - v.getStartElections()) > (electionsDelta * 3)) {
-                log.info("A. setStartElectionIdEvery3Cycles {}", Utils.toLocal(v.getStartElections()));
-                settings.setLastValidationParamEvery3Cycles(v);
-            }
+            addLabelsToBars2(v);
 
-            // use case to rotate labels each two elections (and after 3 elections very first time)
-            if ((settings.electionsCounter.size() % settings.getCycleMod()) == settings.getCycleModEquals()) {
-                log.info("B. setStartElectionIdEvery3Cycles {}", Utils.toLocal(v.getStartElections()));
-                settings.setLastValidationParamEvery3Cycles(v);
-            }
+            calculateTimeLineScale();
 
-            positionBars(settings.getLastValidationParamEvery3Cycles());
-            addLabelsToBars(settings.getLastValidationParamEvery3Cycles());
-
-            long startXHoldStakeLine3 = (long) stakeHoldRange3.getLayoutX();
-            long endHoldStake3 = settings.getStakeHoldRange3End();
-
-            double scaleFactor = (double) 200 / v.getValidationDuration();
-            long holdStakeWidth = (long) (v.getHoldPeriod() * scaleFactor);
-
-            log.debug("startXHoldStakeLine3 {}, endHoldStake3 {}, holdStakeWidth {}", startXHoldStakeLine3, endHoldStake3, holdStakeWidth);
-
-            // draw time-line
-            long fullWidthInPixels = startXHoldStakeLine3 + holdStakeWidth;
-            long fullDurationSeconds = endHoldStake3 - settings.getLastValidationParamEvery3Cycles().getStartElections();
-            double scale = (double) fullWidthInPixels / fullDurationSeconds;
-            log.debug("full width {}px, {}s, scale {}", fullWidthInPixels, fullDurationSeconds, scale);
-
-            settings.setTimeLineScale(scale);
             saveSettings();
 
         } catch (Exception e) {
@@ -2638,29 +2611,66 @@ public class MainController implements Initializable {
         }
     }
 
-    public void drawTimeLine(ValidationParam v) {
+    private void calculateTimeLineScale() {
+        ValidationParam v;
+        if (settings.elections.size() > 1) {
+            Object lastLastKey = settings.elections.keySet().toArray()[settings.elections.size() - 2];
+            v = settings.elections.get(lastLastKey);
+        } else {
+            Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];  // get last element
+            v = settings.elections.get(lastKey);
+        }
+
+        long startXHoldStakeLine3 = (long) stakeHoldRange3.getLayoutX();
+        long endHoldStake3 = settings.getStakeHoldRange3End();
+
+        double scaleFactor = (double) 200 / v.getValidationDuration();
+        long holdStakeWidth = (long) (v.getHoldPeriod() * scaleFactor);
+
+        log.debug("startXHoldStakeLine3 {}, endHoldStake3 {}, holdStakeWidth {}", startXHoldStakeLine3, endHoldStake3, holdStakeWidth);
+
+        // draw time-line
+        long fullWidthInPixels = startXHoldStakeLine3 + holdStakeWidth;
+        //long fullDurationSeconds = endHoldStake3 - settings.getLastValidationParamEvery3Cycles().getStartElections();
+        long fullDurationSeconds = endHoldStake3 - v.getStartElections();
+        double scale = (double) fullWidthInPixels / fullDurationSeconds;
+        log.debug("full width {}px, {}s, scale {}", fullWidthInPixels, fullDurationSeconds, scale);
+        settings.setTimeLineScale(scale);
+    }
+
+    public void drawTimeLine() {
 
         if (nonNull(settings.getTimeLineScale())) {
+            ValidationParam v;
+            if (settings.elections.size() > 1) {
+                Object lastLastKey = settings.elections.keySet().toArray()[settings.elections.size() - 2];
+                v = settings.elections.get(lastLastKey);
+            } else {
+                Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];  // get last element
+                v = settings.elections.get(lastKey);
+            }
 
             log.info("draw time-line");
             // update time-line position
             long x;
             double xcoord;
-            long currentTime = Utils.getCurrentTimeSeconds();
 
-            log.info("Current StartElectionIdEvery3Cycles {}, size {} global {}", Utils.toLocal(settings.getLastValidationParamEvery3Cycles().getStartElections()), settings.electionsCounter.size(), settings.electionsCounterGlobal.size());
+            log.info("Current startElectionss {}, sizeElections {}", Utils.toLocal(v.getStartElections()), settings.elections.size());
 
-            x = currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections();
+            //x = Utils.getCurrentTimeSeconds() - settings.getLastValidationParamEvery3Cycles().getStartElections();
+            x = Utils.getCurrentTimeSeconds() - v.getStartElections();
             double scaleFactor = (double) 200 / v.getValidationDuration();
             long electionsDelta = v.getNextElections() - v.getStartElections();
             long electionsDeltaWidth = (long) (electionsDelta * scaleFactor);
+//
+//            if (settings.electionsCounter.size() > 3) {
+//                xcoord = electionsDeltaWidth + (x * settings.getTimeLineScale());
+//            } else {
+//                xcoord = 0 + (x * settings.getTimeLineScale());
+//            }
 
-            if (settings.electionsCounter.size() > 3) {
-                xcoord = electionsDeltaWidth + (x * settings.getTimeLineScale());
-            } else {
-                xcoord = 0 + (x * settings.getTimeLineScale());
-            }
-            log.debug("electionsDelta {}, electionsDeltaWidth {}, xcoord {}", electionsDelta, electionsDeltaWidth, xcoord);
+            xcoord = 0 + (x * settings.getTimeLineScale());
+            log.info("electionsDelta {}, electionsDeltaWidth {}, xcoord {}", electionsDelta, electionsDeltaWidth, xcoord);
             timeLine.setLayoutX(xcoord);
             saveSettings();
         }
@@ -2732,9 +2742,10 @@ public class MainController implements Initializable {
 
     }
 
-    private void addLabelsToBars(ValidationParam v) {
-        long electionsDelta = v.getNextElections() - v.getStartElections();
-        long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
+    private void addLabelsToBars2(ValidationParam v1) {
+        long electionsDelta1 = v1.getNextElections() - v1.getStartElections();
+        long electionDurationInSeconds1 = v1.getEndElections() - v1.getStartElections();
+        long electionDurationInSeconds2 = 0;
         String elections1Duration;
         String elections1ToolTip;
         long pauseDurationInSeconds;
@@ -2744,119 +2755,125 @@ public class MainController implements Initializable {
         long stakeHoldDurationInSeconds;
         String stakeHold1Duration;
 
-        log.debug("0.addLabelsToBars, size {}", settings.electionsCounter.size());
-        //1
-        elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
-        elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getStartElections()), Utils.toLocal(v.getEndElections()), elections1Duration);
-        if (settings.electionsCounter.size() <= 3) {
-            log.debug("1.addLabelsToBars, size {}, globalSize {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size());
+        ValidationParam v2 = null;
+
+        if (settings.elections.size() > 1) {
+            Object beforeLastKey = settings.elections.keySet().toArray()[settings.elections.size() - 2];
+            v2 = settings.elections.get(beforeLastKey);
+            electionDurationInSeconds2 = v2.getEndElections() - v2.getStartElections();
+        }
+
+        if (settings.elections.size() == 1) {
+            elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds1).toMillis(), "HH:mm:ss", true);
+            elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getStartElections()), Utils.toLocal(v1.getEndElections()), elections1Duration);
             electionsRange1.setTooltip(new Tooltip(elections1ToolTip));
-        } else {
-            log.debug("2.addLabelsToBars, size {}, globalSize {}", settings.electionsCounter.size(), settings.electionsCounterGlobal.size());
-            String elections1Duration0 = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String elections1ToolTip0 = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getStartElections() - electionsDelta), Utils.toLocal(v.getEndElections() - electionsDelta), elections1Duration0);
-            electionsRange1.setTooltip(new Tooltip(elections1ToolTip0));
-        }
 
-        pauseDurationInSeconds = v.getStartValidationCycle() - v.getEndElections();
-        pause1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
-        String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getEndElections()), Utils.toLocal(v.getStartValidationCycle()), pause1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            pauseDurationInSeconds = v1.getStartValidationCycle() - v1.getEndElections();
+            pause1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getEndElections()), Utils.toLocal(v1.getStartValidationCycle()), pause1Duration);
             pauseRange1.setTooltip(new Tooltip(pause1ToolTip));
-        } else {
-            String pause1Duration0 = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String pause1ToolTip0 = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getEndElections() - electionsDelta), Utils.toLocal(v.getStartValidationCycle() - electionsDelta), pause1Duration0);
-            pauseRange1.setTooltip(new Tooltip(pause1ToolTip0));
-        }
 
-        validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
-        validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
-        String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getStartValidationCycle()), Utils.toLocal(v.getEndValidationCycle()), validation1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            validationDurationInSeconds = v1.getEndValidationCycle() - v1.getStartValidationCycle();
+            validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getStartValidationCycle()), Utils.toLocal(v1.getEndValidationCycle()), validation1Duration);
             validationRange1.setTooltip(new Tooltip(validation1ToolTip));
-        } else {
-            String validation1Duration0 = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String validation1ToolTip0 = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getStartValidationCycle() - electionsDelta), Utils.toLocal(v.getEndValidationCycle() - electionsDelta), validation1Duration0);
-            validationRange1.setTooltip(new Tooltip(validation1ToolTip0));
-        }
 
-        stakeHoldDurationInSeconds = v.getHoldPeriod();
-        stakeHold1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
-        String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getEndValidationCycle()), Utils.toLocal(java.time.Duration.ofSeconds(v.getEndValidationCycle()).plusSeconds(v.getHoldPeriod()).toSeconds()), stakeHold1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            stakeHoldDurationInSeconds = v1.getHoldPeriod();
+            stakeHold1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getEndValidationCycle()), Utils.toLocal(java.time.Duration.ofSeconds(v1.getEndValidationCycle()).plusSeconds(v1.getHoldPeriod()).toSeconds()), stakeHold1Duration);
             stakeHoldRange1.setTooltip(new Tooltip(holdStake1ToolTip));
-        } else {
-            String stakeHold1Duration0 = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String holdStake1ToolTip0 = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getEndValidationCycle() - electionsDelta), Utils.toLocal(java.time.Duration.ofSeconds(v.getEndValidationCycle() - electionsDelta).plusSeconds(v.getHoldPeriod()).toSeconds()), stakeHold1Duration0);
-            stakeHoldRange1.setTooltip(new Tooltip(holdStake1ToolTip0));
-        }
 
-        //2
-        long endElections2 = java.time.Duration.ofSeconds(v.getNextElections()).plusSeconds(electionDurationInSeconds).toSeconds();
-        String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v.getNextElections()), Utils.toLocal(endElections2), elections1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            //2
+            long endElections2 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionDurationInSeconds1).toSeconds();
+            String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getNextElections()), Utils.toLocal(endElections2), elections1Duration);
             electionsRange2.setTooltip(new Tooltip(elections2ToolTip));
-        } else {
-            electionsRange2.setTooltip(new Tooltip(elections1ToolTip));
-        }
 
-        long endPause2 = java.time.Duration.ofSeconds(endElections2).plusSeconds(pauseDurationInSeconds).toSeconds();
-        String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections2), Utils.toLocal(endPause2), pause1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            long endPause2 = java.time.Duration.ofSeconds(endElections2).plusSeconds(pauseDurationInSeconds).toSeconds();
+            String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections2), Utils.toLocal(endPause2), pause1Duration);
             pauseRange2.setTooltip(new Tooltip(pause2ToolTip));
-        } else {
-            pauseRange2.setTooltip(new Tooltip(pause1ToolTip));
-        }
 
-        long endValidation2 = java.time.Duration.ofSeconds(endPause2).plusSeconds(validationDurationInSeconds).toSeconds();
-        String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause2), Utils.toLocal(endValidation2), validation1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            long endValidation2 = java.time.Duration.ofSeconds(endPause2).plusSeconds(validationDurationInSeconds).toSeconds();
+            String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause2), Utils.toLocal(endValidation2), validation1Duration);
             validationRange2.setTooltip(new Tooltip(validation2ToolTip));
-        } else {
-            validationRange2.setTooltip(new Tooltip(validation1ToolTip));
-        }
 
-        long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v.getHoldPeriod()).toSeconds();
-        String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v1.getHoldPeriod()).toSeconds();
+            String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
             stakeHoldRange2.setTooltip(new Tooltip(holdStake2ToolTip));
-        } else {
-            stakeHoldRange2.setTooltip(new Tooltip(holdStake1ToolTip));
-        }
 
-        //3
-        long startElections3 = java.time.Duration.ofSeconds(v.getNextElections()).plusSeconds(electionsDelta).toSeconds();
-        long endElections3 = java.time.Duration.ofSeconds(v.getNextElections()).plusSeconds(electionDurationInSeconds + electionsDelta).toSeconds();
-        String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(startElections3), Utils.toLocal(endElections3), elections1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            //3
+            long startElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionsDelta1).toSeconds();
+            long endElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionDurationInSeconds1 + electionsDelta1).toSeconds();
+            String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(startElections3), Utils.toLocal(endElections3), elections1Duration);
             electionsRange3.setTooltip(new Tooltip(elections3ToolTip));
-        } else {
-            electionsRange3.setTooltip(new Tooltip(elections2ToolTip));
-        }
 
-        long endPause3 = java.time.Duration.ofSeconds(endElections3).plusSeconds(pauseDurationInSeconds).toSeconds();
-        String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections3), Utils.toLocal(endPause3), pause1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            long endPause3 = java.time.Duration.ofSeconds(endElections3).plusSeconds(pauseDurationInSeconds).toSeconds();
+            String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections3), Utils.toLocal(endPause3), pause1Duration);
             pauseRange3.setTooltip(new Tooltip(pause3ToolTip));
-        } else {
-            pauseRange3.setTooltip(new Tooltip(pause2ToolTip));
-        }
 
-        long endValidation3 = java.time.Duration.ofSeconds(endPause3).plusSeconds(validationDurationInSeconds).toSeconds();
-        String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause3), Utils.toLocal(endValidation3), validation1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            long endValidation3 = java.time.Duration.ofSeconds(endPause3).plusSeconds(validationDurationInSeconds).toSeconds();
+            String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause3), Utils.toLocal(endValidation3), validation1Duration);
             validationRange3.setTooltip(new Tooltip(validation3ToolTip));
-        } else {
-            validationRange3.setTooltip(new Tooltip(validation2ToolTip));
-        }
 
-        long endHoldStake3 = java.time.Duration.ofSeconds(endValidation3).plusSeconds(v.getHoldPeriod()).toSeconds();
-        String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation3), Utils.toLocal(endHoldStake3), stakeHold1Duration);
-        if (settings.electionsCounter.size() <= 3) {
+            long endHoldStake3 = java.time.Duration.ofSeconds(endValidation3).plusSeconds(v1.getHoldPeriod()).toSeconds();
+            String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation3), Utils.toLocal(endHoldStake3), stakeHold1Duration);
             stakeHoldRange3.setTooltip(new Tooltip(holdStake3ToolTip));
             settings.setStakeHoldRange3End(endHoldStake3);
         } else {
-            stakeHoldRange3.setTooltip(new Tooltip(holdStake2ToolTip));
+            elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds2).toMillis(), "HH:mm:ss", true);
+            elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getStartElections()), Utils.toLocal(v2.getEndElections()), elections1Duration);
+            electionsRange1.setTooltip(new Tooltip(elections1ToolTip));
+
+            pauseDurationInSeconds = v2.getStartValidationCycle() - v2.getEndElections();
+            pause1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getEndElections()), Utils.toLocal(v2.getStartValidationCycle()), pause1Duration);
+            pauseRange1.setTooltip(new Tooltip(pause1ToolTip));
+
+            validationDurationInSeconds = v2.getEndValidationCycle() - v2.getStartValidationCycle();
+            validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getStartValidationCycle()), Utils.toLocal(v2.getEndValidationCycle()), validation1Duration);
+            validationRange1.setTooltip(new Tooltip(validation1ToolTip));
+
+            stakeHoldDurationInSeconds = v2.getHoldPeriod();
+            stakeHold1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
+            String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getEndValidationCycle()), Utils.toLocal(java.time.Duration.ofSeconds(v2.getEndValidationCycle()).plusSeconds(v2.getHoldPeriod()).toSeconds()), stakeHold1Duration);
+            stakeHoldRange1.setTooltip(new Tooltip(holdStake1ToolTip));
+
+            //2
+            long endElections2 = java.time.Duration.ofSeconds(v1.getStartElections()).plusSeconds(electionDurationInSeconds1).toSeconds();
+            String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getStartElections()), Utils.toLocal(endElections2), elections1Duration);
+            electionsRange2.setTooltip(new Tooltip(elections2ToolTip));
+
+            pauseDurationInSeconds = v1.getStartValidationCycle() - v1.getEndElections();
+            long endPause2 = java.time.Duration.ofSeconds(endElections2).plusSeconds(pauseDurationInSeconds).toSeconds();
+            String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections2), Utils.toLocal(endPause2), pause1Duration);
+            pauseRange2.setTooltip(new Tooltip(pause2ToolTip));
+
+            long endValidation2 = java.time.Duration.ofSeconds(endPause2).plusSeconds(validationDurationInSeconds).toSeconds();
+            String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause2), Utils.toLocal(endValidation2), validation1Duration);
+            validationRange2.setTooltip(new Tooltip(validation2ToolTip));
+
+            long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v1.getHoldPeriod()).toSeconds();
+            String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
+            stakeHoldRange2.setTooltip(new Tooltip(holdStake2ToolTip));
+
+            //3
+            long startElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).toSeconds();
+            long endElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionDurationInSeconds2).toSeconds();
+            String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(startElections3), Utils.toLocal(endElections3), elections1Duration);
+            electionsRange3.setTooltip(new Tooltip(elections3ToolTip));
+
+            long endPause3 = java.time.Duration.ofSeconds(endElections3).plusSeconds(pauseDurationInSeconds).toSeconds();
+            String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections3), Utils.toLocal(endPause3), pause1Duration);
+            pauseRange3.setTooltip(new Tooltip(pause3ToolTip));
+
+            long endValidation3 = java.time.Duration.ofSeconds(endPause3).plusSeconds(validationDurationInSeconds).toSeconds();
+            String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause3), Utils.toLocal(endValidation3), validation1Duration);
+            validationRange3.setTooltip(new Tooltip(validation3ToolTip));
+
+            long endHoldStake3 = java.time.Duration.ofSeconds(endValidation3).plusSeconds(v1.getHoldPeriod()).toSeconds();
+            String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation3), Utils.toLocal(endHoldStake3), stakeHold1Duration);
+            stakeHoldRange3.setTooltip(new Tooltip(holdStake3ToolTip));
+
             settings.setStakeHoldRange3End(endHoldStake3);
         }
     }

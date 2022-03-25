@@ -77,7 +77,8 @@ import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.ton.main.App.*;
+import static org.ton.main.App.fxmlLoader;
+import static org.ton.main.App.mainController;
 
 @Slf4j
 @Getter
@@ -466,114 +467,41 @@ public class MyLocalTon {
 
             if (Main.appActive.get()) {
                 try {
+                    long currentTime = Utils.getCurrentTimeSeconds();
 
                     ValidationParam v = Utils.getConfig(settings.getGenesisNode());
                     log.debug("validation parameters {}", v);
-                    long currentTime = Utils.getCurrentTimeSeconds();
-                    long electionsDelta = v.getNextElections() - v.getStartElections();
-                    log.info("currTime-getStartElections>delta*3, {} > {}", currentTime - v.getStartElections(), electionsDelta * 3);
+                    //save election ID
+                    if (v.getStartValidationCycle() > YEAR_1971) {
+                        settings.elections.put(v.getStartValidationCycle(), v);
+                    }
 
-                    if (((v.getStartValidationCycle() > YEAR_1971) && ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections() - 10))) // 10 sec to process
-                            || ((v.getStartValidationCycle() > YEAR_1971) && ((currentTime - v.getStartElections()) > (electionsDelta * 3)))) {
+                    long electionsDelta = v.getNextElections() - v.getStartElections();
+
+                    mainController.drawElections();
+
+                    log.info("[start-end] elections [{} - {}], currentTime {}", Utils.toLocal(v.getStartElections()), Utils.toLocal(v.getEndElections()), Utils.toLocal(currentTime));
+                    log.debug("currTime > delta3, {} {}", (currentTime - v.getStartElections()), electionsDelta * 3);
+
+                    if (((v.getStartValidationCycle() > YEAR_1971) && ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections() - 10)))  // 10 sec to process
+                            || ((v.getStartValidationCycle() > YEAR_1971) && ((currentTime - v.getStartElections()) > (electionsDelta * 2)))) {
 
                         log.info("ELECTIONS OPENED");
-
-                        if (firstAppLaunch) {
-                            firstAppLaunch = false;
-                            if (!settings.getVeryFirstElections()) {
-                                log.debug("A. First app launch and not the first elections");
-                                //always draw elections bars from the beginning
-                                settings.electionsCounter.clear();
-                                settings.electionsCounter.put(1L, null);
-                                settings.electionsCounter.put(2L, null);
-                                settings.electionsCounter.put(3L, null);
-                            } else {
-                                if (nonNull(settings.getLastValidationParamEvery3Cycles())) {
-                                    log.info("Y. currTime - getLastValidationParamEvery3Cycles().getStartElections = {} > {}", currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections(), electionsDelta * 3);
-                                    if ((currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections()) > (electionsDelta * 3)) {
-                                        log.info("too old previous start date of elections");
-
-                                        settings.electionsCounter.clear();
-                                        settings.setLastValidationParamEvery3Cycles(v);
-                                    }
-                                }
-                            }
-                        }
-
-                        settings.electionsCounter.put(v.getStartValidationCycle(), v.getStartValidationCycle());
-
-                        settings.setLastValidationParam(v);
-
-                        saveSettingsToGson();
 
                         Main.inElections.set(true);
 
                         for (String nodeName : settings.getActiveNodes()) {
                             Node node = settings.getNodeByName(nodeName);
                             log.info("participating in elections {}", node.getNodeName());
-                            Utils.participate(node, v); // TODO parallel
-                        }
-                    } else { // active election id is not available
-                        log.info("ELECTIONS CLOSED");
-
-                        v = settings.getLastValidationParam();
-                        if (isNull(v)) {
-                            log.info("neither active nor previous election ids are available, waiting for the elections to be opened");
-                            return;
+                            Utils.participate(node); // TODO parallel
+                            reap(settings.getNodeByName(nodeName));
                         }
 
-                        log.info("using old election id {} {}", v.getStartValidationCycle(), Utils.toLocal(v.getStartValidationCycle()));
+                        Main.inElections.set(false);
 
-                        if (nonNull(v.getStartValidationCycle()) && ((currentTime - v.getStartValidationCycle()) > (electionsDelta * 3))) {
-                            log.info("old election id is too old, need to wait for a new election id");
-                            App.mainController.showWarningMsg("Election Id is not available. Waiting for the next one...", 8);
-                            return;
-                        }
-
-                        if (nonNull(settings.getLastValidationParamEvery3Cycles().getStartElections()) && ((currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections()) > (electionsDelta * 3))) {
-                            log.info("old 3cycles election id is too old, need to wait for a new election id");
-
-                            settings.electionsCounter.clear();
-                            settings.setLastValidationParamEvery3Cycles(v);
-                        }
-
-                        if (firstAppLaunch) {
-                            firstAppLaunch = false;
-                            if (!settings.getVeryFirstElections()) {
-                                log.info("B. First app launch and not the first elections");
-                                firstAppLaunch = false;
-                                //always draw elections bars from the beginning
-                                settings.electionsCounter.clear();
-                                settings.electionsCounter.put(1L, null);
-                                settings.electionsCounter.put(2L, null);
-                                settings.electionsCounter.put(3L, null);
-                                settings.electionsCounter.put(v.getStartValidationCycle(), v.getStartValidationCycle());
-                            } else {
-                                if (nonNull(settings.getLastValidationParamEvery3Cycles())) {
-                                    log.info("X. currTime - getLastValidationParamEvery3Cycles().getStartElections = {} > {}", currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections(), electionsDelta * 3);
-                                    if ((currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections()) > (electionsDelta * 3)) {
-                                        log.info("X. too old previous start date of elections");
-                                        settings.electionsCounter.clear();
-                                        settings.electionsCounter.put(1L, null);
-                                        settings.electionsCounter.put(2L, null);
-                                        //settings.electionsCounter.put(3L, null);
-                                        settings.electionsCounter.put(settings.getLastValidationParamEvery3Cycles().getStartValidationCycle(), settings.getLastValidationParamEvery3Cycles().getStartValidationCycle());
-                                    }
-                                }
-                            }
-                        }
-
-                        saveSettingsToGson();
+                    } else {
+                        log.info("ELECTIONS CLOSED, WAITING...");
                     }
-
-                    ValidationParam finalV = v;
-
-                    mainController.drawElections(finalV);
-
-                    for (String nodeName : settings.getActiveNodes()) {
-                        reap(settings.getNodeByName(nodeName)); // TODO parallel
-                    }
-
                 } catch (Exception e) {
                     log.error("Error getting blockchain configuration! Error {}", e.getMessage());
                     log.error(ExceptionUtils.getStackTrace(e));

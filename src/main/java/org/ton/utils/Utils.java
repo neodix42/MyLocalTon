@@ -539,11 +539,10 @@ public class Utils {
         log.debug("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
 
         long activeElectionId = liteClient.executeGetActiveElectionId(node, MyLocalTon.getInstance().getSettings().getElectorSmcAddrHex());
-        log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
+        log.info("active election id {}, {}, current time {}", activeElectionId, Utils.toLocal(activeElectionId), Utils.toLocal(getCurrentTimeSeconds()));
 
         ResultConfig15 config15 = LiteClientParser.parseConfig15(liteClient.executeGetElections(node));
         log.debug("current elections params {}", config15);
-        log.info("elections start - end, {} - {}", Utils.toLocal(activeElectionId - config15.getElectionsStartBefore()), Utils.toLocal(activeElectionId - config15.getElectionsEndBefore()));
 
         ResultConfig17 config17 = LiteClientParser.parseConfig17(liteClient.executeGetMinMaxStake(node));
         log.debug("min/max stake {}", config17);
@@ -597,9 +596,14 @@ public class Utils {
                 .build();
     }
 
-    public static void participate(Node node, ValidationParam v) {
+    public static void participate(Node node) {
 
         try {
+            MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+            Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];  // get last element
+            ValidationParam v = settings.elections.get(lastKey);
+
             long electionId = v.getStartValidationCycle();
 
             if (node.getElectionsCounter().getOrDefault(electionId, -1L) > YEAR_1971) {
@@ -611,8 +615,6 @@ public class Utils {
                     return;
                 }
             }
-
-            MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
             // if it's a genesis node it has a wallet already - main-wallet.pk
             if (isNull(node.getWalletAddress())) {
@@ -648,8 +650,8 @@ public class Utils {
                     .build();
 
             boolean sentOK = new Wallet().sendTonCoins(sendToncoinsParam);
+
             if (sentOK) {
-                settings.electionsCounterGlobal.put(v.getStartValidationCycle(), true);
                 node.getElectionsCounter().put(v.getStartValidationCycle(), v.getStartValidationCycle());
                 saveSettingsToGson(settings);
             } else {

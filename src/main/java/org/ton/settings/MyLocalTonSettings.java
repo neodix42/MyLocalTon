@@ -114,22 +114,14 @@ public class MyLocalTonSettings implements Serializable {
     ValidationParam lastValidationParam;
     ValidationParam lastValidationParamEvery3Cycles;
     Double timeLineScale;
-    public Map<Long, Long> electionsCounter = new ConcurrentHashMap<>();
-    public Map<Long, Boolean> electionsCounterGlobal = new ConcurrentHashMap<>();
+    //        public Map<Long, Long> electionsCounter = new ConcurrentHashMap<>();
+//    public Map<Long, Boolean> electionsCounterGlobal = new ConcurrentHashMap<>();
+    public Map<Long, ValidationParam> elections = new ConcurrentHashMap<>();
 
-    int cycleMod = 3;
-    int cycleModEquals = 1;
-    //BigDecimal defaultStake = new BigDecimal(10001);
-    //BigDecimal defaultValidatorBalance = new BigDecimal(50005);
+//    int cycleMod = 3;
+//    int cycleModEquals = 1;
+
     Boolean veryFirstElections = Boolean.TRUE;
-
-    //options - logs
-//    @Getter
-//    @Setter
-//    public static class LogSettings implements Serializable {
-//        String myLocalTonLogLevel = "INFO";
-//        //String tonLogLevel = "ERROR"; // TODO REMOVE
-//    }
 
     //options - account and keys
     @Getter
@@ -161,11 +153,11 @@ public class MyLocalTonSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 30 * 60L; // 3 min, 60
-        Long electionStartBefore = 25 * 60L; // 2 min, 50
-        Long electionEndBefore = 10 * 60L;// 1 min, 20
-        Long electionStakesFrozenFor = 10 * 60L;// 30 sec, 20
-        Long originalValidatorSetValidFor = 25 * 60L; // 2 min, 50
+        Long electedFor = 4 * 60L; // 3 min, 60
+        Long electionStartBefore = 3 * 60L; // 2 min, 50
+        Long electionEndBefore = 1 * 60L;// 1 min, 20
+        Long electionStakesFrozenFor = 1 * 60L;// 30 sec, 20
+        Long originalValidatorSetValidFor = 3 * 60L; // 2 min, 50
 
         Long globalId = -239L;
         Long initialBalance = 4999990000L;
