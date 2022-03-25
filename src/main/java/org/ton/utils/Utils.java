@@ -302,10 +302,14 @@ public class Utils {
 
     public static boolean doShutdown() {
         try {
-
+            int endCounter = 1;
             while (Main.inElections.get()) {
                 Thread.sleep(500);
-                log.info("waiting for requests in elections to be processed");
+                log.info("Waiting for requests in elections to be processed, {}/30", endCounter);
+                endCounter++;
+                if (endCounter > 30) {
+                    break;
+                }
             }
 
             if (Main.appActive.get()) {
@@ -539,6 +543,7 @@ public class Utils {
 
         ResultConfig15 config15 = LiteClientParser.parseConfig15(liteClient.executeGetElections(node));
         log.debug("current elections params {}", config15);
+        log.info("elections start - end, {} - {}", Utils.toLocal(activeElectionId - config15.getElectionsStartBefore()), Utils.toLocal(activeElectionId - config15.getElectionsEndBefore()));
 
         ResultConfig17 config17 = LiteClientParser.parseConfig17(liteClient.executeGetMinMaxStake(node));
         log.debug("min/max stake {}", config17);
@@ -602,6 +607,7 @@ public class Utils {
                 if (electionId < Utils.getCurrentTimeSeconds()) {
                     log.info("electionId is outdated");
                 } else {
+                    log.info("exit...........");
                     return;
                 }
             }
@@ -648,10 +654,10 @@ public class Utils {
                 saveSettingsToGson(settings);
             } else {
                 log.error("Participation error. Failed to send {} Toncoins to {}", node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex());
-                App.mainController.showErrorMsg(String.format("Participation error. Failed to send %s Toncoins to %s", node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex()), 3);
+                App.mainController.showErrorMsg(String.format("Participation error. Failed to send %s Toncoins to %s", node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex()), 5);
             }
         } catch (Exception e) {
-            log.error("Error by {} in participation of elections! Error {}", node.getNodeName(), e.getMessage());
+            log.error("Error by {} participating in elections! Error {}", node.getNodeName(), e.getMessage());
             log.error(ExceptionUtils.getStackTrace(e));
         }
     }

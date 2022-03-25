@@ -471,12 +471,10 @@ public class MyLocalTon {
                     log.debug("validation parameters {}", v);
                     long currentTime = Utils.getCurrentTimeSeconds();
                     long electionsDelta = v.getNextElections() - v.getStartElections();
-                    log.info("currTime - getStartElections = {} > {}", currentTime - v.getStartElections(), electionsDelta * 3);
+                    log.info("currTime-getStartElections>delta*3, {} > {}", currentTime - v.getStartElections(), electionsDelta * 3);
 
                     if (((v.getStartValidationCycle() > YEAR_1971) && ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections() - 10))) // 10 sec to process
                             || ((v.getStartValidationCycle() > YEAR_1971) && ((currentTime - v.getStartElections()) > (electionsDelta * 3)))) {
-
-                        log.debug("current active election id {} {}", v.getStartValidationCycle(), Utils.toLocal(v.getStartValidationCycle()));
 
                         log.info("ELECTIONS OPENED");
 
@@ -493,8 +491,10 @@ public class MyLocalTon {
                                 if (nonNull(settings.getLastValidationParamEvery3Cycles())) {
                                     log.info("Y. currTime - getLastValidationParamEvery3Cycles().getStartElections = {} > {}", currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections(), electionsDelta * 3);
                                     if ((currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections()) > (electionsDelta * 3)) {
-                                        log.debug("too old previous start date of elections");
+                                        log.info("too old previous start date of elections");
+
                                         settings.electionsCounter.clear();
+                                        settings.setLastValidationParamEvery3Cycles(v);
                                     }
                                 }
                             }
@@ -508,12 +508,13 @@ public class MyLocalTon {
 
                         Main.inElections.set(true);
 
-                        for (String nodeName : settings.getActiveNodes()) {  // TODO concurrent impl
+                        for (String nodeName : settings.getActiveNodes()) {
                             Node node = settings.getNodeByName(nodeName);
                             log.info("participating in elections {}", node.getNodeName());
                             Utils.participate(node, v); // TODO parallel
                         }
                     } else { // active election id is not available
+                        log.info("ELECTIONS CLOSED");
 
                         v = settings.getLastValidationParam();
                         if (isNull(v)) {
@@ -521,9 +522,20 @@ public class MyLocalTon {
                             return;
                         }
 
-                        log.info("ELECTIONS CLOSED");
+                        log.info("using old election id {} {}", v.getStartValidationCycle(), Utils.toLocal(v.getStartValidationCycle()));
 
-                        log.info("using old election id {} {}", settings.getLastValidationParam().getStartValidationCycle(), Utils.toLocal(settings.getLastValidationParam().getStartValidationCycle()));
+                        if (nonNull(v.getStartValidationCycle()) && ((currentTime - v.getStartValidationCycle()) > (electionsDelta * 3))) {
+                            log.info("old election id is too old, need to wait for a new election id");
+                            App.mainController.showWarningMsg("Election Id is not available. Waiting for the next one...", 8);
+                            return;
+                        }
+
+                        if (nonNull(settings.getLastValidationParamEvery3Cycles().getStartElections()) && ((currentTime - settings.getLastValidationParamEvery3Cycles().getStartElections()) > (electionsDelta * 3))) {
+                            log.info("old 3cycles election id is too old, need to wait for a new election id");
+
+                            settings.electionsCounter.clear();
+                            settings.setLastValidationParamEvery3Cycles(v);
+                        }
 
                         if (firstAppLaunch) {
                             firstAppLaunch = false;
@@ -772,7 +784,6 @@ public class MyLocalTon {
         if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
             ((Label) accountRow.lookup("#hexAddr")).setTextFill(Color.GREEN);
         }
-
 
         ((Label) accountRow.lookup("#b64Addr")).setText(walletEntity.getWallet().getBounceableAddressBase64());
         ((Label) accountRow.lookup("#b64urlAddr")).setText(walletEntity.getWallet().getBounceableAddressBase64url());
@@ -1663,7 +1674,6 @@ public class MyLocalTon {
 
         node.setValidationSigningKey(signingKey);
         node.setValidationSigningPubKey(signingPubKey);
-
         validatorEngineConsole.addPermKey(node, signingKey, electionId, electionEnd);
         validatorEngineConsole.addTempKey(node, signingKey, electionEnd);
     }
@@ -1675,7 +1685,6 @@ public class MyLocalTon {
 
         node.setPrevValidationAndlKey(node.getValidationAndlKey());
         node.setValidationAndlKey(adnlKey); // shown on validator tab as ADNL address        
-
 
         validatorEngineConsole.addAdnl(node, adnlKey);
         validatorEngineConsole.addValidatorAddr(node, signingKey, adnlKey, electionEnd);
@@ -1700,18 +1709,18 @@ public class MyLocalTon {
         if (!node.getNodeName().contains("genesis")) {
             if (isWindows()) {
 //               on Windows locked files cannot be copied. As an option, we can shut down genesis node, copy the files and start it again.
-//               but there is a connection issue with this on Windows
+//               but there is a connection issue with this on Windows.
+//               As an alternative, we can exclude locked files (LOCK), that's why Utils.copyDirectory is used.
 //               log.info("shutting down genesis node...");
 //               settings.getGenesisNode().nodeShutdown();
 
-//               if we copy only db/static dir, it works, but requires full synchronization that takes long time,
-//               in comparison to linux systems where copy of all directories makes almost instant synchronization
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
 //              copy ignoring locked files
                 Utils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir()); // if only this dir, then fails with "Check `ptr && "deferencing null Ref"` failed"
                 Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
                 Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
                 Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
+                // TODO Sometimes after copying all the files there is an error state file is wrong and validator cannot be started
 
 //                Utils.copyDirectory(settings.getGenesisNode().getTonDbStateDir(), node.getTonDbStateDir());
 //                log.info("launching genesis node...");

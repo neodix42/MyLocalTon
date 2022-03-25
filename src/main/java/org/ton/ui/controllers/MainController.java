@@ -955,6 +955,9 @@ public class MainController implements Initializable {
     public JFXTextField nodeSyncBefore7;
 
     @FXML
+    public Label tonDonationAddress;
+
+    @FXML
     JFXCheckBox shardStateCheckbox;
 
     @FXML
@@ -2360,10 +2363,12 @@ public class MainController implements Initializable {
                 validator1PubKeyInteger.setText(new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16) + " (used in participants list)");
             } else { // in a list of current validators we must find an entry from previous next validators
                 for (Validator validator : v.getCurrentValidators()) {
-                    if (validator.getAdnlAddress().equals(node1.getPrevValidationAndlKey())) {
-                        validator1AdnlAddress.setText(validator.getAdnlAddress());
-                        validator1PubKeyHex.setText(validator.getPublicKey());
-                        validator1PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                    if (nonNull(validator.getAdnlAddress())) {
+                        if (validator.getAdnlAddress().equals(node1.getPrevValidationAndlKey())) {
+                            validator1AdnlAddress.setText(validator.getAdnlAddress());
+                            validator1PubKeyHex.setText(validator.getPublicKey());
+                            validator1PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                        }
                     }
                 }
             }
@@ -2594,7 +2599,7 @@ public class MainController implements Initializable {
             }
 
             long electionsDelta = v.getNextElections() - v.getStartElections();
-            log.debug("currTime - startElections = {} > {} 3*delta", (Utils.getCurrentTimeSeconds() - v.getStartElections()), (electionsDelta * 3));
+            log.info("currTime - startElections = {} > {} 3*delta", (Utils.getCurrentTimeSeconds() - v.getStartElections()), (electionsDelta * 3));
             // use case when mylocalton started after long pause and electionId was taken last one but the next one is way ahead in time
             if ((Utils.getCurrentTimeSeconds() - v.getStartElections()) > (electionsDelta * 3)) {
                 log.info("A. setStartElectionIdEvery3Cycles {}", Utils.toLocal(v.getStartElections()));
@@ -3083,5 +3088,16 @@ public class MainController implements Initializable {
         } else {
             Runtime.getRuntime().exec("gio open " + validatorLogDir7.getText());
         }
+    }
+
+    public void copyDonationTonAddress(MouseEvent mouseEvent) {
+        String addr = tonDonationAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
     }
 }

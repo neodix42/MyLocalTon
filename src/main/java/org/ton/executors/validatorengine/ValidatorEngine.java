@@ -18,6 +18,7 @@ import org.ton.wallet.WalletAddress;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,6 +26,8 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.concurrent.Future;
+
+import static org.ton.actions.MyLocalTon.ONE_BLN;
 
 @Slf4j
 public class ValidatorEngine {
@@ -367,7 +370,7 @@ public class ValidatorEngine {
             // replace path to validator-key-1.pub in gen-zerostate.fif
             String genZeroStateFif = FileUtils.readFileToString(new File(node.getGenesisGenZeroStateFifLocation()), StandardCharsets.UTF_8);
             String genZeroStateFifNew = StringUtils.replace(genZeroStateFif, "// \"path_to_" + node.getNodeName() + "_pub_key\"", "\"" + node.getValidatorKeyPubLocation() + "\"");
-            genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), MyLocalTon.getInstance().getSettings().getBlockchainSettings().getInitialStake().toString());
+            genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), node.getDefaultValidatorStake().min(BigDecimal.ONE).multiply(BigDecimal.valueOf(ONE_BLN)).toString());
             FileUtils.writeStringToFile(new File(node.getGenesisGenZeroStateFifLocation()), genZeroStateFifNew, StandardCharsets.UTF_8);
         }
     }

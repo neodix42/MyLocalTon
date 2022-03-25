@@ -155,25 +155,17 @@ public class MyLocalTonSettings implements Serializable {
         int blockchainExplorerPort = 8000;
     }
 
-    // after you disappear from participant list, you have to wait:
-    // разницу между временем окончания выборов и окончанием цикла валидации
     @Getter
     @Setter
     public static class BlockchainSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 5 * 60L; // 3 min, 60
-        Long electionStartBefore = 4 * 60L; // 2 min, 50
-        Long electionEndBefore = 1 * 60L;// 1 min, 20
-        Long electionStakesFrozenFor = 1 * 60L;// 30 sec, 20
-        Long originalValidatorSetValidFor = 4 * 60L; // 2 min, 50
-
-//        Long validatorStateTtl = 365 * 86400L; // 1 year, state will be gc'd after this time (in seconds) default=3600, 1 hour
-//        Long validatorBlockTtl = 365 * 86400L; // 1 year, blocks will be gc'd after this time (in seconds) default=7*86400, 7 days
-//        Long validatorArchiveTtl = 365 * 86400L; //1 year, archived blocks will be deleted after this time (in seconds) default=365*86400, 1 year
-//        Long validatorKeyProofTtl = 10 * 365 * 86400L; // 10 years, key blocks will be deleted after this time (in seconds) default=365*86400*10, 10 years
-//        Long validatorSyncBefore = 2 * 60L; //2 minutes, in initial sync download all blocks for last given seconds default=3600, 1 hour
+        Long electedFor = 30 * 60L; // 3 min, 60
+        Long electionStartBefore = 25 * 60L; // 2 min, 50
+        Long electionEndBefore = 10 * 60L;// 1 min, 20
+        Long electionStakesFrozenFor = 10 * 60L;// 30 sec, 20
+        Long originalValidatorSetValidFor = 25 * 60L; // 2 min, 50
 
         Long globalId = -239L;
         Long initialBalance = 4999990000L;
@@ -186,7 +178,7 @@ public class MyLocalTonSettings implements Serializable {
         Long maxValidatorStake = 10000000L;
         Long minTotalValidatorStake = 10000L;
         BigDecimal maxFactor = new BigDecimal(3);
-        Long initialStake = 10000 * 1000000000L; // 10k
+        //Long initialStake = 10000 * 1000000000L; // 10k
         //Long initialStake = 17L; // 10k
     }
 
