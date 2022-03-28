@@ -9,6 +9,9 @@ import org.ton.settings.Node;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static com.sun.javafx.PlatformUtil.isWindows;
 
@@ -19,7 +22,7 @@ public class ValidatorEngineConsoleExecutor {
     private static final String VALIDATOR_ENGINE_CONSOLE_EXE = "validator-engine-console.exe";
     private static final String VALIDATOR_ENGINE_CONSOLE = "validator-engine-console";
 
-    public Pair<String, Process> execute(Node node, String... command) {
+    public Pair<Process, Future<String>> execute(Node node, String... command) {
 
         String binaryPath = node.getTonBinDir() + (isWindows() ? VALIDATOR_ENGINE_CONSOLE_EXE : VALIDATOR_ENGINE_CONSOLE);
 
@@ -29,18 +32,35 @@ public class ValidatorEngineConsoleExecutor {
         try {
             log.debug("execute: {}", String.join(" ", withBinaryCommand));
 
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+
             final ProcessBuilder pb = new ProcessBuilder(withBinaryCommand).redirectErrorStream(true);
 
             pb.directory(new File(new File(binaryPath).getParent()));
             Process p = pb.start();
 
-            String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
+            Future<String> future = executorService.submit(() -> {
+                try {
+                    Thread.currentThread().setName("validator-engine-console" + node.getNodeName());
 
-            p.getInputStream().close();
-            p.getErrorStream().close();
-            p.getOutputStream().close();
+                    String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
+                    log.info("{} stopped.", "validator-engine-console" + node.getNodeName());
+                    log.debug("validator-console exit output: {} ", resultInput);
+                    p.getInputStream().close();
+                    p.getErrorStream().close();
+                    p.getOutputStream().close();
 
-            return Pair.of(resultInput, p);
+                    return resultInput;
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            });
+
+            executorService.shutdown();
+
+            return Pair.of(p, future);
 
         } catch (final IOException e) {
             log.error(e.getMessage());

@@ -2415,6 +2415,11 @@ public class MainController implements Initializable {
             nodePublicPort2.setText(node2.getPublicPort().toString());
             nodeConsolePort2.setText(node2.getConsolePort().toString());
             liteServerPort2.setText(node2.getLiteServerPort().toString());
+            if (isNull(node2.getWalletAddress())) {
+                deleteValidatorBtn2.setDisable(true);
+            } else {
+                deleteValidatorBtn2.setDisable(false);
+            }
         }
     }
 
@@ -2440,6 +2445,12 @@ public class MainController implements Initializable {
             nodePublicPort3.setText(node3.getPublicPort().toString());
             nodeConsolePort3.setText(node3.getConsolePort().toString());
             liteServerPort3.setText(node3.getLiteServerPort().toString());
+
+            if (isNull(node3.getWalletAddress())) {
+                deleteValidatorBtn3.setDisable(true);
+            } else {
+                deleteValidatorBtn3.setDisable(false);
+            }
         }
     }
 
@@ -2465,6 +2476,12 @@ public class MainController implements Initializable {
             nodePublicPort4.setText(node4.getPublicPort().toString());
             nodeConsolePort4.setText(node4.getConsolePort().toString());
             liteServerPort4.setText(node4.getLiteServerPort().toString());
+
+            if (isNull(node4.getWalletAddress())) {
+                deleteValidatorBtn4.setDisable(true);
+            } else {
+                deleteValidatorBtn4.setDisable(false);
+            }
         }
     }
 
@@ -2490,6 +2507,12 @@ public class MainController implements Initializable {
             nodePublicPort5.setText(node5.getPublicPort().toString());
             nodeConsolePort5.setText(node5.getConsolePort().toString());
             liteServerPort5.setText(node5.getLiteServerPort().toString());
+
+            if (isNull(node5.getWalletAddress())) {
+                deleteValidatorBtn5.setDisable(true);
+            } else {
+                deleteValidatorBtn5.setDisable(false);
+            }
         }
     }
 
@@ -2515,6 +2538,12 @@ public class MainController implements Initializable {
             nodePublicPort6.setText(node6.getPublicPort().toString());
             nodeConsolePort6.setText(node6.getConsolePort().toString());
             liteServerPort6.setText(node6.getLiteServerPort().toString());
+
+            if (isNull(node6.getWalletAddress())) {
+                deleteValidatorBtn6.setDisable(true);
+            } else {
+                deleteValidatorBtn6.setDisable(false);
+            }
         }
     }
 
@@ -2540,6 +2569,12 @@ public class MainController implements Initializable {
             nodePublicPort7.setText(node7.getPublicPort().toString());
             nodeConsolePort7.setText(node7.getConsolePort().toString());
             liteServerPort7.setText(node7.getLiteServerPort().toString());
+
+            if (isNull(node7.getWalletAddress())) {
+                deleteValidatorBtn7.setDisable(true);
+            } else {
+                deleteValidatorBtn7.setDisable(false);
+            }
         }
     }
 

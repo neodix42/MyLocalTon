@@ -354,7 +354,7 @@ public class Fift {
         log.info("signing request by {}", node.getNodeName());
 
         //sign hex string and base64, 2nd line from bottom in output
-        Pair<String, Process> signed = new ValidatorEngineConsoleExecutor().execute(node,
+        Pair<Process, Future<String>> signed = new ValidatorEngineConsoleExecutor().execute(node,
                 "-k", node.getTonCertsDir() + "client",
                 "-p", node.getTonCertsDir() + "server.pub",
                 "-v", "0",
@@ -362,9 +362,9 @@ public class Fift {
                 "-rc",
                 "sign " + node.getValidationSigningKey() + " " + generatedMessageHex);
 
-        log.debug(signed.getLeft()); // make debug
+        log.debug(signed.getRight().get()); // make debug
 
-        String signature = StringUtils.substring(signed.getLeft(), signed.getLeft().indexOf("signature") + 9).trim();
+        String signature = StringUtils.substring(signed.getRight().get(), signed.getRight().get().indexOf("signature") + 9).trim();
         log.info("signature {}", signature);
         FileUtils.deleteQuietly(new File(node.getTonBinDir() + fileNameBase));
 

@@ -128,10 +128,11 @@ public class YesNoController implements Initializable {
         Node node = MyLocalTon.getInstance().getSettings().getNodeByName(nodeName);
         MyLocalTon.getInstance().getSettings().getActiveNodes().remove(nodeName);
 
-        // clean settings
-        Utils.resetNodeSettings(node.getNodeName());
         // clean wallet db and UI
         Utils.deleteWalletByFullAddress(node.getWalletAddress().getFullWalletAddress());
+
+        // clean settings
+        Utils.resetNodeSettings(node.getNodeName());
 
         if (node.nodeShutdownAndDelete()) {
             mainController.validationTabs.getTabs().remove(mainController.getNodeTabByName(nodeName));

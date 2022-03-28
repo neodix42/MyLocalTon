@@ -1597,7 +1597,7 @@ public class MyLocalTon {
         saveSettingsToGson();
     }
 
-    void createSigningKeyForValidation(Node node, long electionId, long electionEnd) {
+    void createSigningKeyForValidation(Node node, long electionId, long electionEnd) throws ExecutionException, InterruptedException {
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
 
         String signingKey = validatorEngineConsole.generateNewNodeKey(node);
@@ -1611,7 +1611,7 @@ public class MyLocalTon {
         validatorEngineConsole.addTempKey(node, signingKey, electionEnd);
     }
 
-    void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) {
+    void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) throws ExecutionException, InterruptedException {
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
         String adnlKey = validatorEngineConsole.generateNewNodeKey(node);
         log.info("{} new adnlKey {} for current elections", node.getNodeName(), adnlKey);

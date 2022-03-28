@@ -304,10 +304,10 @@ public class Utils {
         try {
             int endCounter = 1;
             while (Main.inElections.get()) {
-                Thread.sleep(500);
-                log.info("Waiting for requests in elections to be processed, {}/30", endCounter);
+                Thread.sleep(1000);
+                log.info("Waiting for requests in elections to be processed, {}/15", endCounter);
                 endCounter++;
-                if (endCounter > 30) {
+                if (endCounter > 15) {
                     break;
                 }
             }

@@ -150,11 +150,11 @@ public class MyLocalTonSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 4 * 60L; // 3 min, 60
-        Long electionStartBefore = 3 * 60L; // 2 min, 50
-        Long electionEndBefore = 1 * 60L;// 1 min, 20
-        Long electionStakesFrozenFor = 1 * 60L;// 30 sec, 20
-        Long originalValidatorSetValidFor = 3 * 60L; // 2 min, 50
+        Long electedFor = 30 * 60L; // 3 min, 60
+        Long electionStartBefore = 25 * 60L; // 2 min, 50
+        Long electionEndBefore = 10 * 60L;// 1 min, 20
+        Long electionStakesFrozenFor = 10 * 60L;// 30 sec, 20
+        Long originalValidatorSetValidFor = 25 * 60L; // 2 min, 50
 
         Long globalId = -239L;
         Long initialBalance = 4999990000L;
@@ -167,8 +167,6 @@ public class MyLocalTonSettings implements Serializable {
         Long maxValidatorStake = 10000000L;
         Long minTotalValidatorStake = 10000L;
         BigDecimal maxFactor = new BigDecimal(3);
-        //Long initialStake = 10000 * 1000000000L; // 10k
-        //Long initialStake = 17L; // 10k
     }
 
     Long currentValidatorSetSince = 0L;
