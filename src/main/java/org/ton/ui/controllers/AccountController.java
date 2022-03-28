@@ -293,33 +293,6 @@ public class AccountController {
     public void walletDeleteBtnAction() {
         log.debug("deleting wallet");
         Utils.deleteWalletByFullAddress(hexAddr.getText());
-        /*
-        String[] wcAddr = hexAddr.getText().split(":");
-        WalletPk walletPk = WalletPk.builder()
-                .wc(Long.parseLong(wcAddr[0]))
-                .hexAddress(wcAddr[1])
-                .build();
-
-        WalletEntity walletEntity = App.dbPool.findWallet(walletPk);
-        App.dbPool.deleteWallet(walletPk);
-
-        MainController c = fxmlLoader.getController();
-        Node found = null;
-        for (Node row : c.accountsvboxid.getItems()) {
-            if (((Label) row.lookup("#hexAddr")).getText().equals(hexAddr.getText())) {
-                log.debug("Remove from list {}", hexAddr.getText());
-                found = row;
-            }
-        }
-
-        if (nonNull(found)) {
-            c.accountsvboxid.getItems().remove(found);
-        }
-
-        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".pk"));
-        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".addr"));
-        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + "-query.boc"));
-        */
     }
 
     public void runMethodBtn() throws IOException {

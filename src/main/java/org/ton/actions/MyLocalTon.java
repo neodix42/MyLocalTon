@@ -381,15 +381,15 @@ public class MyLocalTon {
 
         while (installed < toInstall) {
             if (App.dbPool.existsMainWallet() == 0) {
-                createWalletEntity(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "main-wallet", -1L, -1L, settings.getWalletSettings().getInitialAmount()); //WC -1
+                createWalletEntity(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "main-wallet", -1L, -1L, settings.getWalletSettings().getInitialAmount(), false); //WC -1
                 Thread.sleep(500);
             }
             if (App.dbPool.existsConfigWallet() == 0) {
-                createWalletEntity(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "config-master", -1L, -1L, settings.getWalletSettings().getInitialAmount()); //WC -1
+                createWalletEntity(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "config-master", -1L, -1L, settings.getWalletSettings().getInitialAmount(), false); //WC -1
                 Thread.sleep(500);
             }
 
-            createWalletEntity(genesisNode, null, getSettings().getWalletSettings().getDefaultWorkChain(), getSettings().getWalletSettings().getDefaultSubWalletId(), settings.getWalletSettings().getInitialAmount());
+            createWalletEntity(genesisNode, null, getSettings().getWalletSettings().getDefaultWorkChain(), getSettings().getWalletSettings().getDefaultSubWalletId(), settings.getWalletSettings().getInitialAmount(), false);
 
             installed = App.dbPool.getNumberOfPreinstalledWallets();
             log.info("created {}", installed);
@@ -401,7 +401,6 @@ public class MyLocalTon {
             log.info("preinstalled wallet {}", wallet.getFullAddress());
 
             // always update account state on start
-            //AccountState accountState = LiteClientParser.parseGetAccount(LiteClientExecutor.getInstance().executeGetAccount(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress()));
             Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress());
             App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
 
@@ -411,7 +410,7 @@ public class MyLocalTon {
         }
     }
 
-    public WalletEntity createWalletEntity(Node node, String fileBaseName, long workchain, long subWalletid, BigDecimal amount) {
+    public WalletEntity createWalletEntity(Node node, String fileBaseName, long workchain, long subWalletid, BigDecimal amount, boolean validatorWallet) {
 
         try {
             WalletEntity wallet;
@@ -423,7 +422,9 @@ public class MyLocalTon {
                 log.debug("read wallet address: {}", wallet.getHexAddress());
             }
 
-            node.setWalletAddress(wallet.getWallet());
+            if (validatorWallet) {
+                node.setWalletAddress(wallet.getWallet());
+            }
 
             Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(node, wallet.getWc() + ":" + wallet.getHexAddress());
             log.info("on node {}, created wallet {} with balance {}", node.getNodeName(), wallet.getWc() + ":" + wallet.getHexAddress(), stateAndSeqno.getLeft().getBalance().getToncoins());
@@ -480,7 +481,7 @@ public class MyLocalTon {
 
                     mainController.drawElections();
 
-                    log.info("[start-end] elections [{} - {}], currentTime {}", Utils.toLocal(v.getStartElections()), Utils.toLocal(v.getEndElections()), Utils.toLocal(currentTime));
+                    log.debug("[start-end] elections [{} - {}], currentTime {}", Utils.toLocal(v.getStartElections()), Utils.toLocal(v.getEndElections()), Utils.toLocal(currentTime));
                     log.debug("currTime > delta3, {} {}", (currentTime - v.getStartElections()), electionsDelta * 3);
 
                     if (((v.getStartValidationCycle() > YEAR_1971) && ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections() - 10)))  // 10 sec to process
@@ -706,7 +707,11 @@ public class MyLocalTon {
 
     public void populateAccountRowWithData(WalletEntity walletEntity, javafx.scene.Node accountRow, String searchFor) {
 
-        ((Label) accountRow.lookup("#hexAddrLabel")).setText(Utils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress()) + "Hex:");
+        if (nonNull(walletEntity.getWallet())) {
+            ((Label) accountRow.lookup("#hexAddrLabel")).setText(Utils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress()) + "Hex:");
+        } else {
+            ((Label) accountRow.lookup("#hexAddrLabel")).setText("Hex:");
+        }
 
         ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress());
         if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {

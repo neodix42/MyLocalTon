@@ -2236,11 +2236,15 @@ public class MainController implements Initializable {
         Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
         ((Label) parent.lookup("#action")).setText("create");
         ((Label) parent.lookup("#header")).setText("Create " + settings.getWalletSettings().getWalletVersion());
+
         parent.lookup("#body").setVisible(false);
+        parent.lookup("#seqno").setVisible(false);
+
         parent.lookup("#inputFields").setVisible(true);
         if (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3)) {
             parent.lookup("#workchain").setVisible(true);
             parent.lookup("#subWalletId").setVisible(true);
+
         } else {
             parent.lookup("#workchain").setVisible(true);
             parent.lookup("#subWalletId").setVisible(false);
@@ -2354,7 +2358,7 @@ public class MainController implements Initializable {
 
         } catch (Exception e) {
             log.error("Error updating validation tab GUI! Error {}", e.getMessage());
-            e.printStackTrace();
+            log.error(ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -2591,7 +2595,7 @@ public class MainController implements Initializable {
     }
 
     public void drawBarsAndLabels() {
-        log.info("draw drawBarsAndLabels");
+        log.debug("draw drawBarsAndLabels");
 
         try {
             Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];
@@ -2612,66 +2616,66 @@ public class MainController implements Initializable {
     }
 
     private void calculateTimeLineScale() {
-        ValidationParam v;
-        if (settings.elections.size() > 1) {
-            Object lastLastKey = settings.elections.keySet().toArray()[settings.elections.size() - 2];
-            v = settings.elections.get(lastLastKey);
-        } else {
-            Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];  // get last element
-            v = settings.elections.get(lastKey);
-        }
+        Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];  // get last element
+        ValidationParam v = settings.elections.get(lastKey);
 
+        long startXHoldStakeLine2 = (long) stakeHoldRange2.getLayoutX();
         long startXHoldStakeLine3 = (long) stakeHoldRange3.getLayoutX();
+        long endHoldStake2 = settings.getStakeHoldRange2End();
         long endHoldStake3 = settings.getStakeHoldRange3End();
 
         double scaleFactor = (double) 200 / v.getValidationDuration();
         long holdStakeWidth = (long) (v.getHoldPeriod() * scaleFactor);
 
-        log.debug("startXHoldStakeLine3 {}, endHoldStake3 {}, holdStakeWidth {}", startXHoldStakeLine3, endHoldStake3, holdStakeWidth);
+        log.debug("startXHoldStakeLine3 {}, endHoldStake2 {}, endHoldStake3 {} holdStakeWidth {}", startXHoldStakeLine3, endHoldStake2, endHoldStake3, holdStakeWidth);
 
-        // draw time-line
-        long fullWidthInPixels = startXHoldStakeLine3 + holdStakeWidth;
-        //long fullDurationSeconds = endHoldStake3 - settings.getLastValidationParamEvery3Cycles().getStartElections();
-        long fullDurationSeconds = endHoldStake3 - v.getStartElections();
+        long fullWidthInPixels = 0;
+        long fullDurationSeconds = 0;
+
+        if (settings.elections.size() > 1) {
+            fullDurationSeconds = endHoldStake3 - v.getStartElections() + v.getValidationDuration();
+            fullWidthInPixels = startXHoldStakeLine3 + holdStakeWidth;
+        } else {
+            fullDurationSeconds = endHoldStake3 - v.getStartElections();
+            fullWidthInPixels = startXHoldStakeLine3 + holdStakeWidth;
+        }
+
         double scale = (double) fullWidthInPixels / fullDurationSeconds;
         log.debug("full width {}px, {}s, scale {}", fullWidthInPixels, fullDurationSeconds, scale);
         settings.setTimeLineScale(scale);
     }
 
     public void drawTimeLine() {
+        log.debug("draw time-line");
+        long currentTime = Utils.getCurrentTimeSeconds();
 
         if (nonNull(settings.getTimeLineScale())) {
-            ValidationParam v;
-            if (settings.elections.size() > 1) {
-                Object lastLastKey = settings.elections.keySet().toArray()[settings.elections.size() - 2];
-                v = settings.elections.get(lastLastKey);
-            } else {
-                Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];  // get last element
+
+            Object lastLastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];
+            ValidationParam v = settings.elections.get(lastLastKey);
+            long electionsDelta = v.getNextElections() - v.getStartElections();
+
+            if ((currentTime - v.getStartElections()) > (electionsDelta * 2)) {
+                log.info("redraw to the closest");
+                Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];
                 v = settings.elections.get(lastKey);
             }
 
-            log.info("draw time-line");
-            // update time-line position
-            long x;
-            double xcoord;
-
-            log.info("Current startElectionss {}, sizeElections {}", Utils.toLocal(v.getStartElections()), settings.elections.size());
-
-            //x = Utils.getCurrentTimeSeconds() - settings.getLastValidationParamEvery3Cycles().getStartElections();
-            x = Utils.getCurrentTimeSeconds() - v.getStartElections();
+            long x = currentTime - v.getStartElections();
             double scaleFactor = (double) 200 / v.getValidationDuration();
-            long electionsDelta = v.getNextElections() - v.getStartElections();
+            double xcoord;
+            electionsDelta = v.getNextElections() - v.getStartElections();
             long electionsDeltaWidth = (long) (electionsDelta * scaleFactor);
-//
-//            if (settings.electionsCounter.size() > 3) {
-//                xcoord = electionsDeltaWidth + (x * settings.getTimeLineScale());
-//            } else {
-//                xcoord = 0 + (x * settings.getTimeLineScale());
-//            }
 
-            xcoord = 0 + (x * settings.getTimeLineScale());
-            log.info("electionsDelta {}, electionsDeltaWidth {}, xcoord {}", electionsDelta, electionsDeltaWidth, xcoord);
+            if (settings.elections.size() > 1) {
+                xcoord = electionsDeltaWidth + (x * settings.getTimeLineScale());
+            } else {
+                xcoord = 0 + (x * settings.getTimeLineScale());
+            }
+
+            log.debug("electionsDelta {}, electionsDeltaWidth {}, timeScale {}, xcoord {}, x {}, v.getStartElections() {}, sizeElections {}", electionsDelta, electionsDeltaWidth, settings.getTimeLineScale(), xcoord, x, Utils.toLocal(v.getStartElections()), settings.elections.size());
             timeLine.setLayoutX(xcoord);
+            timeLine.setTooltip(new Tooltip(Utils.toLocal(currentTime)));
             saveSettings();
         }
     }
@@ -2799,6 +2803,7 @@ public class MainController implements Initializable {
             long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v1.getHoldPeriod()).toSeconds();
             String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
             stakeHoldRange2.setTooltip(new Tooltip(holdStake2ToolTip));
+            settings.setStakeHoldRange2End(endHoldStake2);
 
             //3
             long startElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionsDelta1).toSeconds();
@@ -2855,6 +2860,8 @@ public class MainController implements Initializable {
             long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v1.getHoldPeriod()).toSeconds();
             String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
             stakeHoldRange2.setTooltip(new Tooltip(holdStake2ToolTip));
+
+            settings.setStakeHoldRange2End(endHoldStake2);
 
             //3
             long startElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).toSeconds();

@@ -182,7 +182,8 @@ public class YesNoController implements Initializable {
                         null,
                         chain,
                         walletId,
-                        MyLocalTon.getInstance().getSettings().getWalletSettings().getInitialAmount());
+                        MyLocalTon.getInstance().getSettings().getWalletSettings().getInitialAmount(),
+                        false);
 
                 if (nonNull(walletEntity)) {
                     App.mainController.showSuccessMsg("Wallet " + walletEntity.getFullAddress() + " created", 3);

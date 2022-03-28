@@ -325,6 +325,7 @@ public class Utils {
 
                 Runtime rt = Runtime.getRuntime();
                 if (isWindows()) {
+                    rt.exec("taskkill /F /IM " + "validator-engine-console.exe");
                     rt.exec("taskkill /F /IM " + "lite-client.exe");
                     rt.exec("taskkill /F /IM " + "dht-server.exe");
                     /*
@@ -372,7 +373,12 @@ public class Utils {
                             }
                         }
                     } while (resultInput.contains("validator-engine"));
+
+                    rt.exec("taskkill /F /IM " + "validator-engine-console.exe");
+                    rt.exec("taskkill /F /IM " + "lite-client.exe");
+                    rt.exec("taskkill /F /IM " + "dht-server.exe");
                 } else {
+                    rt.exec("killall -9 " + "validator-engine-console");
                     rt.exec("killall -9 " + "lite-client");
                     rt.exec("killall -9 " + "dht-server");
                     rt.exec("killall -2 " + "validator-engine"); // TODO look up for the shutdown order when multiple nodes are active
@@ -611,15 +617,13 @@ public class Utils {
                 if (electionId < Utils.getCurrentTimeSeconds()) {
                     log.info("electionId is outdated");
                 } else {
-                    log.info("exit...........");
                     return;
                 }
             }
 
-            // if it's a genesis node it has a wallet already - main-wallet.pk
             if (isNull(node.getWalletAddress())) {
                 log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
-                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount());
+                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
                 node.setWalletAddress(walletEntity.getWallet());
                 Thread.sleep(5 * 1000); //10 sec
             } else {

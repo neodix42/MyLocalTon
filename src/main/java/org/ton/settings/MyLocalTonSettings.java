@@ -110,16 +110,13 @@ public class MyLocalTonSettings implements Serializable {
     String zeroStateFileHashHuman;
     String zeroStateFileHashBase64;
 
+    Long stakeHoldRange2End;
     Long stakeHoldRange3End;
+
     ValidationParam lastValidationParam;
     ValidationParam lastValidationParamEvery3Cycles;
     Double timeLineScale;
-    //        public Map<Long, Long> electionsCounter = new ConcurrentHashMap<>();
-//    public Map<Long, Boolean> electionsCounterGlobal = new ConcurrentHashMap<>();
     public Map<Long, ValidationParam> elections = new ConcurrentHashMap<>();
-
-//    int cycleMod = 3;
-//    int cycleModEquals = 1;
 
     Boolean veryFirstElections = Boolean.TRUE;
 

@@ -89,17 +89,19 @@
                 <Insets left="20.0"/>
             </GridPane.margin>
         </JFXTextField>
-        <JFXToggleButton fx:id="clearBounceFlag" onMouseClicked="#clearBounceFlagClicked" mnemonicParsing="false" text="Clear bounce flag" toggleColor="#0088cc"
-                         toggleLineColor="#dbedff" GridPane.rowIndex="4">
-            <padding>
-                <Insets left="10.0"/>
-            </padding>
-            <GridPane.margin>
-                <Insets left="20.0"/>
-            </GridPane.margin>
+        <!--
+                <JFXToggleButton fx:id="clearBounceFlag" onMouseClicked="#clearBounceFlagClicked" mnemonicParsing="false" text="Clear bounce flag" toggleColor="#0088cc"
+                                 toggleLineColor="#dbedff" GridPane.rowIndex="4">
+                    <padding>
+                        <Insets left="10.0"/>
+                    </padding>
+                    <GridPane.margin>
+                        <Insets left="20.0"/>
+                    </GridPane.margin>
 
-        </JFXToggleButton>
-        <JFXToggleButton fx:id="forceBounceFlag" onMouseClicked="#forceBounceFlagClicked" mnemonicParsing="false" text="Force bounce flag" toggleColor="#0088cc"
+        </JFXToggleButton>    -->
+
+        <JFXToggleButton fx:id="forceBounceFlag" mnemonicParsing="false" text="Force bounce flag" toggleColor="#0088cc"
                          toggleLineColor="#dbedff" GridPane.rowIndex="5">
             <padding>
                 <Insets left="10.0"/>

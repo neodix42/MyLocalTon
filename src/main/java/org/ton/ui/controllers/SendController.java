@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
@@ -86,7 +87,7 @@ public class SendController implements Initializable {
                         .fromSubWalletId(fromWallet.getSubWalletId())
                         .destAddr(destAddress)
                         .amount(amount)
-                        .clearBounce(clearBounceFlag.isSelected())
+//                        .clearBounce(clearBounceFlag.isSelected())
                         .forceBounce(forceBounceFlag.isSelected())
                         .comment(comment.getText())
                         .build();
@@ -107,19 +108,9 @@ public class SendController implements Initializable {
             }
         } catch (Exception e) {
             log.error("Sending error {}", e.getMessage());
+            log.error(ExceptionUtils.getStackTrace(e));
             App.mainController.showErrorMsg(String.format("Error sending Toncoins %s", e.getMessage()), 5);
         }
     }
 
-    public void forceBounceFlagClicked() {
-        if (forceBounceFlag.isSelected()) {
-            clearBounceFlag.setSelected(false);
-        }
-    }
-
-    public void clearBounceFlagClicked() {
-        if (clearBounceFlag.isSelected()) {
-            forceBounceFlag.setSelected(false);
-        }
-    }
 }
