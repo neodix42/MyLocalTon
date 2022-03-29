@@ -119,7 +119,11 @@ public class App extends Application {
 
         Thread.sleep(3000);
 
-        mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L);
+        if (settings.getActiveNodes().size() == 1) {
+            mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L);
+        } else {
+            mainController.showWarningMsg("Starting TON blockchain... Starting " + settings.getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L);
+        }
 
         //create hardfork
         //ResultLastBlock newBlock = myLocalTon.generateNewBlock(genesisNode, forkFromBlock, "");
@@ -130,8 +134,7 @@ public class App extends Application {
 
         new ValidatorEngine().startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation());
 
-//        Utils.waitForBlockchainReady(genesisNode);
-//        Utils.waitForNodeSynchronized(genesisNode);
+        Thread.sleep(3000);
 
         // start other validators
         for (String nodeName : settings.getActiveNodes()) {

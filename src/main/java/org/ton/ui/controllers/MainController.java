@@ -2398,10 +2398,12 @@ public class MainController implements Initializable {
         if (nonNull(node2.getWalletAddress())) {
             if (nonNull(node2.getPrevValidationAndlKey())) {
                 for (Validator validator : v.getCurrentValidators()) {  // in a list of current validators we must find an entry from previous next validators
-                    if (validator.getAdnlAddress().equals(node2.getPrevValidationAndlKey())) {
-                        validator2AdnlAddress.setText(validator.getAdnlAddress());
-                        validator2PubKeyHex.setText(validator.getPublicKey());
-                        validator2PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                    if (nonNull(validator.getAdnlAddress())) {
+                        if (validator.getAdnlAddress().equals(node2.getPrevValidationAndlKey())) {
+                            validator2AdnlAddress.setText(validator.getAdnlAddress());
+                            validator2PubKeyHex.setText(validator.getPublicKey());
+                            validator2PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                        }
                     }
                 }
             }
@@ -2428,10 +2430,12 @@ public class MainController implements Initializable {
         if (nonNull(node3.getWalletAddress())) {
             if (nonNull(node3.getPrevValidationAndlKey())) {
                 for (Validator validator : v.getCurrentValidators()) {
-                    if (validator.getAdnlAddress().equals(node3.getPrevValidationAndlKey())) {
-                        validator3AdnlAddress.setText(validator.getAdnlAddress());
-                        validator3PubKeyHex.setText(validator.getPublicKey());
-                        validator3PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                    if (nonNull(validator.getAdnlAddress())) {
+                        if (validator.getAdnlAddress().equals(node3.getPrevValidationAndlKey())) {
+                            validator3AdnlAddress.setText(validator.getAdnlAddress());
+                            validator3PubKeyHex.setText(validator.getPublicKey());
+                            validator3PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                        }
                     }
                 }
             }
@@ -2459,10 +2463,12 @@ public class MainController implements Initializable {
         if (nonNull(node4.getWalletAddress())) {
             if (nonNull(node4.getPrevValidationAndlKey())) {
                 for (Validator validator : v.getCurrentValidators()) {
-                    if (validator.getAdnlAddress().equals(node4.getPrevValidationAndlKey())) {
-                        validator4AdnlAddress.setText(validator.getAdnlAddress());
-                        validator4PubKeyHex.setText(validator.getPublicKey());
-                        validator4PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                    if (nonNull(validator.getAdnlAddress())) {
+                        if (validator.getAdnlAddress().equals(node4.getPrevValidationAndlKey())) {
+                            validator4AdnlAddress.setText(validator.getAdnlAddress());
+                            validator4PubKeyHex.setText(validator.getPublicKey());
+                            validator4PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                        }
                     }
                 }
             }
@@ -2490,10 +2496,14 @@ public class MainController implements Initializable {
         if (nonNull(node5.getWalletAddress())) {
             if (nonNull(node5.getPrevValidationAndlKey())) {
                 for (Validator validator : v.getCurrentValidators()) {
-                    if (validator.getAdnlAddress().equals(node5.getPrevValidationAndlKey())) {
-                        validator5AdnlAddress.setText(validator.getAdnlAddress());
-                        validator5PubKeyHex.setText(validator.getPublicKey());
-                        validator5PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                    if (nonNull(validator.getAdnlAddress())) {
+                        if (nonNull(validator.getAdnlAddress())) {
+                            if (validator.getAdnlAddress().equals(node5.getPrevValidationAndlKey())) {
+                                validator5AdnlAddress.setText(validator.getAdnlAddress());
+                                validator5PubKeyHex.setText(validator.getPublicKey());
+                                validator5PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                            }
+                        }
                     }
                 }
             }
@@ -2521,10 +2531,12 @@ public class MainController implements Initializable {
         if (nonNull(node6.getWalletAddress())) {
             if (nonNull(node6.getPrevValidationAndlKey())) {
                 for (Validator validator : v.getCurrentValidators()) {
-                    if (validator.getAdnlAddress().equals(node6.getPrevValidationAndlKey())) {
-                        validator6AdnlAddress.setText(validator.getAdnlAddress());
-                        validator6PubKeyHex.setText(validator.getPublicKey());
-                        validator6PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                    if (nonNull(validator.getAdnlAddress())) {
+                        if (validator.getAdnlAddress().equals(node6.getPrevValidationAndlKey())) {
+                            validator6AdnlAddress.setText(validator.getAdnlAddress());
+                            validator6PubKeyHex.setText(validator.getPublicKey());
+                            validator6PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                        }
                     }
                 }
             }
@@ -2552,10 +2564,12 @@ public class MainController implements Initializable {
         if (nonNull(node7.getWalletAddress())) {
             if (nonNull(node7.getPrevValidationAndlKey())) {
                 for (Validator validator : v.getCurrentValidators()) {
-                    if (validator.getAdnlAddress().equals(node7.getPrevValidationAndlKey())) {
-                        validator7AdnlAddress.setText(validator.getAdnlAddress());
-                        validator7PubKeyHex.setText(validator.getPublicKey());
-                        validator7PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                    if (nonNull(validator.getAdnlAddress())) {
+                        if (validator.getAdnlAddress().equals(node7.getPrevValidationAndlKey())) {
+                            validator7AdnlAddress.setText(validator.getAdnlAddress());
+                            validator7PubKeyHex.setText(validator.getPublicKey());
+                            validator7PubKeyInteger.setText(new BigInteger(validator.getPublicKey().toUpperCase(), 16) + " (used in participants list)");
+                        }
                     }
                 }
             }
@@ -3015,18 +3029,13 @@ public class MainController implements Initializable {
 
         newNodeExecutorService.execute(() -> {
             Thread.currentThread().setName("MyLocalTon - Creating validator");
-//            if (Long.parseLong(mainController.currentBlockNum.getText()) < 120) {
-//                showDialogMessage("Too early", "Please wait for 120 blocks to be generated. At least one validator group should be rotated.");
-//            return;
-//            }
+
             try {
                 mainController.addValidatorBtn.setDisable(true);
 
                 org.ton.settings.Node node = Utils.getNewNode();
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
-                    App.mainController.showInfoMsg("Creating validator " + node.getNodeName() + ". You will be informed once it's finished.", 8);
-                    Thread.sleep(500);
 
                     //delete unfinished node creation
                     FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
@@ -3048,8 +3057,6 @@ public class MainController implements Initializable {
                     mainController.addValidatorBtn.setDisable(false);
 
                     // FYI. Status of all nodes reported back from the thread "Node Monitor" and shown on a corresponding tab
-
-                    //App.mainController.showInfoMsg("Validator " + node.getNodeName() + " has been successfully created", 5);
                     showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created, now synchronizing. Once elections will be opened it will take part in them.");
                 } else {
                     showDialogMessage("The limit has been reached", "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");

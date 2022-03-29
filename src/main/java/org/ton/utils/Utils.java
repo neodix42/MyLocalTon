@@ -607,7 +607,7 @@ public class Utils {
         try {
             MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
-            Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];  // get last element
+            Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];
             ValidationParam v = settings.elections.get(lastKey);
 
             long electionId = v.getStartValidationCycle();
@@ -621,11 +621,13 @@ public class Utils {
                 }
             }
 
+            node.getElectionsCounter().put(v.getStartValidationCycle(), v.getStartValidationCycle());
+
             if (isNull(node.getWalletAddress())) {
                 log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
                 WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
                 node.setWalletAddress(walletEntity.getWallet());
-                Thread.sleep(5 * 1000); //10 sec
+                Thread.sleep(5 * 1000);
             } else {
                 log.info("{} no need to create controlling smart-contract (wallet)", node.getNodeName());
             }
@@ -659,8 +661,9 @@ public class Utils {
                 node.getElectionsCounter().put(v.getStartValidationCycle(), v.getStartValidationCycle());
                 saveSettingsToGson(settings);
             } else {
-                log.error("Participation error. Failed to send {} Toncoins to {}", node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex());
-                App.mainController.showErrorMsg(String.format("Participation error. Failed to send %s Toncoins to %s", node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex()), 5);
+                log.error("Participation error. {} failed to send {} Toncoins to {}", node.getNodeName(), node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex());
+                node.getElectionsCounter().remove(v.getStartValidationCycle());
+                App.mainController.showErrorMsg(String.format("Participation error. {} failed to send %s Toncoins to %s", node.getDefaultValidatorStake(), node.getNodeName(), settings.getElectorSmcAddrHex()), 5);
             }
         } catch (Exception e) {
             log.error("Error by {} participating in elections! Error {}", node.getNodeName(), e.getMessage());

@@ -93,7 +93,7 @@ public class Wallet {
 
         //FileUtils.deleteQuietly(new File(tempBocFileAbsolutePath)); // sure ?
 
-        log.info("Sent {} Toncoins by {} from {} to {}.",
+        log.info("Sent {} Toncoins by {} from {} to {}",
                 sendToncoinsParam.getAmount(),
                 sendToncoinsParam.getExecutionNode().getNodeName(),
                 sendToncoinsParam.getFromWallet().getFullWalletAddress(),

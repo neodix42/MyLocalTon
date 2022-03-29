@@ -123,7 +123,7 @@ public class MyLocalTon {
     public static final int SCROLL_BAR_DELTA = 30;
     public static final Long MAX_ROWS_IN_GUI = 1000L;
     public static final int YEAR_1971 = 34131600;
-    public static final int VALIDATION_GUI_REFRESH_SECONDS = 30;
+    public static final int VALIDATION_GUI_REFRESH_SECONDS = 60;
 
     ScheduledExecutorService monitorExecutorService;
     private MyLocalTonSettings settings;
@@ -253,7 +253,7 @@ public class MyLocalTon {
             FileUtils.writeStringToFile(new File(SETTINGS_FILE), abJson, StandardCharsets.UTF_8);
         } catch (Throwable e) {
             log.error("Error saving {} file: {}", SETTINGS_JSON, e.getMessage());
-            e.printStackTrace();
+            log.error(ExceptionUtils.getStackTrace(e));
         }
     }
 
@@ -399,14 +399,18 @@ public class MyLocalTon {
 
         for (WalletEntity wallet : wallets) {
             log.info("preinstalled wallet {}", wallet.getFullAddress());
+            Pair<AccountState, Long> stateAndSeqno = Pair.of(null, -1L);
+            try {
+                // always update account state on start
+                stateAndSeqno = getAccountStateAndSeqno(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress());
+                App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
 
-            // always update account state on start
-            Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress());
-            App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
-
-            wallet.setAccountState(stateAndSeqno.getLeft());
-            wallet.setSeqno(stateAndSeqno.getRight());
-            updateAccountsTabGui(wallet);
+                wallet.setAccountState(stateAndSeqno.getLeft());
+                wallet.setSeqno(stateAndSeqno.getRight());
+                updateAccountsTabGui(wallet);
+            } catch (Exception e) {
+                log.error("Error updating account state. Wallet {}, AccountState {}, seqno {}", wallet.getWallet().getFullWalletAddress(), stateAndSeqno.getLeft(), stateAndSeqno.getRight());
+            }
         }
     }
 
@@ -416,18 +420,21 @@ public class MyLocalTon {
             WalletEntity wallet;
             if (isNull(fileBaseName)) { //generate and read address of just generated wallet
                 wallet = createWalletWithFundsAndSmartContract(settings.getGenesisNode(), node, workchain, subWalletid, amount);
-                log.debug("create wallet address {}", wallet.getHexAddress());
+                log.info("create wallet address {}", wallet.getHexAddress());
             } else { //read address of initially created wallet (main-wallet and config-master)
                 wallet = new Fift().getWalletByBasename(node, fileBaseName);
-                log.debug("read wallet address: {}", wallet.getHexAddress());
+                log.info("read wallet address: {}", wallet.getHexAddress());
             }
 
             if (validatorWallet) {
                 node.setWalletAddress(wallet.getWallet());
             }
 
+            log.info("updating account state {}", node.getNodeName());
+
             Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(node, wallet.getWc() + ":" + wallet.getHexAddress());
-            log.info("on node {}, created wallet {} with balance {}", node.getNodeName(), wallet.getWc() + ":" + wallet.getHexAddress(), stateAndSeqno.getLeft().getBalance().getToncoins());
+            log.debug("new account state on {} = {}", node.getNodeName(), stateAndSeqno);
+            log.info("on node {}, created wallet {}", node.getNodeName(), wallet.getWc() + ":" + wallet.getHexAddress());
             App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
 
             wallet.setAccountState(stateAndSeqno.getLeft());
@@ -482,7 +489,7 @@ public class MyLocalTon {
                     mainController.drawElections();
 
                     log.debug("[start-end] elections [{} - {}], currentTime {}", Utils.toLocal(v.getStartElections()), Utils.toLocal(v.getEndElections()), Utils.toLocal(currentTime));
-                    log.debug("currTime > delta3, {} {}", (currentTime - v.getStartElections()), electionsDelta * 3);
+                    log.debug("currTime > delta2, {} {}", (currentTime - v.getStartElections()), electionsDelta * 2);
 
                     if (((v.getStartValidationCycle() > YEAR_1971) && ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections() - 10)))  // 10 sec to process
                             || ((v.getStartValidationCycle() > YEAR_1971) && ((currentTime - v.getStartElections()) > (electionsDelta * 2)))) {
@@ -493,9 +500,10 @@ public class MyLocalTon {
 
                         for (String nodeName : settings.getActiveNodes()) {
                             Node node = settings.getNodeByName(nodeName);
-                            log.info("participating in elections {}", node.getNodeName());
-                            Utils.participate(node); // TODO parallel
-                            reap(settings.getNodeByName(nodeName));
+
+                            if (node.getStatus().equals("ready")) {
+                                Utils.participate(node);
+                            }
                         }
 
                         Main.inElections.set(false);
@@ -503,14 +511,23 @@ public class MyLocalTon {
                     } else {
                         log.info("ELECTIONS CLOSED, WAITING...");
                     }
+
+                    //update reaped values
+                    for (String nodeName : settings.getActiveNodes()) {
+                        Node node = settings.getNodeByName(nodeName);
+
+                        reap(settings.getNodeByName(nodeName));
+
+                        Platform.runLater(() -> {
+                            updateReapedValuesTab(node);
+                        });
+                    }
                 } catch (Exception e) {
                     log.error("Error getting blockchain configuration! Error {}", e.getMessage());
                     log.error(ExceptionUtils.getStackTrace(e));
                 } finally {
                     Main.inElections.set(false);
                 }
-
-                log.debug("refresh GUI, sleep 30 sec ");
 
                 Platform.runLater(() -> {
                     ProgressBar progress = mainController.progressValidationUpdate;
@@ -536,7 +553,7 @@ public class MyLocalTon {
             ExecutorService executorService;
             while (Main.appActive.get()) {
                 try {
-                    executorService = Executors.newSingleThreadExecutor(); // smells
+                    executorService = Executors.newSingleThreadExecutor();
                     LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
                     executorService.execute(() -> {
@@ -1463,60 +1480,57 @@ public class MyLocalTon {
     }
 
     public void reap(Node node) throws Exception {
+        try {
 
-        log.debug("reaping rewards by {}", node.getNodeName());
+            if (isNull(node.getWalletAddress())) {
+                log.error("Reaping rewards. {} wallet is not present.", node.getNodeName());
+                return;
+            }
 
-        if (isNull(node.getWalletAddress())) {
-            log.error("{} wallet is not present", node.getNodeName());
-            return;
-        }
+            ResultComputeReturnStake result = LiteClientParser.parseRunMethodComputeReturnStake(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeComputeReturnedStake(node, settings.getElectorSmcAddrHex(), node.getWalletAddress().getHexWalletAddress()));
 
-        ResultComputeReturnStake result = LiteClientParser.parseRunMethodComputeReturnStake(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeComputeReturnedStake(node, settings.getElectorSmcAddrHex(), node.getWalletAddress().getHexWalletAddress()));
+            if (result.getStake().compareTo(BigDecimal.ZERO) > 0) {
+                log.info("Reaping rewards. {} reward size is {}, send request for stake recovery", node.getNodeName(), result.getStake());
 
-        log.debug("reap amount {}", result.getStake());
+                // create recover-query.boc
+                new Fift().createRecoverStake(node);
 
-        if (result.getStake().compareTo(BigDecimal.ZERO) > 0) {
-            log.info("Reaping rewards. {} reward size is greater than 0, send request for stake recovery", node.getNodeName());
+                // send stake and validator-query.boc to elector
+                SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
+                        .executionNode(node)
+                        .fromWallet(node.getWalletAddress())
+                        .fromWalletVersion(WalletVersion.V3)
+                        .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
+                        .destAddr(settings.getElectorSmcAddrHex())
+                        .amount(BigDecimal.valueOf(1L))
+                        .comment("stake-recover-request") // TODO check if comment is visible
+                        .bocLocation(node.getTonBinDir() + "recover-query.boc")
+                        .build();
 
-            // create recover-query.boc
-            new Fift().createRecoverStake(node);
+                new Wallet().sendTonCoins(sendToncoinsParam);
 
-            // send stake and validator-query.boc to elector
-            SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
-                    .executionNode(node)
-                    .fromWallet(node.getWalletAddress())
-                    .fromWalletVersion(WalletVersion.V3)
-                    .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
-                    .destAddr(settings.getElectorSmcAddrHex())
-                    .amount(BigDecimal.valueOf(1L))
-                    .comment("stake-recover-request") // TODO check if comment is visible
-                    .bocLocation(node.getTonBinDir() + "recover-query.boc")
-                    .build();
+                // Basic rewards statistics. Better to fetch from the DB actual values, since recover stake may fail e.g.
 
-            new Wallet().sendTonCoins(sendToncoinsParam);
+                node.setLastRewardCollected(result.getStake());
+                node.setTotalRewardsCollected(node.getTotalRewardsCollected().add(result.getStake()));
+                //returned stake - 10001 + 1
+                node.setLastPureRewardCollected(result.getStake().subtract(node.getDefaultValidatorStake().subtract(BigDecimal.ONE).multiply(BigDecimal.valueOf(ONE_BLN))));
+                node.setTotalPureRewardsCollected(node.getTotalPureRewardsCollected().add(node.getLastPureRewardCollected()));
+                node.setElectionsRipped(node.getElectionsRipped().add(BigDecimal.ONE));
+                node.setAvgPureRewardCollected(node.getTotalPureRewardsCollected().divide(node.getElectionsRipped(), 9, RoundingMode.CEILING));
 
-            // Basic rewards statistics. Better to fetch from the DB actual values, since recover stake may fail e.g.
-
-            node.setLastRewardCollected(result.getStake());
-            node.setTotalRewardsCollected(node.getTotalRewardsCollected().add(result.getStake()));
-            //returned stake - 10001 + 1
-            node.setLastPureRewardCollected(result.getStake().subtract(node.getDefaultValidatorStake().subtract(BigDecimal.ONE).multiply(BigDecimal.valueOf(ONE_BLN))));
-            node.setTotalPureRewardsCollected(node.getTotalPureRewardsCollected().add(node.getLastPureRewardCollected()));
-            node.setElectionsRipped(node.getElectionsRipped().add(BigDecimal.ONE));
-            node.setAvgPureRewardCollected(node.getTotalPureRewardsCollected().divide(node.getElectionsRipped(), 9, RoundingMode.CEILING));
-
-            saveSettingsToGson();
-
-            Platform.runLater(() -> {
-                updateReapedValuesTab(node);
-            });
-        } else {
-            log.info("Reaping rewards. {} reward size is {}, nothing to reap.", node.getNodeName(), result.getStake());
+                saveSettingsToGson();
+            } else {
+                log.info("Reaping rewards. {} reward size is {}, nothing to reap.", node.getNodeName(), result.getStake());
+            }
+        } catch (Exception e) {
+            log.error("Error reaping rewards. Error {}", e.getMessage());
+            log.error(ExceptionUtils.getStackTrace(e));
         }
     }
 
     private void updateReapedValuesTab(Node node) {
-        log.info("{} updating reaped values {}", node.getNodeName(), String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+        log.debug("{} updating reaped values {}", node.getNodeName(), String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
 
         switch (node.getNodeName()) {
             case "genesis":
@@ -1586,7 +1600,7 @@ public class MyLocalTon {
     }
 
     public void createValidatorPubKeyAndAdnlAddress(Node node, long electionId) throws Exception {
-
+        log.info("{} creating validator PubKey and ADNL address", node.getNodeName());
         long electionEnd = electionId + 600; // was YEAR
 
         createSigningKeyForValidation(node, electionId, electionEnd);

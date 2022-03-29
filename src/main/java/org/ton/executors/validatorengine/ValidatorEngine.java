@@ -108,7 +108,6 @@ public class ValidatorEngine {
             Files.copy(Paths.get(sharedGlobalConfig), Paths.get(node.getNodeGlobalConfigLocation()), StandardCopyOption.REPLACE_EXISTING);
 
             String s = startValidatorWithoutParams(node, sharedGlobalConfig).getRight().get();
-            //startValidator(node, sharedGlobalConfig);
 
             //log.debug("Initialized {} validator, result {}", node.getNodeName(), validatorGenesisInit.getRight().get());
 

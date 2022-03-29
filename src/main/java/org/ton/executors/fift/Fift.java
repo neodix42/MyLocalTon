@@ -72,7 +72,6 @@ public class Fift {
                 (walletScript.equals("wallet-v3.fif")) ? String.valueOf(sendToncoinsParam.getFromSubWalletId()) : "",
                 String.valueOf(seqno),
                 sendToncoinsParam.getAmount().toPlainString(),
-                (nonNull(sendToncoinsParam.getClearBounce()) && sendToncoinsParam.getClearBounce().equals(Boolean.TRUE)) ? "-n" : "",
                 (nonNull(sendToncoinsParam.getForceBounce()) && sendToncoinsParam.getForceBounce().equals(Boolean.TRUE)) ? "-b" : "",
                 (isNull(sendToncoinsParam.getComment())) ? "" : "-C " + sendToncoinsParam.getComment().trim(),
                 attachedBoc,
