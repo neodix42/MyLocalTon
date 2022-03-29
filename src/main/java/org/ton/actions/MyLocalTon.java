@@ -420,17 +420,17 @@ public class MyLocalTon {
             WalletEntity wallet;
             if (isNull(fileBaseName)) { //generate and read address of just generated wallet
                 wallet = createWalletWithFundsAndSmartContract(settings.getGenesisNode(), node, workchain, subWalletid, amount);
-                log.info("create wallet address {}", wallet.getHexAddress());
+                log.debug("create wallet address {}", wallet.getHexAddress());
             } else { //read address of initially created wallet (main-wallet and config-master)
                 wallet = new Fift().getWalletByBasename(node, fileBaseName);
-                log.info("read wallet address: {}", wallet.getHexAddress());
+                log.debug("read wallet address: {}", wallet.getHexAddress());
             }
 
             if (validatorWallet) {
                 node.setWalletAddress(wallet.getWallet());
             }
 
-            log.info("updating account state {}", node.getNodeName());
+            log.debug("updating account state {}", node.getNodeName());
 
             Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(node, wallet.getWc() + ":" + wallet.getHexAddress());
             log.debug("new account state on {} = {}", node.getNodeName(), stateAndSeqno);
