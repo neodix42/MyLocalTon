@@ -152,7 +152,7 @@ public class MyLocalTonSettings implements Serializable {
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
         Long electedFor = 30 * 60L; // 3 min, 60
-        Long electionStartBefore = 25 * 60L; // 2 min, 50
+        Long electionStartBefore = 20 * 60L; // 2 min, 40
         Long electionEndBefore = 10 * 60L;// 1 min, 20
         Long electionStakesFrozenFor = 10 * 60L;// 30 sec, 20 * 60
         Long originalValidatorSetValidFor = electionStartBefore; // 2 min, 50

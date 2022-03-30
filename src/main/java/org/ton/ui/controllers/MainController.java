@@ -3054,10 +3054,15 @@ public class MainController implements Initializable {
 
                     settings.getActiveNodes().add(node.getNodeName());
                     MyLocalTon.getInstance().saveSettingsToGson();
-                    mainController.addValidatorBtn.setDisable(false);
 
-                    // FYI. Status of all nodes reported back from the thread "Node Monitor" and shown on a corresponding tab
-                    showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created, now synchronizing. Once elections will be opened it will take part in them.");
+                    showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created, now synchronizing and creating main validator's wallet.");
+
+                    log.info("Creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
+                    WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
+                    node.setWalletAddress(walletEntity.getWallet());
+
+                    mainController.addValidatorBtn.setDisable(false);
+                    App.mainController.showInfoMsg("Main wallet for validator " + node.getNodeName() + " has been created successfully", 5);
                 } else {
                     showDialogMessage("The limit has been reached", "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");
                 }

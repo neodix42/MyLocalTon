@@ -193,6 +193,18 @@ public class MyLocalTon {
         }, 0L, 15L, TimeUnit.SECONDS);
     }
 
+    /**
+     * Checks whether all processes and threads up and running
+     */
+    public void runValidatorsMonitor() {
+        log.info("Starting validators monitor");
+
+        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
+            Thread.currentThread().setName("MyLocalTon - Validators Monitor");
+            // TODO
+        }, 0L, VALIDATION_GUI_REFRESH_SECONDS, TimeUnit.SECONDS);
+    }
+
     public static final class AtomicBigInteger {
 
         private final AtomicReference<BigInteger> valueHolder = new AtomicReference<>();
@@ -395,6 +407,12 @@ public class MyLocalTon {
             log.info("created {}", installed);
         }
 
+        if (isNull(genesisNode.getWalletAddress())) {
+            log.info("Creating validator controlling smart-contract (wallet) for node {}", genesisNode.getNodeName());
+            WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(genesisNode, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), genesisNode.getInitialValidatorWalletAmount(), true);
+            genesisNode.setWalletAddress(walletEntity.getWallet());
+        }
+
         List<WalletEntity> wallets = App.dbPool.getAllWallets();
 
         for (WalletEntity wallet : wallets) {
@@ -503,7 +521,13 @@ public class MyLocalTon {
                             Node node = settings.getNodeByName(nodeName);
 
                             if (node.getStatus().equals("ready")) {
-                                Utils.participate(node, v);
+                                log.info("participates in elections {}", nodeName);
+                                ExecutorService nodeParticipationExecutorService = Executors.newSingleThreadExecutor();
+                                nodeParticipationExecutorService.execute(() -> {
+                                    Thread.currentThread().setName("MyLocalTon - Participation in elections by " + nodeName);
+                                    Utils.participate(node, v);
+                                });
+                                nodeParticipationExecutorService.shutdown();
                             }
                         }
 
@@ -663,7 +687,7 @@ public class MyLocalTon {
     }
 
     private void updateAccountsTabGui(WalletEntity walletEntity) {
-        if (isNull(walletEntity)) {
+        if (isNull(walletEntity) || isNull(walletEntity.getAccountState())) {
             return;
         }
         log.debug("updateAccountsTabGui, wallet account addr {}, state {}", walletEntity.getHexAddress(), walletEntity.getAccountState().getStatus());

@@ -620,10 +620,8 @@ public class Utils {
             node.getElectionsCounter().put(electionId, electionId);
 
             if (isNull(node.getWalletAddress())) {
-                log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
-                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
-                node.setWalletAddress(walletEntity.getWallet());
-                Thread.sleep(5 * 1000);
+                log.info("{} controlling smart-contract (wallet) is not present yet, cancel participation", node.getNodeName());
+                return;
             } else {
                 log.info("{} no need to create controlling smart-contract (wallet)", node.getNodeName());
             }
