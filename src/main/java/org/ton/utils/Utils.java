@@ -602,14 +602,10 @@ public class Utils {
                 .build();
     }
 
-    public static void participate(Node node) {
+    public static void participate(Node node, ValidationParam v) {
 
         try {
             MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
-
-            Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];
-            ValidationParam v = settings.elections.get(lastKey);
-
             long electionId = v.getStartValidationCycle();
 
             if (node.getElectionsCounter().getOrDefault(electionId, -1L) > YEAR_1971) {
@@ -621,7 +617,7 @@ public class Utils {
                 }
             }
 
-            node.getElectionsCounter().put(v.getStartValidationCycle(), v.getStartValidationCycle());
+            node.getElectionsCounter().put(electionId, electionId);
 
             if (isNull(node.getWalletAddress())) {
                 log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());

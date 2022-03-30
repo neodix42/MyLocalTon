@@ -331,7 +331,7 @@ public class Fift {
      * from smart contract walletAddress.
      */
     public String createValidatorElectionRequest(Node node, long startElectionTime, BigDecimal maxFactor) throws ExecutionException, InterruptedException {
-        log.info("CreateValidatorElectionRequest {}", node.getNodeName());
+        log.debug("CreateValidatorElectionRequest {}", node.getNodeName());
 
         String fileNameBase = UUID.randomUUID().toString();
 
@@ -372,7 +372,7 @@ public class Fift {
 
     public void signValidatorElectionRequest(Node node, long startElectionTime, BigDecimal maxFactor, String signatureFromElectionRequest) throws
             ExecutionException, InterruptedException {
-        log.info("signValidatorElectionRequest {}", node.getNodeName());
+        log.debug("signValidatorElectionRequest {}", node.getNodeName());
 
         Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "validator-elect-signed.fif",
                 node.getWalletAddress().getBounceableAddressBase64url(),

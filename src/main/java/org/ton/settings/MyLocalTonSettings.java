@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 @Getter
 @Setter
@@ -116,7 +117,7 @@ public class MyLocalTonSettings implements Serializable {
     ValidationParam lastValidationParam;
     ValidationParam lastValidationParamEvery3Cycles;
     Double timeLineScale;
-    public Map<Long, ValidationParam> elections = new ConcurrentHashMap<>();
+    public Map<Long, ValidationParam> elections = new ConcurrentSkipListMap<>();
 
     Boolean veryFirstElections = Boolean.TRUE;
 
@@ -153,8 +154,8 @@ public class MyLocalTonSettings implements Serializable {
         Long electedFor = 30 * 60L; // 3 min, 60
         Long electionStartBefore = 25 * 60L; // 2 min, 50
         Long electionEndBefore = 10 * 60L;// 1 min, 20
-        Long electionStakesFrozenFor = 10 * 60L;// 30 sec, 20
-        Long originalValidatorSetValidFor = 25 * 60L; // 2 min, 50
+        Long electionStakesFrozenFor = 10 * 60L;// 30 sec, 20 * 60
+        Long originalValidatorSetValidFor = electionStartBefore; // 2 min, 50
 
         Long globalId = -239L;
         Long initialBalance = 4999990000L;

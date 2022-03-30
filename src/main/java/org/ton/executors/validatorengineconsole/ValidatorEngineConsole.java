@@ -30,26 +30,34 @@ public class ValidatorEngineConsole {
     }
 
     public void addValidatorAddr(Node node, String validatorIdHex, String newValAdnl, long electionEnd) throws ExecutionException, InterruptedException {
+        log.debug("{} add validator addr", node.getNodeName());
         ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
         Pair<Process, Future<String>> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addvalidatoraddr  " + validatorIdHex + " " + newValAdnl + " " + electionEnd);
         log.debug(result.getRight().get());
+        log.debug("{} added validator addr", node.getNodeName());
     }
 
     public void addPermKey(Node node, String validatorIdHex, long electionId, long electionEnd) throws ExecutionException, InterruptedException {
+        log.debug("{} add permkey", node.getNodeName());
         ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
         Pair<Process, Future<String>> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addpermkey " + validatorIdHex + " " + electionId + " " + electionEnd);
         log.debug(result.getRight().get());
+        log.debug("{} added permkey", node.getNodeName());
     }
 
     public void addTempKey(Node node, String validatorIdHex, long electionEnd) throws ExecutionException, InterruptedException {
+        log.debug("{} add tempkey", node.getNodeName());
         ValidatorEngineConsoleExecutor validatorConsole = new ValidatorEngineConsoleExecutor();
         Pair<Process, Future<String>> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addtempkey " + validatorIdHex + " " + validatorIdHex + " " + electionEnd);
         log.debug(result.getRight().get());
+        log.debug("{} added tempkey", node.getNodeName());
     }
 
     public void addAdnl(Node node, String newValAdnl) throws ExecutionException, InterruptedException {
+        log.debug("{} add adnl", node.getNodeName());
         Pair<Process, Future<String>> result = new ValidatorEngineConsoleExecutor().execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "addadnl " + newValAdnl + " 0");
         log.debug(result.getRight().get());
+        log.debug("{} added adnl", node.getNodeName());
     }
 
     public String generateNewNodeKey(Node node) throws ExecutionException, InterruptedException {

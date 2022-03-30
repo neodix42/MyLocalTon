@@ -482,6 +482,7 @@ public class MyLocalTon {
                     //save election ID
                     if (v.getStartValidationCycle() > YEAR_1971) {
                         settings.elections.put(v.getStartValidationCycle(), v);
+                        saveSettingsToGson();
                     }
 
                     long electionsDelta = v.getNextElections() - v.getStartElections();
@@ -502,7 +503,7 @@ public class MyLocalTon {
                             Node node = settings.getNodeByName(nodeName);
 
                             if (node.getStatus().equals("ready")) {
-                                Utils.participate(node);
+                                Utils.participate(node, v);
                             }
                         }
 

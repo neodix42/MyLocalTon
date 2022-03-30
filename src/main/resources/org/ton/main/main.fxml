@@ -384,7 +384,7 @@
                                                text="Stake Hold"/>
                                         <Separator fx:id="timeLine" layoutX="67.0" layoutY="10.0" orientation="VERTICAL" prefHeight="97.0" prefWidth="0.0"/>
                                     </Pane>
-                                    <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0" prefWidth="2005.0" GridPane.columnSpan="11"
+                                    <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0" prefWidth="2035.0" GridPane.columnSpan="11"
                                                  GridPane.rowIndex="17"/>
                                 </GridPane>
                                 <JFXButton fx:id="addValidatorBtn" disable="true" layoutX="1030.0" layoutY="20.0" onAction="#createNewNodeBtn" prefHeight="48.0" prefWidth="73.0"
