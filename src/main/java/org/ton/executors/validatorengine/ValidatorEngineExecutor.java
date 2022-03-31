@@ -20,7 +20,6 @@ public class ValidatorEngineExecutor {
 
     private static final String VALIDATOR_ENGINE_EXE = "validator-engine.exe";
     private static final String VALIDATOR_ENGINE = "validator-engine";
-    private static final String OS = System.getProperty("os.name").toLowerCase();
 
     public Pair<Process, Future<String>> execute(Node node, String... command) {
 
@@ -44,7 +43,7 @@ public class ValidatorEngineExecutor {
                     Thread.currentThread().setName("validator-engine-" + node.getNodeName());
 
                     String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-                    log.info("{} stopped.", "validator-engine-" + node.getNodeName());
+                    log.info("validator-engine-{} stopped.", node.getNodeName());
                     log.debug("validator exit output: {} ", resultInput);
                     p.getInputStream().close();
                     p.getErrorStream().close();

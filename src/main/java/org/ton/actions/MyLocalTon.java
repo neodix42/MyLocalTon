@@ -95,6 +95,7 @@ public class MyLocalTon {
     public static final String FROZEN = "Frozen";
     public static final long ONE_BLN = 1000000000L;
     private static MyLocalTon singleInstance = null;
+    public static ScheduledExecutorService validatorsMonitor = null;
 
     private static final String CURRENT_DIR = System.getProperty("user.dir");
 
@@ -199,9 +200,25 @@ public class MyLocalTon {
     public void runValidatorsMonitor() {
         log.info("Starting validators monitor");
 
-        Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
+        validatorsMonitor = Executors.newSingleThreadScheduledExecutor();
+        validatorsMonitor.scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Validators Monitor");
-            // TODO
+            for (String nodeName : settings.getActiveNodes()) {
+                Node node = settings.getNodeByName(nodeName);
+
+                if (node.getStatus().equals("not ready") && node.getNodeProcess().exitValue() > 0) {
+                    log.info("{} exit value {}", node.getNodeName(), node.getNodeProcess().exitValue());
+                    log.info("re-starting validator {}...", nodeName);
+                    long pid = new ValidatorEngine().startValidator(node, node.getNodeGlobalConfigLocation()).pid();
+                    log.info("re-started validator {} with pid {}", nodeName, pid);
+                    try {
+                        Thread.sleep(5 * 1000);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                //log.info("{} exit value {}", node.getNodeName(), node.getNodeProcess().exitValue());
+            }
         }, 0L, VALIDATION_GUI_REFRESH_SECONDS, TimeUnit.SECONDS);
     }
 

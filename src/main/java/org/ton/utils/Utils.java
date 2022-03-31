@@ -68,6 +68,7 @@ import java.util.regex.Pattern;
 import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.ton.actions.MyLocalTon.validatorsMonitor;
 import static org.ton.executors.liteclient.LiteClientParser.*;
 import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
@@ -303,6 +304,8 @@ public class Utils {
     public static boolean doShutdown() {
         try {
             int endCounter = 1;
+            validatorsMonitor.shutdownNow();
+            Thread.sleep(200);
             while (Main.inElections.get()) {
                 Thread.sleep(1000);
                 log.info("Waiting for requests in elections to be processed, {}/15", endCounter);
