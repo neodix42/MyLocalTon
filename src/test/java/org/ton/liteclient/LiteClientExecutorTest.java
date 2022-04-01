@@ -3,8 +3,9 @@ package org.ton.liteclient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.AccountState;
@@ -37,15 +38,15 @@ public class LiteClientExecutorTest {
     private static final String CURRENT_DIR = System.getProperty("user.dir");
     private static final String TESTNET_CONFIG_LOCATION = CURRENT_DIR + File.separator + "testnet-global.config.json";
 
-    private LiteClient liteClient;
-    private Node testNode;
+    private static LiteClient liteClient;
+    private static Node testNode;
 
-    @Before
-    public void executedBeforeEach() throws IOException {
-        InputStream TESTNET_CONFIG = IOUtils.toBufferedInputStream(getClass().getResourceAsStream("/testnet-global.config.json"));
+    @BeforeClass
+    public static void executedBeforeEach() throws IOException {
+        InputStream TESTNET_CONFIG = IOUtils.toBufferedInputStream(LiteClientExecutorTest.class.getResourceAsStream("/testnet-global.config.json"));
         Files.copy(TESTNET_CONFIG, Paths.get(TESTNET_CONFIG_LOCATION), StandardCopyOption.REPLACE_EXISTING);
 
-        liteClient = new LiteClient(); //new LiteClientExecutor(nodes.toArray(new String[0]));
+        liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL); //LiteClientExecutor.getInstance(nodes.toArray(new String[0]));
 
         testNode = new GenesisNode();
         testNode.extractBinaries();

@@ -10,7 +10,6 @@ import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -25,7 +24,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -39,15 +37,12 @@ import org.ton.db.entities.WalletPk;
 import org.ton.main.App;
 import org.ton.utils.Utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 
 import static com.sun.javafx.PlatformUtil.isMac;
-import static java.util.Objects.nonNull;
-import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
 import static org.ton.utils.Utils.PATTERN;
 
@@ -297,31 +292,7 @@ public class AccountController {
 
     public void walletDeleteBtnAction() {
         log.debug("deleting wallet");
-        String[] wcAddr = hexAddr.getText().split(":");
-        WalletPk walletPk = WalletPk.builder()
-                .wc(Long.parseLong(wcAddr[0]))
-                .hexAddress(wcAddr[1])
-                .build();
-
-        WalletEntity walletEntity = App.dbPool.findWallet(walletPk);
-        App.dbPool.deleteWallet(walletPk);
-
-        MainController c = fxmlLoader.getController();
-        Node found = null;
-        for (Node row : c.accountsvboxid.getItems()) {
-            if (((Label) row.lookup("#hexAddr")).getText().equals(hexAddr.getText())) {
-                log.debug("Remove from list {}", hexAddr.getText());
-                found = row;
-            }
-        }
-
-        if (nonNull(found)) {
-            c.accountsvboxid.getItems().remove(found);
-        }
-
-        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".pk"));
-        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".addr"));
-        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + "-query.boc"));
+        Utils.deleteWalletByFullAddress(hexAddr.getText());
     }
 
     public void runMethodBtn() throws IOException {

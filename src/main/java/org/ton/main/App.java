@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.DbPool;
+import org.ton.executors.dhtserver.DhtServer;
 import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
@@ -20,9 +21,11 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
+import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -77,15 +80,15 @@ public class App extends Application {
             FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "myLocalTon.log"));
         }
 
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        ge.registerFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, Objects.requireNonNull(App.class.getClassLoader().getResourceAsStream("org/ton/fonts/RobotoMono-Medium.ttf"))));
+        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, Objects.requireNonNull(App.class.getClassLoader().getResourceAsStream("org/ton/fonts/RobotoMono-Medium.ttf"))));
 
         MyLocalTon myLocalTon = MyLocalTon.getInstance();
         myLocalTon.setSettings(Utils.loadSettings());
         myLocalTon.saveSettingsToGson(); //create default config
-
+        MyLocalTonSettings settings = myLocalTon.getSettings();
         log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
-        Utils.setMyLocalTonLogLevel(myLocalTon.getSettings().getLogSettings().getMyLocalTonLogLevel());
+
+        Utils.setMyLocalTonLogLevel(settings.getGenesisNode().getMyLocalTonLogLevel());
 
         System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
         System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
@@ -93,27 +96,59 @@ public class App extends Application {
         // start GUI
         Executors.newSingleThreadExecutor().execute(Application::launch);
 
-        Node genesisNode = myLocalTon.getSettings().getGenesisNode();
+        Node genesisNode = settings.getGenesisNode();
         genesisNode.extractBinaries();
 
         // initialize DB
-        dbPool = new DbPool(myLocalTon.getSettings());
+        dbPool = new DbPool(settings);
 
-        Process validatorGenesisProcess = myLocalTon.initGenesis(genesisNode);
+        DhtServer dhtServer = new DhtServer();
 
-        Thread.sleep(4000);
-        if (nonNull(validatorGenesisProcess)) {
-            validatorGenesisProcess.destroy();
-        } else {
+        List<String> dhtNodes = dhtServer.initDhtServer(genesisNode);
+
+        myLocalTon.initGenesis(genesisNode);
+
+        dhtServer.addDhtNodesToGlobalConfig(dhtNodes, genesisNode.getNodeGlobalConfigLocation());
+
+        dhtServer.startDhtServer(genesisNode, genesisNode.getNodeGlobalConfigLocation());
+
+//        start 2nd DHT server
+//        List<String> dhtNodes2 = dhtServer.initDhtServer(settings.getNode2());
+//        dhtServer.addDhtNodesToGlobalConfig(dhtNodes2, genesisNode.getNodeGlobalConfigLocation());
+//        dhtServer.startDhtServer(settings.getNode2(), genesisNode.getNodeGlobalConfigLocation());
+
+        Thread.sleep(3000);
+
+        if (settings.getActiveNodes().size() == 1) {
             mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L);
+        } else {
+            mainController.showWarningMsg("Starting TON blockchain... Starting " + settings.getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L);
         }
 
         //create hardfork
         //ResultLastBlock newBlock = myLocalTon.generateNewBlock(genesisNode, forkFromBlock, "");
         //myLocalTon.addHardForkEntryIntoMyGlobalConfig(genesisNode, genesisNode.getNodeGlobalConfigLocation(), newBlock);
 
-        ValidatorEngine validatorEngine = new ValidatorEngine();
-        myLocalTon.setGenesisValidatorProcess(validatorEngine.startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation()));
+        //before starting genesis node - let's synchronize all other nodes with it, by copying db in offline mode
+        //Utils.syncWithGenesis();
+
+        new ValidatorEngine().startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation());
+
+        Thread.sleep(3000);
+
+        // start other validators
+        for (String nodeName : settings.getActiveNodes()) {
+            if (!nodeName.contains("genesis")) {
+                long pid = new ValidatorEngine().startValidator(settings.getNodeByName(nodeName), genesisNode.getNodeGlobalConfigLocation()).pid();
+                log.info("started validator {} with pid {}", nodeName, pid);
+                if (isWindows()) {
+                    Utils.waitForBlockchainReady(settings.getNodeByName(nodeName));
+                    Utils.waitForNodeSynchronized(settings.getNodeByName(nodeName));
+                }
+            }
+        }
+
+        myLocalTon.runNodesMonitor();
 
         Utils.waitForBlockchainReady(genesisNode);
         Utils.waitForNodeSynchronized(genesisNode);
@@ -121,8 +156,9 @@ public class App extends Application {
         myLocalTon.runBlockchainMonitor(genesisNode);
 
         myLocalTon.runBlockchainSizeMonitor();
+
         mainController.showSuccessMsg("TON blockchain is ready!", 2);
-        Thread.sleep(3000);
+        Thread.sleep(2000);
 
         myLocalTon.createPreInstalledWallets(genesisNode);
 
@@ -134,5 +170,9 @@ public class App extends Application {
         myLocalTon.runAccountsMonitor();
 
         myLocalTon.runValidationMonitor();
+
+        myLocalTon.runValidatorsMonitor();
+
+        mainController.addValidatorBtn.setDisable(false);
     }
 }

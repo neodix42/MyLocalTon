@@ -21,7 +21,6 @@ public class SendToncoinsParam {
     BigDecimal amount;
     String bocLocation;
     String comment;
-    Boolean clearBounce;
     Boolean forceBounce;
     Long timeout;
 //    Currency extraCurrency; // TODO

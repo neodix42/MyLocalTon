@@ -11,9 +11,11 @@ import org.ton.wallet.WalletVersion;
 import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 @Getter
 @Setter
@@ -46,9 +48,10 @@ public class MyLocalTonSettings implements Serializable {
         walletSettings = new WalletSettings();
         uiSettings = new UiSettings();
         blockchainSettings = new BlockchainSettings();
-        logSettings = new LogSettings();
 
         dbPool = new ConcurrentHashMap<>();
+        //activeNodes = new ArrayList<>();
+        activeNodes = new ConcurrentLinkedQueue<>();
     }
 
     /*
@@ -70,11 +73,11 @@ public class MyLocalTonSettings implements Serializable {
     Node5 node5;
     Node6 node6;
     Node7 node7;
+    Queue<String> activeNodes;
 
     WalletSettings walletSettings;
     UiSettings uiSettings;
     BlockchainSettings blockchainSettings;
-    LogSettings logSettings;
 
     String mainWalletAddrBase64;
     String mainWalletAddrFull;
@@ -108,26 +111,15 @@ public class MyLocalTonSettings implements Serializable {
     String zeroStateFileHashHuman;
     String zeroStateFileHashBase64;
 
+    Long stakeHoldRange2End;
     Long stakeHoldRange3End;
+
     ValidationParam lastValidationParam;
     ValidationParam lastValidationParamEvery3Cycles;
     Double timeLineScale;
-    public Map<Long, Long> electionsCounter = new HashMap<>();
-    public Map<Long, Boolean> electionsCounterGlobal = new HashMap<>();
-    public BigDecimal electionsRipped = BigDecimal.ZERO;
-    int cycleMod = 3;
-    int cycleModEquals = 1;
-    BigDecimal defaultStake = new BigDecimal(10001);
-    BigDecimal defaultValidatorBalance = new BigDecimal(50005);
-    Boolean veryFirstElections = Boolean.TRUE;
+    public Map<Long, ValidationParam> elections = new ConcurrentSkipListMap<>();
 
-    //options - logs
-    @Getter
-    @Setter
-    public static class LogSettings implements Serializable {
-        String myLocalTonLogLevel = "INFO";
-        String tonLogLevel = "ERROR";
-    }
+    Boolean veryFirstElections = Boolean.TRUE;
 
     //options - account and keys
     @Getter
@@ -153,25 +145,17 @@ public class MyLocalTonSettings implements Serializable {
         int blockchainExplorerPort = 8000;
     }
 
-    // after you disappear from participant list, you have to wait:
-    // разницу между временем окончания выборов и окончанием цикла валидации
     @Getter
     @Setter
     public static class BlockchainSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 60 * 60L; // 3 min, 60
-        Long electionStartBefore = 50 * 60L; // 2 min, 50
-        Long electionEndBefore = 20 * 60L;// 1 min, 20
-        Long electionStakesFrozenFor = 20 * 60L;// 30 sec, 20
-        Long originalValidatorSetValidFor = 50 * 60L; // 2 min, 50
-
-        Long validatorStateTtl = 31536000L; // 1 year
-        Long validatorBlockTtl = 31536000L;
-        Long validatorArchiveTtl = 31536000L;
-        Long validatorKeyProofTtl = 315360000L; // 10 years
-        Long validatorSyncBefore = 31536000L;
+        Long electedFor = 30 * 60L; // 3 min, 60 min
+        Long electionStartBefore = 25 * 60L; // 2 min, 50 min
+        Long electionEndBefore = 10 * 60L;// 1 min, 10 min
+        Long electionStakesFrozenFor = 5 * 60L;// 30 sec, 20 min
+        Long originalValidatorSetValidFor = electionStartBefore;
 
         Long globalId = -239L;
         Long initialBalance = 4999990000L;
@@ -184,8 +168,6 @@ public class MyLocalTonSettings implements Serializable {
         Long maxValidatorStake = 10000000L;
         Long minTotalValidatorStake = 10000L;
         BigDecimal maxFactor = new BigDecimal(3);
-        Long initialStake = 10000 * 1000000000L; // 10k
-        //Long initialStake = 17L; // 10k
     }
 
     Long currentValidatorSetSince = 0L;
@@ -194,7 +176,24 @@ public class MyLocalTonSettings implements Serializable {
     Boolean initiallyElected = false;
     String externalMsgLocation;
 
-    public Node getNode(Node node) {
-        return node;
+    public Node getNodeByName(String nodeName) {
+        switch (nodeName) {
+            case "genesis":
+                return genesisNode;
+            case "node2":
+                return node2;
+            case "node3":
+                return node3;
+            case "node4":
+                return node4;
+            case "node5":
+                return node5;
+            case "node6":
+                return node6;
+            case "node7":
+                return node7;
+            default:
+                return genesisNode;
+        }
     }
 }

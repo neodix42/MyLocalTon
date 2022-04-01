@@ -243,7 +243,7 @@ public class DbPool {
                     insertWallet(walletEntity); //repeat failed insert into newly spawned db
                 }
             } catch (Exception e) {
-                log.error("insertWallet error {}", e.getMessage());
+                log.error("Error inserting wallet into DB. Error: {}", e.getMessage());
             } finally {
                 if (em.getTransaction().isActive())
                     em.getTransaction().rollback();

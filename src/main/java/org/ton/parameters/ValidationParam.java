@@ -17,7 +17,6 @@ import java.util.List;
 @ToString
 public class ValidationParam implements Serializable {
     Long totalNodes;
-    Long validatorNodes;
     Long blockchainLaunchTime;
     Long startValidationCycle;
     Long endValidationCycle;
@@ -37,4 +36,5 @@ public class ValidationParam implements Serializable {
     List<ResultListParticipants> participants;
     List<Validator> previousValidators;
     List<Validator> currentValidators;
+    List<Validator> nextValidators;
 }

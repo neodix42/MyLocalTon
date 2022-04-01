@@ -72,7 +72,6 @@ public class Fift {
                 (walletScript.equals("wallet-v3.fif")) ? String.valueOf(sendToncoinsParam.getFromSubWalletId()) : "",
                 String.valueOf(seqno),
                 sendToncoinsParam.getAmount().toPlainString(),
-                (nonNull(sendToncoinsParam.getClearBounce()) && sendToncoinsParam.getClearBounce().equals(Boolean.TRUE)) ? "-n" : "",
                 (nonNull(sendToncoinsParam.getForceBounce()) && sendToncoinsParam.getForceBounce().equals(Boolean.TRUE)) ? "-b" : "",
                 (isNull(sendToncoinsParam.getComment())) ? "" : "-C " + sendToncoinsParam.getComment().trim(),
                 attachedBoc,
@@ -332,7 +331,7 @@ public class Fift {
      * from smart contract walletAddress.
      */
     public String createValidatorElectionRequest(Node node, long startElectionTime, BigDecimal maxFactor) throws ExecutionException, InterruptedException {
-        log.info("CreateValidatorElectionRequest {}", node.getNodeName());
+        log.debug("CreateValidatorElectionRequest {}", node.getNodeName());
 
         String fileNameBase = UUID.randomUUID().toString();
 
@@ -354,7 +353,7 @@ public class Fift {
         log.info("signing request by {}", node.getNodeName());
 
         //sign hex string and base64, 2nd line from bottom in output
-        Pair<String, Process> signed = new ValidatorEngineConsoleExecutor().execute(node,
+        Pair<Process, Future<String>> signed = new ValidatorEngineConsoleExecutor().execute(node,
                 "-k", node.getTonCertsDir() + "client",
                 "-p", node.getTonCertsDir() + "server.pub",
                 "-v", "0",
@@ -362,9 +361,9 @@ public class Fift {
                 "-rc",
                 "sign " + node.getValidationSigningKey() + " " + generatedMessageHex);
 
-        log.debug(signed.getLeft()); // make debug
+        log.debug(signed.getRight().get()); // make debug
 
-        String signature = StringUtils.substring(signed.getLeft(), signed.getLeft().indexOf("signature") + 9).trim();
+        String signature = StringUtils.substring(signed.getRight().get(), signed.getRight().get().indexOf("signature") + 9).trim();
         log.info("signature {}", signature);
         FileUtils.deleteQuietly(new File(node.getTonBinDir() + fileNameBase));
 
@@ -373,7 +372,7 @@ public class Fift {
 
     public void signValidatorElectionRequest(Node node, long startElectionTime, BigDecimal maxFactor, String signatureFromElectionRequest) throws
             ExecutionException, InterruptedException {
-        log.info("signValidatorElectionRequest {}", node.getNodeName());
+        log.debug("signValidatorElectionRequest {}", node.getNodeName());
 
         Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "validator-elect-signed.fif",
                 node.getWalletAddress().getBounceableAddressBase64url(),
@@ -391,7 +390,12 @@ public class Fift {
         String validatorPublicKeyHex = StringUtils.substringBetween(resultStr, "with validator public key ", SPACE).trim();
         BigInteger bigInt = new BigInteger(validatorPublicKeyHex, 16);
         log.info("{} signed adnl {} with validator pubkey (hex){}, (integer){}", node.getNodeName(), node.getValidationAndlKey(), validatorPublicKeyHex, bigInt);
-        node.setValidationPubKeyHex(validatorPublicKeyHex); // used only for monitoring
+
+        // used only for monitoring
+        node.setPrevValidationPubKeyHex(node.getPrevValidationPubKeyHex());
+        node.setValidationPubKeyHex(validatorPublicKeyHex);
+
+        node.setPrevValidationPubKeyInteger(node.getPrevValidationPubKeyInteger());
         node.setValidationPubKeyInteger(bigInt.toString());
     }
 

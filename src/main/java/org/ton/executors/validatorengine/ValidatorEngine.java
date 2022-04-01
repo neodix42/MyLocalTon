@@ -18,6 +18,7 @@ import org.ton.wallet.WalletAddress;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,6 +26,8 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.concurrent.Future;
+
+import static org.ton.actions.MyLocalTon.ONE_BLN;
 
 @Slf4j
 public class ValidatorEngine {
@@ -40,17 +43,17 @@ public class ValidatorEngine {
         log.info("starting validator-engine {}", node.getNodeName());
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
-                "-t", "1",
+                "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                "-t", "2",
                 "-C", myGlobalConfig,
                 "--db", node.getTonDbDir(),
                 "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
                 "--ip", node.getPublicIp() + ":" + node.getPublicPort(),
-                "-S", MyLocalTon.getInstance().getSettings().getBlockchainSettings().getValidatorSyncBefore().toString(), // 1 year, in initial sync download all blocks for last given seconds
-                "-s", MyLocalTon.getInstance().getSettings().getBlockchainSettings().getValidatorStateTtl().toString(), // state will be gc'd after this time (in seconds), default 3600
-                "-b", MyLocalTon.getInstance().getSettings().getBlockchainSettings().getValidatorBlockTtl().toString(), // blocks will be gc'd after this time (in seconds), default=7*86400
-                "-A", MyLocalTon.getInstance().getSettings().getBlockchainSettings().getValidatorArchiveTtl().toString(), // archived blocks will be deleted after this time (in seconds), default 365*86400
-                "-K", MyLocalTon.getInstance().getSettings().getBlockchainSettings().getValidatorKeyProofTtl().toString() // 10 years key blocks will be deleted after this time (in seconds), default 365*86400*10
+                "-S", node.getValidatorSyncBefore().toString(), // 1 year, in initial sync download all blocks for last given seconds
+                "-s", node.getValidatorStateTtl().toString(), // state will be gc'd after this time (in seconds), default 3600
+                "-b", node.getValidatorBlockTtl().toString(), // blocks will be gc'd after this time (in seconds), default=7*86400
+                "-A", node.getValidatorArchiveTtl().toString(), // archived blocks will be deleted after this time (in seconds), default 365*86400
+                "-K", node.getValidatorKeyProofTtl().toString() // 10 years key blocks will be deleted after this time (in seconds), default 365*86400*10
         );
         node.setNodeProcess(validator.getLeft());
         return validator.getLeft();
@@ -60,8 +63,8 @@ public class ValidatorEngine {
         log.info("starting validator-engine without params {}", node.getNodeName());
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
-                "-t", "1",
+                "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                "-t", "2",
                 "-C", myGlobalConfig,
                 "--db", node.getTonDbDir(),
                 "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
@@ -71,24 +74,42 @@ public class ValidatorEngine {
         return validator;
     }
 
+    public Pair<Process, Future<String>> startValidatorRestore(Node node, String myGlobalConfig) {
+        log.info("starting validator-engine without params {}", node.getNodeName());
+
+        Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
+                "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                "-t", "2",
+                "-C", myGlobalConfig,
+                "--db", node.getTonDbDir(),
+                "-U", "0",
+                "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
+                "--ip", node.getPublicIp() + ":" + node.getPublicPort());
+
+        node.setNodeProcess(validator.getLeft());
+        //wait for start to finish
+
+        return validator;
+    }
+
+    /**
+     * run full-node very first time
+     *
+     * @param node
+     * @param sharedGlobalConfig
+     * @throws Exception
+     */
     public void initFullnode(Node node, String sharedGlobalConfig) throws Exception {
-        //run full node very first time
         if (Files.exists(Paths.get(node.getTonDbDir() + "state"))) {
             log.info("Found non-empty state; Skip initialization!");
         } else {
             log.info("Initializing node validator, create keyrings and config.json...");
 
             Files.copy(Paths.get(sharedGlobalConfig), Paths.get(node.getNodeGlobalConfigLocation()), StandardCopyOption.REPLACE_EXISTING);
-//
-//            ValidatorEngineExecutor validator = new ValidatorEngineExecutor();
-//            Pair<Process, Future<String>> validatorGenesisInit = validator.execute(node,
-//                    "-C", node.getNodeGlobalConfigLocation(),
-//                    "--db", node.getTonDbDir(),
-//                    "--ip", node.getPublicIp() + ":" + node.getPublicPort());
 
-            Pair<Process, Future<String>> validatorGenesisInit = startValidatorWithoutParams(node, sharedGlobalConfig);
+            String s = startValidatorWithoutParams(node, sharedGlobalConfig).getRight().get();
 
-            log.debug("Initialized {} validator, result {}", node.getNodeName(), validatorGenesisInit.getRight().get());
+            //log.debug("Initialized {} validator, result {}", node.getNodeName(), validatorGenesisInit.getRight().get());
 
             Utils.replaceOutPortInConfigJson(node.getTonDbDir(), node.getOutPort());
 
@@ -119,22 +140,30 @@ public class ValidatorEngine {
             String existingLiteservers = "\"liteservers\" : " + Utils.sbb(configJson, "\"liteservers\" : [");
             String configJsonNew = StringUtils.replace(configJson, existingLiteservers, liteServers + "\n]");
             FileUtils.writeStringToFile(new File(node.getTonDbDir() + "config.json"), configJsonNew, StandardCharsets.UTF_8);
+            // done with config.json
 
             String myGlobalTonConfig = FileUtils.readFileToString(new File(myGlobalConfig), StandardCharsets.UTF_8);
             String myGlobalTonConfigNew;
             String liteServerConfigNew;
+            String liteServerConfigBoth;
 
             if (myGlobalTonConfig.contains("liteservers")) {
-                //replace exiting lite-servers in global config
+                //add new lite-server to the global config
                 String existingLiteserver = Utils.sbb(myGlobalTonConfig, "\"liteservers\":[");
-                liteServerConfigNew = "[{\"id\":{\"key\":\"" + liteserverPubkeyBase64 + "\", \"@type\":\"pub.ed25519\"}, \"port\": " + node.getLiteServerPort() + ", \"ip\": " + publicIpNum + "}\n]";
-                myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, existingLiteserver, liteServerConfigNew);
-                FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
+                liteServerConfigNew = "{\"id\":{\"key\":\"" + liteserverPubkeyBase64 + "\", \"@type\":\"pub.ed25519\"}, \"port\": " + node.getLiteServerPort() + ", \"ip\": " + publicIpNum + "}\n]";
+                //liteServerConfigBoth = StringUtils.substring(existingLiteserver, 0, -1) + "," + liteServerConfigNew;
+                //myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, existingLiteserver, liteServerConfigBoth);
+                //FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
+
+                //replace and create new config
+                myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, existingLiteserver, "[" + liteServerConfigNew);
+                FileUtils.writeStringToFile(new File(node.getNodeLocalConfigLocation()), myGlobalTonConfigNew, StandardCharsets.UTF_8);
             } else {
                 // add new lite servers around "validator":{
                 liteServerConfigNew = "\"liteservers\":[{\"id\":{\"key\":\"" + liteserverPubkeyBase64 + "\", \"@type\":\"pub.ed25519\"}, \"port\": " + node.getLiteServerPort() + ", \"ip\": " + publicIpNum + "}\n],\n \"validator\": {";
                 myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, "\"validator\": {", liteServerConfigNew);
                 FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
+                FileUtils.writeStringToFile(new File(node.getNodeLocalConfigLocation()), myGlobalTonConfigNew, StandardCharsets.UTF_8);
             }
             log.info("lite-server enabled");
         }
@@ -329,7 +358,7 @@ public class ValidatorEngine {
         node.setValidatorPrvKeyHex(validatorPrvKeyHex);
         node.setValidatorPrvKeyBase64(validatorPrvKeyBase64);
         node.setValidatorPubKeyHex(Hex.encodeHexString(removed4bytes));
-        node.setValidatorPubKeyBase64(Base64.encodeBase64String(validatorPubKey)); // move to  createGenesisValidator ? todo
+        node.setValidatorPubKeyBase64(Base64.encodeBase64String(validatorPubKey));
 
         Utils.saveSettingsToGson(MyLocalTon.getInstance().getSettings());
 
@@ -337,11 +366,10 @@ public class ValidatorEngine {
         Files.write(Paths.get(node.getValidatorKeyPubLocation()), Hex.decodeHex(node.getValidatorPubKeyHex()), StandardOpenOption.CREATE); // "validator-keys-1.pub"
 
         if (updateGenZeroStateFif) {
-            // make full node validator
-            // replace path to validator-key.pub in gen-zerostate.fif
+            // replace path to validator-key-1.pub in gen-zerostate.fif
             String genZeroStateFif = FileUtils.readFileToString(new File(node.getGenesisGenZeroStateFifLocation()), StandardCharsets.UTF_8);
             String genZeroStateFifNew = StringUtils.replace(genZeroStateFif, "// \"path_to_" + node.getNodeName() + "_pub_key\"", "\"" + node.getValidatorKeyPubLocation() + "\"");
-            genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), MyLocalTon.getInstance().getSettings().getBlockchainSettings().getInitialStake().toString());
+            genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), node.getDefaultValidatorStake().min(BigDecimal.ONE).multiply(BigDecimal.valueOf(ONE_BLN)).toString());
             FileUtils.writeStringToFile(new File(node.getGenesisGenZeroStateFifLocation()), genZeroStateFifNew, StandardCharsets.UTF_8);
         }
     }

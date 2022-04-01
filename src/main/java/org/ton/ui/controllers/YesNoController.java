@@ -12,8 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
+import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.main.App;
+import org.ton.settings.Node;
 import org.ton.utils.Utils;
 
 import java.net.URL;
@@ -24,6 +26,7 @@ import java.util.concurrent.Executors;
 import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.nonNull;
 import static org.ton.main.App.fxmlLoader;
+import static org.ton.main.App.mainController;
 
 @Slf4j
 public class YesNoController implements Initializable {
@@ -79,7 +82,7 @@ public class YesNoController implements Initializable {
         });
     }
 
-    public void okBtnAction() {
+    public void okBtnAction() throws InterruptedException {
         log.debug("ok clicked, action {}", action.getText());
         MainController mainController = fxmlLoader.getController();
 
@@ -107,9 +110,34 @@ public class YesNoController implements Initializable {
                 log.debug("showmsg");
                 mainController.yesNoDialog.close();
                 break;
+            case "delnode":
+                log.debug("delnode");
+                mainController.yesNoDialog.close();
+                doDelete();
+                break;
             default:
                 log.debug("no action");
                 mainController.yesNoDialog.close();
+        }
+    }
+
+    private void doDelete() throws InterruptedException {
+        String nodeName = address.getText();
+        log.info("do delete {}", nodeName);
+
+        Node node = MyLocalTon.getInstance().getSettings().getNodeByName(nodeName);
+        MyLocalTon.getInstance().getSettings().getActiveNodes().remove(nodeName);
+
+        // clean wallet db and UI
+        Utils.deleteWalletByFullAddress(node.getWalletAddress().getFullWalletAddress());
+
+        // clean settings
+        Utils.resetNodeSettings(node.getNodeName());
+
+        if (node.nodeShutdownAndDelete()) {
+            mainController.validationTabs.getTabs().remove(mainController.getNodeTabByName(nodeName));
+        } else {
+            App.mainController.showErrorMsg("Error deleting validator " + nodeName, 3);
         }
     }
 
@@ -129,7 +157,7 @@ public class YesNoController implements Initializable {
 
         log.info("run method {} against {} with parameters {}", methodId, smcAddress, parameters);
         try {
-            stdout = new LiteClient().executeRunMethod(MyLocalTon.getInstance().getSettings().getGenesisNode(), smcAddress, methodId, parameters);
+            stdout = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeRunMethod(MyLocalTon.getInstance().getSettings().getGenesisNode(), smcAddress, methodId, parameters);
             if (stdout.contains("arguments")) {
                 stdout = stdout.substring(stdout.indexOf("arguments")).trim();
             }
@@ -155,8 +183,9 @@ public class YesNoController implements Initializable {
                         null,
                         chain,
                         walletId,
-                        MyLocalTon.getInstance().getSettings().getWalletSettings().getInitialAmount());
-                
+                        MyLocalTon.getInstance().getSettings().getWalletSettings().getInitialAmount(),
+                        false);
+
                 if (nonNull(walletEntity)) {
                     App.mainController.showSuccessMsg("Wallet " + walletEntity.getFullAddress() + " created", 3);
                 }
