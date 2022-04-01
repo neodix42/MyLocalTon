@@ -151,11 +151,11 @@ public class MyLocalTonSettings implements Serializable {
         Long minValidators = 1L;
         Long maxValidators = 1000L;
         Long maxMainValidators = 100L;
-        Long electedFor = 30 * 60L; // 3 min, 60
-        Long electionStartBefore = 20 * 60L; // 2 min, 40
-        Long electionEndBefore = 10 * 60L;// 1 min, 20
-        Long electionStakesFrozenFor = 10 * 60L;// 30 sec, 20 * 60
-        Long originalValidatorSetValidFor = electionStartBefore; // 2 min, 50
+        Long electedFor = 30 * 60L; // 3 min, 60 min
+        Long electionStartBefore = 25 * 60L; // 2 min, 50 min
+        Long electionEndBefore = 10 * 60L;// 1 min, 10 min
+        Long electionStakesFrozenFor = 5 * 60L;// 30 sec, 20 min
+        Long originalValidatorSetValidFor = electionStartBefore;
 
         Long globalId = -239L;
         Long initialBalance = 4999990000L;
@@ -175,10 +175,6 @@ public class MyLocalTonSettings implements Serializable {
 
     Boolean initiallyElected = false;
     String externalMsgLocation;
-
-    public Node getNode(Node node) {
-        return node;
-    }
 
     public Node getNodeByName(String nodeName) {
         switch (nodeName) {

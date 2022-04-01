@@ -304,7 +304,9 @@ public class Utils {
     public static boolean doShutdown() {
         try {
             int endCounter = 1;
-            validatorsMonitor.shutdownNow();
+            if (nonNull(validatorsMonitor)) {
+                validatorsMonitor.shutdownNow();
+            }
             Thread.sleep(200);
             while (Main.inElections.get()) {
                 Thread.sleep(1000);

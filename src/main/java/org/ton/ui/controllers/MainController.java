@@ -2544,7 +2544,7 @@ public class MainController implements Initializable {
             AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node6.getWalletAddress().getFullWalletAddress()));
             validator6AdnlAddressNext.setText(node6.getValidationAndlKey());
             validator6PubKeyHexNext.setText(node6.getValidationPubKeyHex());
-            validator6PubKeyIntegerNext.setText(node6.getValidationPubKeyInteger() + " (used in participants list)");
+            validator6PubKeyIntegerNext.setText(node6.getValidationPubKeyInteger());
             validator6WalletAddress.setText(node6.getWalletAddress().getFullWalletAddress());
             validator6WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
             nodePublicPort6.setText(node6.getPublicPort().toString());
@@ -2934,6 +2934,7 @@ public class MainController implements Initializable {
         }
     }
 
+    // copy validators fields
     public void validation1AdnlClicked(MouseEvent mouseEvent) {
         String addr = validator1AdnlAddress.getText();
         final Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -2941,7 +2942,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
     }
 
@@ -2952,18 +2953,21 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
     }
 
     public void validation1PubKeyIntegerClicked(MouseEvent mouseEvent) {
         String addr = validator1PubKeyInteger.getText();
+        if (nonNull(addr)) {
+            addr = addr.substring(0, addr.indexOf("(") - 1);
+        }
         final Clipboard clipboard = Clipboard.getSystemClipboard();
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        log.info(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
     }
 
@@ -2974,7 +2978,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
     }
 
@@ -2985,7 +2989,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
     }
 
@@ -2996,7 +3000,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
     }
 
@@ -3007,7 +3011,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
     }
 
@@ -3019,7 +3023,490 @@ public class MainController implements Initializable {
         content.putString(electionId);
         clipboard.setContent(content);
         log.debug(electionId + " copied");
-        App.mainController.showInfoMsg(electionId + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(electionId + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation2AdnlClicked(MouseEvent mouseEvent) {
+        String addr = validator2AdnlAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation2WalletAddrClicked(MouseEvent mouseEvent) {
+        String addr = validator2WalletAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation2PubKeyIntegerClicked(MouseEvent mouseEvent) {
+        String addr = validator2PubKeyInteger.getText();
+        if (nonNull(addr)) {
+            addr = addr.substring(0, addr.indexOf("(") - 1);
+        }
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.info(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation2PubKeyHexClicked(MouseEvent mouseEvent) {
+        String addr = validator2PubKeyHex.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation2AdnlClickedNext(MouseEvent mouseEvent) {
+        String addr = validator2AdnlAddressNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation2PubKeyHexClickedNext(MouseEvent mouseEvent) {
+        String addr = validator2PubKeyHexNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation2PubKeyIntegerClickedNext(MouseEvent mouseEvent) {
+        String addr = validator2PubKeyIntegerNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation3AdnlClicked(MouseEvent mouseEvent) {
+        String addr = validator3AdnlAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation3WalletAddrClicked(MouseEvent mouseEvent) {
+        String addr = validator3WalletAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation3PubKeyIntegerClicked(MouseEvent mouseEvent) {
+        String addr = validator3PubKeyInteger.getText();
+        if (nonNull(addr)) {
+            addr = addr.substring(0, addr.indexOf("(") - 1);
+        }
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.info(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation3PubKeyHexClicked(MouseEvent mouseEvent) {
+        String addr = validator3PubKeyHex.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation3AdnlClickedNext(MouseEvent mouseEvent) {
+        String addr = validator3AdnlAddressNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation3PubKeyHexClickedNext(MouseEvent mouseEvent) {
+        String addr = validator3PubKeyHexNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation3PubKeyIntegerClickedNext(MouseEvent mouseEvent) {
+        String addr = validator3PubKeyIntegerNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+
+    public void validation4AdnlClicked(MouseEvent mouseEvent) {
+        String addr = validator4AdnlAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation4WalletAddrClicked(MouseEvent mouseEvent) {
+        String addr = validator4WalletAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation4PubKeyIntegerClicked(MouseEvent mouseEvent) {
+        String addr = validator4PubKeyInteger.getText();
+        if (nonNull(addr)) {
+            addr = addr.substring(0, addr.indexOf("(") - 1);
+        }
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.info(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation4PubKeyHexClicked(MouseEvent mouseEvent) {
+        String addr = validator4PubKeyHex.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation4AdnlClickedNext(MouseEvent mouseEvent) {
+        String addr = validator4AdnlAddressNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation4PubKeyHexClickedNext(MouseEvent mouseEvent) {
+        String addr = validator4PubKeyHexNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation4PubKeyIntegerClickedNext(MouseEvent mouseEvent) {
+        String addr = validator4PubKeyIntegerNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+
+    public void validation5AdnlClicked(MouseEvent mouseEvent) {
+        String addr = validator5AdnlAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation5WalletAddrClicked(MouseEvent mouseEvent) {
+        String addr = validator5WalletAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation5PubKeyIntegerClicked(MouseEvent mouseEvent) {
+        String addr = validator5PubKeyInteger.getText();
+        if (nonNull(addr)) {
+            addr = addr.substring(0, addr.indexOf("(") - 1);
+        }
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.info(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation5PubKeyHexClicked(MouseEvent mouseEvent) {
+        String addr = validator5PubKeyHex.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation5AdnlClickedNext(MouseEvent mouseEvent) {
+        String addr = validator5AdnlAddressNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation5PubKeyHexClickedNext(MouseEvent mouseEvent) {
+        String addr = validator5PubKeyHexNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation5PubKeyIntegerClickedNext(MouseEvent mouseEvent) {
+        String addr = validator5PubKeyIntegerNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+
+    public void validation6AdnlClicked(MouseEvent mouseEvent) {
+        String addr = validator6AdnlAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation6WalletAddrClicked(MouseEvent mouseEvent) {
+        String addr = validator6WalletAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation6PubKeyIntegerClicked(MouseEvent mouseEvent) {
+        String addr = validator6PubKeyInteger.getText();
+        if (nonNull(addr)) {
+            addr = addr.substring(0, addr.indexOf("(") - 1);
+        }
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.info(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation6PubKeyHexClicked(MouseEvent mouseEvent) {
+        String addr = validator6PubKeyHex.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation6AdnlClickedNext(MouseEvent mouseEvent) {
+        String addr = validator6AdnlAddressNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation6PubKeyHexClickedNext(MouseEvent mouseEvent) {
+        String addr = validator6PubKeyHexNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation6PubKeyIntegerClickedNext(MouseEvent mouseEvent) {
+        String addr = validator6PubKeyIntegerNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation7AdnlClicked(MouseEvent mouseEvent) {
+        String addr = validator7AdnlAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation7WalletAddrClicked(MouseEvent mouseEvent) {
+        String addr = validator7WalletAddress.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation7PubKeyIntegerClicked(MouseEvent mouseEvent) {
+        String addr = validator7PubKeyInteger.getText();
+        if (nonNull(addr)) {
+            addr = addr.substring(0, addr.indexOf("(") - 1);
+        }
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.info(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation7PubKeyHexClicked(MouseEvent mouseEvent) {
+        String addr = validator7PubKeyHex.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation7AdnlClickedNext(MouseEvent mouseEvent) {
+        String addr = validator7AdnlAddressNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation7PubKeyHexClickedNext(MouseEvent mouseEvent) {
+        String addr = validator7PubKeyHexNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        mouseEvent.consume();
+    }
+
+    public void validation7PubKeyIntegerClickedNext(MouseEvent mouseEvent) {
+        String addr = validator7PubKeyIntegerNext.getText();
+        final Clipboard clipboard = Clipboard.getSystemClipboard();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(addr);
+        clipboard.setContent(content);
+        log.debug(addr + " copied");
+        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
     }
 
