@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -134,17 +133,20 @@ public class App extends Application {
 
         new ValidatorEngine().startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation());
 
-        Thread.sleep(3000);
+//        if (isWindows()) {
+//            Utils.waitForBlockchainReady(genesisNode);
+//            Utils.waitForNodeSynchronized(genesisNode);
+//        }
 
         // start other validators
         for (String nodeName : settings.getActiveNodes()) {
             if (!nodeName.contains("genesis")) {
                 long pid = new ValidatorEngine().startValidator(settings.getNodeByName(nodeName), genesisNode.getNodeGlobalConfigLocation()).pid();
                 log.info("started validator {} with pid {}", nodeName, pid);
-                if (isWindows()) {
-                    Utils.waitForBlockchainReady(settings.getNodeByName(nodeName));
-                    Utils.waitForNodeSynchronized(settings.getNodeByName(nodeName));
-                }
+//                if (isWindows()) {
+//                    Utils.waitForBlockchainReady(settings.getNodeByName(nodeName));
+//                    Utils.waitForNodeSynchronized(settings.getNodeByName(nodeName));
+//                }
             }
         }
 

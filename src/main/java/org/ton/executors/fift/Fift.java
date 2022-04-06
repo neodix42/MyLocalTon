@@ -73,7 +73,7 @@ public class Fift {
                 String.valueOf(seqno),
                 sendToncoinsParam.getAmount().toPlainString(),
                 (nonNull(sendToncoinsParam.getForceBounce()) && sendToncoinsParam.getForceBounce().equals(Boolean.TRUE)) ? "-b" : "",
-                (isNull(sendToncoinsParam.getComment())) ? "" : "-C " + sendToncoinsParam.getComment().trim(),
+                (isNull(sendToncoinsParam.getComment())) ? "" : "-C" + sendToncoinsParam.getComment().trim(),
                 attachedBoc,
                 resultBocFileLocation);
 

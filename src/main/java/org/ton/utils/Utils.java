@@ -622,14 +622,14 @@ public class Utils {
                 }
             }
 
-            node.getElectionsCounter().put(electionId, electionId);
-
             if (isNull(node.getWalletAddress())) {
                 log.info("{} controlling smart-contract (wallet) is not present yet, cancel participation", node.getNodeName());
                 return;
             } else {
                 log.info("{} no need to create controlling smart-contract (wallet)", node.getNodeName());
             }
+
+            node.getElectionsCounter().put(electionId, electionId);
 
             //can be done only once
             MyLocalTon.getInstance().createValidatorPubKeyAndAdnlAddress(node, electionId);

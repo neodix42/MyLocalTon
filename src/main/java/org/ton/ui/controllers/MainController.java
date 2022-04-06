@@ -1834,7 +1834,7 @@ public class MainController implements Initializable {
             }
         }
 
-        if (isLinux() || isMac()) {
+        if (isLinux() || isMac() || isWindows()) {
             addValidatorBtn.setVisible(true);
         }
 
@@ -3187,7 +3187,6 @@ public class MainController implements Initializable {
         mouseEvent.consume();
     }
 
-
     public void validation4AdnlClicked(MouseEvent mouseEvent) {
         String addr = validator4AdnlAddress.getText();
         final Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -3268,7 +3267,6 @@ public class MainController implements Initializable {
         mouseEvent.consume();
     }
 
-
     public void validation5AdnlClicked(MouseEvent mouseEvent) {
         String addr = validator5AdnlAddress.getText();
         final Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -3348,7 +3346,6 @@ public class MainController implements Initializable {
         App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
     }
-
 
     public void validation6AdnlClicked(MouseEvent mouseEvent) {
         String addr = validator6AdnlAddress.getText();
@@ -3529,15 +3526,15 @@ public class MainController implements Initializable {
 
                     MyLocalTon.getInstance().createFullnode(node, true, true);
 
-                    if (isWindows()) {
-                        Utils.waitForBlockchainReady(node);
-                        Utils.waitForNodeSynchronized(node);
-                    }
-
                     Tab newTab = Utils.getNewNodeTab();
                     Platform.runLater(() -> {
                         validationTabs.getTabs().add(newTab);
                     });
+
+                    if (isWindows()) {
+                        Utils.waitForBlockchainReady(node);
+                        Utils.waitForNodeSynchronized(node);
+                    }
 
                     settings.getActiveNodes().add(node.getNodeName());
                     MyLocalTon.getInstance().saveSettingsToGson();
