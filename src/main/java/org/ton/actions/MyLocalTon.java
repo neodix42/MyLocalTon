@@ -981,7 +981,7 @@ public class MyLocalTon {
                     }).collect(Collectors.joining());
 
                     log.info("in msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg);
-                    mainController.showMessage(msg.substring(5));
+                    mainController.showMessage(msg.substring(4));
                 });
 
             } else if ((!txEntity.getTx().getOutMsgs().isEmpty() && !txEntity.getTx().getOutMsgs().get(0).getBody().getCells().isEmpty())) {
@@ -999,7 +999,7 @@ public class MyLocalTon {
                         }).collect(Collectors.joining());
 
                         log.info("out msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg);
-                        mainController.showMessage(msg.substring(5));
+                        mainController.showMessage(msg.substring(4));
                     });
                 }
             }
