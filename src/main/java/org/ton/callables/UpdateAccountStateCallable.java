@@ -1,6 +1,7 @@
 package org.ton.callables;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.callables.parameters.WalletCallbackParam;
 import org.ton.db.DB2;
@@ -33,8 +34,8 @@ public class UpdateAccountStateCallable implements Callable<WalletCallbackParam>
     public WalletCallbackParam call() {
         EntityManager em = db.getEmf().createEntityManager();
         try {
-            if (isNull(accountState.getAddress())) {
-                log.debug("cannot update accountState, address is null");
+            if (isNull(accountState) || isNull(accountState.getAddress())) {
+                log.info("cannot update accountState, address is null");
             } else {
                 WalletEntity walletFound = em.find(WalletEntity.class, walletPk);
 
@@ -52,6 +53,7 @@ public class UpdateAccountStateCallable implements Callable<WalletCallbackParam>
             }
         } catch (Exception e) {
             log.error("Error {}", e.getMessage());
+            log.error(ExceptionUtils.getStackTrace(e));
         } finally {
             if (em.getTransaction().isActive())
                 em.getTransaction().rollback();

@@ -29,7 +29,7 @@ public class DhtServerExecutor {
         withBinaryCommand = ArrayUtils.addAll(withBinaryCommand, command);
 
         try {
-            log.debug("execute: {}", String.join(" ", withBinaryCommand));
+            log.info("execute: {}", String.join(" ", withBinaryCommand));
 
             ExecutorService executorService = Executors.newSingleThreadExecutor();
 

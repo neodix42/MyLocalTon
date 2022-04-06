@@ -50,12 +50,12 @@ public class LiteClientParser {
         }
 
         if (StringUtils.contains(stdout, "adnl query timeout")) {
-            log.error("Blockchain node is not ready");
+            log.debug("Blockchain node is not ready");
             return null;
         }
 
         if (StringUtils.contains(stdout, "server appears to be out of sync")) {
-            log.info("Blockchain node is out of sync");
+            log.debug("Blockchain node is out of sync");
         }
 
         try {
@@ -86,7 +86,7 @@ public class LiteClientParser {
                     .build();
 
         } catch (Exception e) {
-            log.error("Error parsing lite-client's last command! Output: {}", stdout);
+            log.debug("Error parsing lite-client's last command! Output: {}", stdout);
             return null;
         }
     }
@@ -188,6 +188,9 @@ public class LiteClientParser {
     }
 
     public static Transaction parseDumpTrans(String stdout, boolean includeMessageBody) {
+        if (StringUtils.isEmpty(stdout)) {
+            return null;
+        }
         String blockdump = stdout.replace(EOLWIN, SPACE).replace(EOL, SPACE);
         return parseTransaction(blockdump, includeMessageBody);
     }

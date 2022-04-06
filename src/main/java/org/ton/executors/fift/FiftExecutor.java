@@ -30,7 +30,7 @@ public class FiftExecutor {
         withBinaryCommand = ArrayUtils.addAll(withBinaryCommand, commandTrimmed);
 
         try {
-            log.info("execute: {}", String.join(" ", withBinaryCommand));
+            log.debug("execute: {}", String.join(" ", withBinaryCommand));
 
             ExecutorService executorService = Executors.newSingleThreadExecutor();
 

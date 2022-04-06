@@ -36,12 +36,12 @@ ON LINUX:
 
 #include <csignal>
 
-line around 3380
+line around 3415
       signal(SIGINT, sigint_handler);
 
 void sigint_handler(int sig) {
   std::cout << "Exit call sig " << sig << "\n";
-  // shutdownFlag = true;
+  shutdownFlag = true;
   usleep(900000);
   usleep(900000);
   usleep(900000);
@@ -64,3 +64,20 @@ bool Collator::create_mc_state_extra() {
     LOG(INFO) << "cancelling creation of mc state due to positive shutdown flag";
     return false;
   }
+
+in order to avoid node not synced on Windows patch the following in manager.cpp:
+-  if (!started_) {
++  /*if (!started_) {
+     promise.set_error(td::Status::Error(ErrorCode::notready, "node not synced"));
+     return;
+-  }
++  }*/
+
+
+on windows
+netsh int ipv4 set dynamicport tcp start=1025 num=64511
+netsh int ipv4 set dynamicport udp start=1025 num=64511
+netsh int ipv4 show dynamicport udp
+netsh int ipv4 show dynamicport tcp
+
+

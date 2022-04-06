@@ -5,6 +5,9 @@ import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.paint.Color;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
@@ -21,6 +24,8 @@ import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
+import org.ton.db.entities.WalletPk;
+import org.ton.enums.LiteClientEnum;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
@@ -29,8 +34,8 @@ import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
 import org.ton.parameters.ValidationParam;
-import org.ton.settings.MyLocalTonSettings;
-import org.ton.settings.Node;
+import org.ton.settings.*;
+import org.ton.ui.controllers.MainController;
 import org.ton.wallet.Wallet;
 import org.ton.wallet.WalletVersion;
 
@@ -44,10 +49,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.security.CodeSource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -66,7 +68,10 @@ import java.util.regex.Pattern;
 import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.ton.actions.MyLocalTon.validatorsMonitor;
 import static org.ton.executors.liteclient.LiteClientParser.*;
+import static org.ton.main.App.fxmlLoader;
+import static org.ton.main.App.mainController;
 import static org.ton.settings.MyLocalTonSettings.SETTINGS_FILE;
 
 @Slf4j
@@ -298,10 +303,18 @@ public class Utils {
 
     public static boolean doShutdown() {
         try {
-
+            int endCounter = 1;
+            if (nonNull(validatorsMonitor)) {
+                validatorsMonitor.shutdownNow();
+            }
+            Thread.sleep(200);
             while (Main.inElections.get()) {
-                Thread.sleep(500);
-                log.info("waiting for operations to be finished");
+                Thread.sleep(1000);
+                log.info("Waiting for requests in elections to be processed, {}/15", endCounter);
+                endCounter++;
+                if (endCounter > 15) {
+                    break;
+                }
             }
 
             if (Main.appActive.get()) {
@@ -313,19 +326,41 @@ public class Utils {
                 FileUtils.deleteQuietly(Main.file);
                 log.info("Destroying external processes...");
 
-                MyLocalTon.getInstance().getDhtServerProcess().destroy();
-
                 Thread.sleep(1000);
 
                 Runtime rt = Runtime.getRuntime();
                 if (isWindows()) {
+                    rt.exec("taskkill /F /IM " + "validator-engine-console.exe");
                     rt.exec("taskkill /F /IM " + "lite-client.exe");
-                    log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
-                    rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+                    rt.exec("taskkill /F /IM " + "dht-server.exe");
+                    /*
+                    if (nonNull(MyLocalTon.getInstance().getGenesisValidatorProcess())) {
+                        log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+                        rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+                        Thread.sleep(4000);
+                        //double knockout
+                        log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+                        rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+                    }
+                    */
+                    MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+                    for (String nodeName : settings.getActiveNodes()) {
+                        Node node = settings.getNodeByName(nodeName);
+                        if (nonNull(node.getNodeProcess())) {
+                            log.info("killing {} with pid {}", node.getNodeName(), node.getNodeProcess().pid());
+                            rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + node.getNodeProcess().pid());
+                            Thread.sleep(200);
+                        }
+                    }
                     Thread.sleep(4000);
-                    //double knockout
-                    log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
-                    rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
+                    for (String nodeName : settings.getActiveNodes()) {
+                        Node node = settings.getNodeByName(nodeName);
+                        if (nonNull(node.getNodeProcess())) {
+                            log.info("killing {} with pid {}", node.getNodeName(), node.getNodeProcess().pid());
+                            rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + node.getNodeProcess().pid());
+                            Thread.sleep(200);
+                        }
+                    }
 
                     // triple knockout
                     String resultInput = "";
@@ -340,13 +375,18 @@ public class Utils {
                                 int pid = Integer.parseInt(StringUtils.substringBetween(resultInput, "validator-engine.exe", "Console").trim());
                                 boolean success = JProcesses.killProcess(pid).isSuccess();
                                 log.debug("validator-engine with pid " + pid + " killed " + success);
-
                             }
                         }
                     } while (resultInput.contains("validator-engine"));
+
+                    rt.exec("taskkill /F /IM " + "validator-engine-console.exe");
+                    rt.exec("taskkill /F /IM " + "lite-client.exe");
+                    rt.exec("taskkill /F /IM " + "dht-server.exe");
                 } else {
+                    rt.exec("killall -9 " + "validator-engine-console");
                     rt.exec("killall -9 " + "lite-client");
-                    rt.exec("killall -2 " + "validator-engine"); // TODO look up for the shutdown order
+                    rt.exec("killall -9 " + "dht-server");
+                    rt.exec("killall -2 " + "validator-engine"); // TODO look up for the shutdown order when multiple nodes are active
                 }
 
                 log.debug("Waiting for processes to be killed...");
@@ -357,8 +397,13 @@ public class Utils {
             }
         } catch (Exception e) {
             log.error("Unable to shutdown gracefully, error: {}", e.getMessage());
+            log.error(ExceptionUtils.getStackTrace(e));
             return false;
         }
+    }
+
+    public static void killNode(Node node) {
+
     }
 
     public static ResultLastBlock fullBlockSeqno2Result(String fullBlockSeqno) {
@@ -478,7 +523,8 @@ public class Utils {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
+            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
+            log.error("{} is not ready", node.getNodeName());
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
     }
 
@@ -486,8 +532,9 @@ public class Utils {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(new LiteClient().executeLast(node));
+            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
             log.info("{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
+            node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
         } while (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0 && lastBlock.getSyncedSecondsAgo() > 10);
     }
 
@@ -497,44 +544,46 @@ public class Utils {
 
     public static ValidationParam getConfig(org.ton.settings.Node node) throws Exception {
 
-        ResultConfig12 config12 = LiteClientParser.parseConfig12(new LiteClient().executeBlockchainInfo(node));
+        LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
+
+        ResultConfig12 config12 = LiteClientParser.parseConfig12(liteClient.executeBlockchainInfo(node));
         log.debug("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
 
-        long activeElectionId = new LiteClient().executeGetActiveElectionId(node, MyLocalTon.getInstance().getSettings().getElectorSmcAddrHex());
-        log.info("active election id {}, {}", activeElectionId, Utils.toLocal(activeElectionId));
+        long activeElectionId = liteClient.executeGetActiveElectionId(node, MyLocalTon.getInstance().getSettings().getElectorSmcAddrHex());
+        log.info("active election id {}, {}, current time {}", activeElectionId, Utils.toLocal(activeElectionId), Utils.toLocal(getCurrentTimeSeconds()));
 
-        ResultConfig15 config15 = LiteClientParser.parseConfig15(new LiteClient().executeGetElections(node));
+        ResultConfig15 config15 = LiteClientParser.parseConfig15(liteClient.executeGetElections(node));
         log.debug("current elections params {}", config15);
 
-        ResultConfig17 config17 = LiteClientParser.parseConfig17(new LiteClient().executeGetMinMaxStake(node));
+        ResultConfig17 config17 = LiteClientParser.parseConfig17(liteClient.executeGetMinMaxStake(node));
         log.debug("min/max stake {}", config17);
 
-        ResultConfig34 config34 = LiteClientParser.parseConfig34(new LiteClient().executeGetCurrentValidators(node));
+        ResultConfig34 config34 = LiteClientParser.parseConfig34(liteClient.executeGetCurrentValidators(node));
         log.debug("current validators {}", config34);
 
         log.debug("start work time since {}, until {}", Utils.toLocal(config34.getValidators().getSince()), Utils.toLocal(config34.getValidators().getUntil()));
 
-        ResultConfig32 config32 = LiteClientParser.parseConfig32(new LiteClient().executeGetPreviousValidators(node));
-        log.info("previous validators {}", config32);
+        ResultConfig32 config32 = LiteClientParser.parseConfig32(liteClient.executeGetPreviousValidators(node));
+        log.debug("previous validators {}", config32);
 
-        ResultConfig36 config36 = LiteClientParser.parseConfig36(new LiteClient().executeGetNextValidators(node));
-        log.info("next validators {}", config36);
+        ResultConfig36 config36 = LiteClientParser.parseConfig36(liteClient.executeGetNextValidators(node));
+        log.debug("next validators {}", config36);
 
-        ResultConfig0 config0 = LiteClientParser.parseConfig0(new LiteClient().executeGetConfigSmcAddress(node));
+        ResultConfig0 config0 = LiteClientParser.parseConfig0(liteClient.executeGetConfigSmcAddress(node));
         log.debug("config address {}", config0.getConfigSmcAddr());
 
-        ResultConfig1 config1 = LiteClientParser.parseConfig1(new LiteClient().executeGetElectorSmcAddress(node));
+        ResultConfig1 config1 = LiteClientParser.parseConfig1(liteClient.executeGetElectorSmcAddress(node));
         log.debug("elector address {}", config1.getElectorSmcAddress());
 
-        ResultConfig2 config2 = LiteClientParser.parseConfig2(new LiteClient().executeGetMinterSmcAddress(node));
+        ResultConfig2 config2 = LiteClientParser.parseConfig2(liteClient.executeGetMinterSmcAddress(node));
         log.debug("minter address {}", config2.getMinterSmcAddress());
 
-        List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(new LiteClient().executeGetParticipantList(node, config1.getElectorSmcAddress()));
+        List<ResultListParticipants> participants = LiteClientParser.parseRunMethodParticipantList(liteClient.executeGetParticipantList(node, config1.getElectorSmcAddress()));
         log.info("participants {}", participants);
 
         return ValidationParam.builder()
                 .totalNodes(1L) // not used
-                .validatorNodes(config34.getValidators().getTotal())
+//                .validatorNodes(config34.getValidators().getTotal())
                 .blockchainLaunchTime(config12.getEnabledSince())
                 .startValidationCycle(activeElectionId) // same as config34.getValidators().getSince()
                 .endValidationCycle(activeElectionId + config15.getValidatorsElectedFor())
@@ -554,20 +603,18 @@ public class Utils {
                 .participants(participants)
                 .previousValidators(config32.getValidators().getValidators())
                 .currentValidators(config34.getValidators().getValidators())
+                .nextValidators(config36.getValidators().getValidators())
                 .build();
-    }
-
-    private static boolean hasParticipated(long electionId) {
-        return MyLocalTon.getInstance().getSettings().electionsCounterGlobal.getOrDefault(electionId, false);
     }
 
     public static void participate(Node node, ValidationParam v) {
 
         try {
+            MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
             long electionId = v.getStartValidationCycle();
 
-            if (hasParticipated(electionId)) { // TODO actually we need to track participation per node, but for now it's ok
-                log.info("{} has already sent request for elections", node.getNodeName());
+            if (node.getElectionsCounter().getOrDefault(electionId, -1L) > YEAR_1971) {
+                log.info("{} has already sent request ({}) for elections. Current time {}", node.getNodeName(), Utils.toLocal(electionId), Utils.toLocal(Utils.getCurrentTimeSeconds()));
                 if (electionId < Utils.getCurrentTimeSeconds()) {
                     log.info("electionId is outdated");
                 } else {
@@ -575,14 +622,11 @@ public class Utils {
                 }
             }
 
-            MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+            node.getElectionsCounter().put(electionId, electionId);
 
-            // if it's a genesis node it has a wallet already - main-wallet.pk
             if (isNull(node.getWalletAddress())) {
-                log.info("creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
-                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), settings.getDefaultValidatorBalance());
-                node.setWalletAddress(walletEntity.getWallet());
-                Thread.sleep(5 * 1000); //10 sec
+                log.info("{} controlling smart-contract (wallet) is not present yet, cancel participation", node.getNodeName());
+                return;
             } else {
                 log.info("{} no need to create controlling smart-contract (wallet)", node.getNodeName());
             }
@@ -605,19 +649,23 @@ public class Utils {
                     .fromWalletVersion(WalletVersion.V3)
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
-                    .amount(settings.getDefaultStake())
-                    .comment("validator-request-send-stake")
+                    .amount(node.getDefaultValidatorStake())
+                    .comment("validator-request-send-stake") // TODO check if comment is visible
                     .bocLocation(node.getTonBinDir() + "validator-query.boc")
                     .build();
 
-            new Wallet().sendTonCoins(sendToncoinsParam);
+            boolean sentOK = new Wallet().sendTonCoins(sendToncoinsParam);
 
-            //node.setValidationParticipated(true);
-            settings.electionsCounterGlobal.put(v.getStartValidationCycle(), true);
-
-            saveSettingsToGson(settings);
+            if (sentOK) {
+                node.getElectionsCounter().put(v.getStartValidationCycle(), v.getStartValidationCycle());
+                saveSettingsToGson(settings);
+            } else {
+                log.error("Participation error. {} failed to send {} Toncoins to {}", node.getNodeName(), node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex());
+                node.getElectionsCounter().remove(v.getStartValidationCycle());
+                App.mainController.showErrorMsg(String.format("Participation error. {} failed to send %s Toncoins to %s", node.getDefaultValidatorStake(), node.getNodeName(), settings.getElectorSmcAddrHex()), 5);
+            }
         } catch (Exception e) {
-            log.error("Error participating in elections! Error {}", e.getMessage());
+            log.error("Error by {} participating in elections! Error {}", node.getNodeName(), e.getMessage());
             log.error(ExceptionUtils.getStackTrace(e));
         }
     }
@@ -654,5 +702,234 @@ public class Utils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Node getNewNode() {
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+        for (String n : Arrays.asList("genesis", "node2", "node3", "node4", "node5", "node6", "node7")) {
+            if (!settings.getActiveNodes().contains(n)) {
+                switch (n) {
+                    case "genesis":
+                        return settings.getGenesisNode();
+                    case "node2":
+                        return settings.getNode2();
+                    case "node3":
+                        return settings.getNode3();
+                    case "node4":
+                        return settings.getNode4();
+                    case "node5":
+                        return settings.getNode5();
+                    case "node6":
+                        return settings.getNode6();
+                    case "node7":
+                        return settings.getNode7();
+                    default:
+                        return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static void resetNodeSettings(String nodeName) throws InterruptedException {
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+        switch (nodeName) {
+            case "genesis":
+                settings.setGenesisNode(new GenesisNode());
+                break;
+            case "node2":
+                settings.setNode2(new Node2());
+                break;
+            case "node3":
+                settings.setNode3(new Node3());
+                break;
+            case "node4":
+                settings.setNode4(new Node4());
+                break;
+            case "node5":
+                settings.setNode5(new Node5());
+                break;
+            case "node6":
+                settings.setNode6(new Node6());
+                break;
+            case "node7":
+                settings.setNode7(new Node7());
+                break;
+        }
+
+        MyLocalTon.getInstance().saveSettingsToGson();
+    }
+
+    public static Tab getNewNodeTab() {
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+        for (String n : Arrays.asList("genesis", "node2", "node3", "node4", "node5", "node6", "node7")) {
+            if (!settings.getActiveNodes().contains(n)) {
+                switch (n) {
+                    case "genesis":
+                        return mainController.genesisnode1;
+                    case "node2":
+                        return mainController.validator2tab;
+                    case "node3":
+                        return mainController.validator3tab;
+                    case "node4":
+                        return mainController.validator4tab;
+                    case "node5":
+                        return mainController.validator5tab;
+                    case "node6":
+                        return mainController.validator6tab;
+                    case "node7":
+                        return mainController.validator7tab;
+                    default:
+                        return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Tab getNodeTabByName(String nodeName) {
+        switch (nodeName) {
+            case "genesis":
+                return mainController.genesisnode1;
+            case "node2":
+                return mainController.validator2tab;
+            case "node3":
+                return mainController.validator3tab;
+            case "node4":
+                return mainController.validator4tab;
+            case "node5":
+                return mainController.validator5tab;
+            case "node6":
+                return mainController.validator6tab;
+            case "node7":
+                return mainController.validator7tab;
+            default:
+                return mainController.genesisnode1;
+        }
+    }
+
+    public static Label getNodeStatusLabelByName(String nodeName) {
+        switch (nodeName) {
+            case "genesis":
+                return mainController.nodeStatus1;
+            case "node2":
+                return mainController.nodeStatus2;
+            case "node3":
+                return mainController.nodeStatus3;
+            case "node4":
+                return mainController.nodeStatus4;
+            case "node5":
+                return mainController.nodeStatus5;
+            case "node6":
+                return mainController.nodeStatus6;
+            case "node7":
+                return mainController.nodeStatus7;
+            default:
+                return mainController.nodeStatus1;
+        }
+    }
+
+    public static String getNodeNameByWalletAddress(String walletAddress) {
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+        if (nonNull(settings.getGenesisNode().getWalletAddress()) && walletAddress.equals(settings.getGenesisNode().getWalletAddress().getFullWalletAddress())) {
+            return "Validator genesis, ";
+        } else if (nonNull(settings.getNode2().getWalletAddress()) && walletAddress.equals(settings.getNode2().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 2, ";
+        } else if (nonNull(settings.getNode3().getWalletAddress()) && walletAddress.equals(settings.getNode3().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 3, ";
+        } else if (nonNull(settings.getNode4().getWalletAddress()) && walletAddress.equals(settings.getNode4().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 4, ";
+        } else if (nonNull(settings.getNode5().getWalletAddress()) && walletAddress.equals(settings.getNode5().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 5, ";
+        } else if (nonNull(settings.getNode6().getWalletAddress()) && walletAddress.equals(settings.getNode6().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 6, ";
+        } else if (nonNull(settings.getNode7().getWalletAddress()) && walletAddress.equals(settings.getNode7().getWalletAddress().getFullWalletAddress())) {
+            return "Validator 7, ";
+        }
+        return "";
+    }
+
+    public static void showNodeStatus(Node node, Label nodeStatusLabel, Tab tab) {
+
+        if (node.getStatus().contains("not ready")) {
+            nodeStatusLabel.setText(node.getStatus());
+            nodeStatusLabel.setTextFill(Color.FIREBRICK);
+            tab.setStyle("-fx-background-color: firebrick;");
+        } else if (node.getStatus().equals("ready")) {
+            nodeStatusLabel.setText(node.getStatus());
+            nodeStatusLabel.setTextFill(Color.FORESTGREEN);
+            tab.setStyle("-fx-background-color: forestgreen;");
+        } else {
+            nodeStatusLabel.setText(node.getStatus());
+            nodeStatusLabel.setTextFill(Color.DARKORANGE);
+            tab.setStyle("-fx-background-color: darkorange;");
+        }
+    }
+
+    public static void copyDirectory(String src, String dest) {
+        Path srcDir = Paths.get(src);
+        try {
+            Files.walk(srcDir)
+                    .forEach(sourcePath -> {
+                        try {
+                            Path targetPath = Paths.get(dest).resolve(srcDir.relativize(sourcePath));
+                            log.debug("Copying {}} to {}", sourcePath, targetPath);
+                            Files.copy(sourcePath, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                        } catch (IOException ex) {
+                            log.debug("I/O error: {}", ex.getMessage());
+                        }
+                    });
+        } catch (Exception e) {
+            log.warn("cannot copy directory {}", src);
+        }
+    }
+
+    public static void syncWithGenesis() throws IOException {
+
+        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+
+        for (String nodeName : settings.getActiveNodes()) {
+            if (!nodeName.contains("genesis")) {
+                log.info("synchronizing {}", nodeName);
+                Node node = settings.getNodeByName(nodeName);
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbArchiveDir()), new File(node.getTonDbArchiveDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCatchainsDir()), new File(node.getTonDbCatchainsDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCellDbDir()), new File(node.getTonDbCellDbDir()));
+                FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbFilesDir()), new File(node.getTonDbFilesDir()));
+                //FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStateDir()), new File(node.getTonDbStateDir()));
+            }
+        }
+    }
+
+    public static void deleteWalletByFullAddress(String fullAddrress) {
+        String[] wcAddr = fullAddrress.split(":");
+        WalletPk walletPk = WalletPk.builder()
+                .wc(Long.parseLong(wcAddr[0]))
+                .hexAddress(wcAddr[1])
+                .build();
+
+        WalletEntity walletEntity = App.dbPool.findWallet(walletPk);
+        App.dbPool.deleteWallet(walletPk);
+
+        MainController c = fxmlLoader.getController();
+        javafx.scene.Node found = null;
+        for (javafx.scene.Node row : c.accountsvboxid.getItems()) {
+            if (((Label) row.lookup("#hexAddr")).getText().equals(fullAddrress)) {
+                log.debug("Remove from list {}", fullAddrress);
+                found = row;
+            }
+        }
+
+        if (nonNull(found)) {
+            c.accountsvboxid.getItems().remove(found);
+        }
+
+        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".pk"));
+        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".addr"));
+        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + "-query.boc"));
     }
 }

@@ -4,14 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.ton.actions.MyLocalTon;
 import org.ton.executors.generaterandomid.RandomIdExecutor;
 import org.ton.settings.Node;
 import org.ton.utils.Utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,53 +29,72 @@ public class DhtServer {
     public static final String TEMPLATES = "templates";
     public static final String EXAMPLE_GLOBAL_CONFIG = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + TEMPLATES + File.separator + "example.config.json";
 
-    public Process startDhtServer(Node node, String globalConfigFile) {
-        // start dht-server in background
-        log.info("genesis dht-server started at {}", node.getPublicIp() + ":" + node.getDhtPort());
+    public void startDhtServer(Node node, String globalConfigFile) {
+        log.info("{} dht-server started at {}", node.getNodeName(), node.getPublicIp() + ":" + node.getDhtPort());
         Pair<Process, Future<String>> dhtServer = new DhtServerExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
-                "-t", "1",
+                "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                "-t", "2",
                 "-C", globalConfigFile,
                 "-l", node.getDhtServerDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
                 "-D", node.getDhtServerDir(),
                 "-I", node.getPublicIp() + ":" + node.getDhtPort());
         node.setDhtServerProcess(dhtServer.getLeft());
-        return dhtServer.getLeft();
     }
 
     /**
-     * creates dht-server/keyring directory with a key inside and generate config.json based on example.config.json.
-     * Also replaces [NODES] in my-ton-global.config.json
+     * Creates dht-server/keyring directory with a key inside and generate config.json based on example.config.json.
      */
-    public void initDhtServer(Node node, String exampleConfigJson, String myGlobalConfig) throws Exception {
-        int publicIpNum = Utils.getIntegerIp(node.getPublicIp());
-        log.debug("publicIpNum {}", publicIpNum);
-        Files.createDirectories(Paths.get(node.getDhtServerDir()));
+    public List<String> initDhtServer(Node node) throws Exception {
+        if (!Files.exists(Paths.get(node.getDhtServerDir()), LinkOption.NOFOLLOW_LINKS)) {
 
-        log.info("Initializing dht-server, creating key in dht-server/keyring/hex and config.json...");
-        Pair<Process, Future<String>> dhtServerInit = new DhtServerExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(MyLocalTon.getInstance().getSettings().getLogSettings().getTonLogLevel()),
-                "-t", "1",
-                "-C", exampleConfigJson,
-                "-D", node.getDhtServerDir(),
-                "-I", node.getPublicIp() + ":" + node.getDhtPort());
-        log.debug("dht-server result: {}", dhtServerInit.getRight().get());
+            node.extractBinaries();
 
-        Utils.replaceOutPortInConfigJson(node.getDhtServerDir(), node.getDhtOutPort()); // no need - FYI - config.json update?
+            int publicIpNum = Utils.getIntegerIp(node.getPublicIp());
+            log.debug("publicIpNum {}", publicIpNum);
 
-        List<String> dhtNodes = generateDhtKeys(node, publicIpNum);
+            Files.createDirectories(Paths.get(node.getDhtServerDir()));
 
-        String content = FileUtils.readFileToString(new File(myGlobalConfig), StandardCharsets.UTF_8);
-        if (content.contains("NODES")) { //very first creation
+            log.info("Initializing DHT server"); // creating key in dht-server/keyring/hex and config.json
+            Pair<Process, Future<String>> dhtServerInit = new DhtServerExecutor().execute(node,
+                    "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                    "-C", EXAMPLE_GLOBAL_CONFIG,
+                    "-D", node.getDhtServerDir(),
+                    "-I", node.getPublicIp() + ":" + node.getDhtPort());
+
+            log.debug("dht-server result: {}", dhtServerInit.getRight().get());
+
+            Utils.replaceOutPortInConfigJson(node.getDhtServerDir(), node.getDhtOutPort()); // no need - FYI - config.json update?
+
+            return generateDhtKeys(node, publicIpNum);
+        } else {
+            log.info("DHT server initialized. Skipping.");
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Adds dht nodes into "nodes:[]" structure inside my-ton-global.config.json
+     *
+     * @param dhtNodes       - list of generated dht nodes
+     * @param myGlobalConfig - global genesis config
+     * @throws IOException - exception if global config not found
+     */
+    public void addDhtNodesToGlobalConfig(List<String> dhtNodes, String myGlobalConfig) throws IOException {
+        if (dhtNodes.isEmpty()) {
+            return;
+        }
+
+        String globalConfigContent = FileUtils.readFileToString(new File(myGlobalConfig), StandardCharsets.UTF_8);
+
+        if (globalConfigContent.contains("\"nodes\": []")) { //very first creation
             log.debug("Replace NODES placeholder with dht-server entry");
-            String replaced = StringUtils.replace(content, "NODES", String.join(",", dhtNodes));
+            String replaced = StringUtils.replace(globalConfigContent, "\"nodes\": []", "\"nodes\": [" + String.join(",", dhtNodes) + "]");
             FileUtils.writeStringToFile(new File(myGlobalConfig), replaced, StandardCharsets.UTF_8);
             log.debug("dht-nodes added: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
         } else { // modify existing
             log.debug("Replace current list of dht nodes with a new one");
-            String existingNodes = Utils.sbb(content, "\"nodes\": [");
-            String backToTemlate = StringUtils.replace(content, existingNodes, "[NODES]");
-            String replacedLocalConfig = StringUtils.replace(backToTemlate, "NODES", String.join(",", dhtNodes));
+            String existingNodes = Utils.sbb(globalConfigContent, "\"nodes\": [");
+            String replacedLocalConfig = StringUtils.replace(globalConfigContent, existingNodes, StringUtils.substring(existingNodes, 0, -1) + "," + String.join(",", dhtNodes) + "]");
             FileUtils.writeStringToFile(new File(myGlobalConfig), replacedLocalConfig, StandardCharsets.UTF_8);
             log.debug("dht-nodes updated: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
         }
@@ -106,13 +126,5 @@ public class DhtServer {
         log.debug(String.join(",", dhtNodes));
 
         return dhtNodes;
-    }
-
-    public void recreateDhtServer(Node node, String myGlobalConfig) throws Exception {
-        log.info("recreate dht-server");
-        //re-create dht-server - maybe leave it?
-        FileUtils.deleteDirectory(new File(node.getDhtServerDir()));
-        initDhtServer(node, EXAMPLE_GLOBAL_CONFIG, myGlobalConfig);
-        startDhtServer(node, myGlobalConfig);
     }
 }

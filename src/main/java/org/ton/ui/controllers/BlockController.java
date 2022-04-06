@@ -30,6 +30,7 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.BlockPk;
+import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.ResultLastBlock;
@@ -112,15 +113,15 @@ public class BlockController {
     }
 
     private Block getBlockFromServerAndUpdateDb(Node node, BlockPk blockPk) throws Exception {
-        Block block;
-        ResultLastBlock lightBlock = LiteClientParser.parseBySeqno(new LiteClient().executeBySeqno(node,
+        LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
+        ResultLastBlock lightBlock = LiteClientParser.parseBySeqno(liteClient.executeBySeqno(node,
                 Long.parseLong(wc.getText()),
                 shard.getText(),
                 new BigInteger(seqno.getText())));
 
-        block = LiteClientParser.parseDumpblock(new LiteClient().executeDumpblock(node, lightBlock), MyLocalTon.getInstance().getSettings().getUiSettings().isShowShardStateInBlockDump(), MyLocalTon.getInstance().getSettings().getUiSettings().isShowBodyInMessage());
-        // DB.updateBlockDump(blockPk, block);
-        return block;
+//        Block block = LiteClientParser.parseDumpblock(liteClient.executeDumpblock(node, lightBlock), MyLocalTon.getInstance().getSettings().getUiSettings().isShowShardStateInBlockDump(), MyLocalTon.getInstance().getSettings().getUiSettings().isShowBodyInMessage());
+        // DB.updateBlockDump(blockPk, bloc
+        return LiteClientParser.parseDumpblock(liteClient.executeDumpblock(node, lightBlock), MyLocalTon.getInstance().getSettings().getUiSettings().isShowShardStateInBlockDump(), MyLocalTon.getInstance().getSettings().getUiSettings().isShowBodyInMessage());
     }
 
     private void showBlockDump(BlockEntity blockEntity, Block block) throws IOException {
