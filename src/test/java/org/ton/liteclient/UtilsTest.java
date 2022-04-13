@@ -66,7 +66,6 @@ public class UtilsTest {
         String size = Utils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + "myLocalTon");
         log.info("final size \"{}\"", size);
         assertTrue(StringUtils.isNotEmpty(size));
-
     }
 
     @Test

@@ -21,9 +21,6 @@ import org.ton.utils.Utils;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -55,18 +52,13 @@ public class App extends Application {
         primaryStage.setOnShown(windowEvent -> {
             log.debug("onShown, stage loaded");
 
-            if (!Files.exists(Paths.get(MyLocalTon.getInstance().getSettings().getGenesisNode().getTonDbDir() + "state"), LinkOption.NOFOLLOW_LINKS)) {
-                log.info("Initializing genesis network");
+            if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 0) {
                 Platform.runLater(() -> mainController.showWarningMsg("Initializing TON blockchain very first time. It can take up to 2 minutes, please wait.", 60 * 5L));
+            } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
+                Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L));
             } else {
-                if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
-                    Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L));
-                } else {
-                    Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L));
-                }
-
+                Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L));
             }
-
         });
         primaryStage.show();
     }
