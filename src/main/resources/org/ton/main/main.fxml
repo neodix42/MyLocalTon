@@ -1103,7 +1103,7 @@
                         <Tab text="Account &amp; Keys">
                             <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                                 <padding>
-                                    <Insets bottom="25.0" left="25.0" right="25.0" top="50.0"/>
+                                    <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                                 </padding>
                                 <columnConstraints>
                                     <ColumnConstraints/>
@@ -1111,6 +1111,8 @@
                                     <ColumnConstraints/>
                                 </columnConstraints>
                                 <rowConstraints>
+                                    <RowConstraints/>
+                                    <RowConstraints/>
                                     <RowConstraints/>
                                     <RowConstraints/>
                                     <RowConstraints/>
@@ -1129,6 +1131,9 @@
 
                                 <Label prefHeight="35" text="Wallet type" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
                                 <JFXComboBox fx:id="walletVersion" minWidth="100.0" promptText="Wallet V1" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                                       GridPane.columnSpan="3" GridPane.rowIndex="3"/>
+
                             </GridPane>
                         </Tab>
                         <Tab text="Validators">
@@ -1728,8 +1733,10 @@
                                 <JFXCheckBox fx:id="shardStateCheckbox" checkedColor="#0088CC" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                                 <Label text="Show body in messages" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                                 <JFXCheckBox fx:id="showMsgBodyCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                                <Label fx:id="enableBlockchainExplorerLabel" text="Enable native blockchain-explorer" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                                <JFXCheckBox fx:id="enableBlockchainExplorer" checkedColor="#0088CC" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                <Label fx:id="enableBlockchainExplorerLabel" text="Enable native blockchain-explorer" GridPane.columnIndex="0"
+                                       GridPane.rowIndex="5"/>
+                                <JFXCheckBox fx:id="enableBlockchainExplorer" checkedColor="#0088CC" selected="true" onMouseClicked="#BlockChainExplorerCheckBoxClick" GridPane.columnIndex="1"
+                                             GridPane.rowIndex="5"/>
                             </GridPane>
                         </Tab>
                         <Tab text="Blockchain">
@@ -1817,10 +1824,9 @@
 
 
                                         <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
-                                               GridPane.columnSpan="3" GridPane.rowIndex="16"/>
-                                        <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="4" GridPane.rowIndex="16">
-                                            <JFXButton alignment="CENTER" onAction="#resetAction" prefHeight="31.0" prefWidth="100.0" text="Reset" textAlignment="CENTER"/>
-                                        </HBox>
+                                               GridPane.columnSpan="3" GridPane.rowIndex="11"/>
+                                        <JFXButton alignment="CENTER" onAction="#resetAction" prefHeight="31.0" prefWidth="170.0" text="Reset TON Blockchain" textAlignment="CENTER"
+                                                   GridPane.columnSpan="2" GridPane.rowIndex="18"/>
                                     </GridPane>
                                 </center>
                             </BorderPane>

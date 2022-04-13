@@ -99,7 +99,7 @@ public interface Node {
                 Thread.sleep(1000);
                 Runtime.getRuntime().exec("WMIC PROCESS WHERE \"COMMANDLINE LIKE '%" + nodeName + "%lite-client%'\" CALL TERMINATE");
 
-                Runtime.getRuntime().exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + nodePid);
+                Runtime.getRuntime().exec("myLocalTon/utils/SendSignalCtrlC64.exe " + nodePid);
                 Thread.sleep(2000);
                 System.out.println("validator-engine with pid " + nodePid + " killed " + JProcesses.killProcess(nodePid).isSuccess());
                 Thread.sleep(2000);
@@ -132,7 +132,7 @@ public interface Node {
 
         try {
             if (isWindows()) {
-                Runtime.getRuntime().exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + nodePid);
+                Runtime.getRuntime().exec("myLocalTon/utils/SendSignalCtrlC64.exe " + nodePid);
                 Thread.sleep(1000);
                 System.out.println("validator-engine with pid " + nodePid + " killed " + JProcesses.killProcess(nodePid).isSuccess());
                 Thread.sleep(1000);

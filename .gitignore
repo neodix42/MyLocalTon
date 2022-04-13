@@ -4,6 +4,7 @@ testDB/
 **/resources/**/*.zip
 .idea/
 !/src/main/resources/org/ton/binaries/patches/readme.txt
+/src/main/resources/org/ton/binaries/windows/
 *.iml
 
 # User-specific stuff

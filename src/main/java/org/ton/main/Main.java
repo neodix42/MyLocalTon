@@ -34,6 +34,11 @@ public class Main {
 
             Thread.currentThread().setName("MyLocalTon - main");
 
+            Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+                log.debug("UI Uncaught Exception in thread '{}': {}", t.getName(), e.getMessage());
+                //System.exit(1);
+            });
+
             log.info("Starting application at path {}", Utils.getMyPath());
 
             App.main(args);

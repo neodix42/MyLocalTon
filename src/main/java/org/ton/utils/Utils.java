@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -330,25 +331,17 @@ public class Utils {
 
                 Runtime rt = Runtime.getRuntime();
                 if (isWindows()) {
+                    rt.exec("taskkill /F /IM " + "blockchain-explorer.exe");
                     rt.exec("taskkill /F /IM " + "validator-engine-console.exe");
                     rt.exec("taskkill /F /IM " + "lite-client.exe");
                     rt.exec("taskkill /F /IM " + "dht-server.exe");
-                    /*
-                    if (nonNull(MyLocalTon.getInstance().getGenesisValidatorProcess())) {
-                        log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
-                        rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
-                        Thread.sleep(4000);
-                        //double knockout
-                        log.debug("SendSignalCtrlC64.exe {}", MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
-                        rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + MyLocalTon.getInstance().getGenesisValidatorProcess().pid());
-                    }
-                    */
+
                     MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
                     for (String nodeName : settings.getActiveNodes()) {
                         Node node = settings.getNodeByName(nodeName);
                         if (nonNull(node.getNodeProcess())) {
                             log.info("killing {} with pid {}", node.getNodeName(), node.getNodeProcess().pid());
-                            rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + node.getNodeProcess().pid());
+                            rt.exec("myLocalTon/utils/SendSignalCtrlC64.exe " + node.getNodeProcess().pid());
                             Thread.sleep(200);
                         }
                     }
@@ -357,7 +350,7 @@ public class Utils {
                         Node node = settings.getNodeByName(nodeName);
                         if (nonNull(node.getNodeProcess())) {
                             log.info("killing {} with pid {}", node.getNodeName(), node.getNodeProcess().pid());
-                            rt.exec("myLocalTon/genesis/bin/SendSignalCtrlC64.exe " + node.getNodeProcess().pid());
+                            rt.exec("myLocalTon/utils/SendSignalCtrlC64.exe " + node.getNodeProcess().pid());
                             Thread.sleep(200);
                         }
                     }
@@ -379,10 +372,12 @@ public class Utils {
                         }
                     } while (resultInput.contains("validator-engine"));
 
+                    rt.exec("taskkill /F /IM " + "blockchain-explorer.exe");
                     rt.exec("taskkill /F /IM " + "validator-engine-console.exe");
                     rt.exec("taskkill /F /IM " + "lite-client.exe");
                     rt.exec("taskkill /F /IM " + "dht-server.exe");
                 } else {
+                    rt.exec("killall -9 " + "blockchain-explorer");
                     rt.exec("killall -9 " + "validator-engine-console");
                     rt.exec("killall -9 " + "lite-client");
                     rt.exec("killall -9 " + "dht-server");
@@ -533,9 +528,11 @@ public class Utils {
         do {
             Thread.sleep(5000);
             lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
-            log.info("{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
-            node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
-        } while (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0 && lastBlock.getSyncedSecondsAgo() > 10);
+            if (nonNull(lastBlock)) {
+                log.info("{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
+                node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
+            }
+        } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0 && lastBlock.getSyncedSecondsAgo() > 10));
     }
 
     public static long getCurrentTimeSeconds() {
@@ -626,7 +623,7 @@ public class Utils {
                 log.info("{} controlling smart-contract (wallet) is not present yet, cancel participation", node.getNodeName());
                 return;
             } else {
-                log.info("{} no need to create controlling smart-contract (wallet)", node.getNodeName());
+                log.debug("{} no need to create controlling smart-contract (wallet)", node.getNodeName());
             }
 
             node.getElectionsCounter().put(electionId, electionId);
@@ -646,12 +643,12 @@ public class Utils {
             SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                     .executionNode(node)
                     .fromWallet(node.getWalletAddress())
-                    .fromWalletVersion(WalletVersion.V3)
+                    .fromWalletVersion(settings.getWalletSettings().getWalletVersion())
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
                     .amount(node.getDefaultValidatorStake())
-                    .comment("validator-request-send-stake") // TODO check if comment is visible
                     .bocLocation(node.getTonBinDir() + "validator-query.boc")
+                    .timeout(600L)
                     .build();
 
             boolean sentOK = new Wallet().sendTonCoins(sendToncoinsParam);
@@ -928,8 +925,52 @@ public class Utils {
             c.accountsvboxid.getItems().remove(found);
         }
 
-        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".pk"));
-        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".addr"));
-        FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + "-query.boc"));
+        if (nonNull(walletEntity.getWallet())) {
+            FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".pk"));
+            FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + ".addr"));
+            FileUtils.deleteQuietly(new File(walletEntity.getWallet().getFilenameBaseLocation() + "-query.boc"));
+        }
+    }
+
+    public static BigDecimal getDirectorySizeInMegabytes(String path) {
+        BigInteger size = FileUtils.sizeOfDirectoryAsBigInteger(new File(path));
+        return new BigDecimal(size.divide(BigInteger.valueOf(1024L)).divide(BigInteger.valueOf(1024L)));
+    }
+
+    public static String getDirectorySizeUsingDu(String path) {
+        String resultInput = "0MB";
+        if (isWindows()) {
+            try {
+                String cmd = System.getProperty("user.dir") + File.separator + "myLocalTon" + File.separator + "utils" + File.separator + "du.exe -hs " + path;
+                log.debug(cmd);
+                Process p = Runtime.getRuntime().exec(cmd);
+                InputStream procOutput = p.getInputStream();
+
+                resultInput = IOUtils.toString(procOutput, Charset.defaultCharset());
+                log.debug(resultInput);
+                String[] s = resultInput.split("\t");
+
+                return s[0];
+            } catch (Exception e) {
+                log.error("cannot get folder size on windows {}", path);
+                return resultInput;
+            }
+        } else {
+            try {
+                String cmd = "du -hs " + path;
+                log.debug(cmd);
+                Process p = Runtime.getRuntime().exec(cmd);
+                InputStream procOutput = p.getInputStream();
+
+                resultInput = IOUtils.toString(procOutput, Charset.defaultCharset());
+                log.debug(resultInput);
+                String[] s = resultInput.split("\t");
+
+                return s[0];
+            } catch (Exception e) {
+                log.error("cannot get folder size on linux {}", path);
+                return resultInput;
+            }
+        }
     }
 }

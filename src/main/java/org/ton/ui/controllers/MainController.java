@@ -1820,18 +1820,15 @@ public class MainController implements Initializable {
         enableBlockchainExplorerLabel.setVisible(false);
         mainMenuTabs.getTabs().remove(explorerTab);
 
-        if (isLinux() || isMac()) {
+        enableBlockchainExplorer.setVisible(true);
+        enableBlockchainExplorerLabel.setVisible(true);
 
-            enableBlockchainExplorer.setVisible(true);
-            enableBlockchainExplorerLabel.setVisible(true);
-
-            if (enableBlockchainExplorer.isSelected()) {
-                mainMenuTabs.getTabs().remove(searchTab);
-                mainMenuTabs.getTabs().remove(explorerTab);
-                mainMenuTabs.getTabs().add(explorerTab);
-            } else {
-                mainMenuTabs.getTabs().remove(explorerTab);
-            }
+        if (enableBlockchainExplorer.isSelected()) {
+            mainMenuTabs.getTabs().remove(searchTab);
+            mainMenuTabs.getTabs().remove(explorerTab);
+            mainMenuTabs.getTabs().add(explorerTab);
+        } else {
+            mainMenuTabs.getTabs().remove(explorerTab);
         }
 
         if (isLinux() || isMac() || isWindows()) {
@@ -1876,14 +1873,12 @@ public class MainController implements Initializable {
 
     public void startWeb() {
 
-        if (isLinux() || isMac()) {
-            if (enableBlockchainExplorer.isSelected()) {
-                log.info("Starting native blockchain-explorer on port {}", settings.getUiSettings().getBlockchainExplorerPort());
-                BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-                blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getBlockchainExplorerPort());
-                WebEngine webEngine = webView.getEngine();
-                webEngine.load("http://127.0.0.1:" + settings.getUiSettings().getBlockchainExplorerPort() + "/last");
-            }
+        if (enableBlockchainExplorer.isSelected()) {
+            log.info("Starting native blockchain-explorer on port {}", settings.getUiSettings().getBlockchainExplorerPort());
+            BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
+            blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getBlockchainExplorerPort());
+            WebEngine webEngine = webView.getEngine();
+            webEngine.load("http://127.0.0.1:" + settings.getUiSettings().getBlockchainExplorerPort() + "/last");
         }
     }
 
@@ -2139,10 +2134,14 @@ public class MainController implements Initializable {
 
                 String stopsWokring = "";
                 MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
-                int cutoff = (int) Math.ceil(settings.getActiveNodes().size() * 66 / 100.0);
-                log.info("total active nodes {} vs minimum required {}", settings.getActiveNodes().size(), cutoff);
-                if ((settings.getActiveNodes().size() - 1 < cutoff) || (settings.getActiveNodes().size() == 3 && cutoff == 2)) {
-                    stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive, i.e. stops working, since a two-thirds consensus of validators will not be reached.";
+                if (isWindows()) {
+                    stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive. In comparison with Linux and MacOS versions of MyLocalTon, where you can remove validators until you maintain a two-thirds consensus, on Windows the whole blockchain stops working if you remove one validator.";
+                } else {
+                    int cutoff = (int) Math.ceil(settings.getActiveNodes().size() * 66 / 100.0);
+                    log.info("total active nodes {} vs minimum required {}", settings.getActiveNodes().size(), cutoff);
+                    if ((settings.getActiveNodes().size() - 1 < cutoff) || (settings.getActiveNodes().size() == 3 && cutoff == 2)) {
+                        stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive, i.e. stops working, since a two-thirds consensus of validators will not be reached.";
+                    }
                 }
 
                 parent.lookup("#inputFields").setVisible(false);
@@ -2151,7 +2150,7 @@ public class MainController implements Initializable {
                 ((Label) parent.lookup("#action")).setText("delnode"); // no action, simple dialog box
                 ((Label) parent.lookup("#header")).setText("Confirmation");
                 ((Label) parent.lookup("#address")).setText(node.getNodeName()); // just reuse address field
-                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete selected validator? All data and funds will be lost and obviously validator will be removed from elections. Also check if this validator has collected all validation rewards." + stopsWokring);
+                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete the selected validator? All data and funds will be lost and obviously validator will be removed from elections. Don't forget to collect all validation rewards." + stopsWokring);
                 parent.lookup("#okBtn").setDisable(false);
 
                 JFXDialogLayout content = new JFXDialogLayout();
@@ -3654,5 +3653,11 @@ public class MainController implements Initializable {
         log.debug(addr + " copied");
         App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
+    }
+
+    public void BlockChainExplorerCheckBoxClick(MouseEvent mouseEvent) {
+        if (enableBlockchainExplorer.isSelected()) {
+            App.mainController.showInfoMsg("Native blockchain-explorer will be available after restart", 5);
+        }
     }
 }

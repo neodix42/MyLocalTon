@@ -490,16 +490,13 @@ public class MyLocalTon {
             Thread.currentThread().setName("MyLocalTon - Blockchain Size Monitor");
 
             MainController c = fxmlLoader.getController();
-
+            String size = Utils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + MY_LOCAL_TON);
+            log.debug("size {}", size);
             Platform.runLater(() -> {
-                long size = FileUtils.sizeOfDirectory(new File(CURRENT_DIR + File.separator + MY_LOCAL_TON));
-                double sizePrecise = size / 1024 / 1024;
-                double newSizePrecise = (sizePrecise >= 1000) ? (sizePrecise / 1024) : sizePrecise;
-                String unitOfMeasurement = (sizePrecise >= 1000) ? "GB" : "MB";
-                log.debug("DB size {}", String.format("%.1f%s", newSizePrecise, unitOfMeasurement));
-                c.dbSizeId.setText(String.format("%.1f%s", newSizePrecise, unitOfMeasurement));
+                c.dbSizeId.setText(size);
+
             });
-        }, 0L, 15L, TimeUnit.SECONDS);
+        }, 0L, 60L, TimeUnit.SECONDS);
     }
 
     public void runValidationMonitor() {
@@ -534,36 +531,15 @@ public class MyLocalTon {
 
                         Main.inElections.set(true);
 
-                        for (String nodeName : settings.getActiveNodes()) {
-                            Node node = settings.getNodeByName(nodeName);
-
-                            if (node.getStatus().equals("ready")) {
-                                log.info("participates in elections {}", nodeName);
-                                ExecutorService nodeParticipationExecutorService = Executors.newSingleThreadExecutor();
-                                nodeParticipationExecutorService.execute(() -> {
-                                    Thread.currentThread().setName("MyLocalTon - Participation in elections by " + nodeName);
-                                    Utils.participate(node, v);
-                                });
-                                nodeParticipationExecutorService.shutdown();
-                            }
-                        }
+                        participateAll(v);
 
                         Main.inElections.set(false);
 
                     } else {
-                        log.info("ELECTIONS CLOSED, WAITING...");
+                        log.info("ELECTIONS CLOSED, REAPING...");
+                        reapAll();
                     }
 
-                    //update reaped values
-                    for (String nodeName : settings.getActiveNodes()) {
-                        Node node = settings.getNodeByName(nodeName);
-
-                        reap(settings.getNodeByName(nodeName));
-
-                        Platform.runLater(() -> {
-                            updateReapedValuesTab(node);
-                        });
-                    }
                 } catch (Exception e) {
                     log.error("Error getting blockchain configuration! Error {}", e.getMessage());
                     log.error(ExceptionUtils.getStackTrace(e));
@@ -583,6 +559,42 @@ public class MyLocalTon {
 
             }
         }, 0L, VALIDATION_GUI_REFRESH_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void participateAll(ValidationParam v) {
+        for (String nodeName : settings.getActiveNodes()) {
+            Node node = settings.getNodeByName(nodeName);
+
+            if (node.getStatus().equals("ready")) {
+                log.info("participates in elections {}", nodeName);
+                ExecutorService nodeParticipationExecutorService = Executors.newSingleThreadExecutor();
+                nodeParticipationExecutorService.execute(() -> {
+                    Thread.currentThread().setName("MyLocalTon - Participation in elections by " + nodeName);
+                    Utils.participate(node, v);
+                });
+                nodeParticipationExecutorService.shutdown();
+            }
+        }
+    }
+
+    private void reapAll() {
+        for (String nodeName : settings.getActiveNodes()) {
+            Node node = settings.getNodeByName(nodeName);
+
+            if (node.getStatus().equals("ready")) {
+
+                ExecutorService nodeReapRewardsExecutorService = Executors.newSingleThreadExecutor();
+                nodeReapRewardsExecutorService.execute(() -> {
+                    Thread.currentThread().setName("MyLocalTon - Reaping rewards by " + nodeName);
+                    reap(settings.getNodeByName(nodeName));
+
+                    Platform.runLater(() -> {
+                        updateReapedValuesTab(node);
+                    });
+                });
+                nodeReapRewardsExecutorService.shutdown();
+            }
+        }
     }
 
     public void runBlockchainMonitor(Node node) {
@@ -965,43 +977,48 @@ public class MyLocalTon {
     }
 
     private void showButtonWithMessage(javafx.scene.Node txRow, TxEntity txEntity) {
+
+        String msg = null;
         if (txEntity.getTypeTx().contains("Message") && !txEntity.getTypeMsg().contains("External In")) {
             if (!(txEntity.getTx().getInMsg().getBody().getCells().isEmpty()) && (txEntity.getTx().getInMsg().getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0) &&
                     !txEntity.getTx().getInMsg().getBody().getCells().get(0).equals("FFFFFFFF")) {
-                txRow.lookup("#txMsgBtn").setVisible(true);
-                txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
 
-                    String msg = txEntity.getTx().getInMsg().getBody().getCells().stream().map(c -> {
-                        try {
-                            return new String(Hex.decodeHex(c.toCharArray()));
-                        } catch (DecoderException e) {
-                            log.error("Cannot convert hex msg to string");
-                            return "      Cannot convert hex msg to string";
-                        }
-                    }).collect(Collectors.joining());
-
-                    log.info("in msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg);
-                    mainController.showMessage(msg.substring(5));
-                });
+                msg = txEntity.getTx().getInMsg().getBody().getCells().stream().map(c -> {
+                    try {
+                        return new String(Hex.decodeHex(c.toCharArray()));
+                    } catch (DecoderException e) {
+                        log.debug("Cannot convert hex msg to string");
+                        return "      Cannot convert hex msg to string";
+                    }
+                }).collect(Collectors.joining());
 
             } else if ((!txEntity.getTx().getOutMsgs().isEmpty() && !txEntity.getTx().getOutMsgs().get(0).getBody().getCells().isEmpty())) {
                 if (txEntity.getTx().getOutMsgs().get(0).getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0 && !txEntity.getTx().getOutMsgs().get(0).getBody().getCells().get(0).equals("FFFFFFFF")) {
 
-                    txRow.lookup("#txMsgBtn").setVisible(true);
-                    txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
-                        String msg = txEntity.getTx().getOutMsgs().get(0).getBody().getCells().stream().map(c -> {
-                            try {
-                                return new String(Hex.decodeHex(c.toCharArray()));
-                            } catch (DecoderException e) {
-                                log.error("Cannot convert hex msg to string");
-                                return "     Cannot convert hex msg to string";
-                            }
-                        }).collect(Collectors.joining());
-
-                        log.info("out msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg);
-                        mainController.showMessage(msg.substring(5));
-                    });
+                    msg = txEntity.getTx().getOutMsgs().get(0).getBody().getCells().stream().map(c -> {
+                        try {
+                            return new String(Hex.decodeHex(c.toCharArray()));
+                        } catch (DecoderException e) {
+                            log.debug("Cannot convert hex msg to string");
+                            return "     Cannot convert hex msg to string";
+                        }
+                    }).collect(Collectors.joining());
                 }
+            }
+        }
+        if (StringUtils.isNotEmpty(msg) && msg.length() > 4) {
+            msg = msg.substring(4);
+            //byte[] utf8String = msg.getBytes(StandardCharsets.UTF_8);
+            //log.info("msg {}", new String(utf8String, StandardCharsets.UTF_8));
+
+            if (StringUtils.isAlphanumericSpace(msg) || StringUtils.isAsciiPrintable(msg)) {
+                txRow.lookup("#txMsgBtn").setVisible(true);
+                txRow.lookup("#txMsgBtn").setUserData(msg);
+
+                txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
+                    log.info("in msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), txRow.lookup("#txMsgBtn").getUserData());
+                    mainController.showMessage(String.valueOf(txRow.lookup("#txMsgBtn").getUserData()));
+                });
             }
         }
     }
@@ -1521,7 +1538,7 @@ public class MyLocalTon {
         return Pair.of(null, -1L);
     }
 
-    public void reap(Node node) throws Exception {
+    public void reap(Node node) {
         try {
 
             if (isNull(node.getWalletAddress())) {
@@ -1541,11 +1558,10 @@ public class MyLocalTon {
                 SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                         .executionNode(node)
                         .fromWallet(node.getWalletAddress())
-                        .fromWalletVersion(WalletVersion.V3)
+                        .fromWalletVersion(settings.getWalletSettings().getWalletVersion())
                         .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                         .destAddr(settings.getElectorSmcAddrHex())
                         .amount(BigDecimal.valueOf(1L))
-                        .comment("stake-recover-request") // TODO check if comment is visible
                         .bocLocation(node.getTonBinDir() + "recover-query.boc")
                         .build();
 
@@ -1642,7 +1658,7 @@ public class MyLocalTon {
     }
 
     public void createValidatorPubKeyAndAdnlAddress(Node node, long electionId) throws Exception {
-        log.info("{} creating validator PubKey and ADNL address", node.getNodeName());
+        log.debug("{} creating validator PubKey and ADNL address", node.getNodeName());
         long electionEnd = electionId + 600; // was YEAR
 
         createSigningKeyForValidation(node, electionId, electionEnd);
@@ -1659,7 +1675,7 @@ public class MyLocalTon {
         String signingKey = validatorEngineConsole.generateNewNodeKey(node);
         String signingPubKey = validatorEngineConsole.exportPubKey(node, signingKey);
 
-        log.info("{} signingKey {}, new signingPubKey {} for current elections", node.getNodeName(), signingKey, signingPubKey);
+        log.debug("{} signingKey {}, new signingPubKey {} for current elections", node.getNodeName(), signingKey, signingPubKey);
 
         node.setValidationSigningKey(signingKey);
         node.setValidationSigningPubKey(signingPubKey);
@@ -1670,7 +1686,7 @@ public class MyLocalTon {
     void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) throws ExecutionException, InterruptedException {
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
         String adnlKey = validatorEngineConsole.generateNewNodeKey(node);
-        log.info("{} new adnlKey {} for current elections", node.getNodeName(), adnlKey);
+        log.debug("{} new adnlKey {} for current elections", node.getNodeName(), adnlKey);
 
         node.setPrevValidationAndlKey(node.getValidationAndlKey());
         node.setValidationAndlKey(adnlKey); // shown on validator tab as ADNL address        

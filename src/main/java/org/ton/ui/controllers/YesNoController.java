@@ -123,7 +123,7 @@ public class YesNoController implements Initializable {
 
     private void doDelete() throws InterruptedException {
         String nodeName = address.getText();
-        log.info("do delete {}", nodeName);
+        log.debug("do delete {}", nodeName);
 
         Node node = MyLocalTon.getInstance().getSettings().getNodeByName(nodeName);
         MyLocalTon.getInstance().getSettings().getActiveNodes().remove(nodeName);
