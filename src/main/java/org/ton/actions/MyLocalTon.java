@@ -246,8 +246,6 @@ public class MyLocalTon {
 
         if (!Files.exists(Paths.get(node.getTonDbDir() + "state"), LinkOption.NOFOLLOW_LINKS)) {
             log.info("Initializing genesis network");
-            Thread.sleep(1000);
-            Platform.runLater(() -> mainController.showWarningMsg("Initializing TON blockchain very first time. It can take up to 2 minutes, please wait.", 60 * 5L));
 
             ValidatorEngine validatorEngine = new ValidatorEngine();
 

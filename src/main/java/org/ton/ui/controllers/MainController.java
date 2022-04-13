@@ -2230,7 +2230,6 @@ public class MainController implements Initializable {
     }
 
     public void createNewAccountBtn() throws IOException {
-        log.info("create account btn");
 
         Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
         ((Label) parent.lookup("#action")).setText("create");

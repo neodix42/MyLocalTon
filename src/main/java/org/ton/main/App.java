@@ -1,6 +1,7 @@
 package org.ton.main;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
@@ -20,6 +21,9 @@ import org.ton.utils.Utils;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -48,7 +52,22 @@ public class App extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
-        primaryStage.setOnShown(windowEvent -> log.debug("onShown, stage loaded"));
+        primaryStage.setOnShown(windowEvent -> {
+            log.debug("onShown, stage loaded");
+
+            if (!Files.exists(Paths.get(MyLocalTon.getInstance().getSettings().getGenesisNode().getTonDbDir() + "state"), LinkOption.NOFOLLOW_LINKS)) {
+                log.info("Initializing genesis network");
+                Platform.runLater(() -> mainController.showWarningMsg("Initializing TON blockchain very first time. It can take up to 2 minutes, please wait.", 60 * 5L));
+            } else {
+                if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
+                    Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L));
+                } else {
+                    Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L));
+                }
+
+            }
+
+        });
         primaryStage.show();
     }
 
@@ -116,37 +135,17 @@ public class App extends Application {
 //        dhtServer.addDhtNodesToGlobalConfig(dhtNodes2, genesisNode.getNodeGlobalConfigLocation());
 //        dhtServer.startDhtServer(settings.getNode2(), genesisNode.getNodeGlobalConfigLocation());
 
-        Thread.sleep(3000);
-
-        if (settings.getActiveNodes().size() == 1) {
-            mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L);
-        } else {
-            mainController.showWarningMsg("Starting TON blockchain... Starting " + settings.getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L);
-        }
-
         //create hardfork
         //ResultLastBlock newBlock = myLocalTon.generateNewBlock(genesisNode, forkFromBlock, "");
         //myLocalTon.addHardForkEntryIntoMyGlobalConfig(genesisNode, genesisNode.getNodeGlobalConfigLocation(), newBlock);
 
-        //before starting genesis node - let's synchronize all other nodes with it, by copying db in offline mode
-        //Utils.syncWithGenesis();
-
         new ValidatorEngine().startValidator(genesisNode, genesisNode.getNodeGlobalConfigLocation());
-
-//        if (isWindows()) {
-//            Utils.waitForBlockchainReady(genesisNode);
-//            Utils.waitForNodeSynchronized(genesisNode);
-//        }
 
         // start other validators
         for (String nodeName : settings.getActiveNodes()) {
             if (!nodeName.contains("genesis")) {
                 long pid = new ValidatorEngine().startValidator(settings.getNodeByName(nodeName), genesisNode.getNodeGlobalConfigLocation()).pid();
                 log.info("started validator {} with pid {}", nodeName, pid);
-//                if (isWindows()) {
-//                    Utils.waitForBlockchainReady(settings.getNodeByName(nodeName));
-//                    Utils.waitForNodeSynchronized(settings.getNodeByName(nodeName));
-//                }
             }
         }
 
@@ -159,8 +158,9 @@ public class App extends Application {
 
         myLocalTon.runBlockchainSizeMonitor();
 
-        mainController.showSuccessMsg("TON blockchain is ready!", 2);
-        Thread.sleep(2000);
+        mainController.showSuccessMsg("TON blockchain is ready!", 3);
+
+        Thread.sleep(1000);
 
         myLocalTon.createPreInstalledWallets(genesisNode);
 

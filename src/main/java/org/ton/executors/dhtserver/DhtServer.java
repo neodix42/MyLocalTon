@@ -30,7 +30,7 @@ public class DhtServer {
     public static final String EXAMPLE_GLOBAL_CONFIG = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + TEMPLATES + File.separator + "example.config.json";
 
     public void startDhtServer(Node node, String globalConfigFile) {
-        log.info("{} dht-server started at {}", node.getNodeName(), node.getPublicIp() + ":" + node.getDhtPort());
+
         Pair<Process, Future<String>> dhtServer = new DhtServerExecutor().execute(node,
                 "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
                 "-t", "2",
@@ -39,6 +39,8 @@ public class DhtServer {
                 "-D", node.getDhtServerDir(),
                 "-I", node.getPublicIp() + ":" + node.getDhtPort());
         node.setDhtServerProcess(dhtServer.getLeft());
+
+        log.info("{} dht-server started at {}", node.getNodeName(), node.getPublicIp() + ":" + node.getDhtPort());
     }
 
     /**
