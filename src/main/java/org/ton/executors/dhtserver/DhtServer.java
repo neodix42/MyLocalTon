@@ -59,11 +59,20 @@ public class DhtServer {
             log.info("Initializing DHT server"); // creating key in dht-server/keyring/hex and config.json
             Pair<Process, Future<String>> dhtServerInit = new DhtServerExecutor().execute(node,
                     "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                    "-t", "1",
                     "-C", EXAMPLE_GLOBAL_CONFIG,
+                    "-l", node.getDhtServerDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
                     "-D", node.getDhtServerDir(),
                     "-I", node.getPublicIp() + ":" + node.getDhtPort());
 
-            log.debug("dht-server result: {}", dhtServerInit.getRight().get());
+            log.debug("dht-server result: {}", dhtServerInit.getRight().get()); // wait for process to exit
+
+            Thread.sleep(100);
+
+            if (!Files.exists(Paths.get(node.getDhtServerDir() + "config.json"), LinkOption.NOFOLLOW_LINKS)) {
+                log.error("Initialization of DHT server failed. File {} was not created.", node.getDhtServerDir() + "config.json");
+                System.exit(11);
+            }
 
             Utils.replaceOutPortInConfigJson(node.getDhtServerDir(), node.getDhtOutPort()); // no need - FYI - config.json update?
 

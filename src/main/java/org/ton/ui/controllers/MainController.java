@@ -2140,7 +2140,7 @@ public class MainController implements Initializable {
                     int cutoff = (int) Math.ceil(settings.getActiveNodes().size() * 66 / 100.0);
                     log.info("total active nodes {} vs minimum required {}", settings.getActiveNodes().size(), cutoff);
                     if ((settings.getActiveNodes().size() - 1 < cutoff) || (settings.getActiveNodes().size() == 3 && cutoff == 2)) {
-                        stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive, i.e. stops working, since a two-thirds consensus of validators will not be reached.";
+                        stopsWokring = "\n\nIf this node is an active validator your main workchain becomes inactive, i.e. stops working, since a two-thirds consensus of validators will not be reached.";
                     }
                 }
 
@@ -3519,10 +3519,12 @@ public class MainController implements Initializable {
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
 
-                    //delete unfinished node creation
-                    FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
+                    do {
+                        //delete unfinished or failed node creation
+                        FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
 
-                    MyLocalTon.getInstance().createFullnode(node, true, true);
+                        MyLocalTon.getInstance().createFullnode(node, true, true);
+                    } while (Utils.waitForNodeExited(node)); //up to 5 minutes
 
                     Tab newTab = Utils.getNewNodeTab();
                     Platform.runLater(() -> {
@@ -3544,7 +3546,7 @@ public class MainController implements Initializable {
                     node.setWalletAddress(walletEntity.getWallet());
 
                     mainController.addValidatorBtn.setDisable(false);
-                    App.mainController.showInfoMsg("Main wallet for validator " + node.getNodeName() + " has been created successfully", 5);
+                    App.mainController.showInfoMsg("Main wallet for validator " + node.getNodeName() + " has been successfully created.", 5);
                 } else {
                     showDialogMessage("The limit has been reached", "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");
                 }

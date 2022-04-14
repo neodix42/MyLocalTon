@@ -196,6 +196,7 @@ public class MyLocalTon {
 
     /**
      * Checks whether all processes and threads up and running
+     * TODO replace with onExit callback
      */
     public void runValidatorsMonitor() {
         log.info("Starting validators monitor");
@@ -217,7 +218,6 @@ public class MyLocalTon {
                         e.printStackTrace();
                     }
                 }
-                //log.info("{} exit value {}", node.getNodeName(), node.getNodeProcess().exitValue());
             }
         }, 0L, VALIDATION_GUI_REFRESH_SECONDS, TimeUnit.SECONDS);
     }

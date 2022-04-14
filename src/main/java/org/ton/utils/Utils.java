@@ -62,6 +62,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -320,8 +321,13 @@ public class Utils {
 
             if (Main.appActive.get()) {
                 log.debug("Do shutdown");
+
                 Main.appActive.set(false);
-                App.dbPool.closeDbs();
+
+                if (nonNull(App.dbPool)) {
+                    App.dbPool.closeDbs();
+                }
+                
                 Main.fileLock.release();
                 Main.randomAccessFile.close();
                 FileUtils.deleteQuietly(Main.file);
@@ -521,6 +527,14 @@ public class Utils {
             lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
             log.error("{} is not ready", node.getNodeName());
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
+    }
+
+    public static boolean waitForNodeExited(Node node) throws Exception {
+        if (isWindows()) {
+            log.info("check exit value {}", node.getNodeName());
+            return node.getNodeProcess().waitFor(90, TimeUnit.SECONDS);
+        }
+        return false;
     }
 
     public static void waitForNodeSynchronized(Node node) throws Exception {

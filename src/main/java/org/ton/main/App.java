@@ -82,12 +82,14 @@ public class App extends Application {
     public static void main(String[] args) throws Throwable {
 
         if (!Arrays.asList(args).isEmpty()) {
-            log.info("R E S E T T I N G: {}", Arrays.asList(args));
-            Thread.sleep(1000);
-            FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "MyLocalTonDB"));
-            FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "genesis"));
-            FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "templates"));
-            FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "myLocalTon.log"));
+            if (args[0].equalsIgnoreCase("restart")) {
+                log.info("R E S E T T I N G: {}", Arrays.asList(args));
+                Thread.sleep(1000);
+                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "MyLocalTonDB"));
+                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "genesis"));
+                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "templates"));
+                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "myLocalTon.log"));
+            }
         }
 
         GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, Objects.requireNonNull(App.class.getClassLoader().getResourceAsStream("org/ton/fonts/RobotoMono-Medium.ttf"))));
@@ -99,6 +101,14 @@ public class App extends Application {
         log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
 
         Utils.setMyLocalTonLogLevel(settings.getGenesisNode().getMyLocalTonLogLevel());
+
+        // override MyLocalTon log level
+        if (!Arrays.asList(args).isEmpty()) {
+            if (args[0].equalsIgnoreCase("debug")) {
+                Utils.setMyLocalTonLogLevel("DEBUG");
+                settings.getGenesisNode().setTonLogLevel("DEBUG");
+            }
+        }
 
         System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
         System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
