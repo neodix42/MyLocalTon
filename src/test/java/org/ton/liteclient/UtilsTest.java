@@ -3,6 +3,7 @@ package org.ton.liteclient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.ton.settings.GenesisNode;
 import org.ton.settings.Node;
 import org.ton.utils.Utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -28,6 +30,8 @@ import static org.junit.Assert.assertTrue;
 @Slf4j
 @RunWith(JUnit4.class)
 public class UtilsTest {
+
+    private static final String CURRENT_DIR = System.getProperty("user.dir");
 
     @Test
     public void parseFriendlyAddress() {
@@ -47,6 +51,21 @@ public class UtilsTest {
         assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", Utils.friendlyAddrToHex(friendlyAddress3b));
         assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", Utils.friendlyAddrToHex(friendlyAddress3c));
         assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", Utils.friendlyAddrToHex(friendlyAddress3d));
+    }
+
+    @Test
+    public void getDirectorySizeTest() {
+        BigDecimal size = Utils.getDirectorySizeInMegabytes(CURRENT_DIR + File.separator + "myLocalTon");
+        log.info("DB size in MB {}", size);
+        String unitOfMeasurement = (size.compareTo(BigDecimal.valueOf(1024L)) >= 1) ? "GB" : "MB";
+        log.info("DB size {}", String.format("%.1f%s", (size.compareTo(BigDecimal.valueOf(1000L)) >= 1) ? size.divide(BigDecimal.valueOf(1024L)) : size, unitOfMeasurement));
+    }
+
+    @Test
+    public void getDirectorySizeUsingDuTest() {
+        String size = Utils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + "myLocalTon");
+        log.info("final size \"{}\"", size);
+        assertTrue(StringUtils.isNotEmpty(size));
     }
 
     @Test

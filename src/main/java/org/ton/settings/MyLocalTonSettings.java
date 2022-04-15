@@ -50,7 +50,6 @@ public class MyLocalTonSettings implements Serializable {
         blockchainSettings = new BlockchainSettings();
 
         dbPool = new ConcurrentHashMap<>();
-        //activeNodes = new ArrayList<>();
         activeNodes = new ConcurrentLinkedQueue<>();
     }
 

@@ -30,7 +30,7 @@ public class DhtServer {
     public static final String EXAMPLE_GLOBAL_CONFIG = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + TEMPLATES + File.separator + "example.config.json";
 
     public void startDhtServer(Node node, String globalConfigFile) {
-        log.info("{} dht-server started at {}", node.getNodeName(), node.getPublicIp() + ":" + node.getDhtPort());
+
         Pair<Process, Future<String>> dhtServer = new DhtServerExecutor().execute(node,
                 "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
                 "-t", "2",
@@ -39,6 +39,8 @@ public class DhtServer {
                 "-D", node.getDhtServerDir(),
                 "-I", node.getPublicIp() + ":" + node.getDhtPort());
         node.setDhtServerProcess(dhtServer.getLeft());
+
+        log.info("{} dht-server started at {}", node.getNodeName(), node.getPublicIp() + ":" + node.getDhtPort());
     }
 
     /**
@@ -57,11 +59,20 @@ public class DhtServer {
             log.info("Initializing DHT server"); // creating key in dht-server/keyring/hex and config.json
             Pair<Process, Future<String>> dhtServerInit = new DhtServerExecutor().execute(node,
                     "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                    "-t", "1",
                     "-C", EXAMPLE_GLOBAL_CONFIG,
+                    "-l", node.getDhtServerDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
                     "-D", node.getDhtServerDir(),
                     "-I", node.getPublicIp() + ":" + node.getDhtPort());
 
-            log.debug("dht-server result: {}", dhtServerInit.getRight().get());
+            log.debug("dht-server result: {}", dhtServerInit.getRight().get()); // wait for process to exit
+
+            Thread.sleep(100);
+
+            if (!Files.exists(Paths.get(node.getDhtServerDir() + "config.json"), LinkOption.NOFOLLOW_LINKS)) {
+                log.error("Initialization of DHT server failed. File {} was not created.", node.getDhtServerDir() + "config.json");
+                System.exit(11);
+            }
 
             Utils.replaceOutPortInConfigJson(node.getDhtServerDir(), node.getDhtOutPort()); // no need - FYI - config.json update?
 

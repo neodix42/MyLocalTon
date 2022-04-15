@@ -28,6 +28,7 @@ public class Node2 implements Serializable, Node {
     Integer dhtOutPort = 3273;
     Integer dhtForkedOutPort = 3283;
     transient String status = "not ready";
+    String flag = "cloning";
 
     BigDecimal initialValidatorWalletAmount = new BigDecimal("50005");
     BigDecimal defaultValidatorStake = new BigDecimal("10001");
@@ -36,7 +37,7 @@ public class Node2 implements Serializable, Node {
     Long validatorBlockTtl = 365 * 86400L; // 1 year, blocks will be gc'd after this time (in seconds) default=7*86400, 7 days
     Long validatorArchiveTtl = 365 * 86400L; //1 year, archived blocks will be deleted after this time (in seconds) default=365*86400, 1 year
     Long validatorKeyProofTtl = 10 * 365 * 86400L; // 10 years, key blocks will be deleted after this time (in seconds) default=365*86400*10, 10 years
-    Long validatorSyncBefore = 365 * 86400L; //1 year, initial sync download all blocks for last given seconds default=3600, 1 hour
+    Long validatorSyncBefore = 300L; //5 min, initial sync download all blocks for last given seconds default=3600, 1 hour
 
     String tonLogLevel = "ERROR";
 
