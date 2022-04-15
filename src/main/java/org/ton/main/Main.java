@@ -1,6 +1,7 @@
 package org.ton.main;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.utils.Utils;
 
@@ -33,6 +34,11 @@ public class Main {
         if (lockInstance()) {
 
             Thread.currentThread().setName("MyLocalTon - main");
+
+            Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
+                log.debug("UI Uncaught Exception in thread '{}': {}", t.getName(), e.getMessage());
+                log.debug(ExceptionUtils.getStackTrace(e));
+            });
 
             log.info("Starting application at path {}", Utils.getMyPath());
 

@@ -153,7 +153,7 @@ public class MyLocalTon {
         Platform.runLater(() -> mainController.startWeb());
     }
 
-    public void runNodesMonitor() {
+    public void runNodesStatusMonitor() {
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             Thread.currentThread().setName("MyLocalTon - Nodes Monitor");
@@ -161,7 +161,7 @@ public class MyLocalTon {
             for (String nodeName : settings.getActiveNodes()) {
 
                 Executors.newSingleThreadExecutor().execute(() -> {
-                    Thread.currentThread().setName("MyLocalTon - " + nodeName + " Monitor");
+                    Thread.currentThread().setName("MyLocalTon - " + nodeName + " Status Monitor");
                     try {
 
                         Node node = settings.getNodeByName(nodeName);
@@ -175,12 +175,9 @@ public class MyLocalTon {
                             log.info("{} out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
                         } else {
                             node.setStatus("ready");
+                            node.setFlag("cloned");
                             log.info("{} is ready", nodeName);
                         }
-//                        else {
-//                            node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
-//                            log.info("{} is out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
-//                        }
 
                         Platform.runLater(() -> {
                             Utils.showNodeStatus(settings.getNodeByName(nodeName), Utils.getNodeStatusLabelByName(nodeName), Utils.getNodeTabByName(nodeName));
@@ -196,8 +193,9 @@ public class MyLocalTon {
 
     /**
      * Checks whether all processes and threads up and running
+     * TODO replace with onExit callback
      */
-    public void runValidatorsMonitor() {
+    public void runValidatorsProcessMonitor() {
         log.info("Starting validators monitor");
 
         validatorsMonitor = Executors.newSingleThreadScheduledExecutor();
@@ -208,16 +206,27 @@ public class MyLocalTon {
 
                 if (node.getStatus().equals("not ready") && node.getNodeProcess().exitValue() > 0) {
                     log.info("{} exit value {}", node.getNodeName(), node.getNodeProcess().exitValue());
-                    log.info("re-starting validator {}...", nodeName);
-                    long pid = new ValidatorEngine().startValidator(node, node.getNodeGlobalConfigLocation()).pid();
-                    log.info("re-started validator {} with pid {}", nodeName, pid);
+                    if (node.getFlag().equals("cloned")) {
+                        log.info("re-starting validator {}...", nodeName);
+                        long pid = new ValidatorEngine().startValidator(node, node.getNodeGlobalConfigLocation()).pid();
+                        log.info("re-started validator {} with pid {}", nodeName, pid);
+                    } else {
+                        if (!node.getNodeName().equals("genesis")) {
+                            log.info("failed {} creation, delete it", node.getNodeName());
+                            ExecutorService service = Executors.newSingleThreadExecutor();
+                            service.execute(() -> {
+                                Utils.doDelete(node.getNodeName());
+                                mainController.showDialogMessage("Error", "Validator " + node.getNodeName() + " could not be created. For more information refer to the log files.");
+                            });
+                            service.shutdown();
+                        }
+                    }
                     try {
                         Thread.sleep(5 * 1000);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                //log.info("{} exit value {}", node.getNodeName(), node.getNodeProcess().exitValue());
             }
         }, 0L, VALIDATION_GUI_REFRESH_SECONDS, TimeUnit.SECONDS);
     }
@@ -246,8 +255,6 @@ public class MyLocalTon {
 
         if (!Files.exists(Paths.get(node.getTonDbDir() + "state"), LinkOption.NOFOLLOW_LINKS)) {
             log.info("Initializing genesis network");
-            Thread.sleep(1000);
-            Platform.runLater(() -> mainController.showWarningMsg("Initializing TON blockchain very first time. It can take up to 2 minutes, please wait.", 60 * 5L));
 
             ValidatorEngine validatorEngine = new ValidatorEngine();
 
@@ -299,7 +306,7 @@ public class MyLocalTon {
         log.info("{} validatorIdHex {}", node.getNodeName(), node.getValidatorPrvKeyHex());
 
         log.info("Starting temporary full-node...");
-        Pair<Process, Future<String>> validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig);
+        Process validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig).getLeft();
 
         log.debug("sleep 5sec");
         Thread.sleep(5000);
@@ -330,7 +337,7 @@ public class MyLocalTon {
 
         saveSettingsToGson();
 
-        validatorProcess.getLeft().destroy();
+        validatorProcess.destroy();
     }
 
     private static int parseIp(String address) {
@@ -490,16 +497,13 @@ public class MyLocalTon {
             Thread.currentThread().setName("MyLocalTon - Blockchain Size Monitor");
 
             MainController c = fxmlLoader.getController();
-
+            String size = Utils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + MY_LOCAL_TON);
+            log.debug("size {}", size);
             Platform.runLater(() -> {
-                long size = FileUtils.sizeOfDirectory(new File(CURRENT_DIR + File.separator + MY_LOCAL_TON));
-                double sizePrecise = size / 1024 / 1024;
-                double newSizePrecise = (sizePrecise >= 1000) ? (sizePrecise / 1024) : sizePrecise;
-                String unitOfMeasurement = (sizePrecise >= 1000) ? "GB" : "MB";
-                log.debug("DB size {}", String.format("%.1f%s", newSizePrecise, unitOfMeasurement));
-                c.dbSizeId.setText(String.format("%.1f%s", newSizePrecise, unitOfMeasurement));
+                c.dbSizeId.setText(size);
+
             });
-        }, 0L, 15L, TimeUnit.SECONDS);
+        }, 0L, 60L, TimeUnit.SECONDS);
     }
 
     public void runValidationMonitor() {
@@ -534,36 +538,15 @@ public class MyLocalTon {
 
                         Main.inElections.set(true);
 
-                        for (String nodeName : settings.getActiveNodes()) {
-                            Node node = settings.getNodeByName(nodeName);
-
-                            if (node.getStatus().equals("ready")) {
-                                log.info("participates in elections {}", nodeName);
-                                ExecutorService nodeParticipationExecutorService = Executors.newSingleThreadExecutor();
-                                nodeParticipationExecutorService.execute(() -> {
-                                    Thread.currentThread().setName("MyLocalTon - Participation in elections by " + nodeName);
-                                    Utils.participate(node, v);
-                                });
-                                nodeParticipationExecutorService.shutdown();
-                            }
-                        }
+                        participateAll(v);
 
                         Main.inElections.set(false);
 
                     } else {
-                        log.info("ELECTIONS CLOSED, WAITING...");
+                        log.info("ELECTIONS CLOSED, REAPING...");
+                        reapAll();
                     }
 
-                    //update reaped values
-                    for (String nodeName : settings.getActiveNodes()) {
-                        Node node = settings.getNodeByName(nodeName);
-
-                        reap(settings.getNodeByName(nodeName));
-
-                        Platform.runLater(() -> {
-                            updateReapedValuesTab(node);
-                        });
-                    }
                 } catch (Exception e) {
                     log.error("Error getting blockchain configuration! Error {}", e.getMessage());
                     log.error(ExceptionUtils.getStackTrace(e));
@@ -583,6 +566,42 @@ public class MyLocalTon {
 
             }
         }, 0L, VALIDATION_GUI_REFRESH_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void participateAll(ValidationParam v) {
+        for (String nodeName : settings.getActiveNodes()) {
+            Node node = settings.getNodeByName(nodeName);
+
+            if (node.getStatus().equals("ready")) {
+                log.info("participates in elections {}", nodeName);
+                ExecutorService nodeParticipationExecutorService = Executors.newSingleThreadExecutor();
+                nodeParticipationExecutorService.execute(() -> {
+                    Thread.currentThread().setName("MyLocalTon - Participation in elections by " + nodeName);
+                    Utils.participate(node, v);
+                });
+                nodeParticipationExecutorService.shutdown();
+            }
+        }
+    }
+
+    private void reapAll() {
+        for (String nodeName : settings.getActiveNodes()) {
+            Node node = settings.getNodeByName(nodeName);
+
+            if (node.getStatus().equals("ready")) {
+
+                ExecutorService nodeReapRewardsExecutorService = Executors.newSingleThreadExecutor();
+                nodeReapRewardsExecutorService.execute(() -> {
+                    Thread.currentThread().setName("MyLocalTon - Reaping rewards by " + nodeName);
+                    reap(settings.getNodeByName(nodeName));
+
+                    Platform.runLater(() -> {
+                        updateReapedValuesTab(node);
+                    });
+                });
+                nodeReapRewardsExecutorService.shutdown();
+            }
+        }
     }
 
     public void runBlockchainMonitor(Node node) {
@@ -965,43 +984,48 @@ public class MyLocalTon {
     }
 
     private void showButtonWithMessage(javafx.scene.Node txRow, TxEntity txEntity) {
+
+        String msg = null;
         if (txEntity.getTypeTx().contains("Message") && !txEntity.getTypeMsg().contains("External In")) {
             if (!(txEntity.getTx().getInMsg().getBody().getCells().isEmpty()) && (txEntity.getTx().getInMsg().getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0) &&
                     !txEntity.getTx().getInMsg().getBody().getCells().get(0).equals("FFFFFFFF")) {
-                txRow.lookup("#txMsgBtn").setVisible(true);
-                txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
 
-                    String msg = txEntity.getTx().getInMsg().getBody().getCells().stream().map(c -> {
-                        try {
-                            return new String(Hex.decodeHex(c.toCharArray()));
-                        } catch (DecoderException e) {
-                            log.error("Cannot convert hex msg to string");
-                            return "      Cannot convert hex msg to string";
-                        }
-                    }).collect(Collectors.joining());
-
-                    log.info("in msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg);
-                    mainController.showMessage(msg.substring(4));
-                });
+                msg = txEntity.getTx().getInMsg().getBody().getCells().stream().map(c -> {
+                    try {
+                        return new String(Hex.decodeHex(c.toCharArray()));
+                    } catch (DecoderException e) {
+                        log.debug("Cannot convert hex msg to string");
+                        return "      Cannot convert hex msg to string";
+                    }
+                }).collect(Collectors.joining());
 
             } else if ((!txEntity.getTx().getOutMsgs().isEmpty() && !txEntity.getTx().getOutMsgs().get(0).getBody().getCells().isEmpty())) {
                 if (txEntity.getTx().getOutMsgs().get(0).getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0 && !txEntity.getTx().getOutMsgs().get(0).getBody().getCells().get(0).equals("FFFFFFFF")) {
 
-                    txRow.lookup("#txMsgBtn").setVisible(true);
-                    txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
-                        String msg = txEntity.getTx().getOutMsgs().get(0).getBody().getCells().stream().map(c -> {
-                            try {
-                                return new String(Hex.decodeHex(c.toCharArray()));
-                            } catch (DecoderException e) {
-                                log.error("Cannot convert hex msg to string");
-                                return "     Cannot convert hex msg to string";
-                            }
-                        }).collect(Collectors.joining());
-
-                        log.info("out msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), msg);
-                        mainController.showMessage(msg.substring(4));
-                    });
+                    msg = txEntity.getTx().getOutMsgs().get(0).getBody().getCells().stream().map(c -> {
+                        try {
+                            return new String(Hex.decodeHex(c.toCharArray()));
+                        } catch (DecoderException e) {
+                            log.debug("Cannot convert hex msg to string");
+                            return "     Cannot convert hex msg to string";
+                        }
+                    }).collect(Collectors.joining());
                 }
+            }
+        }
+        if (StringUtils.isNotEmpty(msg) && msg.length() > 4) {
+            msg = msg.substring(4);
+            //byte[] utf8String = msg.getBytes(StandardCharsets.UTF_8);
+            //log.info("msg {}", new String(utf8String, StandardCharsets.UTF_8));
+
+            if (StringUtils.isAlphanumericSpace(msg) || StringUtils.isAsciiPrintable(msg)) {
+                txRow.lookup("#txMsgBtn").setVisible(true);
+                txRow.lookup("#txMsgBtn").setUserData(msg);
+
+                txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
+                    log.info("in msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), txRow.lookup("#txMsgBtn").getUserData());
+                    mainController.showMessage(String.valueOf(txRow.lookup("#txMsgBtn").getUserData()));
+                });
             }
         }
     }
@@ -1521,7 +1545,7 @@ public class MyLocalTon {
         return Pair.of(null, -1L);
     }
 
-    public void reap(Node node) throws Exception {
+    public void reap(Node node) {
         try {
 
             if (isNull(node.getWalletAddress())) {
@@ -1541,11 +1565,10 @@ public class MyLocalTon {
                 SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                         .executionNode(node)
                         .fromWallet(node.getWalletAddress())
-                        .fromWalletVersion(WalletVersion.V3)
+                        .fromWalletVersion(settings.getWalletSettings().getWalletVersion())
                         .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                         .destAddr(settings.getElectorSmcAddrHex())
                         .amount(BigDecimal.valueOf(1L))
-                        .comment("stake-recover-request") // TODO check if comment is visible
                         .bocLocation(node.getTonBinDir() + "recover-query.boc")
                         .build();
 
@@ -1642,7 +1665,7 @@ public class MyLocalTon {
     }
 
     public void createValidatorPubKeyAndAdnlAddress(Node node, long electionId) throws Exception {
-        log.info("{} creating validator PubKey and ADNL address", node.getNodeName());
+        log.debug("{} creating validator PubKey and ADNL address", node.getNodeName());
         long electionEnd = electionId + 600; // was YEAR
 
         createSigningKeyForValidation(node, electionId, electionEnd);
@@ -1659,7 +1682,7 @@ public class MyLocalTon {
         String signingKey = validatorEngineConsole.generateNewNodeKey(node);
         String signingPubKey = validatorEngineConsole.exportPubKey(node, signingKey);
 
-        log.info("{} signingKey {}, new signingPubKey {} for current elections", node.getNodeName(), signingKey, signingPubKey);
+        log.debug("{} signingKey {}, new signingPubKey {} for current elections", node.getNodeName(), signingKey, signingPubKey);
 
         node.setValidationSigningKey(signingKey);
         node.setValidationSigningPubKey(signingPubKey);
@@ -1670,7 +1693,7 @@ public class MyLocalTon {
     void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) throws ExecutionException, InterruptedException {
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
         String adnlKey = validatorEngineConsole.generateNewNodeKey(node);
-        log.info("{} new adnlKey {} for current elections", node.getNodeName(), adnlKey);
+        log.debug("{} new adnlKey {} for current elections", node.getNodeName(), adnlKey);
 
         node.setPrevValidationAndlKey(node.getValidationAndlKey());
         node.setValidationAndlKey(adnlKey); // shown on validator tab as ADNL address        
@@ -1684,7 +1707,7 @@ public class MyLocalTon {
         if (Files.exists(Paths.get(node.getTonDbArchiveDir()))) {
             log.info("{} already created, just start it", node.getNodeName());
             if (start) {
-                new ValidatorEngine().startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
+                new ValidatorEngine().startValidator(node, node.getNodeGlobalConfigLocation());
             }
             return;
         }
@@ -1696,12 +1719,11 @@ public class MyLocalTon {
         validatorEngine.initFullnode(node, settings.getGenesisNode().getNodeGlobalConfigLocation());
 
         if (!node.getNodeName().contains("genesis")) {
+            node.setFlag("cloning");
             if (isWindows()) {
 //               on Windows locked files cannot be copied. As an option, we can shut down genesis node, copy the files and start it again.
 //               but there is a connection issue with this on Windows.
 //               As an alternative, we can exclude locked files (LOCK), that's why Utils.copyDirectory is used.
-//               log.info("shutting down genesis node...");
-//               settings.getGenesisNode().nodeShutdown();
 
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
 //              copy ignoring locked files
@@ -1709,13 +1731,6 @@ public class MyLocalTon {
                 Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
                 Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
                 Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
-                // TODO Sometimes after copying all the files there is an error state file is wrong and validator cannot be started
-
-//                Utils.copyDirectory(settings.getGenesisNode().getTonDbStateDir(), node.getTonDbStateDir());
-//                log.info("launching genesis node...");
-//                validatorEngine.startValidator(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation());
-//                Utils.waitForBlockchainReady(settings.getGenesisNode());
-//                Utils.waitForNodeSynchronized(settings.getGenesisNode());
             } else {
                 // speed up synchronization - copy archive, catchains, files, state and celldb directories
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
@@ -1723,7 +1738,6 @@ public class MyLocalTon {
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCatchainsDir()), new File(node.getTonDbCatchainsDir()));
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCellDbDir()), new File(node.getTonDbCellDbDir()));
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbFilesDir()), new File(node.getTonDbFilesDir()));
-                //FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStateDir()), new File(node.getTonDbStateDir()));
             }
         }
 
@@ -1732,7 +1746,7 @@ public class MyLocalTon {
         }
 
         if (start) {
-            validatorEngine.startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
+            validatorEngine.startValidator(node, node.getNodeGlobalConfigLocation());
         }
     }
 }

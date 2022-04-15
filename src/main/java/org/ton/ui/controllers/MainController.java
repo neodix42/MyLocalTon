@@ -1820,21 +1820,18 @@ public class MainController implements Initializable {
         enableBlockchainExplorerLabel.setVisible(false);
         mainMenuTabs.getTabs().remove(explorerTab);
 
-        if (isLinux() || isMac()) {
+        enableBlockchainExplorer.setVisible(true);
+        enableBlockchainExplorerLabel.setVisible(true);
 
-            enableBlockchainExplorer.setVisible(true);
-            enableBlockchainExplorerLabel.setVisible(true);
-
-            if (enableBlockchainExplorer.isSelected()) {
-                mainMenuTabs.getTabs().remove(searchTab);
-                mainMenuTabs.getTabs().remove(explorerTab);
-                mainMenuTabs.getTabs().add(explorerTab);
-            } else {
-                mainMenuTabs.getTabs().remove(explorerTab);
-            }
+        if (enableBlockchainExplorer.isSelected()) {
+            mainMenuTabs.getTabs().remove(searchTab);
+            mainMenuTabs.getTabs().remove(explorerTab);
+            mainMenuTabs.getTabs().add(explorerTab);
+        } else {
+            mainMenuTabs.getTabs().remove(explorerTab);
         }
 
-        if (isLinux() || isMac()) {
+        if (isLinux() || isMac() || isWindows()) {
             addValidatorBtn.setVisible(true);
         }
 
@@ -1876,14 +1873,12 @@ public class MainController implements Initializable {
 
     public void startWeb() {
 
-        if (isLinux() || isMac()) {
-            if (enableBlockchainExplorer.isSelected()) {
-                log.info("Starting native blockchain-explorer on port {}", settings.getUiSettings().getBlockchainExplorerPort());
-                BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-                blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getBlockchainExplorerPort());
-                WebEngine webEngine = webView.getEngine();
-                webEngine.load("http://127.0.0.1:" + settings.getUiSettings().getBlockchainExplorerPort() + "/last");
-            }
+        if (enableBlockchainExplorer.isSelected()) {
+            log.info("Starting native blockchain-explorer on port {}", settings.getUiSettings().getBlockchainExplorerPort());
+            BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
+            blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getBlockchainExplorerPort());
+            WebEngine webEngine = webView.getEngine();
+            webEngine.load("http://127.0.0.1:" + settings.getUiSettings().getBlockchainExplorerPort() + "/last");
         }
     }
 
@@ -2139,10 +2134,14 @@ public class MainController implements Initializable {
 
                 String stopsWokring = "";
                 MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
-                int cutoff = (int) Math.ceil(settings.getActiveNodes().size() * 66 / 100.0);
-                log.info("total active nodes {} vs minimum required {}", settings.getActiveNodes().size(), cutoff);
-                if ((settings.getActiveNodes().size() - 1 < cutoff) || (settings.getActiveNodes().size() == 3 && cutoff == 2)) {
-                    stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive, i.e. stops working, since a two-thirds consensus of validators will not be reached.";
+                if (isWindows()) {
+                    stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive. In comparison with Linux and MacOS versions of MyLocalTon, where you can remove validators until you maintain a two-thirds consensus, on Windows the whole blockchain stops working if you remove one node. If consensus is met upon restart you will be fine.";
+                } else {
+                    int cutoff = (int) Math.ceil(settings.getActiveNodes().size() * 66 / 100.0);
+                    log.info("total active nodes {} vs minimum required {}", settings.getActiveNodes().size(), cutoff);
+                    if ((settings.getActiveNodes().size() - 1 < cutoff) || (settings.getActiveNodes().size() == 3 && cutoff == 2)) {
+                        stopsWokring = "\n\nIf this node is an active validator your main workchain becomes inactive, i.e. stops working, since a two-thirds consensus of validators will not be reached.";
+                    }
                 }
 
                 parent.lookup("#inputFields").setVisible(false);
@@ -2151,7 +2150,7 @@ public class MainController implements Initializable {
                 ((Label) parent.lookup("#action")).setText("delnode"); // no action, simple dialog box
                 ((Label) parent.lookup("#header")).setText("Confirmation");
                 ((Label) parent.lookup("#address")).setText(node.getNodeName()); // just reuse address field
-                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete selected validator? All data and funds will be lost and obviously validator will be removed from elections. Also check if this validator has collected all validation rewards." + stopsWokring);
+                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete the selected validator? All data and funds will be lost and obviously validator will be removed from elections. Don't forget to collect all validation rewards." + stopsWokring);
                 parent.lookup("#okBtn").setDisable(false);
 
                 JFXDialogLayout content = new JFXDialogLayout();
@@ -2231,7 +2230,6 @@ public class MainController implements Initializable {
     }
 
     public void createNewAccountBtn() throws IOException {
-        log.info("create account btn");
 
         Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
         ((Label) parent.lookup("#action")).setText("create");
@@ -3187,7 +3185,6 @@ public class MainController implements Initializable {
         mouseEvent.consume();
     }
 
-
     public void validation4AdnlClicked(MouseEvent mouseEvent) {
         String addr = validator4AdnlAddress.getText();
         final Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -3268,7 +3265,6 @@ public class MainController implements Initializable {
         mouseEvent.consume();
     }
 
-
     public void validation5AdnlClicked(MouseEvent mouseEvent) {
         String addr = validator5AdnlAddress.getText();
         final Clipboard clipboard = Clipboard.getSystemClipboard();
@@ -3348,7 +3344,6 @@ public class MainController implements Initializable {
         App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
     }
-
 
     public void validation6AdnlClicked(MouseEvent mouseEvent) {
         String addr = validator6AdnlAddress.getText();
@@ -3524,32 +3519,32 @@ public class MainController implements Initializable {
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
 
-                    //delete unfinished node creation
+                    //delete unfinished or failed node creation
                     FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
 
                     MyLocalTon.getInstance().createFullnode(node, true, true);
-
-                    if (isWindows()) {
-                        Utils.waitForBlockchainReady(node);
-                        Utils.waitForNodeSynchronized(node);
-                    }
 
                     Tab newTab = Utils.getNewNodeTab();
                     Platform.runLater(() -> {
                         validationTabs.getTabs().add(newTab);
                     });
 
+//                    if (isWindows()) {
+//                        Utils.waitForBlockchainReady(node);
+//                        Utils.waitForNodeSynchronized(node);
+//                    }
+
                     settings.getActiveNodes().add(node.getNodeName());
                     MyLocalTon.getInstance().saveSettingsToGson();
 
-                    showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created, now synchronizing and creating main validator's wallet.");
+                    showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been cloned from genesis, now synchronizing and creating main wallet.");
 
                     log.info("Creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
                     WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
                     node.setWalletAddress(walletEntity.getWallet());
 
                     mainController.addValidatorBtn.setDisable(false);
-                    App.mainController.showInfoMsg("Main wallet for validator " + node.getNodeName() + " has been created successfully", 5);
+                    App.mainController.showInfoMsg("Main wallet for validator " + node.getNodeName() + " has been successfully created.", 5);
                 } else {
                     showDialogMessage("The limit has been reached", "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");
                 }
@@ -3657,5 +3652,11 @@ public class MainController implements Initializable {
         log.debug(addr + " copied");
         App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
         mouseEvent.consume();
+    }
+
+    public void BlockChainExplorerCheckBoxClick(MouseEvent mouseEvent) {
+        if (enableBlockchainExplorer.isSelected()) {
+            App.mainController.showInfoMsg("Native blockchain-explorer will be available after restart", 5);
+        }
     }
 }

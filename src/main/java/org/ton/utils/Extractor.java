@@ -22,6 +22,7 @@ public class Extractor {
     public static final String SMARTCONT = "smartcont";
     public static final String BIN = "bin";
     public static final String TEMPLATES = "templates";
+    public static final String UTILS = "utils";
     public static final String DB = "db";
 
     private final String nodeName;
@@ -40,6 +41,7 @@ public class Extractor {
                 log.info("Detected OS: {}", System.getProperty("os.name"));
                 Files.createDirectories(Paths.get(MyLocalTonSettings.DB_DIR));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + TEMPLATES));
+                Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + UTILS));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "wallets"));
@@ -128,6 +130,34 @@ public class Extractor {
         }
     }
 
+    private void extractWindowsUtils() {
+        try {
+            if (!Files.exists(Paths.get(MY_LOCAL_TON_ROOT_DIR + UTILS + File.separator + "du.exe"), LinkOption.NOFOLLOW_LINKS)) {
+                InputStream sendSignalCtrlC64 = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/utils/SendSignalCtrlC64.exe");
+                Files.copy(sendSignalCtrlC64, Paths.get(MY_LOCAL_TON_ROOT_DIR + UTILS + File.separator + "SendSignalCtrlC64.exe"), StandardCopyOption.REPLACE_EXISTING);
+                sendSignalCtrlC64.close();
+
+                InputStream du = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/utils/du.exe");
+                Files.copy(du, Paths.get(MY_LOCAL_TON_ROOT_DIR + UTILS + File.separator + "du.exe"), StandardCopyOption.REPLACE_EXISTING);
+                du.close();
+
+                InputStream cygWinDll = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/utils/cygwin1.dll");
+                Files.copy(cygWinDll, Paths.get(MY_LOCAL_TON_ROOT_DIR + UTILS + File.separator + "cygwin1.dll"), StandardCopyOption.REPLACE_EXISTING);
+                cygWinDll.close();
+
+                InputStream cygIntlDll = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/utils/cygintl-8.dll");
+                Files.copy(cygIntlDll, Paths.get(MY_LOCAL_TON_ROOT_DIR + UTILS + File.separator + "cygintl-8.dll"), StandardCopyOption.REPLACE_EXISTING);
+                cygIntlDll.close();
+
+                InputStream cygIconDll = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/utils/cygiconv-2.dll");
+                Files.copy(cygIconDll, Paths.get(MY_LOCAL_TON_ROOT_DIR + UTILS + File.separator + "cygiconv-2.dll"), StandardCopyOption.REPLACE_EXISTING);
+                cygIconDll.close();
+            }
+        } catch (Exception e) {
+            log.error("Error extracting windows utils, might be in use");
+        }
+    }
+
     private void extractWindowsBinaries() throws IOException {
         log.info("extracting windows.zip on windows");
 
@@ -138,16 +168,14 @@ public class Extractor {
         zipFile.extractAll(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
         Files.delete(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "windows.zip"));
 
-        log.debug("copy patched validator-engine.exe");
-        InputStream winValidatorEngine = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/validator-engine.exe");
-        Files.copy(winValidatorEngine, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "validator-engine.exe"), StandardCopyOption.REPLACE_EXISTING);
-        winValidatorEngine.close();
-
-        InputStream sendSignalCtrlC64 = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/SendSignalCtrlC64.exe");
-        Files.copy(sendSignalCtrlC64, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "SendSignalCtrlC64.exe"), StandardCopyOption.REPLACE_EXISTING);
-        sendSignalCtrlC64.close();
+//        log.debug("copy patched validator-engine.exe");
+//        InputStream winValidatorEngine = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/validator-engine.exe");
+//        Files.copy(winValidatorEngine, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "validator-engine.exe"), StandardCopyOption.REPLACE_EXISTING);
+//        winValidatorEngine.close();
 
         log.debug("windows binaries path: {}", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
+
+        extractWindowsUtils();
     }
 
     private void extractUbuntuBinaries(String platform) throws IOException {

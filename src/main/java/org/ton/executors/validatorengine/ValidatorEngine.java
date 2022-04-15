@@ -49,7 +49,7 @@ public class ValidatorEngine {
                 "--db", node.getTonDbDir(),
                 "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
                 "--ip", node.getPublicIp() + ":" + node.getPublicPort(),
-                "-S", node.getValidatorSyncBefore().toString(), // 1 year, in initial sync download all blocks for last given seconds
+                "-S", node.getValidatorSyncBefore().toString(), // initial sync download all blocks for last given seconds, default 3600
                 "-s", node.getValidatorStateTtl().toString(), // state will be gc'd after this time (in seconds), default 3600
                 "-b", node.getValidatorBlockTtl().toString(), // blocks will be gc'd after this time (in seconds), default=7*86400
                 "-A", node.getValidatorArchiveTtl().toString(), // archived blocks will be deleted after this time (in seconds), default 365*86400

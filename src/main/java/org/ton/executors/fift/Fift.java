@@ -56,13 +56,22 @@ public class Fift {
             walletScript = "wallet.fif";
         }
 
-        log.info("{} sending using {}", sendToncoinsParam.getExecutionNode().getNodeName(), walletScript);
+        log.debug("{} sending using {}", sendToncoinsParam.getExecutionNode().getNodeName(), walletScript);
         String attachedBoc;
+        String timeout = null;
 
         if (PlatformUtil.isWindows()) {
-            attachedBoc = (isNull(sendToncoinsParam.getBocLocation())) ? "" : "-B\"" + sendToncoinsParam.getBocLocation().trim() + "\"";
+            attachedBoc = (StringUtils.isEmpty(sendToncoinsParam.getBocLocation())) ? "" : "-B\"" + sendToncoinsParam.getBocLocation().trim() + "\"";
         } else {
-            attachedBoc = (isNull(sendToncoinsParam.getBocLocation())) ? "" : "-B" + sendToncoinsParam.getBocLocation().trim();
+            attachedBoc = (StringUtils.isEmpty(sendToncoinsParam.getBocLocation())) ? "" : "-B" + sendToncoinsParam.getBocLocation().trim();
+        }
+
+        if (walletScript.equals("wallet-v3.fif")) {
+            if (isNull(sendToncoinsParam.getTimeout())) {
+                sendToncoinsParam.setTimeout(60L);
+            }
+
+            timeout = sendToncoinsParam.getTimeout().toString();
         }
 
         result = new FiftExecutor().execute(sendToncoinsParam.getExecutionNode(),
@@ -73,8 +82,9 @@ public class Fift {
                 String.valueOf(seqno),
                 sendToncoinsParam.getAmount().toPlainString(),
                 (nonNull(sendToncoinsParam.getForceBounce()) && sendToncoinsParam.getForceBounce().equals(Boolean.TRUE)) ? "-b" : "",
-                (isNull(sendToncoinsParam.getComment())) ? "" : "-C" + sendToncoinsParam.getComment().trim(),
+                StringUtils.isEmpty(timeout) ? "" : "-t" + sendToncoinsParam.getTimeout(),
                 attachedBoc,
+                (StringUtils.isEmpty(sendToncoinsParam.getComment())) ? "" : "-C" + sendToncoinsParam.getComment().trim(),
                 resultBocFileLocation);
 
         String resultStr = result.getRight().get();
@@ -350,7 +360,7 @@ public class Fift {
         String generatedMessageBase64 = array[array.length - 2].trim();
         String generatedMessageHex = array[array.length - 3].trim();
 
-        log.info("signing request by {}", node.getNodeName());
+        log.debug("signing request by {}", node.getNodeName());
 
         //sign hex string and base64, 2nd line from bottom in output
         Pair<Process, Future<String>> signed = new ValidatorEngineConsoleExecutor().execute(node,
@@ -364,7 +374,7 @@ public class Fift {
         log.debug(signed.getRight().get()); // make debug
 
         String signature = StringUtils.substring(signed.getRight().get(), signed.getRight().get().indexOf("signature") + 9).trim();
-        log.info("signature {}", signature);
+        log.debug("signature {}", signature);
         FileUtils.deleteQuietly(new File(node.getTonBinDir() + fileNameBase));
 
         return signature;
@@ -389,7 +399,7 @@ public class Fift {
 
         String validatorPublicKeyHex = StringUtils.substringBetween(resultStr, "with validator public key ", SPACE).trim();
         BigInteger bigInt = new BigInteger(validatorPublicKeyHex, 16);
-        log.info("{} signed adnl {} with validator pubkey (hex){}, (integer){}", node.getNodeName(), node.getValidationAndlKey(), validatorPublicKeyHex, bigInt);
+        log.debug("{} signed adnl {} with validator pubkey (hex){}, (integer){}", node.getNodeName(), node.getValidationAndlKey(), validatorPublicKeyHex, bigInt);
 
         // used only for monitoring
         node.setPrevValidationPubKeyHex(node.getPrevValidationPubKeyHex());

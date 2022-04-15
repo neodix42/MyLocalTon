@@ -40,10 +40,10 @@ public class DhtServerExecutor {
 
             Future<String> future = executorService.submit(() -> {
                 try {
-                    Thread.currentThread().setName("dht-server-" + node.getNodeName());
+                    Thread.currentThread().setName("DHT server on " + node.getNodeName());
 
                     String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-                    log.debug("{} stopped", "dht-server-" + node.getNodeName());
+                    log.info("{} stopped", "dht-server-" + node.getNodeName());
                     p.getInputStream().close();
                     p.getErrorStream().close();
                     p.getOutputStream().close();
@@ -51,7 +51,7 @@ public class DhtServerExecutor {
                     return resultInput;
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.info("Error in DHT server. {}", e.getMessage());
                     return null;
                 }
             });
