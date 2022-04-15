@@ -171,6 +171,10 @@ public interface Node {
 
     void setStatus(String status);
 
+    String getFlag();
+
+    void setFlag(String status);
+
     String getNodeName();
 
     Process getNodeProcess();

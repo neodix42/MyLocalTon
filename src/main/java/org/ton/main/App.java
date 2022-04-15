@@ -151,7 +151,7 @@ public class App extends Application {
             }
         }
 
-        myLocalTon.runNodesMonitor();
+        myLocalTon.runNodesStatusMonitor();
 
         Utils.waitForBlockchainReady(genesisNode);
         Utils.waitForNodeSynchronized(genesisNode);
@@ -175,7 +175,7 @@ public class App extends Application {
 
         myLocalTon.runValidationMonitor();
 
-        myLocalTon.runValidatorsMonitor();
+        myLocalTon.runValidatorsProcessMonitor();
 
         mainController.addValidatorBtn.setDisable(false);
     }

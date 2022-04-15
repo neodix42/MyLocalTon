@@ -153,7 +153,7 @@ public class MyLocalTon {
         Platform.runLater(() -> mainController.startWeb());
     }
 
-    public void runNodesMonitor() {
+    public void runNodesStatusMonitor() {
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             Thread.currentThread().setName("MyLocalTon - Nodes Monitor");
@@ -161,7 +161,7 @@ public class MyLocalTon {
             for (String nodeName : settings.getActiveNodes()) {
 
                 Executors.newSingleThreadExecutor().execute(() -> {
-                    Thread.currentThread().setName("MyLocalTon - " + nodeName + " Monitor");
+                    Thread.currentThread().setName("MyLocalTon - " + nodeName + " Status Monitor");
                     try {
 
                         Node node = settings.getNodeByName(nodeName);
@@ -175,12 +175,9 @@ public class MyLocalTon {
                             log.info("{} out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
                         } else {
                             node.setStatus("ready");
+                            node.setFlag("cloned");
                             log.info("{} is ready", nodeName);
                         }
-//                        else {
-//                            node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
-//                            log.info("{} is out of sync by {} seconds", nodeName, lastBlock.getSyncedSecondsAgo());
-//                        }
 
                         Platform.runLater(() -> {
                             Utils.showNodeStatus(settings.getNodeByName(nodeName), Utils.getNodeStatusLabelByName(nodeName), Utils.getNodeTabByName(nodeName));
@@ -198,7 +195,7 @@ public class MyLocalTon {
      * Checks whether all processes and threads up and running
      * TODO replace with onExit callback
      */
-    public void runValidatorsMonitor() {
+    public void runValidatorsProcessMonitor() {
         log.info("Starting validators monitor");
 
         validatorsMonitor = Executors.newSingleThreadScheduledExecutor();
@@ -209,9 +206,21 @@ public class MyLocalTon {
 
                 if (node.getStatus().equals("not ready") && node.getNodeProcess().exitValue() > 0) {
                     log.info("{} exit value {}", node.getNodeName(), node.getNodeProcess().exitValue());
-                    log.info("re-starting validator {}...", nodeName);
-                    long pid = new ValidatorEngine().startValidator(node, node.getNodeGlobalConfigLocation()).pid();
-                    log.info("re-started validator {} with pid {}", nodeName, pid);
+                    if (node.getFlag().equals("cloned")) {
+                        log.info("re-starting validator {}...", nodeName);
+                        long pid = new ValidatorEngine().startValidator(node, node.getNodeGlobalConfigLocation()).pid();
+                        log.info("re-started validator {} with pid {}", nodeName, pid);
+                    } else {
+                        if (!node.getNodeName().equals("genesis")) {
+                            log.info("failed {} creation, delete it", node.getNodeName());
+                            ExecutorService service = Executors.newSingleThreadExecutor();
+                            service.execute(() -> {
+                                Utils.doDelete(node.getNodeName());
+                                mainController.showDialogMessage("Error", "Validator " + node.getNodeName() + " could not be created. For more information refer to the log files.");
+                            });
+                            service.shutdown();
+                        }
+                    }
                     try {
                         Thread.sleep(5 * 1000);
                     } catch (Exception e) {
@@ -297,7 +306,7 @@ public class MyLocalTon {
         log.info("{} validatorIdHex {}", node.getNodeName(), node.getValidatorPrvKeyHex());
 
         log.info("Starting temporary full-node...");
-        Pair<Process, Future<String>> validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig);
+        Process validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig).getLeft();
 
         log.debug("sleep 5sec");
         Thread.sleep(5000);
@@ -328,7 +337,7 @@ public class MyLocalTon {
 
         saveSettingsToGson();
 
-        validatorProcess.getLeft().destroy();
+        validatorProcess.destroy();
     }
 
     private static int parseIp(String address) {
@@ -1698,7 +1707,7 @@ public class MyLocalTon {
         if (Files.exists(Paths.get(node.getTonDbArchiveDir()))) {
             log.info("{} already created, just start it", node.getNodeName());
             if (start) {
-                new ValidatorEngine().startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
+                new ValidatorEngine().startValidator(node, node.getNodeGlobalConfigLocation());
             }
             return;
         }
@@ -1710,12 +1719,11 @@ public class MyLocalTon {
         validatorEngine.initFullnode(node, settings.getGenesisNode().getNodeGlobalConfigLocation());
 
         if (!node.getNodeName().contains("genesis")) {
+            node.setFlag("cloning");
             if (isWindows()) {
 //               on Windows locked files cannot be copied. As an option, we can shut down genesis node, copy the files and start it again.
 //               but there is a connection issue with this on Windows.
 //               As an alternative, we can exclude locked files (LOCK), that's why Utils.copyDirectory is used.
-//               log.info("shutting down genesis node...");
-//               settings.getGenesisNode().nodeShutdown();
 
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
 //              copy ignoring locked files
@@ -1723,13 +1731,6 @@ public class MyLocalTon {
                 Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
                 Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
                 Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
-                // TODO Sometimes after copying all the files there is an error state file is wrong and validator cannot be started
-
-//                Utils.copyDirectory(settings.getGenesisNode().getTonDbStateDir(), node.getTonDbStateDir());
-//                log.info("launching genesis node...");
-//                validatorEngine.startValidator(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation());
-//                Utils.waitForBlockchainReady(settings.getGenesisNode());
-//                Utils.waitForNodeSynchronized(settings.getGenesisNode());
             } else {
                 // speed up synchronization - copy archive, catchains, files, state and celldb directories
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
@@ -1737,7 +1738,6 @@ public class MyLocalTon {
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCatchainsDir()), new File(node.getTonDbCatchainsDir()));
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbCellDbDir()), new File(node.getTonDbCellDbDir()));
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbFilesDir()), new File(node.getTonDbFilesDir()));
-                //FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStateDir()), new File(node.getTonDbStateDir()));
             }
         }
 
@@ -1746,7 +1746,7 @@ public class MyLocalTon {
         }
 
         if (start) {
-            validatorEngine.startValidatorWithoutParams(node, node.getNodeGlobalConfigLocation());
+            validatorEngine.startValidator(node, node.getNodeGlobalConfigLocation());
         }
     }
 }

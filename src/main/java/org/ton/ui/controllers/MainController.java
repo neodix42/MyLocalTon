@@ -2135,7 +2135,7 @@ public class MainController implements Initializable {
                 String stopsWokring = "";
                 MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
                 if (isWindows()) {
-                    stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive. In comparison with Linux and MacOS versions of MyLocalTon, where you can remove validators until you maintain a two-thirds consensus, on Windows the whole blockchain stops working if you remove one validator.";
+                    stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive. In comparison with Linux and MacOS versions of MyLocalTon, where you can remove validators until you maintain a two-thirds consensus, on Windows the whole blockchain stops working if you remove one node. If consensus is met upon restart you will be fine.";
                 } else {
                     int cutoff = (int) Math.ceil(settings.getActiveNodes().size() * 66 / 100.0);
                     log.info("total active nodes {} vs minimum required {}", settings.getActiveNodes().size(), cutoff);
@@ -3519,27 +3519,25 @@ public class MainController implements Initializable {
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
 
-                    do {
-                        //delete unfinished or failed node creation
-                        FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
+                    //delete unfinished or failed node creation
+                    FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
 
-                        MyLocalTon.getInstance().createFullnode(node, true, true);
-                    } while (Utils.waitForNodeExited(node)); //up to 5 minutes
+                    MyLocalTon.getInstance().createFullnode(node, true, true);
 
                     Tab newTab = Utils.getNewNodeTab();
                     Platform.runLater(() -> {
                         validationTabs.getTabs().add(newTab);
                     });
 
-                    if (isWindows()) {
-                        Utils.waitForBlockchainReady(node);
-                        Utils.waitForNodeSynchronized(node);
-                    }
+//                    if (isWindows()) {
+//                        Utils.waitForBlockchainReady(node);
+//                        Utils.waitForNodeSynchronized(node);
+//                    }
 
                     settings.getActiveNodes().add(node.getNodeName());
                     MyLocalTon.getInstance().saveSettingsToGson();
 
-                    showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been successfully created, now synchronizing and creating main validator's wallet.");
+                    showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been cloned from genesis, now synchronizing and creating main wallet.");
 
                     log.info("Creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
                     WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);

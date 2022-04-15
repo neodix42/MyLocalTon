@@ -327,7 +327,7 @@ public class Utils {
                 if (nonNull(App.dbPool)) {
                     App.dbPool.closeDbs();
                 }
-                
+
                 Main.fileLock.release();
                 Main.randomAccessFile.close();
                 FileUtils.deleteQuietly(Main.file);
@@ -527,6 +527,7 @@ public class Utils {
             lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
             log.error("{} is not ready", node.getNodeName());
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
+        node.setFlag("cloned");
     }
 
     public static boolean waitForNodeExited(Node node) throws Exception {
@@ -985,6 +986,29 @@ public class Utils {
                 log.error("cannot get folder size on linux {}", path);
                 return resultInput;
             }
+        }
+    }
+
+    public static void doDelete(String nodeName) {
+        try {
+            log.info("deleting node {}", nodeName);
+            Node node = MyLocalTon.getInstance().getSettings().getNodeByName(nodeName);
+            MyLocalTon.getInstance().getSettings().getActiveNodes().remove(nodeName);
+
+            // clean wallet db and UI
+            Utils.deleteWalletByFullAddress(node.getWalletAddress().getFullWalletAddress());
+
+            // clean settings
+            Utils.resetNodeSettings(node.getNodeName());
+
+            if (node.nodeShutdownAndDelete()) {
+                mainController.validationTabs.getTabs().remove(mainController.getNodeTabByName(nodeName));
+            } else {
+                App.mainController.showErrorMsg("Error deleting validator " + nodeName, 3);
+            }
+        } catch (InterruptedException e) {
+            log.error("Cannot shutdown and delete {}", nodeName);
+            log.error(ExceptionUtils.getStackTrace(e));
         }
     }
 }
