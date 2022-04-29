@@ -191,46 +191,6 @@ public class MyLocalTon {
         }, 0L, 15L, TimeUnit.SECONDS);
     }
 
-    /**
-     * Checks whether all processes and threads up and running
-     * TODO replace with onExit callback
-     */
-    public void runValidatorsProcessMonitor() {
-        log.info("Starting validators monitor");
-
-        validatorsMonitor = Executors.newSingleThreadScheduledExecutor();
-        validatorsMonitor.scheduleWithFixedDelay(() -> {
-            Thread.currentThread().setName("MyLocalTon - Validators Monitor");
-            for (String nodeName : settings.getActiveNodes()) {
-                Node node = settings.getNodeByName(nodeName);
-
-                if (node.getStatus().equals("not ready") && node.getNodeProcess().exitValue() > 0) {
-                    log.info("{} exit value {}", node.getNodeName(), node.getNodeProcess().exitValue());
-                    if (node.getFlag().equals("cloned")) {
-                        log.info("re-starting validator {}...", nodeName);
-                        long pid = new ValidatorEngine().startValidator(node, node.getNodeGlobalConfigLocation()).pid();
-                        log.info("re-started validator {} with pid {}", nodeName, pid);
-                    } else {
-                        if (!node.getNodeName().equals("genesis")) {
-                            log.info("failed {} creation, delete it", node.getNodeName());
-                            ExecutorService service = Executors.newSingleThreadExecutor();
-                            service.execute(() -> {
-                                Utils.doDelete(node.getNodeName());
-                                mainController.showDialogMessage("Error", "Validator " + node.getNodeName() + " could not be created. For more information refer to the log files.");
-                            });
-                            service.shutdown();
-                        }
-                    }
-                    try {
-                        Thread.sleep(5 * 1000);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }, 0L, VALIDATION_GUI_REFRESH_SECONDS, TimeUnit.SECONDS);
-    }
-
     public static final class AtomicBigInteger {
 
         private final AtomicReference<BigInteger> valueHolder = new AtomicReference<>();

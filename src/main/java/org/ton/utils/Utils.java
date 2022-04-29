@@ -70,7 +70,6 @@ import java.util.regex.Pattern;
 import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.ton.actions.MyLocalTon.validatorsMonitor;
 import static org.ton.executors.liteclient.LiteClientParser.*;
 import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
@@ -306,10 +305,7 @@ public class Utils {
     public static boolean doShutdown() {
         try {
             int endCounter = 1;
-            if (nonNull(validatorsMonitor)) {
-                validatorsMonitor.shutdownNow();
-            }
-            Thread.sleep(200);
+
             while (Main.inElections.get()) {
                 Thread.sleep(1000);
                 log.info("Waiting for requests in elections to be processed, {}/15", endCounter);
@@ -1001,10 +997,10 @@ public class Utils {
             // clean settings
             Utils.resetNodeSettings(node.getNodeName());
 
-            if (node.nodeShutdownAndDelete()) {
+            if (node.nodeShutdown()) {
                 mainController.validationTabs.getTabs().remove(mainController.getNodeTabByName(nodeName));
             } else {
-                App.mainController.showErrorMsg("Error deleting validator " + nodeName, 3);
+                App.mainController.showErrorMsg("Error deleting validator " + nodeName, 5);
             }
         } catch (InterruptedException e) {
             log.error("Cannot shutdown and delete {}", nodeName);
