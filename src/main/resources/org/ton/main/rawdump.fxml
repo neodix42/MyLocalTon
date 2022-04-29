@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.paint.*?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1"
-            xmlns="http://javafx.com/javafx/11.0.2" fx:controller="org.ton.ui.controllers.RawDumpController">
+            xmlns="http://javafx.com/javafx/17.0.2" fx:controller="org.ton.ui.controllers.RawDumpController">
     <center>
         <SwingNode fx:id="swingid">
 

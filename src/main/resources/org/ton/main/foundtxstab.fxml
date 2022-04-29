@@ -4,7 +4,7 @@
 <?import com.jfoenix.controls.JFXListView?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<Tab fx:id="foundtxstab" text="TXs/Messages" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1">
+<Tab fx:id="foundtxstab" text="TXs/Messages" xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1">
     <BorderPane fx:id="foundtxsbp" prefHeight="592.0" prefWidth="1079.0" style="-fx-background-color: dbedff; -fx-padding: 0 0 0 0;" xmlns:fx="http://javafx.com/fxml/1">
         <top>
             <VBox prefHeight="595.0" prefWidth="1079.0">

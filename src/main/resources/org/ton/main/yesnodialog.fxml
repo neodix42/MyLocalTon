@@ -4,8 +4,8 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="285.0" prefWidth="577.0" stylesheets="@../css/global-font.css"
-           xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.YesNoController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="524.0" stylesheets="@../css/global-font.css"
+           xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.YesNoController">
     <GridPane>
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="394.0" minWidth="10.0" prefWidth="394.0"/>

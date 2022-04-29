@@ -175,8 +175,6 @@ public class App extends Application {
 
         myLocalTon.runValidationMonitor();
 
-        myLocalTon.runValidatorsProcessMonitor();
-
         mainController.addValidatorBtn.setDisable(false);
     }
 }
