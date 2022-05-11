@@ -65,13 +65,13 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${openjfx.version}</version>
-            <classifier>linux</classifier>
+            <classifier>linux-aarch64</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${openjfx.version}</version>
-            <classifier>mac</classifier>
+            <classifier>mac-aarch64</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -90,14 +90,9 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
             <version>${openjfx.version}</version>
-            <classifier>linux</classifier>
+            <classifier>linux-aarch64</classifier>
         </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-            <version>${openjfx.version}</version>
-            <classifier>mac</classifier>
-        </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
