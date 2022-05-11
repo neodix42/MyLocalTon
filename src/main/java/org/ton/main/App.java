@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
@@ -41,6 +42,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         log.info("Starting application");
+
         fxmlLoader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/main.fxml"));
         root = fxmlLoader.load();
         scene = new Scene(root);
@@ -49,6 +51,7 @@ public class App extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
+
         primaryStage.setOnShown(windowEvent -> {
             log.debug("onShown, stage loaded");
 
@@ -60,6 +63,7 @@ public class App extends Application {
                 Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L));
             }
         });
+
         primaryStage.show();
     }
 
@@ -160,9 +164,14 @@ public class App extends Application {
 
         myLocalTon.runBlockchainSizeMonitor();
 
-        mainController.showSuccessMsg("TON blockchain is ready!", 3);
+        while (isNull(mainController)) {
+            log.info("Waiting for UI to start...");
+            Thread.sleep(1000);
+        }
 
-        Thread.sleep(1000);
+        mainController.showSuccessMsg("TON blockchain is ready!", 2);
+
+        Thread.sleep(2100);
 
         myLocalTon.createPreInstalledWallets(genesisNode);
 
