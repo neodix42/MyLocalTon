@@ -19,8 +19,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Run tests
-        run: mvn test -Dtest=LiteClientParserTest,UtilsTest
       - name: Build with Maven
         run: mvn package -DskipTests
       - name: Upload artifact
