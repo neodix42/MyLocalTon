@@ -437,27 +437,56 @@ public class Utils {
         return false;
     }
 
-    public static String getUbuntuVersion() {
+    private static String executeLsbRelease() {
         try {
             Process proc = Runtime.getRuntime().exec("lsb_release -a");
             InputStream procOutput = proc.getInputStream();
 
             if (proc.waitFor() == 0) {
-                String resultInput = IOUtils.toString(procOutput, Charset.defaultCharset());
-                log.debug("getUbuntuVersion: {}", resultInput);
-                if (resultInput.contains("20.04")) {
-                    return "20.04";
-                } else if (resultInput.contains("18.04")) {
-                    return "18.04";
-                } else {
-                    return "";
-                }
+                return IOUtils.toString(procOutput, Charset.defaultCharset());
             }
+            return "";
         } catch (Exception e) {
-            log.error("getUbuntuVersion error: {}", e.getMessage());
+            log.error("executeLsbRelease error: {}", e.getMessage());
             return "";
         }
-        return "";
+    }
+
+    private static String executeUname() {
+        try {
+            Process proc = Runtime.getRuntime().exec("uname -a");
+            InputStream procOutput = proc.getInputStream();
+
+            if (proc.waitFor() == 0) {
+                return IOUtils.toString(procOutput, Charset.defaultCharset());
+            }
+            return "";
+        } catch (Exception e) {
+            log.error("executeUname error: {}", e.getMessage());
+            return "";
+        }
+    }
+
+    public static String getUbuntuVersion() {
+
+        String lsb = executeLsbRelease();
+        String uname = executeUname();
+        if (lsb.contains("20.04")) {
+            if (uname.contains("aarch64")) {
+                return "20.04-arm64";
+            } else {
+                return "20.04";
+            }
+        } else if (lsb.contains("18.04")) {
+            if (uname.contains("aarch64")) {
+                log.error("Ubuntu 18.04 aarch64-arm64 is not supported.");
+                return "";
+            } else {
+                return "18.04";
+            }
+        } else {
+            return "";
+        }
     }
 
     public static String constructFullBlockSeq(Long wc, String shard, BigInteger seqno, String rootHash, String fileHash) {

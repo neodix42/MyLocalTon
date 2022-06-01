@@ -57,6 +57,8 @@ public class Extractor {
                 } else if (isUnix()) {
                     if (Utils.getUbuntuVersion().equals("20.04")) {
                         extractUbuntuBinaries("ubuntu20");
+                    } else if (Utils.getUbuntuVersion().equals("20.04-arm64")) {
+                        extractUbuntuBinaries("ubuntu20-arm64");
                     } else if (Utils.getUbuntuVersion().equals("18.04")) {
                         extractUbuntuBinaries("ubuntu18");
                     } else {
