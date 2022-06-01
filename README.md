@@ -2,8 +2,8 @@
 
 ## What is it
 
-This is your personal local TON blockchain (www.ton.org) in a shape of cross-platform desktop application. It comes in a form of uber-jar with all dependencies and binaries. Please
-notice this an alpha version and cannot be treated as production ready.
+This is your personal local TON blockchain (www.ton.org) in a shape of cross-platform desktop application. It comes in a form of uber-jar with all dependencies and binaries. Please notice this an
+alpha version and cannot be treated as production ready.
 
 ![demo animation](https://github.com/neodiX42/MyLocalTon/blob/main/screens/MyLocalTon-alpha-demo.gif)
 
@@ -13,6 +13,7 @@ notice this an alpha version and cannot be treated as production ready.
 |---|---|---|---|---|
 | Ubuntu 18.04  | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |
 | Ubuntu 20.04  | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:    |  |
+| Ubuntu 20.04 aarch64 | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
 | Debian 11.2  | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
 | MacOS 11.6.1 M1  | :heavy_check_mark:   | not tested   |  not tested | :heavy_check_mark:    |  |
 | MacOS 12.2.1 M1  | not tested   | not tested   |  not tested | :heavy_check_mark:    |  |
@@ -55,8 +56,8 @@ https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msv
 
 ## Installation and usage
 
-Download MyLocalTon.jar from https://github.com/neodiX42/MyLocalTon/actions. Click the latest successful build executed against `main` branch and find MyLocalTon under Artifacts
-section. Open console, go to the location where you have just placed the executable and execute the following command.
+Download MyLocalTon.jar from https://github.com/neodiX42/MyLocalTon/actions. Click the latest successful build executed against `main` branch and find MyLocalTon under Artifacts section. Open console,
+go to the location where you have just placed the executable and execute the following command.
 
 `java -jar MyLocalTon.jar`
 
@@ -68,8 +69,8 @@ On the page https://github.com/neodiX42/MyLocalTon/actions please take the build
 
 ## Upgrade
 
-Today upgrade is not supported, that means once you have a new version of MyLocalTon.jar just overwrite the existing MyLocalTon.jar and delete myLocalTon directory next to it. The
-upgrade functionality is in the backlog, so it will be implemented in future releases.
+Today upgrade is not supported, that means once you have a new version of MyLocalTon.jar just overwrite the existing MyLocalTon.jar and delete myLocalTon directory next to it. The upgrade
+functionality is in the backlog, so it will be implemented in future releases.
 
 ## Build from sources
 
