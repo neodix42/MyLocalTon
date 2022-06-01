@@ -73,12 +73,6 @@
             <version>${openjfx.version}</version>
             <classifier>mac-aarch64</classifier>
         </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-web</artifactId>
-            <version>${openjfx.version}</version>
-            <classifier>mac-aarch64</classifier>
-        </dependency>
 
         <dependency>
             <groupId>org.openjfx</groupId>
