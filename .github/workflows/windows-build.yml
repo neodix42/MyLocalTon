@@ -1,6 +1,6 @@
 name: Cross-platform build
 
-    
+
 on:
   workflow_dispatch:
   push:
