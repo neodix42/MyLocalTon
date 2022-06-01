@@ -57,6 +57,8 @@ public class Extractor {
                 } else if (isUnix()) {
                     if (Utils.getUbuntuVersion().equals("20.04")) {
                         extractUbuntuBinaries("ubuntu20");
+                    } else if (Utils.getUbuntuVersion().equals("20.04-arm64")) {
+                        extractUbuntuBinaries("ubuntu20-arm64");
                     } else if (Utils.getUbuntuVersion().equals("18.04")) {
                         extractUbuntuBinaries("ubuntu18");
                     } else {
@@ -188,10 +190,10 @@ public class Extractor {
         zipFile.extractAll(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
         Files.delete(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform + ".zip"));
 
-        log.debug("copy patched validator-engine");
-        InputStream ubuntuValidatorEngine = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/validator-engine-" + platform);
-        Files.copy(ubuntuValidatorEngine, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "validator-engine"), StandardCopyOption.REPLACE_EXISTING);
-        ubuntuValidatorEngine.close();
+//        log.debug("copy patched validator-engine");
+//        InputStream ubuntuValidatorEngine = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/validator-engine-" + platform);
+//        Files.copy(ubuntuValidatorEngine, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "validator-engine"), StandardCopyOption.REPLACE_EXISTING);
+//        ubuntuValidatorEngine.close();
 
         new ProcessBuilder("chmod", "755", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "create-hardfork").start();
         new ProcessBuilder("chmod", "755", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "create-state").start();
