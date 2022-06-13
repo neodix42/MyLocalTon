@@ -471,7 +471,13 @@ public class Utils {
 
         String lsb = executeLsbRelease();
         String uname = executeUname();
-        if (lsb.contains("20.04")) {
+        if (lsb.contains("22.04")) {
+            if (uname.contains("aarch64")) {
+                return "22.04-arm64";
+            } else {
+                return "22.04";
+            }
+        } else if (lsb.contains("20.04")) {
             if (uname.contains("aarch64")) {
                 return "20.04-arm64";
             } else {
