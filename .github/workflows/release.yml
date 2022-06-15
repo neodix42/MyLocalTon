@@ -19,34 +19,45 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+
       - name: Build with Maven
         run: mvn package -DskipTests
+
       - name: Upload artifact
         run: mkdir MyLocalTon && cp target/MyLocalTon.jar MyLocalTon
       - uses: actions/upload-artifact@v2
         with:
           name: MyLocalTon
           path: MyLocalTon
+
+      - name: Read CHANGELOG.md and use it as a body of new release
+        id: read_release
+        shell: bash
+        run: |
+          r=$(cat CHANGELOG.md)
+          r="${r//'%'/'%25'}"
+          r="${r//$'\n'/'%0A'}"
+          r="${r//$'\r'/'%0D'}"
+          echo "::set-output name=CHANGELOG_BODY::$r"
+          
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.run_number }}
+          tag_name: v${{ github.run_number }}-${GITHUB_REF##*/}
           release_name: Release ${{ github.run_number }}
           body: |
-            Changes in this Release
-            - First Change
-            - Second Change
+            ${{ steps.read_release.outputs.CHANGELOG_BODY }}
           draft: false
           prerelease: true
+          
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon.jar
-          asset_name: MyLocalTon
-          tag: ${{ github.run_number }}
+          asset_name: MyLocalTon.jar
+          tag: v${{ github.run_number }}-${GITHUB_REF##*/}
           overwrite: true
-          body: "This is my release text"
