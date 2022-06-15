@@ -39,14 +39,19 @@ jobs:
           r="${r//$'\n'/'%0A'}"
           r="${r//$'\r'/'%0D'}"
           echo "::set-output name=CHANGELOG_BODY::$r"
-          
+
+      - name: Get the current branch name
+        shell: bash
+        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+        id: myref
+    
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.run_number }}-${GITHUB_REF##*/}
+          tag_name: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           release_name: Release ${{ github.run_number }}
           body: |
             ${{ steps.read_release.outputs.CHANGELOG_BODY }}
@@ -59,5 +64,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon.jar
           asset_name: MyLocalTon.jar
-          tag: v${{ github.run_number }}-${GITHUB_REF##*/}
+          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
