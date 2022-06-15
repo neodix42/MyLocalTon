@@ -44,7 +44,7 @@ jobs:
         shell: bash
         run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
         id: myref
-    
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -52,12 +52,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          release_name: Release ${{ github.run_number }}
+          release_name: MyLocalTon v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           body: |
             ${{ steps.read_release.outputs.CHANGELOG_BODY }}
           draft: false
           prerelease: true
-          
+
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
