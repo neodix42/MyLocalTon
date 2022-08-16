@@ -1,3 +1,3 @@
 ### Changes in this release
-- aa
-- ba
+- added CHANGELOG.md
+- added github action to automatically build releases
