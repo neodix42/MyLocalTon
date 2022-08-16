@@ -57,13 +57,23 @@ public class Extractor {
                 } else if (isUnix()) {
                     if (Utils.getUbuntuVersion().equals("20.04")) {
                         extractUbuntuBinaries("ubuntu20");
-                    } else if (Utils.getUbuntuVersion().equals("20.04-arm64")) {
+                    }
+                    else if (Utils.getUbuntuVersion().equals("20.04-arm64")) {
                         extractUbuntuBinaries("ubuntu20-arm64");
-                    } else if (Utils.getUbuntuVersion().equals("18.04")) {
+                    }
+                    else if (Utils.getUbuntuVersion().equals("18.04")) {
                         extractUbuntuBinaries("ubuntu18");
-                    } else if (Utils.getUbuntuVersion().equals("22.04")) {
+                    }
+                    else if (Utils.getUbuntuVersion().equals("18.04-arm64")) {
+                        extractUbuntuBinaries("ubuntu18-arm64");
+                    }
+                    else if (Utils.getUbuntuVersion().equals("22.04")) {
                         extractUbuntuBinaries("ubuntu22");
-                    } else {
+                    }
+                    else if (Utils.getUbuntuVersion().equals("22.04-arm64")) {
+                        extractUbuntuBinaries("ubuntu22-arm64");
+                    }
+                    else {
                         log.error("This Linux system officially is not supported, but let's try to run TON binaries compiled on Ubuntu 20.04");
                         extractUbuntuBinaries("ubuntu20");
                     }
