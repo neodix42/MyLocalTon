@@ -59,16 +59,16 @@ https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msv
 
 ## Installation and usage
 
-Download MyLocalTon.jar from https://github.com/neodiX42/MyLocalTon/actions. Click the latest successful build executed against `main` branch and find MyLocalTon under Artifacts section. Open console,
-go to the location where you have just placed the executable and execute the following command.
+### For x86_64 architecture
+Go to https://github.com/neodiX42/MyLocalTon/releases. Open Assets section and download MyLocalTon.jar.
+
+Open console and execute the following command:
 
 `java -jar MyLocalTon.jar`
 
-Make sure you have write rights inside the directory.
+### For aarch64/arm64 architecture (MacOS M1 and Linux)
 
-### For MacOS M1 and Linux users with aarch64 architecture
-
-On the page https://github.com/neodiX42/MyLocalTon/actions please take the build from the branch `arm64-aarch64`
+Go to https://github.com/neodiX42/MyLocalTon/releases and select version with `arm64-aarch64` prefix.
 
 ## Upgrade
 
