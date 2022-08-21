@@ -1,3 +1,2 @@
 ### Changes in this release
-- binaries updated to 2022.08
-- update installation details
+- fix missing validator-engine for MacOS arm64
