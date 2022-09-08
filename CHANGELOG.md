@@ -1,2 +1,3 @@
 ### Changes in this release
-- fix missing validator-engine for MacOS arm64
+
+- bug fixing; handle error retrieving seqno; https://github.com/neodiX42/MyLocalTon/issues/7

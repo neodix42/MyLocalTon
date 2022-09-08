@@ -171,8 +171,10 @@ public class YesNoController implements Initializable {
                         MyLocalTon.getInstance().getSettings().getWalletSettings().getInitialAmount(),
                         false);
 
-                if (nonNull(walletEntity)) {
+                if (nonNull(walletEntity) && walletEntity.getSeqno() != -1L) {
                     App.mainController.showSuccessMsg("Wallet " + walletEntity.getFullAddress() + " created", 3);
+                } else {
+                    App.mainController.showErrorMsg("Error creating wallet " + walletEntity.getFullAddress() + ". See logs for details.", 4);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
