@@ -29,6 +29,7 @@ import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.enums.LiteClientEnum;
+import org.ton.exceptions.WrongSeqnoException;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
@@ -411,7 +412,7 @@ public class MyLocalTon {
                 wallet.setSeqno(stateAndSeqno.getRight());
                 updateAccountsTabGui(wallet);
             } catch (Exception e) {
-                log.error("Error updating account state. Wallet {}, AccountState {}, seqno {}", wallet.getWallet().getFullWalletAddress(), stateAndSeqno.getLeft(), stateAndSeqno.getRight());
+                log.error("Error updating account state. Wallet {}, AccountState {}, seqno {}. {}", wallet.getWallet().getFullWalletAddress(), stateAndSeqno.getLeft(), stateAndSeqno.getRight(), e.getMessage());
             }
         }
     }
@@ -676,7 +677,7 @@ public class MyLocalTon {
                     tx.getTxSeqno(), tx.getLt(), lastBlock.getShortBlockSeqno());
             WalletEntity walletEntity = insertNewAccountEntity(lastBlock, txDetails);
 
-            if (updateGuiNow) {
+            if (updateGuiNow && !isNull(walletEntity)) {
                 updateAccountsTabGui(walletEntity);
             }
         }
@@ -1176,52 +1177,56 @@ public class MyLocalTon {
 
     public WalletEntity insertNewAccountEntity(ResultLastBlock lastBlock, Transaction txDetails) {
 
-        //AccountState accountState = LiteClientParser.parseGetAccount(LiteClientExecutor.getInstance().executeGetAccount(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr()));
-        Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-        log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
+        try {
+            Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
+            log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
 
-        Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(stateAndSeqno.getLeft());
+            Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(stateAndSeqno.getLeft());
 
-        WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
-                .wc(lastBlock.getWc())
-                .hexAddress(txDetails.getAccountAddr())
-                .build());
-
-        if (isNull(foundWallet)) {
-
-            WalletAddress wa = new Fift().convertAddr(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-
-            WalletAddress walletAddress = WalletAddress.builder()
+            WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
                     .wc(lastBlock.getWc())
-                    .hexWalletAddress(txDetails.getAccountAddr())
-                    .subWalletId(walletVersionAndId.getRight())
-                    .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr())
-                    .bounceableAddressBase64url(wa.getBounceableAddressBase64url())
-                    .nonBounceableAddressBase64Url(wa.getNonBounceableAddressBase64Url())
-                    .bounceableAddressBase64(wa.getBounceableAddressBase64())
-                    .nonBounceableAddressBase64(wa.getNonBounceableAddressBase64())
-                    .build();
+                    .hexAddress(txDetails.getAccountAddr())
+                    .build());
 
-            WalletEntity walletEntity = WalletEntity.builder()
-                    .wc(walletAddress.getWc())
-                    .hexAddress(walletAddress.getHexWalletAddress())
-                    .subWalletId(walletAddress.getSubWalletId())
-                    .walletVersion(walletVersionAndId.getLeft())
-                    .wallet(walletAddress)
-                    .accountState(stateAndSeqno.getLeft())
-                    .createdAt(txDetails.getNow())
-                    .build();
+            if (isNull(foundWallet)) {
 
-            App.dbPool.insertWallet(walletEntity);
+                WalletAddress wa = new Fift().convertAddr(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
 
-            return walletEntity;
-        } else {
-            foundWallet.setAccountState(stateAndSeqno.getLeft());
-            foundWallet.setSeqno(stateAndSeqno.getRight());
-            log.debug("Wallet found! Update state {}", foundWallet.getFullAddress()); // update state
-            App.dbPool.updateWalletStateAndSeqno(foundWallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
+                WalletAddress walletAddress = WalletAddress.builder()
+                        .wc(lastBlock.getWc())
+                        .hexWalletAddress(txDetails.getAccountAddr())
+                        .subWalletId(walletVersionAndId.getRight())
+                        .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr())
+                        .bounceableAddressBase64url(wa.getBounceableAddressBase64url())
+                        .nonBounceableAddressBase64Url(wa.getNonBounceableAddressBase64Url())
+                        .bounceableAddressBase64(wa.getBounceableAddressBase64())
+                        .nonBounceableAddressBase64(wa.getNonBounceableAddressBase64())
+                        .build();
 
-            return foundWallet;
+                WalletEntity walletEntity = WalletEntity.builder()
+                        .wc(walletAddress.getWc())
+                        .hexAddress(walletAddress.getHexWalletAddress())
+                        .subWalletId(walletAddress.getSubWalletId())
+                        .walletVersion(walletVersionAndId.getLeft())
+                        .wallet(walletAddress)
+                        .accountState(stateAndSeqno.getLeft())
+                        .createdAt(txDetails.getNow())
+                        .build();
+
+                App.dbPool.insertWallet(walletEntity);
+
+                return walletEntity;
+            } else {
+                foundWallet.setAccountState(stateAndSeqno.getLeft());
+                foundWallet.setSeqno(stateAndSeqno.getRight());
+                log.debug("Wallet found! Update state {}", foundWallet.getFullAddress()); // update state
+                App.dbPool.updateWalletStateAndSeqno(foundWallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
+
+                return foundWallet;
+            }
+        } catch (Exception e) {
+            log.error("Error executing insertNewAccountEntity: {}", e.getMessage());
+            return null;
         }
     }
 
@@ -1496,10 +1501,13 @@ public class MyLocalTon {
         }, 0L, 5L, TimeUnit.SECONDS);
     }
 
-    Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) {
+    Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) throws WrongSeqnoException {
         AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(node, address));
         if (nonNull(accountState.getBalance())) {
             long seqno = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
+            if (seqno == -1L) {
+                throw new WrongSeqnoException("Cannot retrieve seqno from contract " + address);
+            }
             return Pair.of(accountState, seqno);
         }
         return Pair.of(null, -1L);
