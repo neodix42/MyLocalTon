@@ -1294,6 +1294,9 @@ public class MyLocalTon {
                 c.blockslistviewid.getItems().remove(size - 1);
                 //concurrentHashMap.truncate
             }
+
+            blockRow.setStyle("-fx-background-color: #ffffff; -fx-border-style: " +
+                    "hidden hidden solid hidden; -fx-border-width: 2; -fx-border-color: #e7e7e7;");
             c.blockslistviewid.getItems().add(0, blockRow);
         }
     }
@@ -1458,8 +1461,14 @@ public class MyLocalTon {
         if (((Label) blockRow.lookup("#roothash")).getText().equals(searchFor)) {
             ((Label) blockRow.lookup("#roothash")).setTextFill(Color.GREEN);
         }
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        ((Label) blockRow.lookup("#createdat")).setText(formatter.format(new Date(new Timestamp(finalLastBlock.getCreatedAt() * 1000).getTime())));
+        //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm:ss");
+        //((Label) blockRow.lookup("#createdat")).setText(formatter.format(new Date(new Timestamp(finalLastBlock.getCreatedAt() * 1000).getTime())));
+
+        ((Label) blockRow.lookup("#createdatDate")).setText(formatterDate.format(new Date(new Timestamp(finalLastBlock.getCreatedAt() * 1000).getTime())));
+        ((Label) blockRow.lookup("#createdatTime")).setText(formatterTime.format(new Date(new Timestamp(finalLastBlock.getCreatedAt() * 1000).getTime())));
+
     }
 
     public void insertBlockEntity(ResultLastBlock lastBlock) {

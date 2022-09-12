@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -60,9 +61,13 @@ public class BlockController {
     @FXML
     public Label shard;
 
+    //@FXML
+    //public Label createdat;
     @FXML
-    public Label createdat;
+    public Label createdatDate;
 
+    @FXML
+    public Label createdatTime;
     @FXML
     public Label filehash;
 
@@ -87,7 +92,7 @@ public class BlockController {
     @FXML
     void blockInfoBtn() throws Exception {
 
-        long createdAt = Utils.datetimeToTimestamp(createdat.getText());
+        long createdAt = Utils.datetimeToTimestamp(createdatDate.getText() + " " + createdatTime.getText());
         log.debug("click seqno {}, createdAt {}, formatted {}", seqno.getText(), createdAt, Utils.toUtcNoSpace(createdAt));
 
         Node node = MyLocalTon.getInstance().getSettings().getGenesisNode();

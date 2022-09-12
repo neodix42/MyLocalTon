@@ -97,33 +97,41 @@
                             </HBox>
                         </Group>
                     </graphic>
-                    <BorderPane prefHeight="616.0" prefWidth="1079.0" style="-fx-background-color: dbedff;" xmlns:fx="http://javafx.com/fxml/1">
-                        <top>
-                            <VBox prefHeight="620.0" prefWidth="1079.0">
-                                <HBox prefHeight="44.0" BorderPane.alignment="CENTER">
-                                    <VBox prefHeight="55.0" prefWidth="99.0">
-                                        <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SEQNO"/>
-                                    </VBox>
-                                    <VBox prefHeight="55.0" prefWidth="99.0">
-                                        <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center; -fx-font-size: 16;" text="WORKCHAIN"/>
-                                    </VBox>
-                                    <VBox prefHeight="55.0" prefWidth="183.0">
-                                        <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="183.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SHARD"/>
-                                    </VBox>
-                                    <VBox prefHeight="55.0" prefWidth="160.0">
-                                        <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="MINED ON"/>
-                                    </VBox>
-                                    <VBox prefHeight="55.0" prefWidth="430.0">
-                                        <Label prefHeight="48.0" prefWidth="430.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FILE AND ROOT HASHES"/>
-                                    </VBox>
-                                </HBox>
-                                <JFXListView fx:id="blockslistviewid" focusTraversable="false" maxHeight="-Infinity" onScroll="#blocksOnScroll" prefHeight="583.0"
-                                             prefWidth="1079.0" style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
-                                    <!-- add dynamic content here -->
-                                </JFXListView>
-                            </VBox>
-                        </top>
-                    </BorderPane>
+                    <AnchorPane prefHeight="616.0" prefWidth="1079.0" style="-fx-background-color: #EFEFEF"
+                                xmlns:fx="http://javafx.com/fxml/1">
+                        <children>
+                            <AnchorPane fx:id="blocksPane" layoutX="62.0" layoutY="30.0" prefHeight="580.0" prefWidth="1039.0"
+                                  style="-fx-background-color: #FFFFFF; -fx-background-radius: 10;"
+                                  AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
+
+                                <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                                    <HBox prefHeight="44.0" BorderPane.alignment="CENTER" >
+                                        <VBox prefHeight="55.0" prefWidth="99.0">
+                                            <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SEQNO"/>
+                                        </VBox>
+                                        <VBox prefHeight="55.0" prefWidth="99.0">
+                                            <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center; -fx-font-size: 16;" text="WORKCHAIN"/>
+                                        </VBox>
+                                        <VBox prefHeight="55.0" prefWidth="183.0">
+                                            <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="183.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SHARD"/>
+                                        </VBox>
+                                        <VBox prefHeight="55.0" prefWidth="160.0">
+                                            <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="MINED ON"/>
+                                        </VBox>
+                                        <VBox prefHeight="55.0" prefWidth="430.0">
+                                            <Label prefHeight="48.0" prefWidth="430.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FILE AND ROOT HASHES"/>
+                                        </VBox>
+                                    </HBox>
+                                    <JFXListView fx:id="blockslistviewid" focusTraversable="false" maxHeight="-Infinity"
+                                                 onScroll="#blocksOnScroll" prefHeight="543.0"
+                                                 layoutX="10"
+                                                 prefWidth="1019.0" style="-fx-background-color: #FFFFFF;">
+                                        <!-- add dynamic content here -->
+                                    </JFXListView>
+                                </VBox>
+                            </AnchorPane>
+                        </children>
+                    </AnchorPane>
                 </Tab>
                 <Tab fx:id="transactionsTab">
                     <graphic>
@@ -2261,8 +2269,35 @@
                         </Tab>
                     </JFXTabPane>
                 </Tab>
+
+                <Tab fx:id="emptyTab1" disable="true">
+                    <graphic>
+                        <Group>
+                            <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="48.0" prefWidth="209.0" rotate="90.0">
+
+                                <Label text="Lite Server" textFill="WHITE">
+                                    <font>
+                                        <Font size="19.0"/>
+                                    </font>
+                                    <HBox.margin>
+                                        <Insets left="10.0"/>
+                                    </HBox.margin>
+                                </Label>
+                            </HBox>
+                        </Group>
+                    </graphic>
+
+                </Tab>
             </JFXTabPane>
         </center>
+<!--        <left>-->
+<!--            <VBox>-->
+<!--                <Label alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="100" style="-fx-background-color: #bcbcbc;" BorderPane.alignment="BOTTOM_LEFT" text="Lite Server"/>-->
+<!--                <Label alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="100" style="-fx-background-color: #bcbcbc;" BorderPane.alignment="BOTTOM_LEFT" text="Current Block"/>-->
+<!--                <Label alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="100" style="-fx-background-color: #bcbcbc;" BorderPane.alignment="BOTTOM_LEFT" text="Shards"/>-->
+<!--                <Label alignment="CENTER_LEFT" prefHeight="39.0" prefWidth="100" style="-fx-background-color: #bcbcbc;" BorderPane.alignment="BOTTOM_LEFT" text="Size"/>-->
+<!--            </VBox>-->
+<!--        </left>-->
         <bottom>
             <Label fx:id="statusBar" alignment="CENTER" prefHeight="39.0" prefWidth="1335.0" style="-fx-background-color: #dbedff;" BorderPane.alignment="CENTER"/>
         </bottom>
