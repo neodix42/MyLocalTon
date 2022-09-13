@@ -78,16 +78,18 @@ public class BlockController {
     public Label roothash;
     String style;
 
-    @FXML
-    void handleMouseEnter() {
-        style = blockRowBorderPane.getStyle();
-        blockRowBorderPane.setStyle("-fx-background-color: bedef4;");
-    }
+    //@FXML
+    //void handleMouseEnter() {
+        //style = blockRowBorderPane.getStyle();
+        //blockRowBorderPane.setStyle("-fx-background-color: #F0F2F6;");
+        //blockRowBorderPane.setStyle("-fx-background-color: #F0F2F6; -fx-border-style: " +
+        //        "hidden hidden solid hidden; -fx-border-width: 2; -fx-border-color: #e7e7e7;");
+    //}
 
-    @FXML
-    void handleMouseExit() {
-        blockRowBorderPane.setStyle(style);
-    }
+    //@FXML
+    //void handleMouseExit() {
+    //    blockRowBorderPane.setStyle(style);
+    //}
 
     @FXML
     void blockInfoBtn() throws Exception {

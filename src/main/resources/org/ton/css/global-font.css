@@ -76,13 +76,3 @@
     -fx-control-inner-background: transparent;
     -fx-background-color: rgba(255, 255, 255, 0.1);
 }
-
-.background-info-button:hover {
-    -fx-background-color: #E9F1FD;
-    -size: 30;
-    -fx-min-height: -size;
-    -fx-min-width: -size;
-    -fx-max-height: -size;
-    -fx-max-width: -size;
-    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
-}

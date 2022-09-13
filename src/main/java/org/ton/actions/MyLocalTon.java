@@ -1268,7 +1268,8 @@ public class MyLocalTon {
                         return;
                     }
                     if (finalLastBlock.getWc() == -1L) {
-                        (blockRow.lookup("#blockRowBorderPane")).setStyle("-fx-background-color: #e9f4ff;");
+                        //(blockRow.lookup("#blockRowBorderPane")).setStyle("-fx-background-color: #e9f4ff;");
+                        (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("block-row-pane-gray");
                     }
 
                     showInGuiOnlyUniqueBlocks(c, finalLastBlock, blockRow);
@@ -1295,8 +1296,8 @@ public class MyLocalTon {
                 //concurrentHashMap.truncate
             }
 
-            blockRow.setStyle("-fx-background-color: #ffffff; -fx-border-style: " +
-                    "hidden hidden solid hidden; -fx-border-width: 2; -fx-border-color: #e7e7e7;");
+            //blockRow.setStyle("-fx-background-color: #ffffff; -fx-border-style: " +
+            //        "hidden hidden solid hidden; -fx-border-width: 2; -fx-border-color: #e7e7e7;");
             c.blockslistviewid.getItems().add(0, blockRow);
         }
     }
@@ -1331,7 +1332,9 @@ public class MyLocalTon {
                 populateBlockRowWithData(resultLastBlock, blockRow, searchFor);
 
                 if (resultLastBlock.getWc() == -1L) {
-                    blockRow.setStyle("-fx-background-color: e9f4ff;");
+                    //blockRow.setStyle("-fx-background-color: e9f4ff;");
+                    blockRow.getStyleClass().add("block-row-pane-gray");
+                    //(blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("block-row-pane-gray");
                 }
                 log.debug("adding block to found gui {} roothash {}", block.getSeqno(), block.getRoothash());
 

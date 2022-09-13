@@ -10,10 +10,12 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.WebView?>
 <?import java.net.URL?>
+<?import java.lang.String?>
 <StackPane fx:id="superWindow" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.MainController">
     <BorderPane id="main" fx:id="mainWindow" maxHeight="720.0" prefHeight="722.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1">
         <stylesheets>
             <URL value="@../css/global-font.css"/>
+            <URL value="@../css/main-styles.css"/>
         </stylesheets>
         <top>
             <HBox fx:id="topbar" prefHeight="58.0" prefWidth="600.0" style="-fx-background-color: #303757;" BorderPane.alignment="CENTER">
@@ -107,19 +109,44 @@
                                 <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                                     <HBox prefHeight="44.0" BorderPane.alignment="CENTER" >
                                         <VBox prefHeight="55.0" prefWidth="99.0">
-                                            <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SEQNO"/>
+                                            <Label prefHeight="48.0" prefWidth="99.0" text="SEQNO">
+                                                <styleClass>
+                                                    <String fx:value="main-label-font" />
+                                                    <String fx:value="content-label-size" />
+                                                </styleClass>
+                                            </Label>
                                         </VBox>
                                         <VBox prefHeight="55.0" prefWidth="99.0">
-                                            <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center; -fx-font-size: 16;" text="WORKCHAIN"/>
+                                            <Label prefHeight="48.0" prefWidth="99.0" text="WORKCHAIN">
+                                                <styleClass>
+                                                    <String fx:value="main-label-font" />
+                                                    <String fx:value="content-label-size" />
+                                                </styleClass>
+                                            </Label>
                                         </VBox>
                                         <VBox prefHeight="55.0" prefWidth="183.0">
-                                            <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="183.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SHARD"/>
+                                            <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="183.0" text="SHARD">
+                                                <styleClass>
+                                                    <String fx:value="main-label-font" />
+                                                    <String fx:value="content-label-size" />
+                                                </styleClass>
+                                            </Label>
                                         </VBox>
                                         <VBox prefHeight="55.0" prefWidth="160.0">
-                                            <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="MINED ON"/>
+                                            <Label prefHeight="48.0" prefWidth="160.0" text="MINED ON">
+                                                <styleClass>
+                                                    <String fx:value="main-label-font" />
+                                                    <String fx:value="content-label-size" />
+                                                </styleClass>
+                                            </Label>
                                         </VBox>
                                         <VBox prefHeight="55.0" prefWidth="430.0">
-                                            <Label prefHeight="48.0" prefWidth="430.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FILE AND ROOT HASHES"/>
+                                            <Label prefHeight="48.0" prefWidth="430.0" text="FILE AND ROOT HASHES">
+                                                <styleClass>
+                                                    <String fx:value="main-label-font" />
+                                                    <String fx:value="content-label-size" />
+                                                </styleClass>
+                                            </Label>
                                         </VBox>
                                     </HBox>
                                     <JFXListView fx:id="blockslistviewid" focusTraversable="false" maxHeight="-Infinity"

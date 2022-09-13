@@ -1,0 +1,14 @@
+@font-face{
+    src: url("../fonts/Mulish-Bold.ttf");
+}
+
+.main-label-font {
+    -fx-font-family: "Mulish";
+    -fx-font-weight: 800;
+    -fx-text-fill: #303757;
+}
+
+.content-label-size {
+    -fx-alignment: center;
+    -fx-font-size: 16;
+}

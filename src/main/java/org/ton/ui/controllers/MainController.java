@@ -1302,11 +1302,14 @@ public class MainController implements Initializable {
 
                             MyLocalTon.getInstance().populateBlockRowWithData(resultLastBlock, blockRow, null);
 
-//                            if (resultLastBlock.getWc() == -1L) {
+                            if (resultLastBlock.getWc() == -1L) {
+                                (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("block-row-pane-gray");
 //                                blockRow.setStyle("-fx-background-color: e9f4ff;");
-//                            }
-                            blockRow.setStyle("-fx-background-color: #ffffff; -fx-border-style: " +
-                                    "hidden hidden solid hidden; -fx-border-width: 2; -fx-border-color: #e7e7e7;");
+                                //#F7F9FB
+                                //blockRow.setStyle("-fx-background-color: red; -fx-border-style: " +
+                                //        "hidden hidden solid hidden; -fx-border-width: 2; -fx-border-color: #e7e7e7;");
+                            }
+
                             log.debug("Adding block {} roothash {}", block.getSeqno(), block.getRoothash());
 
                             blockRows.add(blockRow);
