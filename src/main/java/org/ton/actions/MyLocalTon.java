@@ -461,7 +461,7 @@ public class MyLocalTon {
             String size = Utils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + MY_LOCAL_TON);
             log.debug("size {}", size);
             Platform.runLater(() -> {
-                c.dbSizeId.setText(size);
+                c.dbSizeId.setSecondaryText(size);
 
             });
         }, 0L, 60L, TimeUnit.SECONDS);
@@ -1236,8 +1236,8 @@ public class MyLocalTon {
         Platform.runLater(() -> {
             try {
                 // update GUI
-                c.shardsNum.setText(String.valueOf(shardsNum));
-                c.liteClientInfo.setText(String.format("%s:%s", settings.getGenesisNode().getPublicIp(), settings.getGenesisNode().getLiteServerPort()));
+                c.shardsNum.setSecondaryText(String.valueOf(shardsNum));
+                c.liteClientInfo.setSecondaryText(String.format("%s:%s", settings.getGenesisNode().getPublicIp(), settings.getGenesisNode().getLiteServerPort()));
             } catch (Exception e) {
                 log.error("error updating top bar gui, {}", e.getMessage());
             }
@@ -1253,7 +1253,7 @@ public class MyLocalTon {
             try {
                 // update top bar
                 if (finalLastBlock.getWc().equals(-1L)) {
-                    c.currentBlockNum.setText(finalLastBlock.getSeqno().toString());
+                    c.currentBlockNum.setSecondaryText(finalLastBlock.getSeqno().toString());
                 }
 
                 if (Boolean.TRUE.equals(autoScroll)) {
@@ -1359,8 +1359,8 @@ public class MyLocalTon {
 
         tab.setOnClosed(e -> {
             if (c.foundTabs.getTabs().isEmpty()) {
-                c.mainMenuTabs.getTabs().remove(c.searchTab);
-                c.mainMenuTabs.getSelectionModel().selectFirst();
+            //    c.mainMenuTabs.getTabs().remove(c.searchTab);
+            //    c.mainMenuTabs.getSelectionModel().selectFirst();
             }
         });
 

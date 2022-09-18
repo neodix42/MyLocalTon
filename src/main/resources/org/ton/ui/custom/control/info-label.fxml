@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+
+<fx:root type="javafx.scene.layout.HBox"  prefHeight="30.0" prefWidth="190.0"
+         xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml">
+   <children>
+      <Label fx:id="primaryLabel" prefHeight="30.0" style="-fx-font-weight: 800;" >
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="secondaryLabel" prefHeight="30.0"  >
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+   </children>
+</fx:root>

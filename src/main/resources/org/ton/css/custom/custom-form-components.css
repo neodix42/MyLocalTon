@@ -1,0 +1,32 @@
+.jfx-text-field {
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 16px;
+}
+.jfx-text-field .input-line{
+	-fx-pref-height: 0px;
+}
+
+.jfx-text-field .input-focused-line{
+	-fx-pref-height: 0px;
+}
+
+.jfx-combo-box {
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 16px;
+}
+.jfx-combo-box .input-line{
+	-fx-pref-height: 0px;
+}
+
+.jfx-combo-box .input-focused-line{
+	-fx-pref-height: 0px;
+}
+
+.textfield-background {
+    -fx-padding: 10 0 10 0;
+    -fx-border-style: solid;
+    -fx-border-width: 1;
+    -fx-border-insets: 0;
+    -fx-border-radius: 10;
+    -fx-border-color: #888888;
+}

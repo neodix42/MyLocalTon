@@ -1,0 +1,49 @@
+.background-pane {
+    -fx-background-color: #FFFFFF;
+}
+
+.lock-pane {
+    -fx-background-color: black;
+    -fx-opacity: 0.2;
+}
+
+.modal-pane {
+    -fx-background-radius: 20;
+    -fx-background-color: white;
+}
+
+.modal-pane-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #303757;
+    -fx-font-weight: bold;
+}
+
+.modal-pane-content-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #1F1F1F;
+}
+
+.submenu-button {
+    -fx-font-size: 14px;
+}
+
+.content-pane {
+    -fx-background-color: White;
+    -fx-background-radius: 10;
+}
+
+.custom-button-svg {
+    -fx-fill: #F7F9FB;
+}
+
+.custom-button-btn {
+    -fx-background-radius: 40;
+    -fx-background-color: #0088CC;
+    -fx-text-fill: #F7F9FB;
+    -fx-font-size: 16px;
+}
+
+.no-transactions-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #6E6E6E;
+}

@@ -1,0 +1,18 @@
+.menu-button {
+    -fx-background-radius: 10;
+    -fx-background-color: #FFFFFF;
+}
+
+.menu-button:hover {
+    -fx-background-radius: 10;
+    -fx-background-color: #F7F9FB;
+}
+
+.svg-path {
+    -fx-fill: #0088CC;
+}
+
+.main-label {
+    -fx-font-size: 16px;
+    -fx-padding: 0 0 0 10;
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Line?>
+<?import java.net.URL?>
+<?import javafx.scene.control.CheckBox?>
+<?import org.ton.ui.custom.control.CustomTextField?>
+<?import org.ton.ui.custom.control.CustomButton?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
+            prefHeight="720.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx/18"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.ton.ui.custom.layout.SendCoinPane" >
+
+   <stylesheets>
+      <URL value="@../../../css/custom/main-layout.css" />
+      <URL value="@../../../css/custom/send-coin-pane.css" />
+   </stylesheets>
+
+   <children>
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
+                  prefHeight="720.0" prefWidth="1335.0" styleClass="lock-pane" />
+
+      <AnchorPane prefHeight="350.0" prefWidth="510.0"
+                  styleClass="modal-pane"
+                  AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="200.0">
+         <children>
+            <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Send TonCoins" styleClass="modal-pane-label"
+                   AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0">
+            </Label>
+            <Line endX="510.0" layoutY="60.0" stroke="#888888" />
+
+            <CustomTextField prefWidth="450.0" layoutY="80.0" layoutX="30.0" editableField="false" fieldText="OQBQ3neZwaHb681Jj+1Ja6ONUewNDTivLRgWTbgyZ/hXW5gM" />
+
+            <CustomTextField fieldPromptText="Amount" prefWidth="450.0" layoutY="140.0" layoutX="30.0" />
+
+            <CustomTextField fieldPromptText="Message" prefWidth="450.0" layoutY="200.0" layoutX="30.0" />
+
+            <CheckBox layoutX="30.0" layoutY="260.0" text="Bounce Flag" />
+
+            <CustomButton text="Send" prefWidth="100" layoutX="205" layoutY="300" />
+
+         </children>
+      </AnchorPane>
+
+
+   </children>
+</AnchorPane>

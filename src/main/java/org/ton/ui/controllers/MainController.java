@@ -1,6 +1,7 @@
 package org.ton.ui.controllers;
 
 import com.jfoenix.controls.*;
+import com.objectdb.o.STR;
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.application.Platform;
@@ -47,6 +48,8 @@ import org.ton.executors.liteclient.api.config.Validator;
 import org.ton.main.App;
 import org.ton.parameters.ValidationParam;
 import org.ton.settings.*;
+import org.ton.ui.custom.control.CustomInfoLabel;
+import org.ton.ui.custom.layout.CustomMainLayout;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
 
@@ -84,28 +87,28 @@ public class MainController implements Initializable {
     public StackPane superWindow;
 
     @FXML
-    public BorderPane mainWindow;
+    public CustomMainLayout mainLayout;
 
-    @FXML
-    public JFXTabPane mainMenuTabs;
+    //@FXML
+    //public JFXTabPane mainMenuTabs;
 
     @FXML
     public JFXTabPane settingTabs;
 
     @FXML
-    public Label currentBlockNum;
+    public CustomInfoLabel currentBlockNum;
 
     @FXML
-    public Label liteClientInfo;
+    public CustomInfoLabel liteClientInfo;
 
     @FXML
-    public Label shardsNum;
+    public CustomInfoLabel shardsNum;
+
+    @FXML
+    public CustomInfoLabel dbSizeId;
 
     @FXML
     public ImageView scrollBtnImageView;
-
-    @FXML
-    public HBox topbar;
 
     @FXML
     public JFXListView<Node> blockslistviewid;
@@ -155,14 +158,14 @@ public class MainController implements Initializable {
     @FXML
     public TextField nodeSyncBefore1;
 
-    @FXML
-    public Tab settingsTab;
+    //@FXML
+    //public Tab settingsTab;
 
-    @FXML
-    public Tab accountsTab;
+    //@FXML
+    //public Tab accountsTab;
 
-    @FXML
-    public Tab transactionsTab;
+    //@FXML
+    //public Tab transactionsTab;
 
     @FXML
     public JFXButton myLocalTonDbDirBtn;
@@ -962,14 +965,14 @@ public class MainController implements Initializable {
     @FXML
     JFXCheckBox showMsgBodyCheckBox;
 
-    @FXML
-    public Tab searchTab;
+    //@FXML
+    //public Tab searchTab;
 
     @FXML
     Label searchTabText;
 
-    @FXML
-    JFXTextField searchField;
+//    @FXML
+//    JFXTextField searchField;
 
     @FXML
     public Tab foundBlocks;
@@ -992,8 +995,8 @@ public class MainController implements Initializable {
     @FXML
     public JFXListView<Node> foundAccountsvboxid;
 
-    @FXML
-    public Tab blocksTab;
+    //@FXML
+    //public Tab blocksTab;
 
     @FXML
     TextField configNodePublicPort1;
@@ -1034,8 +1037,8 @@ public class MainController implements Initializable {
     @FXML
     Label statusBar;
 
-    @FXML
-    private JFXButton scrollBtn;
+//    @FXML
+//    private JFXButton scrollBtn;
 
     @FXML
     private JFXSlider walletsNumber;
@@ -1070,8 +1073,7 @@ public class MainController implements Initializable {
     @FXML
     public JFXCheckBox inOutMsgsCheckBox;
 
-    @FXML
-    public Label dbSizeId;
+
 
     @FXML
     public ComboBox<String> myLogLevel;
@@ -1496,10 +1498,10 @@ public class MainController implements Initializable {
             saveSettings();
         });
 
-        mainMenuTabs.getSelectionModel().selectedItemProperty().addListener(e -> {
-            log.debug("main menu changed, save settings");
-            saveSettings();
-        });
+        //mainMenuTabs.getSelectionModel().selectedItemProperty().addListener(e -> {
+        //    log.debug("main menu changed, save settings");
+        //    saveSettings();
+        //});
 
         EventHandler<KeyEvent> onlyDigits = keyEvent -> {
             if (!((TextField) keyEvent.getSource()).getText().matches("[\\d\\.\\-]+")) {
@@ -1606,22 +1608,23 @@ public class MainController implements Initializable {
         maxFactor.setOnKeyTyped(onlyDigits);
         electionEndBefore.setOnKeyTyped(onlyDigits);
 
-        searchField.setOnKeyPressed(event -> {
+        //searchField.setOnKeyPressed(event -> {
+        mainLayout.getSearchBar().getTextField().setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                log.debug("search for {}", searchField.getText());
+                log.debug("search for {}", mainLayout.getSearchBar().getSearchText());
 
                 foundBlockslistviewid.getItems().clear();
                 foundTxsvboxid.getItems().clear();
                 foundAccountsvboxid.getItems().clear();
 
                 //clear previous results
-                mainMenuTabs.getTabs().add(searchTab);
-                mainMenuTabs.getSelectionModel().selectLast();
+                //mainMenuTabs.getTabs().add(searchTab);
+                //mainMenuTabs.getSelectionModel().selectLast();
                 foundTabs.getTabs().add(foundBlocks);
                 foundTabs.getTabs().add(foundAccounts);
                 foundTabs.getTabs().add(foundTxs);
 
-                String searchFor = searchField.getText();
+                String searchFor = mainLayout.getSearchBar().getSearchText();
 
                 List<BlockEntity> foundBlocksEntities = App.dbPool.searchBlocks(searchFor);
                 MyLocalTon.getInstance().showFoundBlocksInGui(foundBlocksEntities, searchFor);
@@ -1634,13 +1637,13 @@ public class MainController implements Initializable {
             }
         });
 
-        mainMenuTabs.getTabs().remove(searchTab);
+        //mainMenuTabs.getTabs().remove(searchTab);
 
         foundTabs.getTabs().remove(foundBlocks);
         foundTabs.getTabs().remove(foundAccounts);
         foundTabs.getTabs().remove(foundTxs);
 
-        scrollBtn.setTooltip(new Tooltip("Autoscroll on/off"));
+        //scrollBtn.setTooltip(new Tooltip("Autoscroll on/off"));
 
         tickTockCheckBox.setSelected(settings.getUiSettings().isShowTickTockTransactions());
         mainConfigTxCheckBox.setSelected(settings.getUiSettings().isShowMainConfigTransactions());
@@ -1823,17 +1826,17 @@ public class MainController implements Initializable {
         // blockchain-explorer tab
         enableBlockchainExplorer.setVisible(false);
         enableBlockchainExplorerLabel.setVisible(false);
-        mainMenuTabs.getTabs().remove(explorerTab);
+        //mainMenuTabs.getTabs().remove(explorerTab);
 
         enableBlockchainExplorer.setVisible(true);
         enableBlockchainExplorerLabel.setVisible(true);
 
         if (enableBlockchainExplorer.isSelected()) {
-            mainMenuTabs.getTabs().remove(searchTab);
-            mainMenuTabs.getTabs().remove(explorerTab);
-            mainMenuTabs.getTabs().add(explorerTab);
+        //    mainMenuTabs.getTabs().remove(searchTab);
+        //    mainMenuTabs.getTabs().remove(explorerTab);
+        //    mainMenuTabs.getTabs().add(explorerTab);
         } else {
-            mainMenuTabs.getTabs().remove(explorerTab);
+        //    mainMenuTabs.getTabs().remove(explorerTab);
         }
 
         if (isLinux() || isMac() || isWindows()) {
@@ -1889,9 +1892,9 @@ public class MainController implements Initializable {
 
     public void showAccTxs(String hexAddr) throws IOException {
 
-        mainMenuTabs.getTabs().remove(searchTab);
-        mainMenuTabs.getTabs().add(searchTab);
-        mainMenuTabs.getSelectionModel().selectLast();
+        //mainMenuTabs.getTabs().remove(searchTab);
+        //mainMenuTabs.getTabs().add(searchTab);
+        //mainMenuTabs.getSelectionModel().selectLast();
 
         if (!foundTabs.getTabs().filtered(t -> t.getText().contains(Utils.getLightAddress(hexAddr))).isEmpty()) {
             return;
@@ -1902,8 +1905,8 @@ public class MainController implements Initializable {
 
         newTab.setOnClosed(event -> {
             if (foundTabs.getTabs().isEmpty()) {
-                mainMenuTabs.getTabs().remove(searchTab);
-                mainMenuTabs.getSelectionModel().selectFirst();
+            //    mainMenuTabs.getTabs().remove(searchTab);
+            //    mainMenuTabs.getSelectionModel().selectFirst();
             }
         });
 
@@ -3664,4 +3667,29 @@ public class MainController implements Initializable {
             App.mainController.showInfoMsg("Native blockchain-explorer will be available after restart", 5);
         }
     }
+
+    /**
+     * New Methods
+     */
+
+    public void setCurrentBlockNum(String text) {
+        //shardsNum
+    }
+
+    public void setShardsNum(String text) {
+        //shardsNum
+    }
+
+    public void setLiteClientInfo(String text) {
+        //liteClientInfo
+    }
+
+    public void setDbSizeId(String text) {
+        //dbSizeId
+
+    }
+
+
+
+
 }

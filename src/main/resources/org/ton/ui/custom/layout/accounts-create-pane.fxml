@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<?import java.net.URL?>
+
+<?import org.ton.ui.custom.control.CustomTextField?>
+<?import org.ton.ui.custom.control.CustomComboBox?>
+<?import org.ton.ui.custom.control.CustomButton?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
+            prefHeight="720.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx/18"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.ton.ui.custom.layout.AccountsCreatePane">
+
+   <stylesheets>
+      <URL value="@../../../css/custom/main-layout.css" />
+   </stylesheets>
+
+   <children>
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
+                  prefHeight="720.0" prefWidth="1335.0" styleClass="lock-pane" />
+
+      <AnchorPane prefHeight="350.0" prefWidth="510.0"
+                  styleClass="modal-pane"
+                  AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="200.0">
+         <children>
+            <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Create Wallet" styleClass="modal-pane-label"
+                   AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0">
+            </Label>
+            <Line endX="510.0" layoutY="60.0" stroke="#888888" />
+
+            <CustomTextField fieldPromptText="Workchain" prefWidth="450.0" layoutY="80.0" layoutX="30.0"/>
+
+            <CustomTextField fieldPromptText="Sub-wallet ID" prefWidth="450.0" layoutY="140.0" layoutX="30.0"/>
+
+            <CustomComboBox prefWidth="450.0" layoutY="200.0" layoutX="30.0"/>
+            <CustomButton text="Create" prefWidth="100" layoutX="205" layoutY="280" />
+
+         </children>
+      </AnchorPane>
+
+
+   </children>
+</AnchorPane>
