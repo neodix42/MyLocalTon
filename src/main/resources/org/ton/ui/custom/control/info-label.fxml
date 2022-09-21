@@ -6,17 +6,13 @@
 
 
 <fx:root type="javafx.scene.layout.HBox"  prefHeight="30.0" prefWidth="190.0"
-         xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml">
+         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+         stylesheets="@../../../css/custom/info-label.css" >
    <children>
-      <Label fx:id="primaryLabel" prefHeight="30.0" style="-fx-font-weight: 800;" >
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label fx:id="secondaryLabel" prefHeight="30.0"  >
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
+
+      <Label fx:id="primaryLabel" prefHeight="30.0" styleClass="primary-label" />
+
+      <Label fx:id="secondaryLabel" prefHeight="30.0" styleClass="secondary-label" />
+
    </children>
 </fx:root>

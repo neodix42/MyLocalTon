@@ -50,4 +50,5 @@ public class CustomInfoLabel extends HBox {
     public void setSecondaryWidth(double secondaryWidth) {
         secondaryLabel.setPrefWidth(secondaryWidth);
     }
+
 }

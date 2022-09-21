@@ -1,87 +1,59 @@
 package org.ton.ui.custom.control;
 
 
-import com.jfoenix.controls.JFXButton;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.css.PseudoClass;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
 
 import java.io.IOException;
 
-public class CustomMenuButton extends JFXButton {
+public class CustomMenuButton extends HBox {
 
-    private String mainSvgPath;
-    private String labelText;
-    private String secondarySvgPath;
+    @FXML
+    private Label mainLabel;
 
     private Node view;
 
-    public CustomMenuButton() {
+    public CustomMenuButton() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("custom-menu-button.fxml"));
-        try {
-            view = (Node) fxmlLoader.load();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        setGraphic(view);
+        fxmlLoader.setController(this);
+        fxmlLoader.setRoot(this);
+        view = fxmlLoader.load();
     }
 
     public String getMainSvgPath() {
-        return mainSvgPath;
+        SVGPath svg = (SVGPath) mainLabel.getGraphic();
+        return svg.getContent();
     }
 
     public void setMainSvgPath(String mainSvgPath) {
-        Label lb = (Label) view.lookup("#mainLabel");
-        SVGPath svg = (SVGPath) lb.getGraphic();
+        SVGPath svg = (SVGPath) mainLabel.getGraphic();
         svg.setContent(mainSvgPath);
-        this.mainSvgPath = mainSvgPath;
     }
 
     public String getLabelText() {
-        return labelText;
+        return mainLabel.getText();
     }
 
     public void setLabelText(String labelText) {
-        Label lb = (Label) view.lookup("#mainLabel");
-        lb.setText(labelText);
-        this.labelText = labelText;
-    }
-
-    public String getSecondarySvgPath() {
-        return secondarySvgPath;
-    }
-
-    public void setSecondarySvgPath(String secondarySvgPath) {
-        Label lb = (Label) view.lookup("#secondLabel");
-        SVGPath svg = (SVGPath) lb.getGraphic();
-        svg.setContent(secondarySvgPath);
-        this.secondarySvgPath = secondarySvgPath;
-    }
-
-    public StringProperty mainSvgPathProperty() {
-        return new SimpleStringProperty(mainSvgPath);
-    }
-
-    public StringProperty labelTextProperty() {
-        return new SimpleStringProperty(labelText);
-    }
-
-    public StringProperty secondarySvgPathProperty() {
-        return new SimpleStringProperty(secondarySvgPath);
+        mainLabel.setText(labelText);
     }
 
     public Node getView() {
         return view;
     }
 
-    public boolean isOpened() {
-        Label lb = (Label) this.getView().lookup("#secondLabel");
-        SVGPath svg = (SVGPath) lb.getGraphic();
-        double r = svg.getRotate();
-        return svg.getRotate() != 0.0;
+    public void activate() {
+        this.requestFocus();
+        this.pseudoClassStateChanged(PseudoClass.getPseudoClass("activated"), true);
+    }
+
+    public void deactivate() {
+        this.pseudoClassStateChanged(PseudoClass.getPseudoClass("activated"), false);
     }
 
 }

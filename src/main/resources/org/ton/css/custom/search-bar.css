@@ -2,6 +2,15 @@
     -fx-padding: 0 20 0 20;
     -fx-font-size: 16px;
 }
+/*.jfx-button {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}*/
 .jfx-text-field .input-line{
 	-fx-pref-height: 0px;
 }
@@ -15,6 +24,10 @@
     -fx-background-radius: 10;
 }
 
-search-svg {
+.search-svg {
     -fx-fill: #888888;
+}
+
+.clear-button {
+    -fx-fill: #F72B50;
 }

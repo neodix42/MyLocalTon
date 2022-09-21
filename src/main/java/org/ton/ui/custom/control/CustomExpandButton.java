@@ -5,6 +5,7 @@ import javafx.animation.RotateTransition;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class CustomExpandButton extends Region  {
+public class CustomExpandButton extends AnchorPane {
 
     @FXML
     private Label mainLabel;
@@ -29,14 +30,15 @@ public class CustomExpandButton extends Region  {
     @FXML
     private Label secondLabel;
 
-    @FXML
-    private HBox subButtons;
 
-    private ObservableList<Node> buttons;
+    @FXML
+    private HBox hBoxButton, buttons;
+
+    private ObservableList<Node> ObservableListButtons;
 
     private List<Node> listbuttons = new ArrayList<>();
 
-    private AnchorPane view;
+    //private AnchorPane view;
 
     private double buttonsHeight = 0.0;
 
@@ -46,19 +48,15 @@ public class CustomExpandButton extends Region  {
 
     private int index = 0;
 
-    public CustomExpandButton() {
+    public CustomExpandButton() throws IOException {
+        super();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("custom-expand-button.fxml"));
         fxmlLoader.setController(this);
-        try {
-            view = (AnchorPane) fxmlLoader.load();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        view.getChildren().remove(subButtons);
-        getChildren().add(view);
+        fxmlLoader.setRoot(this);
+        fxmlLoader.load();
 
-        buttons = subButtons.getChildren();
-        subButtons.getChildren().addListener(new ListChangeListener<Node>() {
+        ObservableListButtons = buttons.getChildren();
+        buttons.getChildren().addListener(new ListChangeListener<Node>() {
 
             @Override
             public void onChanged(Change<? extends Node> change) {
@@ -67,14 +65,14 @@ public class CustomExpandButton extends Region  {
                     node.setLayoutX(0.0);
                     node.setLayoutY(0.0);
                     buttonsHeight += ((Region) node).getPrefHeight();
-                    view.getChildren().add(index, node);
+                    getChildren().add(index, node);
                     listbuttons.add(index, node);
                     index++;
                 }
             }
 
         });
-        mainButtonHeight = view.getPrefHeight();
+        mainButtonHeight = getPrefHeight();
     }
 
     public String getMainSvgPath() {
@@ -114,11 +112,7 @@ public class CustomExpandButton extends Region  {
         return svg.getRotate() != 0.0;
     }
 
-    public AnchorPane getView() {
-        return view;
-    }
-
-    private void moveMenuBtns(double toY) {
+    private void slideButtonsDown(double toY) {
         double decreasePosition = 0.0;
         for(int i = listbuttons.size() -1; i >=0 ;i--) {
             Node node = listbuttons.get(i);
@@ -131,7 +125,7 @@ public class CustomExpandButton extends Region  {
         }
     }
 
-    private void moveUpMenuBtns() {
+    private void slideButtonsUp() {
         listbuttons.forEach(node -> {
             TranslateTransition tr =
                     new TranslateTransition(Duration.seconds((TRANSITION_TIME - 0.01)), node);
@@ -144,25 +138,34 @@ public class CustomExpandButton extends Region  {
         if(this.isOpened()) {
             rotate(0.0);
             ResizeHeightTranslation t =
-                    new ResizeHeightTranslation(Duration.seconds(TRANSITION_TIME), view, mainButtonHeight);
-            moveUpMenuBtns();
+                    new ResizeHeightTranslation(Duration.seconds(TRANSITION_TIME), this, mainButtonHeight);
+            slideButtonsUp();
             t.play();
         } else {
             rotate(90.0);
             double newHeight = mainButtonHeight + buttonsHeight;
             ResizeHeightTranslation t =
-                    new ResizeHeightTranslation(Duration.seconds(TRANSITION_TIME), view, newHeight);
-            moveMenuBtns(newHeight);
+                    new ResizeHeightTranslation(Duration.seconds(TRANSITION_TIME), this, newHeight);
+            slideButtonsDown(newHeight);
             t.play();
         }
     }
 
-    public ObservableList<Node> getSubButtons() {
-        return subButtons.getChildren();
+    public ObservableList<Node> getButtons() {
+        return buttons.getChildren();
     }
 
     public double getMainButtonHeight() {
         return this.mainButtonHeight;
+    }
+
+    public void activate() {
+        hBoxButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("activated"), true);
+        this.requestFocus();
+    }
+
+    public void deactivate() {
+        hBoxButton.pseudoClassStateChanged(PseudoClass.getPseudoClass("activated"), false);
     }
 
 }

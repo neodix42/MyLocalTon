@@ -1,4 +1,39 @@
-.block-row-pane {
+@font-face{
+    font-family: 'Roboto Mono Medium';
+    src: url("../fonts/RobotoMono-Medium.ttf");
+}
+
+.row-label-normal {
+    -fx-font-family: "Roboto Mono Medium";
+    -fx-alignment: center;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 14px;
+}
+
+.row-label-small {
+    -fx-font-family: "Roboto Mono Medium";
+        -fx-alignment: center;
+        -fx-text-fill: #1F1F1F;
+        -fx-font-size: 12px;
+}
+
+/*
+background: #1F1F1F;
+
+style="-fx-alignment: center; -fx-font-size: 14;"
+style="-fx-alignment: center; -fx-font-size: 14;"
+style="-fx-alignment: center; -fx-font-size: 14;"
+
+
+style="-fx-alignment: center; -fx-font-size: 11;"
+
+.label, .text, .tab {
+    -fx-font-family: "Roboto Mono Medium";
+}
+*/
+
+
+.row-pane {
     -fx-background-color: #FFFFFF;
     -fx-border-style: hidden hidden solid hidden;
     -fx-border-width: 2;

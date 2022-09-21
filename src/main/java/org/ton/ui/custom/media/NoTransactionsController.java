@@ -42,7 +42,7 @@ public class NoTransactionsController implements Initializable {
         rotator.setToAngle(360);
         rotator.setCycleCount(3);
         rotator.setInterpolator(Interpolator.LINEAR);
-        rotator.setOnFinished(e -> main.removeNoTransactionsView());
+        //rotator.setOnFinished(e -> main.removeNoTransactionsView());
         rotator.play();
     }
 

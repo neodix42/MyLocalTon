@@ -10,8 +10,8 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import java.net.URL?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
-            prefHeight="720.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx/18"
-            xmlns:fx="http://javafx.com/fxml/1"
+            prefHeight="720.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.ton.ui.custom.layout.CustomLoadingPane" >
     <stylesheets>
         <URL value="@../../../css/custom/main-layout.css" />

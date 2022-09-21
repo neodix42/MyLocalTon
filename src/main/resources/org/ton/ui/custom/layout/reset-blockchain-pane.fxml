@@ -6,8 +6,8 @@
 <?import java.net.URL?>
 <?import org.ton.ui.custom.control.CustomButton?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
-            prefHeight="720.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx/18"
-            xmlns:fx="http://javafx.com/fxml/1"
+            prefHeight="720.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.ton.ui.custom.layout.ResetBlockchainPane"
             >
 

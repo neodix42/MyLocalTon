@@ -23,9 +23,7 @@
     -fx-text-fill: #1F1F1F;
 }
 
-.submenu-button {
-    -fx-font-size: 14px;
-}
+
 
 .content-pane {
     -fx-background-color: White;
@@ -41,9 +39,4 @@
     -fx-background-color: #0088CC;
     -fx-text-fill: #F7F9FB;
     -fx-font-size: 16px;
-}
-
-.no-transactions-label {
-    -fx-font-size: 16px;
-    -fx-text-fill: #6E6E6E;
 }

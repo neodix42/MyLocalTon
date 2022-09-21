@@ -7,7 +7,7 @@
 <?import java.net.URL?>
 <fx:root type="com.jfoenix.controls.JFXButton"
          prefHeight="40" minWidth="10.0" styleClass="custom-button-btn"
-         xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
    <stylesheets>
       <URL value="@../../../css/custom/main-layout.css" />
    </stylesheets>

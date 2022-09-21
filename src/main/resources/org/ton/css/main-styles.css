@@ -1,9 +1,26 @@
 @font-face{
-    src: url("../fonts/Mulish-Bold.ttf");
+  font-family: 'Mulish ExtraBold';
+  src: url('../fonts/Mulish-ExtraBold.ttf') format('truetype');
 }
 
+.content-header-label {
+    -fx-font-family: "Mulish ExtraBold";
+    -fx-text-fill: #303757;
+    -fx-alignment: center;
+    -fx-font-size: 16px;
+}
+
+.content-list-view {
+    -fx-background-color: #FFFFFF;
+}
+
+/*
+
+
+
+
 .main-label-font {
-    -fx-font-family: "Mulish";
+    -fx-font-family: "Mulish ExtraBold";
     -fx-font-weight: 800;
     -fx-text-fill: #303757;
 }
@@ -12,3 +29,4 @@
     -fx-alignment: center;
     -fx-font-size: 16;
 }
+*/

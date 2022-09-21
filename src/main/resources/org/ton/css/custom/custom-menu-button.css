@@ -1,3 +1,7 @@
+@font-face{
+    src: url("../../fonts/Mulish-Bold.ttf");
+}
+
 .menu-button {
     -fx-background-radius: 10;
     -fx-background-color: #FFFFFF;
@@ -8,6 +12,11 @@
     -fx-background-color: #F7F9FB;
 }
 
+.menu-button:activated {
+    -fx-background-radius: 10;
+    -fx-background-color: #303757;
+}
+
 .svg-path {
     -fx-fill: #0088CC;
 }
@@ -15,4 +24,46 @@
 .main-label {
     -fx-font-size: 16px;
     -fx-padding: 0 0 0 10;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #303757;
+    -fx-font-weight: 700;
+}
+
+.menu-button:activated > #mainLabel {
+    -fx-font-size: 16px;
+    -fx-padding: 0 0 0 10;
+    -fx-font-family: "Mulish";
+    -fx-font-weight: 700;
+    -fx-text-fill: #FFFFFF;
+}
+
+.menu-button:activated > #mainLabel > #labelSvg {
+    -fx-fill: #FFFFFF;
+}
+
+.menu-button:activated > #secondLabel > #secondSvg {
+    -fx-fill: #FFFFFF;
+}
+
+
+/* Settings and Search slide buttons */
+
+.submenu-button {
+    -fx-font-size: 14px;
+    -fx-padding: 0 0 0 20;
+    -fx-text-fill: #6E6E6E;
+    -fx-font-family: "Mulish";
+    -fx-font-weight: 700;
+}
+
+.submenu-button:focused {
+    -fx-text-fill: #303757;
+}
+
+.submenu-button:focused > #svg {
+    -fx-fill: #303757;
+}
+
+.custom-submenu-button-svg {
+    -fx-fill: #6E6E6E;
 }

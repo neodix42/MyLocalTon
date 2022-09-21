@@ -5,22 +5,14 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<HBox prefHeight="50.0" prefWidth="170.0"
-      stylesheets="@../../../css/custom/custom-menu-button.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
-    <children>
-        <Label fx:id="mainLabel" graphicTextGap="20.0" styleClass="main-label" prefHeight="50.0" prefWidth="140.0" text="Settings">
-            <graphic>
-                <SVGPath fx:id="labelSvg" styleClass="svg-path" />
-            </graphic>
-            <opaqueInsets>
-                <Insets />
-            </opaqueInsets>
-
-        </Label>
-        <Label fx:id="secondLabel" alignment="BASELINE_LEFT" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="30.0">
-            <graphic>
-                <SVGPath fx:id="secondSvg" styleClass="svg-path" />
-            </graphic>
-        </Label>
-    </children>
-</HBox>
+<fx:root type="javafx.scene.layout.HBox"  prefHeight="50.0" prefWidth="170.0" styleClass="menu-button"
+         stylesheets="@../../../css/custom/custom-menu-button.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <Label fx:id="mainLabel" graphicTextGap="20.0" styleClass="main-label" prefHeight="50.0" prefWidth="170.0" text="Settings">
+        <graphic>
+            <SVGPath fx:id="labelSvg" styleClass="svg-path" />
+        </graphic>
+        <opaqueInsets>
+            <Insets />
+        </opaqueInsets>
+    </Label>
+</fx:root>

@@ -49,6 +49,7 @@ import org.ton.main.App;
 import org.ton.parameters.ValidationParam;
 import org.ton.settings.*;
 import org.ton.ui.custom.control.CustomInfoLabel;
+import org.ton.ui.custom.layout.CustomLoadingPane;
 import org.ton.ui.custom.layout.CustomMainLayout;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
@@ -3672,6 +3673,22 @@ public class MainController implements Initializable {
      * New Methods
      */
 
+    public void showLoadingPane() {
+        try {
+            mainLayout.showLoadingPane();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeLoadingPane() {
+        try {
+            mainLayout.removeLoadingPane();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setCurrentBlockNum(String text) {
         //shardsNum
     }
@@ -3689,7 +3706,11 @@ public class MainController implements Initializable {
 
     }
 
+    @FXML
+    private Label lblSeqno;
 
-
-
+    public void mouseClick(MouseEvent e) {
+        System.out.println("click");
+        System.out.println(lblSeqno.getFont().getFamily());
+    }
 }

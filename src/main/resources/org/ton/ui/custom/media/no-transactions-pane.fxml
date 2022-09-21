@@ -9,7 +9,7 @@
 
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="650.0" prefWidth="1105.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1"
+            prefHeight="650.0" prefWidth="1105.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.ton.ui.custom.media.NoTransactionsController" styleClass="content-pane"
             AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
             AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">

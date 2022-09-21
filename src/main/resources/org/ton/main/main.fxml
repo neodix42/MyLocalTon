@@ -42,50 +42,37 @@
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                 <HBox prefHeight="44.0" BorderPane.alignment="CENTER" >
                     <VBox prefHeight="55.0" prefWidth="99.0">
-                        <Label prefHeight="48.0" prefWidth="99.0" text="SEQNO">
-                            <styleClass>
-                                <String fx:value="main-label-font" />
-                                <String fx:value="content-label-size" />
-                            </styleClass>
-                        </Label>
+                        <Label fx:id="lblSeqno" prefHeight="48.0" prefWidth="99.0" text="SEQNO"
+                               styleClass="content-header-label" onMouseClicked="#mouseClick" />
+
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="99.0">
-                        <Label prefHeight="48.0" prefWidth="99.0" text="WORKCHAIN">
-                            <styleClass>
-                                <String fx:value="main-label-font" />
-                                <String fx:value="content-label-size" />
-                            </styleClass>
-                        </Label>
+                    <VBox prefHeight="55.0" prefWidth="110.0">
+                        <Label prefHeight="48.0" prefWidth="110.0" text="WORKCHAIN"
+                               styleClass="content-header-label"/>
+
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="183.0">
-                        <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="183.0" text="SHARD">
-                            <styleClass>
-                                <String fx:value="main-label-font" />
-                                <String fx:value="content-label-size" />
-                            </styleClass>
-                        </Label>
+                    <VBox prefHeight="55.0" prefWidth="172.0">
+                        <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="172.0" text="SHARD"
+                               style="-fx-padding: 0 0 0 -20"
+                               styleClass="content-header-label"/>
+
                     </VBox>
                     <VBox prefHeight="55.0" prefWidth="160.0">
-                        <Label prefHeight="48.0" prefWidth="160.0" text="MINED ON">
-                            <styleClass>
-                                <String fx:value="main-label-font" />
-                                <String fx:value="content-label-size" />
-                            </styleClass>
-                        </Label>
+                        <Label prefHeight="48.0" prefWidth="160.0" text="MINED ON"
+                               style="-fx-padding: 0 0 0 10"
+                               styleClass="content-header-label"/>
+
                     </VBox>
                     <VBox prefHeight="55.0" prefWidth="430.0">
-                        <Label prefHeight="48.0" prefWidth="430.0" text="FILE AND ROOT HASHES">
-                            <styleClass>
-                                <String fx:value="main-label-font" />
-                                <String fx:value="content-label-size" />
-                            </styleClass>
-                        </Label>
+                        <Label prefHeight="48.0" prefWidth="430.0" text="FILE AND ROOT HASHES"
+                               styleClass="content-header-label"/>
                     </VBox>
                 </HBox>
                 <JFXListView fx:id="blockslistviewid" focusTraversable="false" maxHeight="-Infinity"
                              onScroll="#blocksOnScroll" prefHeight="543.0"
                              layoutX="10"
-                             prefWidth="1019.0" style="-fx-background-color: #FFFFFF;">
+                             prefWidth="1019.0" styleClass="content-list-view"
+                             >
                     <!-- add dynamic content here -->
                 </JFXListView>
             </VBox>
@@ -99,23 +86,27 @@
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                 <HBox prefHeight="44.0" prefWidth="978.0" BorderPane.alignment="CENTER">
                     <VBox minWidth="205.0" prefHeight="55.0" prefWidth="205.0">
-                        <Label minWidth="205.0" prefHeight="48.0" prefWidth="205.0" style="-fx-alignment: center;-fx-font-size: 16;" text="BLOCK/STATUS"/>
+                        <Label minWidth="205.0" prefHeight="48.0" prefWidth="205.0" styleClass="content-header-label" text="BLOCK/STATUS"/>
                     </VBox>
                     <VBox prefHeight="55.0" prefWidth="127.0">
-                        <Label prefHeight="48.0" prefWidth="127.0" style="-fx-alignment: center; -fx-font-size: 16;" text="HASH/TIME"/>
+                        <Label prefHeight="48.0" prefWidth="127.0" styleClass="content-header-label" text="HASH/TIME"/>
                     </VBox>
                     <VBox prefHeight="44.0" prefWidth="128.0">
-                        <Label contentDisplay="CENTER" prefHeight="44.0" prefWidth="101.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TYPE"/>
+                        <Label contentDisplay="CENTER" prefHeight="44.0" prefWidth="101.0"
+                               style="-fx-padding: 0 0 0 30"
+                               styleClass="content-header-label" text="TYPE"/>
                     </VBox>
                     <VBox prefHeight="55.0" prefWidth="350.0">
-                        <Label prefHeight="44.0" prefWidth="361.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FROM/TO"/>
+                        <Label prefHeight="44.0" prefWidth="361.0" styleClass="content-header-label" text="FROM/TO"/>
                     </VBox>
                     <VBox prefHeight="43.0" prefWidth="226.0">
-                        <Label prefHeight="43.0" prefWidth="233.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TONCOINS/FEES"/>
+                        <Label prefHeight="43.0" prefWidth="233.0"
+                               style="-fx-padding: 0 0 0 90"
+                               styleClass="content-header-label" text="TONCOINS/FEES"/>
                     </VBox>
                 </HBox>
                 <JFXListView fx:id="transactionsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#txsOnScroll" prefHeight="582.0" prefWidth="1079.0"
-                             style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
+                             styleClass="content-list-view" BorderPane.alignment="CENTER">
                     <!-- add dynamic content here -->
                 </JFXListView>
             </VBox>

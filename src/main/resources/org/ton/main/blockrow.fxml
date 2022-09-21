@@ -9,35 +9,43 @@
 <?import javafx.scene.shape.SVGPath?>
 
 <BorderPane fx:id="blockRowBorderPane" onMouseClicked="#blockRowClick"
-            prefHeight="46.0" prefWidth="1010.0" styleClass="block-row-pane" xmlns="http://javafx.com/javafx/17.0.2"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.BlockController">
-
-    <stylesheets>
-        <URL value="@../css/global-font.css" />
-        <URL value="@../css/blockrow-styles.css" />
-    </stylesheets>
+            prefHeight="46.0" prefWidth="1010.0" styleClass="row-pane" xmlns="http://javafx.com/javafx/17.0.2"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.BlockController"
+            stylesheets="@../css/listview-row-styles.css" >
 
     <center>
         <HBox prefHeight="46.0" prefWidth="1001.0" BorderPane.alignment="CENTER">
             <VBox prefHeight="46.0" prefWidth="80.0">
-                <Label fx:id="seqno" contentDisplay="BOTTOM" onMouseClicked="#blockRowSeqnoClick" prefHeight="40.0" prefWidth="80.0" style="-fx-alignment: center; -fx-font-size: 14;" text="2132156" textAlignment="CENTER" />
+                <Label fx:id="seqno" contentDisplay="BOTTOM" onMouseClicked="#blockRowSeqnoClick" prefHeight="40.0" prefWidth="80.0"
+                       styleClass="row-label-normal"
+                        text="2132156" textAlignment="CENTER" />
             </VBox>
-            <VBox prefHeight="46.0" prefWidth="80.0">
-                <Label fx:id="wc" prefHeight="40.0" prefWidth="80.0" style="-fx-alignment: center; -fx-font-size: 14;" text="-10" textAlignment="CENTER" textOverrun="CLIP" />
+            <VBox prefHeight="46.0" prefWidth="120.0">
+                <Label fx:id="wc" prefHeight="40.0" prefWidth="120.0"
+                       styleClass="row-label-normal"
+                        text="-10" textAlignment="CENTER" textOverrun="CLIP" />
             </VBox>
             <VBox prefHeight="46.0" prefWidth="183.0">
-                <Label fx:id="shard" prefHeight="40.0" prefWidth="183.0" style="-fx-alignment: center; -fx-font-size: 14;" text="8000000000000000" />
+                <Label fx:id="shard" prefHeight="40.0" prefWidth="183.0"
+                       styleClass="row-label-normal"
+                       text="8000000000000000" />
             </VBox>
 
             <VBox prefHeight="46.0" prefWidth="160.0">
 <!--                <Label fx:id="createdat" prefHeight="20.0" prefWidth="216.0" style="-fx-alignment: center; -fx-font-size: 11;" text="2021.03.26 15:55:32"/>-->
-                <Label fx:id="createdatDate" prefHeight="20.0" prefWidth="160.0" style="-fx-alignment: center; -fx-font-size: 11;" text="2021.03.26 15:55:32" />
-                <Label fx:id="createdatTime" prefHeight="20.0" prefWidth="160.0" style="-fx-alignment: center; -fx-font-size: 11;" text="2021.03.26 15:55:32" />
+                <Label fx:id="createdatDate" prefHeight="20.0" prefWidth="160.0"
+                       styleClass="row-label-small" text="2021.03.26 15:55:32" />
+                <Label fx:id="createdatTime" prefHeight="20.0" prefWidth="160.0"
+                       styleClass="row-label-small" text="2021.03.26 15:55:32" />
             </VBox>
-            <VBox prefHeight="46.0" prefWidth="438.0">
-                <Label fx:id="filehash" onMouseClicked="#blockRowHashClick" prefHeight="20.0" prefWidth="432.0" style="-fx-font-size: 11;" text="B34238F49A4EDB9559A5F44E7D567D133C6A0A1BD3555041079F24C2EF67E8D8" />
+            <VBox prefHeight="46.0" prefWidth="480.0" >
+                <Label fx:id="filehash" onMouseClicked="#blockRowHashClick" prefHeight="20.0" prefWidth="480.0"
+                       styleClass="row-label-small"
+                       text="B34238F49A4EDB9559A5F44E7D567D133C6A0A1BD3555041079F24C2EF67E8D8" />
 
-                <Label fx:id="roothash" onMouseClicked="#blockRowHashClick" prefHeight="20.0" prefWidth="430.0" style="-fx-font-size: 11;" text="E247EA02117AC3024B78D834EF7CAD424F0F9D9C3052810863E08FA6020BB34C" />
+                <Label fx:id="roothash" onMouseClicked="#blockRowHashClick" prefHeight="20.0" prefWidth="480.0"
+                       styleClass="row-label-small"
+                       text="E247EA02117AC3024B78D834EF7CAD424F0F9D9C3052810863E08FA6020BB34C" />
             </VBox>
         </HBox>
     </center>

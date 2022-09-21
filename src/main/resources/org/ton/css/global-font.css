@@ -2,9 +2,11 @@
     src: url("../fonts/RobotoMono-Medium.ttf");
 }
 
+/*
 .label, .text, .tab {
     -fx-font-family: "Roboto Mono Medium";
 }
+*/
 
 .list-cell {
     -fx-padding: 0px;

@@ -54,14 +54,14 @@ public class App extends Application {
 
         primaryStage.setOnShown(windowEvent -> {
             log.debug("onShown, stage loaded");
-
-            if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 0) {
-                Platform.runLater(() -> mainController.showWarningMsg("Initializing TON blockchain very first time. It can take up to 2 minutes, please wait.", 60 * 5L));
-            } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
-                Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L));
-            } else {
-                Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L));
-            }
+            mainController.showLoadingPane();
+//            if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 0) {
+//                Platform.runLater(() -> mainController.showWarningMsg("Initializing TON blockchain very first time. It can take up to 2 minutes, please wait.", 60 * 5L));
+//            } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
+//                Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L));
+//            } else {
+//                Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L));
+//            }
         });
 
         primaryStage.show();
@@ -169,7 +169,9 @@ public class App extends Application {
             Thread.sleep(1000);
         }
 
-        mainController.showSuccessMsg("TON blockchain is ready!", 2);
+        //mainController.showSuccessMsg("TON blockchain is ready!", 2);
+        //mainController.removeLoadingPane();
+        Platform.runLater(() -> mainController.removeLoadingPane());
 
         Thread.sleep(2100);
 

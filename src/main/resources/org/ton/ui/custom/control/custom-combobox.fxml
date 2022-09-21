@@ -4,7 +4,7 @@
 <?import com.jfoenix.controls.JFXComboBox?>
 
 <fx:root type="javafx.scene.layout.HBox" prefHeight="40.0" prefWidth="450.0"
-         xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml"
+         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
          stylesheets="@../../../css/custom/custom-form-components.css" styleClass="textfield-background">
 
     <children>
