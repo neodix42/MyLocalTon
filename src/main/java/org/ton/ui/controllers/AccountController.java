@@ -118,18 +118,18 @@ public class AccountController {
         App.mainController.showSendDialog(hexAddr.getText());
     }
 
-    String style;
-
-    @FXML
-    void handleMouseEnter() {
-        style = accRowBorderPane.getStyle();
-        accRowBorderPane.setStyle("-fx-background-color: bedef4; -fx-padding: 10 0 0 5;");
-    }
-
-    @FXML
-    void handleMouseExit() {
-        accRowBorderPane.setStyle(style);
-    }
+//    String style;
+//
+//    @FXML
+//    void handleMouseEnter() {
+//        style = accRowBorderPane.getStyle();
+//        accRowBorderPane.setStyle("-fx-background-color: bedef4; -fx-padding: 10 0 0 5;");
+//    }
+//
+//    @FXML
+//    void handleMouseExit() {
+//        accRowBorderPane.setStyle(style);
+//    }
 
     @FXML
     void accInfoBtn() throws IOException {

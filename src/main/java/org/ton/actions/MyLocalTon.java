@@ -705,7 +705,14 @@ public class MyLocalTon {
                 }
 
                 if (walletEntity.getWc() == -1L) {
-                    (accountRow.lookup("#accRowBorderPane")).setStyle("-fx-background-color: e9f4ff; -fx-padding: 10 0 0 5;");
+                    //(accountRow.lookup("#accRowBorderPane")).setStyle("-fx-background-color: e9f4ff; -fx-padding: 10 0 0 5;");
+                    (accountRow.lookup("#accRowBorderPane")).getStyleClass().add("row-pane-gray");
+                    (accountRow.lookup("#hBoxDeletetn")).getStyleClass().add("background-acc-delete-button-gray");
+                    (accountRow.lookup("#hBoxSendBtn")).getStyleClass().add("background-acc-send-button-gray");
+                    (accountRow.lookup("#hBoxInfoBtn")).getStyleClass().add("background-acc-info-button-gray");
+
+
+
                 }
 
                 showInGuiOnlyUniqueAccounts(walletEntity, c, accountRow);
@@ -794,15 +801,17 @@ public class MyLocalTon {
         String status = isNull(walletEntity.getAccountState().getStatus()) ? "" : walletEntity.getAccountState().getStatus();
         ((Label) accountRow.lookup("#status")).setText(status);
 
-        accountRow.lookup("#walletDeleteBtn").setDisable(
-                settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress()));
-
-        accountRow.lookup("#accSendBtn").setDisable(
-                status.equals(UNINITIALIZED) ||
-                        status.equals(FROZEN) ||
-                        settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) ||
-                        isNull(walletEntity.getWallet().getPrivateKeyLocation())
-        );
+        if(settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())) {
+            accountRow.lookup("#walletDeleteBtn").setDisable(true);
+            (accountRow.lookup("#hBoxDeletetn")).getStyleClass().clear();
+        }
+        if(status.equals(UNINITIALIZED) ||
+                status.equals(FROZEN) ||
+                settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) ||
+                isNull(walletEntity.getWallet().getPrivateKeyLocation())) {
+            accountRow.lookup("#accSendBtn").setDisable(true);
+            (accountRow.lookup("#hBoxSendBtn")).getStyleClass().clear();
+        }
     }
 
     private void updateTxTabGui(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails, List<TxEntity> txEntities) {
@@ -827,7 +836,8 @@ public class MyLocalTon {
                     }
 
                     if (txE.getTypeTx().equals("Message")) {
-                        (txRow.lookup("#txRowBorderPane")).setStyle("-fx-background-color: #e9f4ff;");
+                        //(txRow.lookup("#txRowBorderPane")).setStyle("-fx-background-color: #e9f4ff;");
+                        (txRow.lookup("#txRowBorderPane")).getStyleClass().add("row-pane-gray");
                     }
 
                     showInGuiOnlyUniqueTxs(lastBlock, tx, txDetails, c, txE, txRow);  //show in gui only unique values. some might come from scroll event
@@ -1269,7 +1279,7 @@ public class MyLocalTon {
                     }
                     if (finalLastBlock.getWc() == -1L) {
                         //(blockRow.lookup("#blockRowBorderPane")).setStyle("-fx-background-color: #e9f4ff;");
-                        (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("block-row-pane-gray");
+                        (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
                     }
 
                     showInGuiOnlyUniqueBlocks(c, finalLastBlock, blockRow);
@@ -1333,8 +1343,8 @@ public class MyLocalTon {
 
                 if (resultLastBlock.getWc() == -1L) {
                     //blockRow.setStyle("-fx-background-color: e9f4ff;");
-                    blockRow.getStyleClass().add("block-row-pane-gray");
-                    //(blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("block-row-pane-gray");
+                    blockRow.getStyleClass().add("row-pane-gray");
+                    //(blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
                 }
                 log.debug("adding block to found gui {} roothash {}", block.getSeqno(), block.getRoothash());
 

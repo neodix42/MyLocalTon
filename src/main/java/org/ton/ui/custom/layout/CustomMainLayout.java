@@ -18,10 +18,16 @@ import org.ton.ui.custom.control.CustomButton;
 import org.ton.ui.custom.control.CustomExpandButton;
 import org.ton.ui.custom.control.CustomMenuButton;
 import org.ton.ui.custom.control.CustomSearchBar;
+import org.ton.ui.custom.events.CustomEventListener;
+import org.ton.ui.custom.events.event.CustomActionEvent;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static org.ton.ui.custom.events.CustomEventBus.emit;
+//import static org.ton.ui.custom.events.CustomEventBus.listenFor;
+//, CustomEventListener<CustomActionEvent>
 
 public class CustomMainLayout extends AnchorPane implements Initializable {
 
@@ -89,6 +95,11 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         });
     }
 
+//    @Override
+//    public void handle(CustomActionEvent event) {
+//
+//    }
+
 
     private boolean hasResult() {
         return buttons.getChildren().contains(resultsBtn);
@@ -146,7 +157,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         resetButtons();
         accountsBtn.activate();
         createButton = new CustomButton(CustomButton.CustomButtonType.CREATE, 110.0);
-        createButton.setOnAction(action -> createAccount());
+        createButton.setOnAction(action -> emit(new CustomActionEvent(CustomActionEvent.Type.CLICK)));
         this.topButton.getChildren().add(createButton);
         changeContent(accountsPane);
     }
@@ -254,4 +265,6 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
 
     private void createAccount() {
     }
+
+
 }

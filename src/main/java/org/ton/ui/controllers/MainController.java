@@ -49,6 +49,8 @@ import org.ton.main.App;
 import org.ton.parameters.ValidationParam;
 import org.ton.settings.*;
 import org.ton.ui.custom.control.CustomInfoLabel;
+import org.ton.ui.custom.events.CustomEventListener;
+import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.ui.custom.layout.CustomLoadingPane;
 import org.ton.ui.custom.layout.CustomMainLayout;
 import org.ton.utils.Utils;
@@ -78,8 +80,11 @@ import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
 import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
 
+import static org.ton.ui.custom.events.CustomEventBus.emit;
+import static org.ton.ui.custom.events.CustomEventBus.listenFor;
+
 @Slf4j
-public class MainController implements Initializable {
+public class MainController implements Initializable, CustomEventListener<CustomActionEvent> {
 
     public static final String LIGHT_BLUE = "#dbedff";
 
@@ -1087,6 +1092,10 @@ public class MainController implements Initializable {
     JFXDialog sendDialog;
     JFXDialog yesNoDialog;
 
+    public MainController() {
+        listenFor(CustomActionEvent.class, this);
+    }
+
     public void showSendDialog(String srcAddr) throws IOException {
 
         Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/dialogsend.fxml")).load();
@@ -1306,7 +1315,7 @@ public class MainController implements Initializable {
                             MyLocalTon.getInstance().populateBlockRowWithData(resultLastBlock, blockRow, null);
 
                             if (resultLastBlock.getWc() == -1L) {
-                                (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("block-row-pane-gray");
+                                (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
 //                                blockRow.setStyle("-fx-background-color: e9f4ff;");
                                 //#F7F9FB
                                 //blockRow.setStyle("-fx-background-color: red; -fx-border-style: " +
@@ -2235,6 +2244,18 @@ public class MainController implements Initializable {
             yesNoDialog.show();
         } catch (Exception e) {
             log.error("Cannot show message, error {}", e.getMessage());
+        }
+    }
+
+    @Override
+    public void handle(CustomActionEvent event)  {
+        if (event.getEventType() == CustomActionEvent.Type.CLICK) {
+            try {
+                createNewAccountBtn();
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
         }
     }
 

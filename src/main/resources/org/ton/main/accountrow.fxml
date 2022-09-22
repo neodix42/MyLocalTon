@@ -5,8 +5,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane fx:id="accRowBorderPane" onMouseEntered="#handleMouseEnter" onMouseExited="#handleMouseExit" prefHeight="120.0" prefWidth="1045.0"
-            style="-fx-background-color: dbedff; -fx-padding: 10 0 0 5;" stylesheets="@../css/global-font.css" xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1"
+<?import javafx.scene.shape.SVGPath?>
+<BorderPane fx:id="accRowBorderPane" prefHeight="120.0" prefWidth="1045.0"
+            styleClass="account-row-pane" stylesheets="@../css/listview-row-styles.css" xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.ton.ui.controllers.AccountController">
     <center>
         <HBox prefHeight="120.0" prefWidth="863.0" BorderPane.alignment="CENTER">
@@ -16,25 +17,25 @@
                         <Insets bottom="5.0" left="5.0" right="5.0"/>
                     </padding>
 
-                    <Label fx:id="hexAddrLabel" minWidth="190.0" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Hex:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <Label fx:id="hexAddrLabel" minWidth="190.0" styleClass="row-label-small-right" text="Hex:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
-                    <Label fx:id="hexAddr" minWidth="500.0" onMouseClicked="#accRowHexAddrClick" style="-fx-alignment: center-left; -fx-font-size: 12;"
+                    <Label fx:id="hexAddr" minWidth="500.0" onMouseClicked="#accRowHexAddrClick" styleClass="row-label-small-left"
                            text="0:e50738dd6363b5e91d738e21d8eff5da3194ec1a34bccaa7a2d32e8136f8620c" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
 
-                    <Label fx:id="b64AddrLabel" prefHeight="15.0" prefWidth="201.0" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Bounceable, base64:" GridPane.columnIndex="0"
+                    <Label fx:id="b64AddrLabel" prefHeight="15.0" prefWidth="201.0" styleClass="row-label-small-right" text="Bounceable, base64:" GridPane.columnIndex="0"
                            GridPane.rowIndex="1"/>
-                    <Label fx:id="b64Addr" onMouseClicked="#accRowB64AddrClick" style="-fx-alignment: center-left; -fx-font-size: 12;" text="EQDlBzjdY2O16R1zjiHY7/XaMZTsGjS8yqei0y6BNvhiDB9Q"
+                    <Label fx:id="b64Addr" onMouseClicked="#accRowB64AddrClick" styleClass="row-label-small-left" text="EQDlBzjdY2O16R1zjiHY7/XaMZTsGjS8yqei0y6BNvhiDB9Q"
                            GridPane.columnIndex="1" GridPane.rowIndex="1"/>
-                    <Label fx:id="b64urlAddrLabel" prefHeight="15.0" prefWidth="205.0" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Bounceable, base64url:" GridPane.columnIndex="0"
+                    <Label fx:id="b64urlAddrLabel" prefHeight="15.0" prefWidth="205.0" styleClass="row-label-small-right" text="Bounceable, base64url:" GridPane.columnIndex="0"
                            GridPane.rowIndex="2"/>
-                    <Label fx:id="b64urlAddr" onMouseClicked="#accRowB64UrlAddrClick" style="-fx-alignment: center-left; -fx-font-size: 12;" text="EQDlBzjdY2O16R1zjiHY7_XaMZTsGjS8yqei0y6BNvhiDB9Q"
+                    <Label fx:id="b64urlAddr" onMouseClicked="#accRowB64UrlAddrClick" styleClass="row-label-small-left" text="EQDlBzjdY2O16R1zjiHY7_XaMZTsGjS8yqei0y6BNvhiDB9Q"
                            GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                    <Label fx:id="nb64AddrLabel" prefHeight="15.0" prefWidth="213.0" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Non-Bounceable, base64:" GridPane.columnIndex="0"
+                    <Label fx:id="nb64AddrLabel" prefHeight="15.0" prefWidth="213.0" styleClass="row-label-small-right" text="Non-Bounceable, base64:" GridPane.columnIndex="0"
                            GridPane.rowIndex="3"/>
-                    <Label fx:id="nb64Addr" onMouseClicked="#accRowNb64AddrClick" style="-fx-alignment: center-left; -fx-font-size: 12;" text="UQDlBzjdY2O16R1zjiHY7/XaMZTsGjS8yqei0y6BNvhiDEKV"
+                    <Label fx:id="nb64Addr" onMouseClicked="#accRowNb64AddrClick" styleClass="row-label-small-left" text="UQDlBzjdY2O16R1zjiHY7/XaMZTsGjS8yqei0y6BNvhiDEKV"
                            textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                    <Label fx:id="nb64urlAddrLabel" style="-fx-alignment: center-right; -fx-font-size: 12;" text="Non-Bounceable, base64url:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                    <Label fx:id="nb64urlAddr" onMouseClicked="#accRowNb64UrlAddrClick" style="-fx-alignment: center-left; -fx-font-size: 12;" text="UQDlBzjdY2O16R1zjiHY7_XaMZTsGjS8yqei0y6BNvhiDEKV"
+                    <Label fx:id="nb64urlAddrLabel" styleClass="row-label-small-right" text="Non-Bounceable, base64url:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                    <Label fx:id="nb64urlAddr" onMouseClicked="#accRowNb64UrlAddrClick" styleClass="row-label-small-left" text="UQDlBzjdY2O16R1zjiHY7_XaMZTsGjS8yqei0y6BNvhiDEKV"
                            GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                     <columnConstraints>
                         <ColumnConstraints/>
@@ -51,12 +52,12 @@
                 </GridPane>
             </VBox>
             <VBox prefHeight="20.0" prefWidth="188.0">
-                <Label fx:id="balance" onMouseClicked="#accRowBalanceClick" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 11;" text="9,5623.20"/>
-                <Label fx:id="createdat" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 11;" text="2021.03.26 15:55:32"/>
-                <Label fx:id="status" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center; -fx-font-size: 11;" text="Active"/>
-                <Label fx:id="type" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center;-fx-font-size: 11;" text="Wallet V1"/>
-                <Label fx:id="seqno" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center; -fx-font-size: 11; -fx-padding: 0 0 0 0;" text="Seqno 2563"/>
-                <Label fx:id="walledId" prefHeight="18.0" prefWidth="188.0" style="-fx-alignment: center; -fx-font-size: 11;" text="Wallet ID 1"/>
+                <Label fx:id="balance" onMouseClicked="#accRowBalanceClick" prefHeight="18.0" prefWidth="188.0" styleClass="row-label-small" text="9,5623.20"/>
+                <Label fx:id="createdat" prefHeight="18.0" prefWidth="188.0" styleClass="row-label-small" text="2021.03.26 15:55:32"/>
+                <Label fx:id="status" prefHeight="18.0" prefWidth="188.0" styleClass="row-label-small" text="Active"/>
+                <Label fx:id="type" prefHeight="18.0" prefWidth="188.0" styleClass="row-label-small" text="Wallet V1"/>
+                <Label fx:id="seqno" prefHeight="18.0" prefWidth="188.0" styleClass="row-label-small" style="-fx-padding: 0 0 0 0;" text="Seqno 2563"/>
+                <Label fx:id="walledId" prefHeight="18.0" prefWidth="188.0" styleClass="row-label-small" text="Wallet ID 1"/>
             </VBox>
         </HBox>
     </center>
@@ -64,37 +65,43 @@
         <VBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="46.0" prefWidth="67.0" style="-fx-padding: 0 25 0 0;" BorderPane.alignment="CENTER">
 
-                <JFXButton fx:id="walletDeleteBtn" onAction="#walletDeleteBtnAction" prefHeight="30.0" prefWidth="30.0">
-                    <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/delete.png"/>
-                        </ImageView>
-                    </graphic>
-                    <tooltip>
-                        <Tooltip text="Delete account. All toncoins and private key will be lost."/>
-                    </tooltip>
-                </JFXButton>
+                <HBox fx:id="hBoxDeletetn" alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="30.0" styleClass="background-acc-delete-button" BorderPane.alignment="CENTER">
+                    <JFXButton fx:id="walletDeleteBtn" onAction="#walletDeleteBtnAction" prefHeight="30.0" prefWidth="30.0" contentDisplay="GRAPHIC_ONLY">
+                        <graphic>
+                            <SVGPath content="M9.99988 1.71667C11.4609 1.71667 12.7107 2.76039 13.0005 4.16741L13.0093 4.21667L15.7107 4.21861L15.7925 4.20965L15.8692 4.20915L15.9349 4.21667L17.2894 4.21669C17.5689 4.21274 17.8289 4.35958 17.9698 4.60098C18.1107 4.84239 18.1107 5.14096 17.9698 5.38237C17.8465 5.5936 17.632 5.73243 17.3945 5.76119L17.2916 5.76668L16.5353 5.76667L15.4999 15.4766C15.3903 16.6119 14.5026 17.5101 13.3988 17.661L13.2317 17.678L13.0695 17.6833H6.92941C5.73184 17.6833 4.71175 16.8045 4.5201 15.6388L4.49917 15.4781L3.46332 5.76667L2.71034 5.76666C2.50072 5.76963 2.30209 5.68777 2.15643 5.54481L2.08821 5.46835L2.02999 5.38237C1.88909 5.14096 1.88909 4.84239 2.02999 4.60098C2.15327 4.38975 2.36772 4.25093 2.60522 4.22216L2.70822 4.21667L4.04014 4.21886C4.07815 4.2123 4.11661 4.20859 4.15794 4.20772L4.23948 4.21193L4.26584 4.21667H6.98932L6.9993 4.16741C7.26488 2.87764 8.33721 1.89315 9.63946 1.73803L9.81841 1.72206L9.99988 1.71667ZM14.9773 5.76667H5.02132L6.04193 15.3274C6.08283 15.7508 6.40458 16.0752 6.81533 16.1263L6.92941 16.1333H13.0695C13.4956 16.1333 13.8487 15.8449 13.9392 15.4392L13.9572 15.3258L14.9773 5.76667ZM8.62621 4.1475C8.86647 3.6184 9.39268 3.26667 9.99989 3.26667L10.1385 3.27284C10.6864 3.32184 11.1518 3.6591 11.3736 4.1475L11.4013 4.21667H8.59732L8.62621 4.1475Z"
+                                     styleClass="acc-delete-svg" />
+                        </graphic>
+                        <tooltip>
+                            <Tooltip text="Delete account. All toncoins and private key will be lost."/>
+                        </tooltip>
+                    </JFXButton>
+                </HBox>
 
-                <JFXButton fx:id="accSendBtn" onAction="#accSendBtnAction" prefHeight="30.0" prefWidth="30.0">
-                    <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/send.png"/>
-                        </ImageView>
-                    </graphic>
-                    <tooltip>
-                        <Tooltip text="Send toncoins to other wallet"/>
-                    </tooltip>
-                </JFXButton>
-                <JFXButton onAction="#accInfoBtn" prefHeight="30.0" prefWidth="30.0">
-                    <graphic>
-                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/info.png"/>
-                        </ImageView>
-                    </graphic>
-                    <tooltip>
-                        <Tooltip text="Get account information"/>
-                    </tooltip>
-                </JFXButton>
+                <HBox fx:id="hBoxSendBtn" alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="30.0" styleClass="background-acc-send-button" BorderPane.alignment="CENTER">
+                    <JFXButton fx:id="accSendBtn" onAction="#accSendBtnAction" prefHeight="30.0" prefWidth="30.0" contentDisplay="GRAPHIC_ONLY">
+                        <graphic>
+                            <SVGPath content="M17.3709 2.68722C17.2187 2.51774 16.9997 2.42378 16.772 2.43031L16.7407 2.43192L16.6881 2.43738L10.9552 2.43594L10.8522 2.44143C10.6147 2.4702 10.4002 2.60902 10.2769 2.82025C10.136 3.06166 10.136 3.36023 10.2769 3.60164L10.3352 3.68762L10.4034 3.76408C10.549 3.90704 10.7477 3.98889 10.9573 3.98593L14.9172 3.98499L8.74055 10.163L8.67108 10.2394C8.52227 10.4271 8.46758 10.6778 8.52953 10.9155C8.60033 11.187 8.81242 11.3991 9.084 11.4699L9.18643 11.4894L9.28915 11.495C9.49401 11.4924 9.69282 11.4086 9.8386 11.2567L16.0132 5.08099L16.0135 9.04428L16.019 9.14728C16.0478 9.38478 16.1866 9.59922 16.3978 9.72251C16.6392 9.86341 16.9378 9.86341 17.1792 9.72251C17.4206 9.58161 17.5674 9.32165 17.5635 9.04216L17.5635 3.28989L17.5701 3.18572C17.5674 3.01023 17.4977 2.82846 17.3709 2.68722ZM8.55007 4.07025C8.40917 3.82885 8.14921 3.68201 7.86972 3.68596L5.70518 3.68594L5.52004 3.69115C3.80391 3.78796 2.43018 5.22168 2.43018 6.96094V14.2943L2.43539 14.4794C2.53219 16.1955 3.96591 17.5693 5.70518 17.5693H13.0385L13.2236 17.5641C14.9398 17.4673 16.3135 16.0335 16.3135 14.2943V12.1276L16.308 12.0246C16.2793 11.7871 16.1404 11.5727 15.9292 11.4494C15.6878 11.3085 15.3892 11.3085 15.1478 11.4494C14.9064 11.5903 14.7596 11.8502 14.7635 12.1297L14.7635 14.2943L14.7572 14.4442C14.6825 15.3329 13.9482 16.0193 13.0385 16.0193H5.70517L5.55526 16.013C4.66651 15.9382 3.98017 15.204 3.98017 14.2943V6.96094L3.98645 6.81103C4.06121 5.92228 4.79543 5.23594 5.70517 5.23594H7.87184L7.97484 5.23046C8.21234 5.20169 8.42678 5.06287 8.55007 4.85164C8.69097 4.61023 8.69097 4.31166 8.55007 4.07025Z"
+                                     styleClass="send-svg" />
+                        </graphic>
+                        <tooltip>
+                            <Tooltip text="Send toncoins to other wallet"/>
+                        </tooltip>
+                    </JFXButton>
+                </HBox>
+
+                <HBox fx:id="hBoxInfoBtn" alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="30.0" styleClass="background-acc-info-button" BorderPane.alignment="CENTER">
+                    <JFXButton onAction="#accInfoBtn" prefHeight="30.0" prefWidth="30.0" contentDisplay="GRAPHIC_ONLY">
+                        <graphic>
+                            <SVGPath content="M23.4835 15C23.4835 10.3222 19.678 6.51666 15.0002 6.51666C10.3224 6.51666 6.51685 10.3222 6.51685 15C6.51685 19.6778 10.3224 23.4833 15.0002 23.4833C19.678 23.4833 23.4835 19.6778 23.4835 15ZM8.06685 15C8.06685 11.1634 11.1636 8.06666 15.0002 8.06666C18.8368 8.06666 21.9335 11.1634 21.9335 15C21.9335 18.8366 18.8368 21.9333 15.0002 21.9333C11.1636 21.9333 8.06685 18.8366 8.06685 15ZM14.9881 13.5911C15.1976 13.5878 15.3996 13.6695 15.5479 13.8176C15.6665 13.9361 15.7427 14.089 15.7669 14.2516L15.7752 14.375L15.7752 18.9562C15.7791 19.2357 15.6323 19.4957 15.3909 19.6366C15.1495 19.7775 14.8509 19.7775 14.6095 19.6366C14.3983 19.5133 14.2594 19.2988 14.2307 19.0613L14.2252 18.9583L14.2252 14.3771C14.2196 13.9852 14.506 13.6569 14.8831 13.5998L14.9881 13.5911ZM15.9835 11.6667C15.9835 11.1236 15.5433 10.6833 15.0002 10.6833C14.4571 10.6833 14.0168 11.1236 14.0168 11.6667C14.0168 12.2097 14.4571 12.65 15.0002 12.65C15.5433 12.65 15.9835 12.2097 15.9835 11.6667Z"
+                                     styleClass="acc-info-svg" />
+                        </graphic>
+                        <tooltip>
+                            <Tooltip text="Get account information"/>
+                        </tooltip>
+                    </JFXButton>
+                </HBox>
+
+
             </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="46.0" prefWidth="67.0" style="-fx-padding: 0 25 0 0;" BorderPane.alignment="CENTER">
 

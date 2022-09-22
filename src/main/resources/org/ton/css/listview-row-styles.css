@@ -12,25 +12,24 @@
 
 .row-label-small {
     -fx-font-family: "Roboto Mono Medium";
-        -fx-alignment: center;
-        -fx-text-fill: #1F1F1F;
-        -fx-font-size: 12px;
+    -fx-alignment: center;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 12px;
 }
 
-/*
-background: #1F1F1F;
-
-style="-fx-alignment: center; -fx-font-size: 14;"
-style="-fx-alignment: center; -fx-font-size: 14;"
-style="-fx-alignment: center; -fx-font-size: 14;"
-
-
-style="-fx-alignment: center; -fx-font-size: 11;"
-
-.label, .text, .tab {
+.row-label-small-right {
     -fx-font-family: "Roboto Mono Medium";
+    -fx-alignment: center-right;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 12px;
 }
-*/
+
+.row-label-small-left {
+    -fx-font-family: "Roboto Mono Medium";
+    -fx-alignment: center-left;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 12px;
+}
 
 
 .row-pane {
@@ -40,11 +39,26 @@ style="-fx-alignment: center; -fx-font-size: 11;"
     -fx-border-color: #e7e7e7;
 }
 
-.block-row-pane:hover {
+.row-pane:hover {
     -fx-background-color: #E9F4FF;
 }
+.account-row-pane {
+    -fx-background-color: #FFFFFF;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 2;
+    -fx-border-color: #e7e7e7;
+}
 
-.block-row-pane-gray {
+/*
+.account-row-pane:hover {
+    -fx-background-color: #FFFFFF;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 2;
+    -fx-border-color: #e7e7e7;
+}
+*/
+
+.row-pane-gray {
     -fx-background-color: #F7F9FB;
     -fx-border-style: hidden hidden solid hidden;
     -fx-border-width: 2;
@@ -61,6 +75,77 @@ style="-fx-alignment: center; -fx-font-size: 11;"
     -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
 }
 
+.background-acc-info-button {
+    -fx-background-color: #FFFFFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-info-button:hover {
+    -fx-background-color: #E9F1FD;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-send-button {
+    -fx-background-color: #FFFFFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-send-button:hover {
+    -fx-background-color: #E5EAFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-delete-button {
+    -fx-background-color: #FFFFFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-delete-button:hover {
+    -fx-background-color: #FEE6EA;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+
+.background-acc-delete-button-gray, .background-acc-send-button-gray, .background-acc-info-button-gray {
+    -fx-background-color: #F7F9FB;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
 .info-svg {
     -fx-fill: #0088CC;
 }
@@ -69,4 +154,34 @@ style="-fx-alignment: center; -fx-font-size: 11;"
     -fx-fill: #F7F9FB;
 }
 
+.acc-info-svg {
+    -fx-fill: #0088CC;
+}
+
+.acc-send-svg {
+    -fx-fill: #303757;
+}
+
+.acc-delete-svg {
+    -fx-fill: #F72B50;
+}
+
+.jfx-button:disabled>.acc-send-svg {
+    -fx-fill: #888888;
+    -fx-opacity: 1.0 ;
+}
+.jfx-button:disabled>.acc-delete-svg {
+    -fx-fill: #888888;
+    -fx-opacity: 1.0 ;
+}
+.background-info-button:hover>.button>.info-svg {
+    -fx-fill: #F7F9FB;
+}
+
+
+/*
+ {
+    -fx-fill: #F7F9FB;
+}
+*/
 

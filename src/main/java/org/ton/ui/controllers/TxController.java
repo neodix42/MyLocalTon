@@ -92,18 +92,6 @@ public class TxController {
     @FXML
     Label txLt;
 
-    String style;
-
-    @FXML
-    void handleMouseEnter() {
-        style = txRowBorderPane.getStyle();
-        txRowBorderPane.setStyle("-fx-background-color: #bedef4;");
-    }
-
-    @FXML
-    void handleMouseExit() {
-        txRowBorderPane.setStyle(style);
-    }
 
     @FXML
     void txInfoBtn() throws Exception {

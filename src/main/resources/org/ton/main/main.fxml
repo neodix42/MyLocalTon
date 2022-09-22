@@ -120,30 +120,30 @@
                 <VBox prefHeight="620.0" prefWidth="1116.0">
                     <HBox prefHeight="44.0" prefWidth="924.0" BorderPane.alignment="CENTER">
                         <VBox prefHeight="44.0" prefWidth="740.0">
-                            <Label prefHeight="44.0" prefWidth="740.0" style="-fx-alignment: center;-fx-font-size: 16;" text="ACCOUNT"/>
+                            <Label prefHeight="44.0" prefWidth="740.0" styleClass="content-header-label" text="ACCOUNT"/>
                         </VBox>
                         <VBox prefHeight="43.0" prefWidth="144.0">
-                            <Label prefHeight="43.0" prefWidth="143.0" style="-fx-alignment: center; -fx-font-size: 16;" text="BALANCE"/>
+                            <Label prefHeight="43.0" prefWidth="143.0" styleClass="content-header-label" text="BALANCE"/>
                         </VBox>
 
                         <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0" BorderPane.alignment="CENTER">
-                            <Label prefHeight="48.0" prefWidth="199.0" style="-fx-alignment: center-right;-fx-padding: 0 20 0 0; -fx-font-size: 16;"/>
+                            <Label prefHeight="48.0" prefWidth="199.0" styleClass="content-header-label"/>
                         </HBox>
                     </HBox>
                     <JFXListView fx:id="accountsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#accountsOnScroll" prefHeight="579.0" prefWidth="1077.0"
-                                 style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
+                                 styleClass="content-list-view" BorderPane.alignment="CENTER">
                         <!-- add dynamic content here
                         <fx:include fx:id="accs" source="accountrow.fxml"/>
                         -->
                     </JFXListView>
                 </VBox>
-                <JFXButton layoutX="1030.0" layoutY="550" onAction="#createNewAccountBtn" prefHeight="48.0" prefWidth="73.0">
-                    <graphic>
-                        <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
-                            <Image url="@../images/addaccount.png"/>
-                        </ImageView>
-                    </graphic>
-                </JFXButton>
+<!--                <JFXButton layoutX="1030.0" layoutY="550" onAction="#createNewAccountBtn" prefHeight="48.0" prefWidth="73.0">-->
+<!--                    <graphic>-->
+<!--                        <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">-->
+<!--                            <Image url="@../images/addaccount.png"/>-->
+<!--                        </ImageView>-->
+<!--                    </graphic>-->
+<!--                </JFXButton>-->
             </VBox>
         </accountsPane>
 
