@@ -3,43 +3,31 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
-<?import java.net.URL?>
 
 <?import org.ton.ui.custom.control.CustomTextField?>
-<?import org.ton.ui.custom.control.CustomComboBox?>
-<?import org.ton.ui.custom.control.CustomButton?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
-            prefHeight="720.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.ton.ui.custom.layout.AccountsCreatePane">
 
-   <stylesheets>
-      <URL value="@../../../css/custom/main-layout.css" />
-   </stylesheets>
+
+<?import org.ton.ui.custom.control.CustomButton?>
+<?import com.jfoenix.controls.JFXButton?>
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.ton.ui.custom.layout.AccountsCreatePaneController" styleClass="background-dialog-pane"
+            prefHeight="350.0" prefWidth="510.0" stylesheets="@../../../css/custom/main-layout.css">
 
    <children>
-      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
-                  prefHeight="720.0" prefWidth="1335.0" styleClass="lock-pane" />
+      <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Create Wallet" styleClass="modal-pane-label" />
 
-      <AnchorPane prefHeight="350.0" prefWidth="510.0"
-                  styleClass="modal-pane"
-                  AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="200.0">
-         <children>
-            <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Create Wallet" styleClass="modal-pane-label"
-                   AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0">
-            </Label>
-            <Line endX="510.0" layoutY="60.0" stroke="#888888" />
+      <Line endX="510.0" layoutY="60.0" stroke="#888888" />
 
-            <CustomTextField fieldPromptText="Workchain" prefWidth="450.0" layoutY="80.0" layoutX="30.0"/>
+      <CustomTextField fx:id="workchain" fieldPromptText="Workchain" prefWidth="450.0" layoutY="80.0" layoutX="30.0"/>
 
-            <CustomTextField fieldPromptText="Sub-wallet ID" prefWidth="450.0" layoutY="140.0" layoutX="30.0"/>
+      <CustomTextField fx:id="subWalletID" fieldPromptText="Sub-wallet ID" prefWidth="450.0" layoutY="140.0" layoutX="30.0"/>
 
-            <CustomComboBox prefWidth="450.0" layoutY="200.0" layoutX="30.0"/>
-            <CustomButton text="Create" prefWidth="100" layoutX="205" layoutY="280" />
-
-         </children>
-      </AnchorPane>
-
+      <!--      <CustomComboBox prefWidth="450.0" layoutY="200.0" layoutX="30.0"/>-->
+      <CustomTextField fx:id="walletVersion" prefWidth="450.0" layoutY="200.0" layoutX="30.0" editableField="false"/>
+<!--      <CustomButton text="Create" prefWidth="120" layoutX="195" layoutY="280" styleClass="custom-button-form" />-->
+      <JFXButton fx:id="createBtn" onAction="#doCreateAccount" text="Create" prefHeight="40" prefWidth="120" layoutX="195" layoutY="280" styleClass="custom-button-form" />
+      <!--      <CustomButton text="Create" prefWidth="100" layoutX="205" layoutY="280" />-->
 
    </children>
 </AnchorPane>

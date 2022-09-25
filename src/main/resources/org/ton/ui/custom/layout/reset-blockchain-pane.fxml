@@ -3,54 +3,34 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
-<?import java.net.URL?>
 <?import org.ton.ui.custom.control.CustomButton?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
-            prefHeight="720.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.ton.ui.custom.layout.ResetBlockchainPane"
-            >
-
-   <stylesheets>
-      <URL value="@../../../css/custom/main-layout.css" />
-
-   </stylesheets>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="270.0" prefWidth="510.0" styleClass="background-dialog-pane"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.ton.ui.custom.layout.ResetBlockchainPaneController"
+            stylesheets="@../../../css/custom/main-layout.css">
 
    <children>
-      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
-                  prefHeight="720.0" prefWidth="1335.0" styleClass="lock-pane" />
+      <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Reset TON Blockchain" styleClass="modal-pane-label"
+             AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0">
+      </Label>
+      <Line endX="510.0" layoutY="60.0" stroke="#888888" />
 
-      <AnchorPane prefHeight="270.0" prefWidth="510.0"
-                  styleClass="modal-pane"
-                  AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="200.0">
+      <VBox prefHeight="40.0" prefWidth="470.0"
+            AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="80.0">
          <children>
-            <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Reset TON Blockchain" styleClass="modal-pane-label"
-                   AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0">
-            </Label>
-            <Line endX="510.0" layoutY="60.0" stroke="#888888" />
-
-
-
-            <VBox prefHeight="40.0" prefWidth="470.0"
-                  AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="80.0">
-               <children>
-                  <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
-                         text="You can reset current signle-node TON blockchain to the new"  />
-                  <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
-                         text="settings. All data will be lost and zero state will be created "/>
-                  <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
-                         text="from scratch. Do you want to proceed?"/>
-
-
-               </children>
-            </VBox>
-
-
-            <CustomButton text="OK" prefWidth="100" layoutX="205" layoutY="200" />
+            <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
+                   text="You can reset current signle-node TON blockchain to the new"  />
+            <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
+                   text="settings. All data will be lost and zero state will be created "/>
+            <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
+                   text="from scratch. Do you want to proceed?"/>
 
          </children>
-      </AnchorPane>
+      </VBox>
 
+      <CustomButton text="OK" prefWidth="100" layoutX="205" layoutY="200" onAction="#resetAction" styleClass="custom-button-form"/>
 
    </children>
+
 </AnchorPane>

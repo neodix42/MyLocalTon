@@ -373,7 +373,7 @@ public class MyLocalTon {
 
         if (installed < toInstall) {
             Thread.sleep(1000);
-            mainController.showWarningMsg("Creating initial wallets...", 5 * 60L);
+            mainController.showWarningMsg("Creating initial wallets...", 5);
         }
 
         while (installed < toInstall) {

@@ -40,13 +40,19 @@ public class App extends Application {
     public static boolean firstAppLaunch = true;
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage)  {
         log.info("Starting application");
 
         fxmlLoader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/main.fxml"));
-        root = fxmlLoader.load();
+        try {
+            root = fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
         scene = new Scene(root);
         mainController = fxmlLoader.getController();
+        mainController.setHostServices(getHostServices());
 
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
@@ -54,14 +60,17 @@ public class App extends Application {
 
         primaryStage.setOnShown(windowEvent -> {
             log.debug("onShown, stage loaded");
-            mainController.showLoadingPane();
-//            if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 0) {
-//                Platform.runLater(() -> mainController.showWarningMsg("Initializing TON blockchain very first time. It can take up to 2 minutes, please wait.", 60 * 5L));
-//            } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
-//                Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L));
-//            } else {
-//                Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L));
-//            }
+
+            if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 0) {
+                mainController.showLoadingPane("Initializing TON blockchain very first time.", "It can take up to 2 minutes, please wait.");
+                //Platform.runLater(() -> mainController.showWarningMsg("Initializing TON blockchain very first time. It can take up to 2 minutes, please wait.", 5));
+            } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
+                //Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5));
+                mainController.showLoadingPane("Starting TON blockchain...", "Should take no longer than 45 seconds.");
+            } else {
+                mainController.showLoadingPane("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size(), " validators, may take up to 3 minutes.");
+                //Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, may take up to 3 minutes.", 5));
+            }
         });
 
         primaryStage.show();
@@ -75,7 +84,7 @@ public class App extends Application {
         }
 
         mainController.saveSettings();
-        mainController.showShutdownMsg("Shutting down TON blockchain...", 5 * 60L);
+        mainController.showShutdownMsg("Shutting down TON blockchain...", 5);
     }
 
     public static void setRoot(String fxml) throws IOException {
@@ -169,7 +178,7 @@ public class App extends Application {
             Thread.sleep(1000);
         }
 
-        //mainController.showSuccessMsg("TON blockchain is ready!", 2);
+        mainController.showSuccessMsg("TON blockchain is ready!", 2);
         //mainController.removeLoadingPane();
         Platform.runLater(() -> mainController.removeLoadingPane());
 

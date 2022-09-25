@@ -12,6 +12,13 @@ public class CustomButton extends JFXButton {
     @FXML
     private SVGPath svg;
 
+    public CustomButton() throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("custom-button.fxml"));
+        fxmlLoader.setRoot(this);
+        fxmlLoader.setController(this);
+        fxmlLoader.load();
+    }
+
     public CustomButton(CustomButtonType type, double width) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("custom-button.fxml"));
         fxmlLoader.setRoot(this);

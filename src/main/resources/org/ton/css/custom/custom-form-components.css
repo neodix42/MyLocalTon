@@ -1,3 +1,8 @@
+@font-face{
+  font-family: 'Mulish Bold';
+  src: url('../fonts/Mulish-Bold.ttf') format('truetype');
+}
+
 .jfx-text-field {
     -fx-padding: 0 10 0 10;
     -fx-font-size: 16px;
@@ -14,6 +19,9 @@
     -fx-padding: 0 10 0 10;
     -fx-font-size: 16px;
 }
+.combo-box {
+    -fx-padding: -6 10 -6 10;
+}
 .jfx-combo-box .input-line{
 	-fx-pref-height: 0px;
 }
@@ -29,4 +37,24 @@
     -fx-border-insets: 0;
     -fx-border-radius: 10;
     -fx-border-color: #888888;
+}
+
+.textfield-font {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6E6E6E;
+    -fx-font-family: "Mulish Bold";
+}
+
+/*
+.combobox-font {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6E6E6E;
+    -fx-font-family: "Mulish Bold";
+}
+*/
+
+.combobox-font > .list-cell  {
+    -fx-font-size: 14px;
+    -fx-font-family: "Mulish Bold";
+    -fx-text-fill: #6E6E6E;
 }

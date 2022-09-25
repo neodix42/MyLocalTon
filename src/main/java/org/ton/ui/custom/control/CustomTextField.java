@@ -42,4 +42,8 @@ public class CustomTextField extends HBox {
     public void setEditableField(boolean editable) {
         textField.setEditable(editable);
     }
+
+    public JFXTextField getTextField() {
+        return textField;
+    }
 }

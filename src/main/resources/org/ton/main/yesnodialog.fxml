@@ -4,8 +4,9 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="524.0" stylesheets="@../css/global-font.css"
-           xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.YesNoController">
+<?import org.ton.ui.custom.control.CustomTextField?>
+<StackPane fx:id="stackYesNo" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="524.0" stylesheets="@../css/main-styles.css"
+           xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.YesNoController" style="-fx-background-color: #FFFFFF;">
     <GridPane>
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="394.0" minWidth="10.0" prefWidth="394.0"/>
@@ -18,7 +19,7 @@
         </rowConstraints>
         <Label fx:id="action" visible="false"/>
         <Label fx:id="address" visible="false"/>
-        <Label fx:id="header" prefHeight="39.0" prefWidth="624.0" style="-fx-background-color: #dbedff; -fx-padding: 0 0 0 20;" text="Header" visible="true" GridPane.columnSpan="2"
+        <Label fx:id="header" prefHeight="39.0" prefWidth="624.0" styleClass="header-label-yes-no"  text="Header" visible="true" GridPane.columnSpan="2"
                GridPane.rowIndex="0" GridPane.valignment="TOP"/>
 
         <Label fx:id="body" prefHeight="125.0" prefWidth="632.0" style="-fx-font-size: 11; -fx-padding: 0 0 0 40;" text="body text" visible="true" GridPane.columnSpan="2"
@@ -33,22 +34,29 @@
                     <Insets left="20.0"/>
                 </GridPane.margin>
             </JFXTextField>
-            <JFXTextField fx:id="workchain" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="Workchain" GridPane.columnSpan="1" GridPane.rowIndex="1">
-                <padding>
-                    <Insets left="10.0"/>
-                </padding>
-                <GridPane.margin>
-                    <Insets left="20.0"/>
-                </GridPane.margin>
-            </JFXTextField>
-            <JFXTextField fx:id="subWalletId" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="Sub-wallet ID" GridPane.columnSpan="1" GridPane.rowIndex="1">
-                <padding>
-                    <Insets left="10.0"/>
-                </padding>
-                <GridPane.margin>
-                    <Insets left="20.0"/>
-                </GridPane.margin>
-            </JFXTextField>
+
+            <CustomTextField fx:id="workchain" alignment="BOTTOM_LEFT" fieldPromptText="Workchain" prefWidth="450.0" GridPane.columnSpan="1" GridPane.rowIndex="1"/>
+<!--            <JFXTextField fx:id="workchain" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="Workchain" GridPane.columnSpan="1" GridPane.rowIndex="1">-->
+<!--                <padding>-->
+<!--                    <Insets left="10.0"/>-->
+<!--                </padding>-->
+<!--                <GridPane.margin>-->
+<!--                    <Insets left="20.0"/>-->
+<!--                </GridPane.margin>-->
+<!--            </JFXTextField>-->
+
+            <CustomTextField fx:id="subWalletId" alignment="BOTTOM_LEFT" fieldPromptText="Sub-wallet ID" prefWidth="450.0" GridPane.columnSpan="1" GridPane.rowIndex="1"/>
+<!--            <JFXTextField fx:id="subWalletId" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="Sub-wallet ID" GridPane.columnSpan="1" GridPane.rowIndex="1">-->
+<!--                <padding>-->
+<!--                    <Insets left="10.0"/>-->
+<!--                </padding>-->
+<!--                <GridPane.margin>-->
+<!--                    <Insets left="20.0"/>-->
+<!--                </GridPane.margin>-->
+<!--            </JFXTextField>-->
+
+            <CustomTextField fx:id="walletVersionTextField" alignment="BOTTOM_LEFT"  prefWidth="450.0" GridPane.columnSpan="1" GridPane.rowIndex="1" editableField="false"/>
+
             <VBox.margin>
                 <Insets left="50.0"/>
             </VBox.margin>

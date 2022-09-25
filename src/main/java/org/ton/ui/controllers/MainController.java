@@ -1,9 +1,7 @@
 package org.ton.ui.controllers;
 
 import com.jfoenix.controls.*;
-import com.objectdb.o.STR;
-import javafx.animation.FillTransition;
-import javafx.animation.Interpolator;
+import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,7 +10,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -22,13 +19,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,11 +43,16 @@ import org.ton.executors.liteclient.api.config.Validator;
 import org.ton.main.App;
 import org.ton.parameters.ValidationParam;
 import org.ton.settings.*;
+import org.ton.ui.custom.control.CustomComboBox;
 import org.ton.ui.custom.control.CustomInfoLabel;
-import org.ton.ui.custom.events.CustomEventListener;
+import org.ton.ui.custom.control.CustomTextField;
+import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
-import org.ton.ui.custom.layout.CustomLoadingPane;
+import org.ton.ui.custom.events.event.CustomNotificationEvent;
+import org.ton.ui.custom.layout.AccountsCreatePaneController;
+import org.ton.ui.custom.layout.CustomLoadingPaneController;
 import org.ton.ui.custom.layout.CustomMainLayout;
+import org.ton.ui.custom.layout.SendCoinPaneController;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
 
@@ -84,11 +84,12 @@ import static org.ton.ui.custom.events.CustomEventBus.emit;
 import static org.ton.ui.custom.events.CustomEventBus.listenFor;
 
 @Slf4j
-public class MainController implements Initializable, CustomEventListener<CustomActionEvent> {
+public class MainController implements Initializable {
 
     public static final String LIGHT_BLUE = "#dbedff";
 
     public static final long ONE_BLN = 1000000000L;
+    public static final String TELEGRAM_NEODIX = "https://telegram.me/neodix";
     @FXML
     public StackPane superWindow;
 
@@ -98,8 +99,8 @@ public class MainController implements Initializable, CustomEventListener<Custom
     //@FXML
     //public JFXTabPane mainMenuTabs;
 
-    @FXML
-    public JFXTabPane settingTabs;
+    //@FXML
+    //public JFXTabPane settingTabs;
 
     @FXML
     public CustomInfoLabel currentBlockNum;
@@ -124,30 +125,6 @@ public class MainController implements Initializable, CustomEventListener<Custom
 
     @FXML
     public JFXListView<Node> accountsvboxid;
-
-    @FXML
-    public TextField electedFor;
-
-    @FXML
-    public TextField initialBalance;
-
-    @FXML
-    public TextField globalId;
-
-    @FXML
-    public TextField electionStartBefore;
-
-    @FXML
-    public TextField electionEndBefore;
-
-    @FXML
-    public TextField stakesFrozenFor;
-
-    @FXML
-    public TextField gasPrice;
-
-    @FXML
-    public TextField cellPrice;
 
     @FXML
     public TextField nodeStateTtl1;
@@ -741,42 +718,6 @@ public class MainController implements Initializable, CustomEventListener<Custom
     public JFXTabPane subLogsTabs;
 
     @FXML
-    public JFXTextField validatorLogDir2;
-
-    @FXML
-    public JFXComboBox<String> tonLogLevel2;
-
-    @FXML
-    public JFXTextField validatorLogDir3;
-
-    @FXML
-    public JFXComboBox<String> tonLogLevel3;
-
-    @FXML
-    public JFXTextField validatorLogDir4;
-
-    @FXML
-    public JFXComboBox<String> tonLogLevel4;
-
-    @FXML
-    public JFXTextField validatorLogDir5;
-
-    @FXML
-    public JFXComboBox<String> tonLogLevel5;
-
-    @FXML
-    public JFXTextField validatorLogDir6;
-
-    @FXML
-    public JFXComboBox<String> tonLogLevel6;
-
-    @FXML
-    public JFXTextField validatorLogDir7;
-
-    @FXML
-    public JFXComboBox<String> tonLogLevel7;
-
-    @FXML
     public JFXTextField nodeStateTtl2;
 
     @FXML
@@ -1019,56 +960,18 @@ public class MainController implements Initializable, CustomEventListener<Custom
     @FXML
     ImageView aboutLogo;
 
-    @FXML
-    JFXTextField gasPriceMc;
-
-    @FXML
-    JFXTextField cellPriceMc;
-
-    @FXML
-    JFXTextField maxFactor;
-
-    @FXML
-    JFXTextField minTotalStake;
-
-    @FXML
-    JFXTextField maxStake;
-
-    @FXML
-    JFXTextField minStake;
-
-    @FXML
-    JFXComboBox<String> walletVersion;
-
-    @FXML
-    Label statusBar;
+//    @FXML
+//    Label statusBar;
 
 //    @FXML
 //    private JFXButton scrollBtn;
 
     @FXML
-    private JFXSlider walletsNumber;
-
-    @FXML
-    private TextField coinsPerWallet;
-
-    @FXML
-    private TextField validatorLogDir1;
-
-    @FXML
-    private TextField dhtLogDir1;
-
-    @FXML
-    private TextField minValidators;
-
-    @FXML
-    private TextField maxValidators;
-
-    @FXML
-    private TextField maxMainValidators;
-
-    @FXML
-    private TextField myLocalTonLog;
+    private CustomTextField validatorLogDir1, dhtLogDir1, myLocalTonLog, validatorLogDir2, validatorLogDir3,
+            validatorLogDir4, validatorLogDir5, validatorLogDir6, validatorLogDir7, coinsPerWallet, walletsNumber,
+            globalId, initialBalance, maxValidators, maxMainValidators, minValidators, electedFor, minStake,
+            electionStartBefore, minTotalStake, stakesFrozenFor, maxFactor, gasPrice, gasPriceMc, cellPrice,
+            cellPriceMc, electionEndBefore, maxStake;
 
     @FXML
     public JFXCheckBox tickTockCheckBox;
@@ -1079,28 +982,35 @@ public class MainController implements Initializable, CustomEventListener<Custom
     @FXML
     public JFXCheckBox inOutMsgsCheckBox;
 
-
-
     @FXML
-    public ComboBox<String> myLogLevel;
-
-    @FXML
-    public ComboBox<String> tonLogLevel;
+    public CustomComboBox myLogLevel, tonLogLevel, tonLogLevel2, tonLogLevel3, tonLogLevel4, tonLogLevel5,
+            tonLogLevel6, tonLogLevel7, walletVersion;
 
     private MyLocalTonSettings settings;
 
     JFXDialog sendDialog;
     JFXDialog yesNoDialog;
+    private JFXDialog loadingDialog;
+    private HostServices hostServices;
 
     public MainController() {
-        listenFor(CustomActionEvent.class, this);
+        listenFor(CustomActionEvent.class, this::handle);
     }
 
-    public void showSendDialog(String srcAddr) throws IOException {
+    public void showSendDialog(String srcAddr) {
+        FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/send-coin-pane.fxml"));
+        Parent parent = null;
+        try {
+            parent = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        SendCoinPaneController controller = loader.getController();
+        controller.setHiddenWalletAddr(srcAddr);
+        //Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/dialogsend.fxml")).load();
 
-        Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/dialogsend.fxml")).load();
-
-        ((Label) parent.lookup("#hiddenWalletAddr")).setText(srcAddr);
+        //((Label) parent.lookup("#hiddenWalletAddr")).setText(srcAddr);
 
         JFXDialogLayout content = new JFXDialogLayout();
         content.setBody(parent);
@@ -1112,64 +1022,72 @@ public class MainController implements Initializable, CustomEventListener<Custom
                     }
                 }
         );
-        sendDialog.setOnDialogOpened(jfxDialogEvent -> parent.lookup("#destAddr").requestFocus());
+        //sendDialog.setOnDialogOpened(jfxDialogEvent -> parent.lookup("#destAddr").requestFocus());
+        sendDialog.setOnDialogOpened(jfxDialogEvent -> controller.requestFocusToDestinationAddress());
         sendDialog.show();
     }
 
+
+
     public void showInfoMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
-            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: dbedff");
-            Rectangle rect = new Rectangle();
-            rect.setFill(Color.valueOf(LIGHT_BLUE));
-            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-            statusBar.setText(msg);
-            animateBackgroundColor(statusBar, Color.valueOf(LIGHT_BLUE), Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
-            animateFontColor(statusBar, Color.BLACK, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
+            emit(new CustomNotificationEvent(CustomEvent.Type.INFO, msg, durationSeconds));
+//            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: dbedff");
+//            Rectangle rect = new Rectangle();
+//            rect.setFill(Color.valueOf(LIGHT_BLUE));
+//            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
+//            statusBar.setText(msg);
+//            animateBackgroundColor(statusBar, Color.valueOf(LIGHT_BLUE), Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
+//            animateFontColor(statusBar, Color.BLACK, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
         });
     }
 
     public void showSuccessMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
-            statusBar.setStyle("-fx-text-fill: white; -fx-background-color: green");
-            Rectangle rect = new Rectangle();
-            rect.setFill(Color.GREEN);
-            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-            statusBar.setText(msg);
-
-            animateBackgroundColor(statusBar, Color.GREEN, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
-            animateFontColor(statusBar, Color.WHITE, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
+            emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, msg, durationSeconds));
+//            statusBar.setStyle("-fx-text-fill: white; -fx-background-color: green");
+//            Rectangle rect = new Rectangle();
+//            rect.setFill(Color.GREEN);
+//            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
+//            statusBar.setText(msg);
+//
+//            animateBackgroundColor(statusBar, Color.GREEN, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
+//            animateFontColor(statusBar, Color.WHITE, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
         });
     }
 
     public void showErrorMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
-            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: lightcoral");
-            Rectangle rect = new Rectangle();
-            rect.setFill(Color.valueOf(LIGHT_BLUE));
-            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-            statusBar.setText(msg);
-            animateBackgroundColor(statusBar, Color.valueOf("lightcoral"), Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
-            animateFontColor(statusBar, Color.BLACK, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
+            emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, msg, durationSeconds));
+//            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: lightcoral");
+//            Rectangle rect = new Rectangle();
+//            rect.setFill(Color.valueOf(LIGHT_BLUE));
+//            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
+//            statusBar.setText(msg);
+//            animateBackgroundColor(statusBar, Color.valueOf("lightcoral"), Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
+//            animateFontColor(statusBar, Color.BLACK, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
         });
     }
 
     public void showWarningMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
-            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: orange");
-            Rectangle rect = new Rectangle();
-            rect.setFill(Color.ORANGE);
-            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-            statusBar.setText(msg);
+            emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds));
+//            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: orange");
+//            Rectangle rect = new Rectangle();
+//            rect.setFill(Color.ORANGE);
+//            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
+//            statusBar.setText(msg);
         });
     }
 
     public void showShutdownMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
-            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: orange");
-            Rectangle rect = new Rectangle();
-            rect.setFill(Color.ORANGE);
-            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-            statusBar.setText(msg);
+            emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds));
+//            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: orange");
+//            Rectangle rect = new Rectangle();
+//            rect.setFill(Color.ORANGE);
+//            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
+//            statusBar.setText(msg);
 
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
             service.schedule(() -> {
@@ -1185,52 +1103,52 @@ public class MainController implements Initializable, CustomEventListener<Custom
         });
     }
 
-    public static void animateBackgroundColor(Control control, Color fromColor, Color toColor, int duration) {
-
-        Rectangle rect = new Rectangle();
-        rect.setFill(fromColor);
-
-        Rectangle rectFont = new Rectangle();
-        rectFont.setFill(Color.BLACK);
-
-        FillTransition tr = new FillTransition();
-        tr.setShape(rect);
-        tr.setDuration(Duration.millis(1000));
-        tr.setFromValue(fromColor);
-        tr.setToValue(toColor);
-
-        tr.setInterpolator(new Interpolator() {
-            @Override
-            protected double curve(double t) {
-                control.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-                return t;
-            }
-        });
-        tr.setDelay(Duration.millis(duration));
-        tr.play();
-    }
-
-    public static void animateFontColor(Control control, Color fromColor, Color toColor, int duration) {
-
-        Rectangle rect = new Rectangle();
-        rect.setFill(fromColor);
-
-        FillTransition tr = new FillTransition();
-        tr.setShape(rect);
-        tr.setDuration(Duration.millis(1000));
-        tr.setFromValue(fromColor);
-        tr.setToValue(toColor);
-
-        tr.setInterpolator(new Interpolator() {
-            @Override
-            protected double curve(double t) {
-                ((Label) control).setTextFill(rect.getFill());
-                return t;
-            }
-        });
-        tr.setDelay(Duration.millis(duration));
-        tr.play();
-    }
+//    public static void animateBackgroundColor(Control control, Color fromColor, Color toColor, int duration) {
+//
+//        Rectangle rect = new Rectangle();
+//        rect.setFill(fromColor);
+//
+//        Rectangle rectFont = new Rectangle();
+//        rectFont.setFill(Color.BLACK);
+//
+//        FillTransition tr = new FillTransition();
+//        tr.setShape(rect);
+//        tr.setDuration(Duration.millis(1000));
+//        tr.setFromValue(fromColor);
+//        tr.setToValue(toColor);
+//
+//        tr.setInterpolator(new Interpolator() {
+//            @Override
+//            protected double curve(double t) {
+//                control.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
+//                return t;
+//            }
+//        });
+//        tr.setDelay(Duration.millis(duration));
+//        tr.play();
+//    }
+//
+//    public static void animateFontColor(Control control, Color fromColor, Color toColor, int duration) {
+//
+//        Rectangle rect = new Rectangle();
+//        rect.setFill(fromColor);
+//
+//        FillTransition tr = new FillTransition();
+//        tr.setShape(rect);
+//        tr.setDuration(Duration.millis(1000));
+//        tr.setFromValue(fromColor);
+//        tr.setToValue(toColor);
+//
+//        tr.setInterpolator(new Interpolator() {
+//            @Override
+//            protected double curve(double t) {
+//                ((Label) control).setTextFill(rect.getFill());
+//                return t;
+//            }
+//        });
+//        tr.setDelay(Duration.millis(duration));
+//        tr.play();
+//    }
 
     public void shutdown() {
         saveSettings();
@@ -1238,31 +1156,31 @@ public class MainController implements Initializable, CustomEventListener<Custom
 
     @FXML
     void myLocalTonFileBtnAction() throws IOException {
-        log.info("open mylocalton log {}", myLocalTonLog.getText().trim());
+        log.info("open mylocalton log {}", myLocalTonLog.getFieldText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start notepad " + myLocalTonLog.getText());
+            Runtime.getRuntime().exec("cmd /c start notepad " + myLocalTonLog.getFieldText());
         } else {
-            Runtime.getRuntime().exec("gio open " + myLocalTonLog.getText());
+            Runtime.getRuntime().exec("gio open " + myLocalTonLog.getFieldText());
         }
     }
 
     @FXML
     void dhtLogDirBtnAction1() throws IOException {
-        log.debug("open dht dir {}", dhtLogDir1.getText().trim());
+        log.debug("open dht dir {}", dhtLogDir1.getFieldText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + dhtLogDir1.getText());
+            Runtime.getRuntime().exec("cmd /c start " + dhtLogDir1.getFieldText());
         } else {
-            Runtime.getRuntime().exec("gio open " + dhtLogDir1.getText());
+            Runtime.getRuntime().exec("gio open " + dhtLogDir1.getFieldText());
         }
     }
 
     @FXML
     void valLogDirBtnAction1() throws IOException {
-        log.debug("open validator log dir {}", validatorLogDir1.getText().trim());
+        log.debug("open validator log dir {}", validatorLogDir1.getFieldText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir1.getText());
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir1.getFieldText());
         } else {
-            Runtime.getRuntime().exec("gio open " + validatorLogDir1.getText());
+            Runtime.getRuntime().exec("gio open " + validatorLogDir1.getFieldText());
         }
     }
 
@@ -1499,14 +1417,14 @@ public class MainController implements Initializable, CustomEventListener<Custom
 
         WebEngine browser = webView.getEngine();
 
-        walletsNumber.setOnMouseReleased(event -> {
-            log.debug("walletsNumber released, {}", walletsNumber.getValue());
-        });
+//        walletsNumber.setOnMouseReleased(event -> {
+//            log.debug("walletsNumber released, {}", walletsNumber.getValue());
+//        });
 
-        settingTabs.getSelectionModel().selectedItemProperty().addListener(e -> {
-            log.debug("settings tab changed, save settings");
-            saveSettings();
-        });
+//        settingTabs.getSelectionModel().selectedItemProperty().addListener(e -> {
+//            log.debug("settings tab changed, save settings");
+//            saveSettings();
+//        });
 
         //mainMenuTabs.getSelectionModel().selectedItemProperty().addListener(e -> {
         //    log.debug("main menu changed, save settings");
@@ -1519,7 +1437,7 @@ public class MainController implements Initializable, CustomEventListener<Custom
             }
         };
 
-        coinsPerWallet.setOnKeyTyped(onlyDigits);
+        coinsPerWallet.getTextField().setOnKeyTyped(onlyDigits);
 
         configNodePublicPort1.setOnKeyTyped(onlyDigits);
         configNodeConsolePort1.setOnKeyTyped(onlyDigits);
@@ -1662,44 +1580,44 @@ public class MainController implements Initializable, CustomEventListener<Custom
         showMsgBodyCheckBox.setSelected(settings.getUiSettings().isShowBodyInMessage());
         shardStateCheckbox.setSelected(settings.getUiSettings().isShowShardStateInBlockDump());
 
-        walletsNumber.setValue(settings.getWalletSettings().getNumberOfPreinstalledWallets());
-        coinsPerWallet.setText(settings.getWalletSettings().getInitialAmount().toString());
-        walletVersion.getItems().add(WalletVersion.V1.getValue());
-        walletVersion.getItems().add(WalletVersion.V2.getValue());
-        walletVersion.getItems().add(WalletVersion.V3.getValue());
-        walletVersion.getSelectionModel().select(settings.getWalletSettings().getWalletVersion().getValue());
+        walletsNumber.setFieldText(settings.getWalletSettings().getNumberOfPreinstalledWallets().toString());
+        coinsPerWallet.setFieldText(settings.getWalletSettings().getInitialAmount().toString());
+        walletVersion.addItem(WalletVersion.V1.getValue());
+        walletVersion.addItem(WalletVersion.V2.getValue());
+        walletVersion.addItem(WalletVersion.V3.getValue());
+        walletVersion.selectItem(settings.getWalletSettings().getWalletVersion().getValue());
 
-        validatorLogDir1.setText(settings.getGenesisNode().getTonLogDir());
-        myLocalTonLog.setText(settings.LOG_FILE);
-        dhtLogDir1.setText(settings.getGenesisNode().getDhtServerDir());
+        validatorLogDir1.setFieldText(settings.getGenesisNode().getTonLogDir());
+        myLocalTonLog.setFieldText(settings.LOG_FILE);
+        dhtLogDir1.setFieldText(settings.getGenesisNode().getDhtServerDir());
 
-        validatorLogDir2.setText(settings.getNode2().getTonLogDir());
-        validatorLogDir3.setText(settings.getNode3().getTonLogDir());
-        validatorLogDir4.setText(settings.getNode4().getTonLogDir());
-        validatorLogDir5.setText(settings.getNode5().getTonLogDir());
-        validatorLogDir6.setText(settings.getNode6().getTonLogDir());
-        validatorLogDir7.setText(settings.getNode7().getTonLogDir());
+        validatorLogDir2.setFieldText(settings.getNode2().getTonLogDir());
+        validatorLogDir3.setFieldText(settings.getNode3().getTonLogDir());
+        validatorLogDir4.setFieldText(settings.getNode4().getTonLogDir());
+        validatorLogDir5.setFieldText(settings.getNode5().getTonLogDir());
+        validatorLogDir6.setFieldText(settings.getNode6().getTonLogDir());
+        validatorLogDir7.setFieldText(settings.getNode7().getTonLogDir());
 
-        minValidators.setText(settings.getBlockchainSettings().getMinValidators().toString());
-        maxValidators.setText(settings.getBlockchainSettings().getMaxValidators().toString());
-        maxMainValidators.setText(settings.getBlockchainSettings().getMaxMainValidators().toString());
+        minValidators.setFieldText(settings.getBlockchainSettings().getMinValidators().toString());
+        maxValidators.setFieldText(settings.getBlockchainSettings().getMaxValidators().toString());
+        maxMainValidators.setFieldText(settings.getBlockchainSettings().getMaxMainValidators().toString());
 
-        electedFor.setText(settings.getBlockchainSettings().getElectedFor().toString());
-        electionStartBefore.setText(settings.getBlockchainSettings().getElectionStartBefore().toString());
-        electionEndBefore.setText(settings.getBlockchainSettings().getElectionEndBefore().toString());
-        stakesFrozenFor.setText(settings.getBlockchainSettings().getElectionStakesFrozenFor().toString());
+        electedFor.setFieldText(settings.getBlockchainSettings().getElectedFor().toString());
+        electionStartBefore.setFieldText(settings.getBlockchainSettings().getElectionStartBefore().toString());
+        electionEndBefore.setFieldText(settings.getBlockchainSettings().getElectionEndBefore().toString());
+        stakesFrozenFor.setFieldText(settings.getBlockchainSettings().getElectionStakesFrozenFor().toString());
 
-        globalId.setText(settings.getBlockchainSettings().getGlobalId().toString());
-        initialBalance.setText(settings.getBlockchainSettings().getInitialBalance().toString());
-        gasPrice.setText(settings.getBlockchainSettings().getGasPrice().toString());
-        gasPriceMc.setText(settings.getBlockchainSettings().getGasPriceMc().toString());
-        cellPrice.setText(settings.getBlockchainSettings().getCellPrice().toString());
-        cellPriceMc.setText(settings.getBlockchainSettings().getCellPriceMc().toString());
+        globalId.setFieldText(settings.getBlockchainSettings().getGlobalId().toString());
+        initialBalance.setFieldText(settings.getBlockchainSettings().getInitialBalance().toString());
+        gasPrice.setFieldText(settings.getBlockchainSettings().getGasPrice().toString());
+        gasPriceMc.setFieldText(settings.getBlockchainSettings().getGasPriceMc().toString());
+        cellPrice.setFieldText(settings.getBlockchainSettings().getCellPrice().toString());
+        cellPriceMc.setFieldText(settings.getBlockchainSettings().getCellPriceMc().toString());
 
-        minStake.setText(settings.getBlockchainSettings().getMinValidatorStake().toString());
-        maxStake.setText(settings.getBlockchainSettings().getMaxValidatorStake().toString());
-        minTotalStake.setText(settings.getBlockchainSettings().getMinTotalValidatorStake().toString());
-        maxFactor.setText(settings.getBlockchainSettings().getMaxFactor().toString());
+        minStake.setFieldText(settings.getBlockchainSettings().getMinValidatorStake().toString());
+        maxStake.setFieldText(settings.getBlockchainSettings().getMaxValidatorStake().toString());
+        minTotalStake.setFieldText(settings.getBlockchainSettings().getMinTotalValidatorStake().toString());
+        maxFactor.setFieldText(settings.getBlockchainSettings().getMaxFactor().toString());
 
         nodeBlockTtl1.setText(settings.getGenesisNode().getValidatorBlockTtl().toString());
         nodeArchiveTtl1.setText(settings.getGenesisNode().getValidatorArchiveTtl().toString());
@@ -1779,59 +1697,59 @@ public class MainController implements Initializable, CustomEventListener<Custom
         validatorWalletDeposit7.setText(settings.getNode7().getInitialValidatorWalletAmount().toString());
         validatorDefaultStake7.setText(settings.getNode7().getDefaultValidatorStake().toString());
 
-        tonLogLevel.getItems().add("DEBUG");
-        tonLogLevel.getItems().add("WARNING");
-        tonLogLevel.getItems().add("INFO");
-        tonLogLevel.getItems().add("ERROR");
-        tonLogLevel.getItems().add("FATAL");
-        tonLogLevel.getSelectionModel().select(settings.getGenesisNode().getTonLogLevel());
+        tonLogLevel.addItem("DEBUG");
+        tonLogLevel.addItem("WARNING");
+        tonLogLevel.addItem("INFO");
+        tonLogLevel.addItem("ERROR");
+        tonLogLevel.addItem("FATAL");
+        tonLogLevel.selectItem(settings.getGenesisNode().getTonLogLevel());
 
-        tonLogLevel2.getItems().add("DEBUG");
-        tonLogLevel2.getItems().add("WARNING");
-        tonLogLevel2.getItems().add("INFO");
-        tonLogLevel2.getItems().add("ERROR");
-        tonLogLevel2.getItems().add("FATAL");
-        tonLogLevel2.getSelectionModel().select(settings.getNode2().getTonLogLevel());
+        tonLogLevel2.addItem("DEBUG");
+        tonLogLevel2.addItem("WARNING");
+        tonLogLevel2.addItem("INFO");
+        tonLogLevel2.addItem("ERROR");
+        tonLogLevel2.addItem("FATAL");
+        tonLogLevel2.selectItem(settings.getNode2().getTonLogLevel());
 
-        tonLogLevel3.getItems().add("DEBUG");
-        tonLogLevel3.getItems().add("WARNING");
-        tonLogLevel3.getItems().add("INFO");
-        tonLogLevel3.getItems().add("ERROR");
-        tonLogLevel3.getItems().add("FATAL");
-        tonLogLevel3.getSelectionModel().select(settings.getNode3().getTonLogLevel());
+        tonLogLevel3.addItem("DEBUG");
+        tonLogLevel3.addItem("WARNING");
+        tonLogLevel3.addItem("INFO");
+        tonLogLevel3.addItem("ERROR");
+        tonLogLevel3.addItem("FATAL");
+        tonLogLevel3.selectItem(settings.getNode3().getTonLogLevel());
 
-        tonLogLevel4.getItems().add("DEBUG");
-        tonLogLevel4.getItems().add("WARNING");
-        tonLogLevel4.getItems().add("INFO");
-        tonLogLevel4.getItems().add("ERROR");
-        tonLogLevel4.getItems().add("FATAL");
-        tonLogLevel4.getSelectionModel().select(settings.getNode4().getTonLogLevel());
+        tonLogLevel4.addItem("DEBUG");
+        tonLogLevel4.addItem("WARNING");
+        tonLogLevel4.addItem("INFO");
+        tonLogLevel4.addItem("ERROR");
+        tonLogLevel4.addItem("FATAL");
+        tonLogLevel4.selectItem(settings.getNode4().getTonLogLevel());
 
-        tonLogLevel5.getItems().add("DEBUG");
-        tonLogLevel5.getItems().add("WARNING");
-        tonLogLevel5.getItems().add("INFO");
-        tonLogLevel5.getItems().add("ERROR");
-        tonLogLevel5.getItems().add("FATAL");
-        tonLogLevel5.getSelectionModel().select(settings.getNode5().getTonLogLevel());
+        tonLogLevel5.addItem("DEBUG");
+        tonLogLevel5.addItem("WARNING");
+        tonLogLevel5.addItem("INFO");
+        tonLogLevel5.addItem("ERROR");
+        tonLogLevel5.addItem("FATAL");
+        tonLogLevel5.selectItem(settings.getNode5().getTonLogLevel());
 
-        tonLogLevel6.getItems().add("DEBUG");
-        tonLogLevel6.getItems().add("WARNING");
-        tonLogLevel6.getItems().add("INFO");
-        tonLogLevel6.getItems().add("ERROR");
-        tonLogLevel6.getItems().add("FATAL");
-        tonLogLevel6.getSelectionModel().select(settings.getNode6().getTonLogLevel());
+        tonLogLevel6.addItem("DEBUG");
+        tonLogLevel6.addItem("WARNING");
+        tonLogLevel6.addItem("INFO");
+        tonLogLevel6.addItem("ERROR");
+        tonLogLevel6.addItem("FATAL");
+        tonLogLevel6.selectItem(settings.getNode6().getTonLogLevel());
 
-        tonLogLevel7.getItems().add("DEBUG");
-        tonLogLevel7.getItems().add("WARNING");
-        tonLogLevel7.getItems().add("INFO");
-        tonLogLevel7.getItems().add("ERROR");
-        tonLogLevel7.getItems().add("FATAL");
-        tonLogLevel7.getSelectionModel().select(settings.getNode7().getTonLogLevel());
+        tonLogLevel7.addItem("DEBUG");
+        tonLogLevel7.addItem("WARNING");
+        tonLogLevel7.addItem("INFO");
+        tonLogLevel7.addItem("ERROR");
+        tonLogLevel7.addItem("FATAL");
+        tonLogLevel7.selectItem(settings.getNode7().getTonLogLevel());
 
-        myLogLevel.getItems().add("INFO");
-        myLogLevel.getItems().add("DEBUG");
-        myLogLevel.getItems().add("ERROR");
-        myLogLevel.getSelectionModel().select(settings.getGenesisNode().getMyLocalTonLogLevel());
+        myLogLevel.addItem("INFO");
+        myLogLevel.addItem("DEBUG");
+        myLogLevel.addItem("ERROR");
+        myLogLevel.selectItem(settings.getGenesisNode().getMyLocalTonLogLevel());
 
         // blockchain-explorer tab
         enableBlockchainExplorer.setVisible(false);
@@ -1866,6 +1784,7 @@ public class MainController implements Initializable, CustomEventListener<Custom
                 validationTabs.getTabs().add(getNodeTabByName(n));
             }
         }
+        mainLayout.setExplorer(enableBlockchainExplorer.isSelected());
     }
 
     public Tab getNodeTabByName(String nodeName) {
@@ -1936,30 +1855,30 @@ public class MainController implements Initializable, CustomEventListener<Custom
         settings.getUiSettings().setEnableBlockchainExplorer(enableBlockchainExplorer.isSelected());
         settings.getUiSettings().setShowShardStateInBlockDump(shardStateCheckbox.isSelected());
 
-        settings.getWalletSettings().setNumberOfPreinstalledWallets((long) walletsNumber.getValue());
-        settings.getWalletSettings().setInitialAmount(new BigDecimal(coinsPerWallet.getText()));
+        settings.getWalletSettings().setNumberOfPreinstalledWallets(Long.parseLong(walletsNumber.getFieldText()));
+        settings.getWalletSettings().setInitialAmount(new BigDecimal(coinsPerWallet.getFieldText()));
         settings.getWalletSettings().setWalletVersion(WalletVersion.getKeyByValue(walletVersion.getValue()));
 
-        settings.getBlockchainSettings().setMinValidators(Long.valueOf(minValidators.getText()));
-        settings.getBlockchainSettings().setMaxValidators(Long.valueOf(maxValidators.getText()));
-        settings.getBlockchainSettings().setMaxMainValidators(Long.valueOf(maxMainValidators.getText()));
+        settings.getBlockchainSettings().setMinValidators(Long.valueOf(minValidators.getFieldText()));
+        settings.getBlockchainSettings().setMaxValidators(Long.valueOf(maxValidators.getFieldText()));
+        settings.getBlockchainSettings().setMaxMainValidators(Long.valueOf(maxMainValidators.getFieldText()));
 
-        settings.getBlockchainSettings().setGlobalId(Long.valueOf(globalId.getText()));
-        settings.getBlockchainSettings().setInitialBalance(Long.valueOf(initialBalance.getText()));
+        settings.getBlockchainSettings().setGlobalId(Long.valueOf(globalId.getFieldText()));
+        settings.getBlockchainSettings().setInitialBalance(Long.valueOf(initialBalance.getFieldText()));
 
-        settings.getBlockchainSettings().setElectedFor(Long.valueOf(electedFor.getText()));
-        settings.getBlockchainSettings().setElectionStartBefore(Long.valueOf(electionStartBefore.getText()));
-        settings.getBlockchainSettings().setElectionEndBefore(Long.valueOf(electionEndBefore.getText()));
-        settings.getBlockchainSettings().setElectionStakesFrozenFor(Long.valueOf(stakesFrozenFor.getText()));
-        settings.getBlockchainSettings().setGasPrice(Long.valueOf(gasPrice.getText()));
-        settings.getBlockchainSettings().setGasPriceMc(Long.valueOf(gasPriceMc.getText()));
-        settings.getBlockchainSettings().setCellPrice(Long.valueOf(cellPrice.getText()));
-        settings.getBlockchainSettings().setCellPriceMc(Long.valueOf(cellPriceMc.getText()));
+        settings.getBlockchainSettings().setElectedFor(Long.valueOf(electedFor.getFieldText()));
+        settings.getBlockchainSettings().setElectionStartBefore(Long.valueOf(electionStartBefore.getFieldText()));
+        settings.getBlockchainSettings().setElectionEndBefore(Long.valueOf(electionEndBefore.getFieldText()));
+        settings.getBlockchainSettings().setElectionStakesFrozenFor(Long.valueOf(stakesFrozenFor.getFieldText()));
+        settings.getBlockchainSettings().setGasPrice(Long.valueOf(gasPrice.getFieldText()));
+        settings.getBlockchainSettings().setGasPriceMc(Long.valueOf(gasPriceMc.getFieldText()));
+        settings.getBlockchainSettings().setCellPrice(Long.valueOf(cellPrice.getFieldText()));
+        settings.getBlockchainSettings().setCellPriceMc(Long.valueOf(cellPriceMc.getFieldText()));
 
-        settings.getBlockchainSettings().setMinValidatorStake(Long.valueOf(minStake.getText()));
-        settings.getBlockchainSettings().setMaxValidatorStake(Long.valueOf(maxStake.getText()));
-        settings.getBlockchainSettings().setMinTotalValidatorStake(Long.valueOf(minTotalStake.getText()));
-        settings.getBlockchainSettings().setMaxFactor(new BigDecimal(maxFactor.getText()));
+        settings.getBlockchainSettings().setMinValidatorStake(Long.valueOf(minStake.getFieldText()));
+        settings.getBlockchainSettings().setMaxValidatorStake(Long.valueOf(maxStake.getFieldText()));
+        settings.getBlockchainSettings().setMinTotalValidatorStake(Long.valueOf(minTotalStake.getFieldText()));
+        settings.getBlockchainSettings().setMaxFactor(new BigDecimal(maxFactor.getFieldText()));
 
         settings.getGenesisNode().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl1.getText()));
         settings.getGenesisNode().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl1.getText()));
@@ -2089,16 +2008,28 @@ public class MainController implements Initializable, CustomEventListener<Custom
         App.mainController.showInfoMsg("lite-client last command copied to clipboard", 0.5);
     }
 
-    public void resetAction() throws IOException {
+    public void resetAction()  {
 
-        Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
-        parent.lookup("#inputFields").setVisible(false);
-        parent.lookup("#body").setVisible(true);
-        parent.lookup("#header").setVisible(true);
-        ((Label) parent.lookup("#action")).setText("reset");
-        ((Label) parent.lookup("#header")).setText("Reset TON blockchain");
-        ((Label) parent.lookup("#body")).setText("You can reset current single-node TON blockchain to the new settings. All data will be lost and zero state will be created from scratch. Do you want to proceed?");
-        parent.lookup("#okBtn").setDisable(false);
+//        Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
+//        parent.lookup("#inputFields").setVisible(false);
+//        parent.lookup("#body").setVisible(true);
+//        parent.lookup("#header").setVisible(true);
+//        ((Label) parent.lookup("#action")).setText("reset");
+//        ((Label) parent.lookup("#header")).setText("Reset TON blockchain");
+//        ((Label) parent.lookup("#body")).setText("You can reset current single-node TON blockchain to the new settings. All data will be lost and zero state will be created from scratch. Do you want to proceed?");
+//        parent.lookup("#okBtn").setDisable(false);
+
+        FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/reset-blockchain-pane.fxml"));
+
+        Parent parent = null;
+        try {
+            parent = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        //ResetBlockchainPaneController controller = loader.getController();
+
 
         JFXDialogLayout content = new JFXDialogLayout();
         content.setBody(parent);
@@ -2247,42 +2178,37 @@ public class MainController implements Initializable, CustomEventListener<Custom
         }
     }
 
-    @Override
-    public void handle(CustomActionEvent event)  {
-        if (event.getEventType() == CustomActionEvent.Type.CLICK) {
-            try {
-                createNewAccountBtn();
-            } catch (IOException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     public void createNewAccountBtn() throws IOException {
 
-        Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
-        ((Label) parent.lookup("#action")).setText("create");
-        ((Label) parent.lookup("#header")).setText("Create " + settings.getWalletSettings().getWalletVersion());
+        //Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
+        FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/accounts-create-pane.fxml"));
+        Parent parent = loader.load();
+        AccountsCreatePaneController controller = loader.getController();
+//        parent.lookup("#inputFields").setVisible(true);
+//        ((Label) parent.lookup("#action")).setText("create");
+//        ((Label) parent.lookup("#header")).setText("Create " + settings.getWalletSettings().getWalletVersion());
+        //((CustomTextField) parent.lookup("#walletVersionTextField")).setFieldText(settings.getWalletSettings().getWalletVersion().getValue());
+        controller.setWalletVersionText(settings.getWalletSettings().getWalletVersion().getValue());
+//        parent.lookup("#body").setVisible(false);
+//        parent.lookup("#seqno").setVisible(false);
+//        parent.lookup("#walletVersionTextField").setVisible(true);
 
-        parent.lookup("#body").setVisible(false);
-        parent.lookup("#seqno").setVisible(false);
-
-        parent.lookup("#inputFields").setVisible(true);
-        if (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3)) {
-            parent.lookup("#workchain").setVisible(true);
-            parent.lookup("#subWalletId").setVisible(true);
-
-        } else {
-            parent.lookup("#workchain").setVisible(true);
-            parent.lookup("#subWalletId").setVisible(false);
-        }
-        parent.lookup("#okBtn").setDisable(false);
+        if (!settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3)) {
+//            parent.lookup("#workchain").setVisible(true);
+//            parent.lookup("#subWalletId").setVisible(true);
+            controller.hideSubWalletID();
+        }// else {
+//            parent.lookup("#workchain").setVisible(true);
+//            parent.lookup("#subWalletId").setVisible(false);
+        //}
+        //parent.lookup("#okBtn").setDisable(false);
 
         JFXDialogLayout content = new JFXDialogLayout();
         content.setBody(parent);
+        //content.setStyle("-fx-background-radius: 20;");
 
         yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
+
         yesNoDialog.setOnKeyPressed(keyEvent -> {
                     if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
                         yesNoDialog.close();
@@ -3620,69 +3546,74 @@ public class MainController implements Initializable, CustomEventListener<Custom
     }
 
     public void valLogDirBtnAction2() throws IOException {
-        log.info("open validator log dir {}", validatorLogDir2.getText().trim());
+        log.info("open validator log dir {}", validatorLogDir2.getFieldText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir2.getText());
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir2.getFieldText());
         } else {
-            Runtime.getRuntime().exec("gio open " + validatorLogDir2.getText());
+            Runtime.getRuntime().exec("gio open " + validatorLogDir2.getFieldText());
         }
     }
 
     public void valLogDirBtnAction3() throws IOException {
-        log.debug("open validator log dir {}", validatorLogDir3.getText().trim());
+        log.debug("open validator log dir {}", validatorLogDir3.getFieldText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir3.getText());
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir3.getFieldText());
         } else {
-            Runtime.getRuntime().exec("gio open " + validatorLogDir3.getText());
+            Runtime.getRuntime().exec("gio open " + validatorLogDir3.getFieldText());
         }
     }
 
     public void valLogDirBtnAction4() throws IOException {
-        log.debug("open validator log dir {}", validatorLogDir4.getText().trim());
+        log.debug("open validator log dir {}", validatorLogDir4.getFieldText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir4.getText());
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir4.getFieldText());
         } else {
-            Runtime.getRuntime().exec("gio open " + validatorLogDir4.getText());
+            Runtime.getRuntime().exec("gio open " + validatorLogDir4.getFieldText());
         }
     }
 
     public void valLogDirBtnAction5() throws IOException {
-        log.debug("open validator log dir {}", validatorLogDir5.getText().trim());
+        log.debug("open validator log dir {}", validatorLogDir5.getFieldText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir5.getText());
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir5.getFieldText());
         } else {
-            Runtime.getRuntime().exec("gio open " + validatorLogDir5.getText());
+            Runtime.getRuntime().exec("gio open " + validatorLogDir5.getFieldText());
         }
     }
 
     public void valLogDirBtnAction6() throws IOException {
-        log.debug("open validator log dir {}", validatorLogDir6.getText().trim());
+        log.debug("open validator log dir {}", validatorLogDir6.getFieldText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir6.getText());
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir6.getFieldText());
         } else {
-            Runtime.getRuntime().exec("gio open " + validatorLogDir6.getText());
+            Runtime.getRuntime().exec("gio open " + validatorLogDir6.getFieldText());
         }
     }
 
     public void valLogDirBtnAction7() throws IOException {
-        log.debug("open validator log dir {}", validatorLogDir7.getText().trim());
+        log.debug("open validator log dir {}", validatorLogDir7.getFieldText().trim());
         if (isWindows()) {
-            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir7.getText());
+            Runtime.getRuntime().exec("cmd /c start " + validatorLogDir7.getFieldText());
         } else {
-            Runtime.getRuntime().exec("gio open " + validatorLogDir7.getText());
+            Runtime.getRuntime().exec("gio open " + validatorLogDir7.getFieldText());
         }
     }
 
-    public void copyDonationTonAddress(MouseEvent mouseEvent) {
-        String addr = tonDonationAddress.getText();
-        final Clipboard clipboard = Clipboard.getSystemClipboard();
-        final ClipboardContent content = new ClipboardContent();
-        content.putString(addr);
-        clipboard.setContent(content);
-        log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
-        mouseEvent.consume();
+    @FXML
+    public void openTelegramLink() {
+        hostServices.showDocument(TELEGRAM_NEODIX);
     }
+
+//    public void copyDonationTonAddress(MouseEvent mouseEvent) {
+//        String addr = tonDonationAddress.getText();
+//        final Clipboard clipboard = Clipboard.getSystemClipboard();
+//        final ClipboardContent content = new ClipboardContent();
+//        content.putString(addr);
+//        clipboard.setContent(content);
+//        log.debug(addr + " copied");
+//        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+//        mouseEvent.consume();
+//    }
 
     public void BlockChainExplorerCheckBoxClick(MouseEvent mouseEvent) {
         if (enableBlockchainExplorer.isSelected()) {
@@ -3694,20 +3625,38 @@ public class MainController implements Initializable, CustomEventListener<Custom
      * New Methods
      */
 
-    public void showLoadingPane() {
+    public void showLoadingPane(String line1, String line2) {
+        FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/loading-pane.fxml"));
+        Parent parent = null;
         try {
-            mainLayout.showLoadingPane();
+            parent = loader.load();
         } catch (IOException e) {
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
+        CustomLoadingPaneController controller = loader.getController();
+        controller.setLines(line1, line2);
+
+        JFXDialogLayout content = new JFXDialogLayout();
+        content.setBody(parent);
+
+        loadingDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
+        loadingDialog.setOnKeyPressed(keyEvent -> {
+                    if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                        loadingDialog.close();
+                        loadingDialog = null;
+                    }
+                }
+        );
+        loadingDialog.setOnDialogClosed(e -> loadingDialog = null);
+
+        loadingDialog.show();
     }
 
     public void removeLoadingPane() {
-        try {
-            mainLayout.removeLoadingPane();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        loadingDialog.close();
+        loadingDialog = null;
+        emit(new CustomActionEvent(CustomEvent.Type.START));
     }
 
     public void setCurrentBlockNum(String text) {
@@ -3727,11 +3676,32 @@ public class MainController implements Initializable, CustomEventListener<Custom
 
     }
 
-    @FXML
-    private Label lblSeqno;
+    public void handle(CustomEvent event)  {
+        switch (event.getEventType()) {
+            case CLICK:
+                try {
+                    createNewAccountBtn();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+                break;
+            case DIALOG_SEND_CLOSE:
+                sendDialog.close();
+                sendDialog = null;
+                break;
+            case DIALOG_RESET_CLOSE:
+                yesNoDialog.close();
+                yesNoDialog = null;
+                break;
+            case SAVE_SETTINGS:
+                saveSettings();
+                break;
+        }
+    }
 
-    public void mouseClick(MouseEvent e) {
-        System.out.println("click");
-        System.out.println(lblSeqno.getFont().getFamily());
+    public void setHostServices(HostServices hostServices) {
+        this.hostServices = hostServices;
     }
 }
+

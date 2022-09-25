@@ -6,47 +6,39 @@
 <?import java.net.URL?>
 
 <?import org.ton.ui.custom.control.CustomButton?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
-            prefHeight="720.0" prefWidth="1335.0" xmlns="http://javafx.com/javafx"
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+        prefHeight="300.0" prefWidth="510.0"
+            styleClass="background-dialog-pane"
+            xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.ton.ui.custom.layout.TransformPane">
+            fx:controller="org.ton.ui.custom.layout.TransformPaneController">
+   <children>
+      <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Transform" styleClass="modal-pane-label"
+             AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0">
+      </Label>
+      <Line endX="510.0" layoutY="60.0" stroke="#888888" />
+
+      <VBox prefHeight="40.0" prefWidth="470.0"
+            AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="90.0">
+         <children>
+            <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
+                   text="You can transform this single-node TON blockchain into"  />
+            <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
+                   text="three-nodes TON blockchain, where all three nodes will act"/>
+            <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
+                   text="as validators and participate in elections. Later you will be able"/>
+            <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
+                   text="to add more full nodes if you wish. Do you want to proceed?"/>
+         </children>
+      </VBox>
+
+      <CustomButton text="OK" prefWidth="100" layoutX="205" layoutY="230" styleClass="custom-button-form" />
+
+   </children>
 
    <stylesheets>
       <URL value="@../../../css/custom/main-layout.css" />
       <URL value="@../../../css/custom/send-coin-pane.css" />
    </stylesheets>
 
-   <children>
-      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="720.0" minWidth="1335.0"
-                  prefHeight="720.0" prefWidth="1335.0" styleClass="lock-pane" />
-
-      <AnchorPane prefHeight="300.0" prefWidth="510.0"
-                  styleClass="modal-pane"
-                  AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="200.0">
-         <children>
-            <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Transform" styleClass="modal-pane-label"
-                   AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0">
-            </Label>
-            <Line endX="510.0" layoutY="60.0" stroke="#888888" />
-
-            <VBox prefHeight="40.0" prefWidth="470.0"
-                  AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="90.0">
-               <children>
-                  <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
-                         text="You can transform this single-node TON blockchain into"  />
-                  <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
-                         text="three-nodes TON blockchain, where all three nodes will act"/>
-                  <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
-                         text="as validators and participate in elections. Later you will be able"/>
-                  <Label prefHeight="20.0" prefWidth="470.0" styleClass="modal-pane-content-label"
-                         text="to add more full nodes if you wish. Do you want to proceed?"/>
-               </children>
-            </VBox>
-
-            <CustomButton text="OK" prefWidth="100" layoutX="205" layoutY="230" />
-
-         </children>
-      </AnchorPane>
-
-   </children>
 </AnchorPane>

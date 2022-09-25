@@ -32,7 +32,28 @@ public class CustomMenuButton extends HBox {
 
     public void setMainSvgPath(String mainSvgPath) {
         SVGPath svg = (SVGPath) mainLabel.getGraphic();
+
         svg.setContent(mainSvgPath);
+    }
+
+    public void setSvgScaleX(double scaleX) {
+        SVGPath svg = (SVGPath) mainLabel.getGraphic();
+        svg.setScaleX(scaleX);
+    }
+
+    public double getSvgScaleX() {
+        SVGPath svg = (SVGPath) mainLabel.getGraphic();
+        return svg.getScaleX();
+    }
+
+    public void setSvgScaleY(double scaleY) {
+        SVGPath svg = (SVGPath) mainLabel.getGraphic();
+        svg.setScaleY(scaleY);
+    }
+
+    public double getSvgScaleY() {
+        SVGPath svg = (SVGPath) mainLabel.getGraphic();
+        return svg.getScaleY();
     }
 
     public String getLabelText() {

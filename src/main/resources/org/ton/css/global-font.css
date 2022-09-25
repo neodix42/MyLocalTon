@@ -2,6 +2,11 @@
     src: url("../fonts/RobotoMono-Medium.ttf");
 }
 
+@font-face{
+  font-family: 'Mulish';
+  src: url('../fonts/Mulish-Bold.ttf') format('truetype');
+}
+
 /*
 .label, .text, .tab {
     -fx-font-family: "Roboto Mono Medium";
@@ -11,6 +16,15 @@
 .list-cell {
     -fx-padding: 0px;
 }
+/*
+.jfx-dialog {
+    -fx-background-color: yellow;
+}
+
+.jfx-dialog-layout {
+    -fx-background-color: red;
+}
+*/
 
 <!--
 #subWalletId:focused {
@@ -77,4 +91,28 @@
     -fx-text-box-border: transparent;
     -fx-control-inner-background: transparent;
     -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.jfx-tab-pane .headers-region {
+    -fx-background-color: #0088CC;
+}
+.jfx-tab-pane .tab-header-background {
+    -fx-background-color: #0088CC;
+}
+.jfx-tab-pane .tab-selected-line {
+    -fx-stroke: #0088CC;
+    -fx-stroke-width: 3pt;
+}
+
+/* Fonts Used */
+.label-second-font-14 {
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 14px;
+}
+
+.label-second-font-16 {
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 16px;
 }

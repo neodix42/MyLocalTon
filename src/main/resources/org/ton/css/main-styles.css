@@ -3,16 +3,37 @@
   src: url('../fonts/Mulish-ExtraBold.ttf') format('truetype');
 }
 
+.jfx-dialog-overlay-pane > StackPane{
+    -fx-background-color: transparent;
+}
+/*
+
+.jfx-dialog-overlay-pane > StackPane{
+-fx-background-color: transparent;
+    -fx-background-radius: 20;
+    -fx-background-color: #FFFFFF;
+    -fx-padding: 0px;
+    -fx-insets: 0px;
+}
+
+
+-fx-background-color: #dbedff;  */
+.header-label-yes-no {
+    -fx-background-color: #dbedff;
+    -fx-padding: 0 0 0 20;
+}
+
 .content-header-label {
     -fx-font-family: "Mulish ExtraBold";
     -fx-text-fill: #303757;
-    -fx-alignment: center;
-    -fx-font-size: 16px;
+
 }
 
 .content-list-view {
     -fx-background-color: #FFFFFF;
 }
+
+
 
 /*
 

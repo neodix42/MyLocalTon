@@ -2,9 +2,9 @@ package org.ton.ui.custom.events.event;
 
 import org.ton.ui.custom.events.CustomEvent;
 
-public class CustomActionEvent extends CustomEvent {
+public class CustomSwitchEvent extends CustomEvent {
 
-    public CustomActionEvent(Type eventType) {
+    public CustomSwitchEvent(Type eventType) {
         super(eventType);
     }
 

@@ -1,3 +1,8 @@
+@font-face{
+  font-family: 'Mulish ExtraBold';
+  src: url('../../fonts/Mulish-ExtraBold.ttf') format('truetype');
+}
+
 .background-pane {
     -fx-background-color: #FFFFFF;
 }
@@ -7,15 +12,15 @@
     -fx-opacity: 0.2;
 }
 
-.modal-pane {
+.background-dialog-pane {
     -fx-background-radius: 20;
-    -fx-background-color: white;
+    -fx-background-color: #FFFFFF;
 }
 
 .modal-pane-label {
     -fx-font-size: 18px;
     -fx-text-fill: #303757;
-    -fx-font-weight: bold;
+    -fx-font-family: "Mulish ExtraBold";
 }
 
 .modal-pane-content-label {
@@ -23,11 +28,15 @@
     -fx-text-fill: #1F1F1F;
 }
 
-
+.modal-second-content-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-family: "Mulish";
+}
 
 .content-pane {
     -fx-background-color: White;
-    -fx-background-radius: 10;
+    -fx-background-radius: 20;
 }
 
 .custom-button-svg {
@@ -39,4 +48,43 @@
     -fx-background-color: #0088CC;
     -fx-text-fill: #F7F9FB;
     -fx-font-size: 16px;
+}
+
+.custom-button-form {
+    -fx-background-radius: 40;
+    -fx-background-color: #0088CC;
+    -fx-text-fill: #F7F9FB;
+    -fx-font-size: 14px;
+    -fx-font-family: "Mulish ExtraBold";
+}
+
+
+.custom-directory-button-svg {
+    -fx-fill: #0088CC;
+}
+
+.directory-button {
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+}
+
+.background-directory-button {
+    -fx-background-color: #FFFFFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-directory-button:hover {
+    -fx-background-color: #E5EAFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
 }

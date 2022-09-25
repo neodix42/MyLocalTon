@@ -10,7 +10,7 @@ import java.io.IOException;
 public class CustomComboBox extends HBox {
 
     @FXML
-    private JFXComboBox comboBox;
+    private JFXComboBox<String> comboBox;
 
     public CustomComboBox() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("custom-combobox.fxml"));
@@ -18,8 +18,8 @@ public class CustomComboBox extends HBox {
         fxmlLoader.setController(this);
         fxmlLoader.load();
 
-        comboBox.getItems().addAll("Simple Wallet V3", "Simple Wallet V2", "Simple Wallet V1");
-        comboBox.getSelectionModel().select(0);
+        //comboBox.getItems().addAll("Simple Wallet V3", "Simple Wallet V2", "Simple Wallet V1");
+        //comboBox.getSelectionModel().select(0);
     }
 
     public String getFieldPromptText() {
@@ -28,5 +28,17 @@ public class CustomComboBox extends HBox {
 
     public void setFieldPromptText(String text) {
         comboBox.setPromptText(text);
+    }
+
+    public void addItem(String item) {
+        comboBox.getItems().add(item);
+    }
+
+    public void selectItem(String item) {
+        comboBox.getSelectionModel().select(item);
+    }
+
+    public String getValue() {
+        return comboBox.getValue();
     }
 }
