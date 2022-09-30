@@ -539,6 +539,10 @@ public class Utils {
         return StringUtils.substring(addr, 0, 6) + ".." + StringUtils.substring(addr, -4);
     }
 
+//    public static String getExtraLightAddress(String addr) {
+//        return StringUtils.substring(addr, 0, 6) + "...";
+//    }
+
     public static void replaceOutPortInConfigJson(String path, Integer port) throws IOException {
         String contentConfigJson = Files.readString(Paths.get(path + "config.json"), StandardCharsets.UTF_8);
         String replacedConfigJson = StringUtils.replace(contentConfigJson, "3278", String.valueOf(port));

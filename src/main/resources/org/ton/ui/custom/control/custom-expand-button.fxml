@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import java.net.URL?>
+<fx:root type="javafx.scene.layout.AnchorPane"  prefHeight="50.0" prefWidth="170.0"
+         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" >
+   <children>
+      <HBox fx:id="buttons" prefHeight="50.0" prefWidth="170.0" maxHeight="50.0" maxWidth="170.0" layoutX="0.0" layoutY="0.0">
+
+      </HBox>
+
+      <HBox fx:id="hBoxButton" prefHeight="50.0" prefWidth="170.0" layoutX="0.0" layoutY="0.0" styleClass="menu-button">
+         <children>
+            <Label fx:id="mainLabel" graphicTextGap="20.0" styleClass="main-label" prefHeight="50.0" prefWidth="140.0" text="Settings">
+               <graphic>
+                  <SVGPath fx:id="labelSvg" styleClass="svg-path" />
+               </graphic>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+
+            </Label>
+            <Label fx:id="secondLabel" alignment="BASELINE_LEFT" contentDisplay="GRAPHIC_ONLY" prefHeight="50.0" prefWidth="30.0">
+               <graphic>
+                  <SVGPath fx:id="secondSvg"
+                           content="M2.99473 1.1284C2.99707 1.22743 3.0385 1.32152 3.10997 1.39012L7.71983 5.99998L3.10997 10.6098C3.03724 10.6805 2.9962 10.7775 2.9962 10.8789C2.99624 11.0315 3.08881 11.169 3.23027 11.2263C3.37174 11.2837 3.53387 11.2496 3.64024 11.1401L8.51524 6.26512C8.66163 6.11867 8.66163 5.88129 8.51524 5.73484L3.64024 0.859844C3.53311 0.74823 3.36845 0.713849 3.22561 0.773274C3.08277 0.8327 2.99108 0.973737 2.99473 1.1284H2.99473Z"
+                           styleClass="svg-path" />
+               </graphic>
+            </Label>
+
+         </children>
+      </HBox>
+
+   </children>
+
+   <stylesheets>
+      <URL value="@../../../css/custom/custom-menu-button.css"/>
+      <URL value="@../../../css/global-font.css"/>
+   </stylesheets>
+</fx:root>

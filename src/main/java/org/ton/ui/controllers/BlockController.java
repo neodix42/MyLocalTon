@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -61,8 +62,10 @@ public class BlockController {
     public Label shard;
 
     @FXML
-    public Label createdat;
+    public Label createdatDate;
 
+    @FXML
+    public Label createdatTime;
     @FXML
     public Label filehash;
 
@@ -71,23 +74,12 @@ public class BlockController {
 
     @FXML
     public Label roothash;
-    String style;
 
-    @FXML
-    void handleMouseEnter() {
-        style = blockRowBorderPane.getStyle();
-        blockRowBorderPane.setStyle("-fx-background-color: bedef4;");
-    }
-
-    @FXML
-    void handleMouseExit() {
-        blockRowBorderPane.setStyle(style);
-    }
 
     @FXML
     void blockInfoBtn() throws Exception {
 
-        long createdAt = Utils.datetimeToTimestamp(createdat.getText());
+        long createdAt = Utils.datetimeToTimestamp(createdatDate.getText() + " " + createdatTime.getText());
         log.debug("click seqno {}, createdAt {}, formatted {}", seqno.getText(), createdAt, Utils.toUtcNoSpace(createdAt));
 
         Node node = MyLocalTon.getInstance().getSettings().getGenesisNode();
@@ -214,7 +206,7 @@ public class BlockController {
         content.putString(seq);
         clipboard.setContent(content);
         log.info(seq + " copied");
-        App.mainController.showInfoMsg(seq + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(seq + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -226,7 +218,7 @@ public class BlockController {
         content.putString(shortBlock);
         clipboard.setContent(content);
         log.info("{} copied", shortBlock);
-        App.mainController.showInfoMsg(shortBlock + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(shortBlock + " copied to clipboard", 2);
     }
 
     @FXML
@@ -237,7 +229,8 @@ public class BlockController {
         content.putString(fullBlock);
         clipboard.setContent(content);
         log.info("{} copied", fullBlock);
-        App.mainController.showInfoMsg(fullBlock + " copied to clipboard", 0.5);
+        String lightfullBlock = Utils.getLightAddress(roothash.getText() + ":" + filehash.getText());
+        App.mainController.showInfoMsg(lightfullBlock + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 }

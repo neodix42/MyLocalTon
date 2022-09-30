@@ -1,0 +1,26 @@
+.check-box .box {
+    -fx-background-color: #F0F2F4;
+    -fx-border-color: grey;
+    -fx-border-radius:3px;
+    -fx-pref-height: 20;
+    -fx-pref-width: 20;
+}
+.check-box .mark {
+ 	-fx-shape: "M9.56066 0.939269C9.87309 0.626884 10.3796 0.626901 10.692 0.939306L11.187 1.43432C11.4994 1.74674 11.4994 2.25327 11.187 2.56569L5.69203 8.06066C5.37961 8.37308 4.87308 8.37308 4.56066 8.06066L1.06569 4.56569C0.753266 4.25327 0.753266 3.74674 1.06569 3.43432L1.56072 2.93928C1.87312 2.62689 2.3796 2.62686 2.69203 2.93922L5.12635 5.373L9.56066 0.939269Z";
+ 	-fx-max-width: 4;
+    -fx-max-height: 3;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #0088CC;
+}
+
+.check-box {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1F1F1F;
+}
