@@ -14,9 +14,7 @@
             AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
             AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
 
-   <stylesheets>
-      <URL value="@../../../css/custom/main-layout.css" />
-   </stylesheets>
+
 
    <children>
 
@@ -32,4 +30,9 @@
          </graphic>
       </JFXButton>
    </children>
+
+   <stylesheets>
+      <URL value="@../../../css/custom/main-layout.css" />
+      <URL value="@../../../css/global-font.css"/>
+   </stylesheets>
 </AnchorPane>

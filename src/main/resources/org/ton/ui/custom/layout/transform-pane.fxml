@@ -39,6 +39,7 @@
    <stylesheets>
       <URL value="@../../../css/custom/main-layout.css" />
       <URL value="@../../../css/custom/send-coin-pane.css" />
+      <URL value="@../../../css/global-font.css" />
    </stylesheets>
 
 </AnchorPane>

@@ -6,8 +6,9 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.SVGPath?>
+<?import java.net.URL?>
 <BorderPane fx:id="accRowBorderPane" prefHeight="120.0" prefWidth="1045.0"
-            styleClass="account-row-pane" stylesheets="@../css/listview-row-styles.css" xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1"
+            styleClass="account-row-pane" xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.ton.ui.controllers.AccountController">
     <center>
         <HBox prefHeight="120.0" prefWidth="863.0" BorderPane.alignment="CENTER">
@@ -137,4 +138,8 @@
             </HBox>
         </VBox>
     </right>
+    <stylesheets>
+        <URL value="@../css/listview-row-styles.css"/>
+        <URL value="@../css/global-font.css"/>
+    </stylesheets>
 </BorderPane>

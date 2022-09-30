@@ -7,7 +7,6 @@
 <?import java.net.URL?>
 <?import javafx.scene.control.CheckBox?>
 <?import org.ton.ui.custom.control.CustomTextField?>
-<?import org.ton.ui.custom.control.CustomButton?>
 
 <?import com.jfoenix.controls.JFXButton?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
@@ -36,5 +35,6 @@
    <stylesheets>
       <URL value="@../../../css/custom/main-layout.css" />
       <URL value="@../../../css/custom/send-coin-pane.css" />
+      <URL value="@../../../css/global-font.css"/>
    </stylesheets>
 </AnchorPane>

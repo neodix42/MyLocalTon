@@ -10,10 +10,11 @@
 <?import org.ton.ui.custom.control.CustomButton?>
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXTextArea?>
+<?import java.net.URL?>
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.ton.ui.custom.layout.RunMethodPaneController" styleClass="background-dialog-pane"
-            prefHeight="400.0" prefWidth="510.0" stylesheets="@../../../css/custom/main-layout.css">
+            prefHeight="400.0" prefWidth="510.0" >
 
    <children>
       <Label fx:id="header" layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Create Wallet" styleClass="modal-pane-label" />
@@ -32,4 +33,8 @@
 
 
    </children>
+   <stylesheets>
+      <URL value="@../../../css/custom/main-layout.css"/>
+      <URL value="@../../../css/global-font.css"/>
+   </stylesheets>
 </AnchorPane>

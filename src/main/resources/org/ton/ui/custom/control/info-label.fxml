@@ -7,7 +7,7 @@
 
 <fx:root type="javafx.scene.layout.HBox"  prefHeight="30.0" prefWidth="190.0"
          xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-         stylesheets="@../../../css/custom/info-label.css" >
+         stylesheets="@../../../css/global-font.css" >
    <children>
 
       <Label fx:id="primaryLabel" prefHeight="30.0" styleClass="primary-label" />

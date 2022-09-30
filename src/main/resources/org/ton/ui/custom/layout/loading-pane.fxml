@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 <?import java.net.URL?>
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="244.0" prefWidth="360.0" styleClass="background-dialog-pane"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"

@@ -4,11 +4,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
 <?import org.ton.ui.custom.control.CustomButton?>
+<?import java.net.URL?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="270.0" prefWidth="510.0" styleClass="background-dialog-pane"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.ton.ui.custom.layout.ResetBlockchainPaneController"
-            stylesheets="@../../../css/custom/main-layout.css">
+            >
 
    <children>
       <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Reset TON Blockchain" styleClass="modal-pane-label"
@@ -32,5 +33,8 @@
       <CustomButton text="OK" prefWidth="100" layoutX="205" layoutY="200" onAction="#resetAction" styleClass="custom-button-form"/>
 
    </children>
-
+   <stylesheets>
+      <URL value="@../../../css/custom/main-layout.css"/>
+      <URL value="@../../../css/global-font.css"/>
+   </stylesheets>
 </AnchorPane>

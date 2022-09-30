@@ -1,7 +1,3 @@
-@font-face{
-    src: url("../../fonts/Mulish-Bold.ttf");
-}
-
 .menu-button {
     -fx-background-radius: 10;
     -fx-background-color: #FFFFFF;
@@ -21,22 +17,6 @@
     -fx-fill: #0088CC;
 }
 
-.main-label {
-    -fx-font-size: 16px;
-    -fx-padding: 0 0 0 10;
-    -fx-font-family: "Mulish";
-    -fx-text-fill: #303757;
-    -fx-font-weight: 700;
-}
-
-.menu-button:activated > #mainLabel {
-    -fx-font-size: 16px;
-    -fx-padding: 0 0 0 10;
-    -fx-font-family: "Mulish";
-    -fx-font-weight: 700;
-    -fx-text-fill: #FFFFFF;
-}
-
 .menu-button:activated > #mainLabel > #labelSvg {
     -fx-fill: #FFFFFF;
 }
@@ -45,16 +25,7 @@
     -fx-fill: #FFFFFF;
 }
 
-
 /* Settings and Search slide buttons */
-
-.submenu-button {
-    -fx-font-size: 13px;
-    -fx-padding: 0 0 0 20;
-    -fx-text-fill: #6E6E6E;
-    -fx-font-family: "Mulish";
-    -fx-font-weight: 700;
-}
 
 .submenu-button:focused {
     -fx-text-fill: #303757;

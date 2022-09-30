@@ -1,12 +1,6 @@
-@font-face{
-  font-family: 'Mulish ExtraBold';
-  src: url('../fonts/Mulish-ExtraBold.ttf') format('truetype');
-}
-
 .jfx-dialog-overlay-pane > StackPane{
     -fx-background-color: transparent;
 }
-
 
 .scroll-bar:horizontal .track,
 .scroll-bar:vertical .track{
@@ -53,29 +47,9 @@
     -fx-background-insets : 2.0, 0.0, 0.0;
 }
 
-
-/*
-derive(#0088CC,90.0%);
-.jfx-dialog-overlay-pane > StackPane{
--fx-background-color: transparent;
-    -fx-background-radius: 20;
-    -fx-background-color: #FFFFFF;
-    -fx-padding: 0px;
-    -fx-insets: 0px;
-}
-
-
--fx-background-color: #dbedff;  */
 .header-label-yes-no {
     -fx-background-color: #dbedff;
     -fx-padding: 0 0 0 20;
-}
-
-.content-header-label {
-    -fx-font-family: "Mulish ExtraBold";
-    -fx-text-fill: #303757;
-    -fx-font-size: 16px;
-    -fx-alignment: center_left;
 }
 
 .content-list-view {
@@ -106,7 +80,6 @@ derive(#0088CC,90.0%);
     -fx-fill: #F7F9FB;
 }
 
-
 .close-search-button {
     -fx-fill: #07A0EC;
 }
@@ -114,20 +87,3 @@ derive(#0088CC,90.0%);
 .label-close-search-button:hover > .close-search-button {
     -fx-fill: #0088CC;
 }
-
-/*
-
--fx-fill: #F72B50;
-
-
-.main-label-font {
-    -fx-font-family: "Mulish ExtraBold";
-    -fx-font-weight: 800;
-    -fx-text-fill: #303757;
-}
-
-.content-label-size {
-    -fx-alignment: center;
-    -fx-font-size: 16;
-}
-*/

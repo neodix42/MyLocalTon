@@ -6,13 +6,12 @@
 
 <?import org.ton.ui.custom.control.CustomTextField?>
 
-
-<?import org.ton.ui.custom.control.CustomButton?>
+<?import java.net.URL?>
 <?import com.jfoenix.controls.JFXButton?>
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.ton.ui.custom.layout.AccountsCreatePaneController" styleClass="background-dialog-pane"
-            prefHeight="350.0" prefWidth="510.0" stylesheets="@../../../css/custom/main-layout.css">
+            prefHeight="350.0" prefWidth="510.0" >
 
    <children>
       <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Create Wallet" styleClass="modal-pane-label" />
@@ -28,4 +27,8 @@
       <JFXButton fx:id="createBtn" onAction="#doCreateAccount" text="Create" prefHeight="40" prefWidth="120" layoutX="195" layoutY="280" styleClass="custom-button-form" />
 
    </children>
+   <stylesheets>
+      <URL value="@../../../css/custom/main-layout.css" />
+      <URL value="@../../../css/global-font.css" />
+   </stylesheets>
 </AnchorPane>

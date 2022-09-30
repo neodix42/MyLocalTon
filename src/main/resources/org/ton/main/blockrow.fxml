@@ -7,10 +7,10 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
+<?import java.net.URL?>
 <BorderPane fx:id="blockRowBorderPane" onMouseClicked="#blockRowClick"
             prefHeight="46.0" prefWidth="1010.0" styleClass="row-pane" xmlns="http://javafx.com/javafx/17.0.2"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.BlockController"
-            stylesheets="@../css/listview-row-styles.css" >
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.BlockController" >
 
     <center>
         <HBox prefHeight="46.0" prefWidth="1001.0">
@@ -59,4 +59,9 @@
             </children>
         </HBox>
     </right>
+
+    <stylesheets>
+        <URL value="@../css/listview-row-styles.css"/>
+        <URL value="@../css/global-font.css"/>
+    </stylesheets>
 </BorderPane>

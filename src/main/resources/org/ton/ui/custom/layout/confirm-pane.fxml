@@ -4,11 +4,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
 <?import org.ton.ui.custom.control.CustomButton?>
+<?import java.net.URL?>
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="270.0" prefWidth="510.0" styleClass="background-dialog-pane"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.ton.ui.custom.layout.ConfirmPaneController"
-            stylesheets="@../../../css/custom/main-layout.css">
+            fx:controller="org.ton.ui.custom.layout.ConfirmPaneController" >
 
    <children>
 
@@ -31,5 +31,8 @@
       <CustomButton fx:id="okButton" text="OK" prefWidth="100" layoutX="205" layoutY="200" onAction="#confirm" styleClass="custom-button-form"/>
 
    </children>
-
+   <stylesheets>
+      <URL value="@../../../css/custom/main-layout.css" />
+      <URL value="@../../../css/global-font.css" />
+   </stylesheets>
 </AnchorPane>

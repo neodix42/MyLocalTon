@@ -5,7 +5,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 
-<StackPane fx:id="stackYesNo" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="524.0" stylesheets="@../css/main-styles.css"
+<?import java.net.URL?>
+<StackPane fx:id="stackYesNo" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="524.0"
            xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.YesNoController" style="-fx-background-color: #FFFFFF;">
     <GridPane>
         <columnConstraints>
@@ -69,4 +70,8 @@
             </GridPane.margin>
         </JFXButton>
     </GridPane>
+    <stylesheets>
+        <URL value="@../css/main-styles.css"/>
+<!--        <URL value="@../css/global-font.css"/>-->
+    </stylesheets>
 </StackPane>
