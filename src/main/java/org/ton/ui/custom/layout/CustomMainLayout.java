@@ -1,6 +1,8 @@
 package org.ton.ui.custom.layout;
 
+import com.jfoenix.controls.JFXListView;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -10,18 +12,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.util.Duration;
-import org.ton.ui.custom.control.CustomButton;
-import org.ton.ui.custom.control.CustomExpandButton;
-import org.ton.ui.custom.control.CustomMenuButton;
-import org.ton.ui.custom.control.CustomSearchBar;
+import org.ton.main.App;
+import org.ton.ui.custom.control.*;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.ui.custom.events.event.CustomNotificationEvent;
+import org.ton.ui.custom.events.event.CustomRefreshEvent;
+import org.ton.ui.custom.events.event.CustomSearchEvent;
+import org.ton.ui.custom.media.NoBlocksTransactionsController;
 import org.ton.ui.custom.toastr.Notification;
 import org.ton.ui.custom.toastr.NotificationAnchorStack;
 
@@ -36,25 +39,21 @@ import static org.ton.ui.custom.events.CustomEventBus.listenFor;
 public class CustomMainLayout extends AnchorPane implements Initializable {
 
     @FXML
-    AnchorPane logoPane, search, buttons, info;
-
-    @FXML
     private CustomMenuButton blocksBtn, transactionsBtn, validationBtn, accountsBtn, explorerBtn;
 
     @FXML
     private CustomExpandButton settingBtn, resultsBtn;
 
     @FXML
-    private AnchorPane contentPane, blocksPane, transactionsPane, validationPane, accountsPane, blankPane,
-            settingsPane, logsPane, accountsKeysPane, settingsValidatorsPane, blockchainPane, userInterfacePane,
-            aboutPane, explorerPane, searchPane;
-    //, statusPane;
+    private CustomSubMenuButton logsBtn, foundBlocksBtn, foundTxsBtn, foundAccountsBtn, foundAccountsTxsBtn;
 
     @FXML
-    private HBox topButton;
+    private AnchorPane logoPane, search, buttons, info, contentPane, blocksPane, transactionsPane, validationPane, accountsPane, blankPane,
+            logsPane, accountsKeysPane, settingsValidatorsPane, blockchainPane, userInterfacePane,
+            aboutPane, explorerPane, foundBlocksPane, foundAccountsPane, foundTxsPane, foundAccountsTxsPane;
 
     @FXML
-    private Pane lockPane;
+    private HBox topButton, scrollButton, closeButton;
 
     @FXML
     private CustomSearchBar searchBar;
@@ -62,15 +61,21 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     @FXML
     private NotificationAnchorStack notificationStack;
 
-    //private Node view;
-
     private CustomButton createButton;
 
-    private Pane lastPane = null;
-
-    private Node loadingPane = null;
+    private Node lastPane = null;
 
     private boolean explorer;
+
+    private boolean hasBlocks = false;
+
+    private boolean hasTransactions = false;
+
+    private boolean hasAccounts = false;
+
+    private Node noBlocksTransactions = null;
+
+    private NoBlocksTransactionsController noBlocksTransactionsController = null;
 
     public CustomMainLayout() throws IOException {
 
@@ -92,11 +97,20 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         contentPane.getChildren().remove(userInterfacePane);
         contentPane.getChildren().remove(aboutPane);
         contentPane.getChildren().remove(explorerPane);
+        contentPane.getChildren().remove(foundBlocksPane);
+        contentPane.getChildren().remove(foundAccountsPane);
+        contentPane.getChildren().remove(foundTxsPane);
+        contentPane.getChildren().remove(foundAccountsTxsPane);
+
         lastPane = blankPane;
         listenFor(CustomNotificationEvent.class, this::handle);
         listenFor(CustomActionEvent.class, this::handle);
+        listenFor(CustomSearchEvent.class, this::handle);
+        listenFor(CustomRefreshEvent.class, this::handle);
+
 
         buttons.getChildren().remove(explorerBtn);
+        buttons.getChildren().remove(resultsBtn);
 
     }
 
@@ -108,7 +122,6 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
             public void changed(ObservableValue<? extends Number> arg0,
                                 Number arg1, Number arg2) {
                 if(arg1.doubleValue() > 0.0) {
-                    //TODO: search result button and explorer button
                     if(hasResult()) {
                         TranslateTransition tr = new TranslateTransition(Duration.seconds(0.001), resultsBtn);
                         tr.setToY(arg2.doubleValue() - settingBtn.getMainButtonHeight());
@@ -127,31 +140,45 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
 
 
     @FXML
-    public void handleSettingsLogs(ActionEvent event) {
+    private void handleSettingsLogs(ActionEvent event) {
                 changeContent(logsPane);
     }
     @FXML
-    public void handleSettingsValidators(ActionEvent event) {
+    private void handleSettingsValidators(ActionEvent event) {
         changeContent(settingsValidatorsPane);
     }
     @FXML
-    public void handleSettingsAccountsKeys(ActionEvent event){
+    private void handleSettingsAccountsKeys(ActionEvent event){
         changeContent(accountsKeysPane);
     }
     @FXML
-    public void handleSettingsBlockchain(ActionEvent event){
+    private void handleSettingsBlockchain(ActionEvent event){
         changeContent(blockchainPane);
     }
     @FXML
-    public void handleSettingsUserInterface(ActionEvent event) {
+    private void handleSettingsUserInterface(ActionEvent event) {
         changeContent(userInterfacePane);
     }
     @FXML
-    public void handleSettingsAbout(ActionEvent event) {
+    private void handleSettingsAbout(ActionEvent event) {
         changeContent(aboutPane);
     }
-
-
+    @FXML
+    private void handleFoundBlocks(ActionEvent event) {
+        changeContent(foundBlocksPane);
+    }
+    @FXML
+    private void handleFoundAccountsTxs() {
+        changeContent(foundAccountsTxsPane);
+    }
+    @FXML
+    private void handleFoundAccounts(ActionEvent event) {
+        changeContent(foundAccountsPane);
+    }
+    @FXML
+    private void handleFoundTxs(ActionEvent event) {
+        changeContent(foundTxsPane);
+    }
 
     private boolean hasResult() {
         return buttons.getChildren().contains(resultsBtn);
@@ -164,42 +191,128 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     @FXML
     private void clickExpandSettings(MouseEvent e) {
         resetButtons();
-        if(!settingBtn.isOpened()) {
-            blankPane.toFront();
-            settingBtn.activate();
-        }
         removeCreateButton();
-        settingBtn.rotateIcon();
         if(resultsBtn.isOpened())
             resultsBtn.rotateIcon();
+        if(!settingBtn.isOpened()) {
+            if(!isEditingSettings()) {
+                logsBtn.requestFocus();
+                changeContent(logsPane);
+            }
+        }
+        settingBtn.rotateIcon();
+        settingBtn.activate();
     }
+
+
 
     @FXML
     private void clickExpandResults(MouseEvent e) {
         resetButtons();
-        if(!resultsBtn.isOpened()) {
-            blankPane.toFront();
-            resultsBtn.activate();
-        }
         removeCreateButton();
-        resultsBtn.rotateIcon();
         if(settingBtn.isOpened())
             settingBtn.rotateIcon();
+        if(!resultsBtn.isOpened()) {
+            if(!isViewingResults()) {
+                foundBlocksBtn.requestFocus();
+                changeContent(foundBlocksPane);
+            }
+        }
+        resultsBtn.activate();
+        resultsBtn.rotateIcon();
     }
+
+
 
     @FXML
     private void clickBlocks(Event e) {
         resetButtons();
         blocksBtn.activate();
-        changeContent(blocksPane);
+        if(hasBlocks)
+            changeContent(blocksPane);
+        else 
+            checkBlocks();
     }
 
     @FXML
     private void clickTransactions(Event e) {
         resetButtons();
         transactionsBtn.activate();
-        changeContent(transactionsPane);
+        if(hasTransactions)
+            changeContent(transactionsPane);
+        else
+            checkTransactions();
     }
+
+    private void loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType viewType) {
+        if(noBlocksTransactions == null) {
+            try {
+                FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/media/no-blocks-transactions-pane.fxml"));
+
+                noBlocksTransactions = loader.load();
+
+                noBlocksTransactionsController = loader.getController();
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+
+        }
+        noBlocksTransactionsController.setViewType(viewType);
+        changeContent(noBlocksTransactions);
+    }
+
+    private void refreshTransactions() {
+        if(((JFXListView) transactionsPane.lookup("#transactionsvboxid")).getItems().size() > 0) {
+            hasTransactions = true;
+            changeContent(transactionsPane);
+        }
+    }
+
+    private void refreshBlocks() {
+        if(((JFXListView) blocksPane.lookup("#blockslistviewid")).getItems().size() > 0) {
+            hasBlocks = true;
+            changeContent(blocksPane);
+        }
+    }
+
+    private void refreshAccounts() throws IOException {
+        if(((JFXListView) accountsPane.lookup("#accountsvboxid")).getItems().size() > 0) {
+            hasAccounts = true;
+            addCreateButton();
+            changeContent(accountsPane);
+        }
+    }
+
+    private void checkBlocks() {
+        if(((JFXListView) blocksPane.lookup("#blockslistviewid")).getItems().size() == 0) {
+            loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType.BLOCKS);
+        } else {
+            hasBlocks = true;
+            changeContent(blocksPane);
+        }
+    }
+
+    private void checkTransactions() {
+        if(((JFXListView) transactionsPane.lookup("#transactionsvboxid")).getItems().size() == 0) {
+            loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType.TRANSACTIONS);
+        } else {
+            hasTransactions = true;
+            changeContent(transactionsPane);
+        }
+    }
+
+    private void checkAccounts() throws IOException {
+        if(((JFXListView) accountsPane.lookup("#accountsvboxid")).getItems().size() == 0) {
+            loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType.ACCOUNTS);
+        } else {
+            hasAccounts = true;
+            addCreateButton();
+            changeContent(accountsPane);
+        }
+    }
+
+
 
     @FXML
     private void clickValidation(Event e) {
@@ -212,11 +325,18 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     private void clickAccount(Event e) throws IOException {
         resetButtons();
         accountsBtn.activate();
+        if(hasAccounts) {
+            addCreateButton();
+            changeContent(accountsPane);
+        } else
+            checkAccounts();
+    }
+
+    private void addCreateButton() throws IOException {
         createButton = new CustomButton(CustomButton.CustomButtonType.CREATE, 110.0);
         createButton.setOnAction(action -> emit(new CustomActionEvent(CustomEvent.Type.CLICK)));
         createButton.getStyleClass().add("custom-button-btn");
         this.topButton.getChildren().add(createButton);
-        changeContent(accountsPane);
     }
 
     @FXML
@@ -225,7 +345,6 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         explorerBtn.activate();
         changeContent(explorerPane);
     }
-
 
     private void resetButtons() {
         deactivateAllButton();
@@ -248,13 +367,257 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         explorerBtn.deactivate();
     }
 
-    private void changeContent(Pane pane) {
-        contentPane.getChildren().remove(lastPane);
-        contentPane.getChildren().add(pane);
-        lastPane = pane;
+    private void changeContent(Node pane) {
+        try {
+            Platform.runLater(() -> emit(new CustomActionEvent(CustomEvent.Type.SAVE_SETTINGS)));
+            contentPane.getChildren().remove(lastPane);
+            contentPane.getChildren().add(pane);
+            lastPane = pane;
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setExplorer(boolean explorer) {
+        this.explorer = explorer;
+        if(explorer) {
+            if(hasResult()) {
+                resultsBtn.setLayoutY(320.0);
+            }
+            buttons.getChildren().add(explorerBtn);
+        }
+    }
+
+    private void setNumFoundBlocks(int num) {
+        foundBlocksBtn.setText("Blocks ( " + num + " )");
+    }
+    private void setNumFoundTxs(int num) {
+        foundTxsBtn.setText("Transaction ( " + num + " )");
+    }
+    private void setNumFoundAccounts(int num) {
+        foundAccountsBtn.setText("Accounts ( " + num + " )");
+    }
+
+    private void setNumFoundAccountsTxs(int num, String accountAddr) {
+        try {
+            foundAccountsTxsBtn = new CustomSubMenuButton();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        foundAccountsTxsBtn.setText("Acc TXs (" + num + " )");
+        foundAccountsTxsBtn.setOnAction(e -> handleFoundAccountsTxs());
+        resultsBtn.addButton(foundAccountsTxsBtn);
+
+        ((Label)foundAccountsTxsPane.lookup("#labelAccountsTxs")).setText("Account " + accountAddr + " - TXs (" + num + " )");
+        if(settingBtn.isOpened()) {
+            settingBtn.rotateIcon();
+            settingBtn.deactivate();
+        }
+        if(resultsBtn.isOpened()) {
+            resultsBtn.rotateIcon();
+            resultsBtn.deactivate();
+        }
+
+        resetButtons();
+        addResultsButton();
+        foundAccountsTxsBtn.requestFocus();
+        changeContent(foundAccountsTxsPane);
+    }
+
+    private void removeFoundAccountsTxs() {
+        resultsBtn.removeButton(foundAccountsTxsBtn);
+        ((Label)foundAccountsTxsPane.lookup("#labelAccountsTxs")).setText("");
+        initialState();
     }
 
 
+    private void addResultsButton() {
+        if(hasExplorer())
+            resultsBtn.setLayoutY(320.0);
+        if(!buttons.getChildren().contains(resultsBtn))
+            buttons.getChildren().add(resultsBtn);
+        removeCreateButton();
+        resetButtons();
+        resultsBtn.activate();
+        if(settingBtn.isOpened())
+            settingBtn.rotateIcon();
+        if(!resultsBtn.isOpened()) {
+            resultsBtn.rotateIcon();
+        }
+        foundBlocksBtn.requestFocus();
+        changeContent(foundBlocksPane);
+
+    }
+
+    private void removeResultsButton() {
+        buttons.getChildren().remove(resultsBtn);
+        resetButtons();
+        blocksBtn.activate();
+        changeContent(blocksPane);
+    }
+
+    private void removeCreateButton() {
+        if(createButton != null) {
+            if(this.topButton.getChildren().contains(createButton)) {
+                this.topButton.getChildren().remove(createButton);
+                createButton = null;
+            }
+        }
+    }
+
+    private boolean isEditingSettings() {
+        return contentPane.getChildren().contains(logsPane) ||
+                contentPane.getChildren().contains(settingsValidatorsPane) ||
+                contentPane.getChildren().contains(accountsKeysPane) ||
+                contentPane.getChildren().contains(blockchainPane) ||
+                contentPane.getChildren().contains(userInterfacePane) ||
+                contentPane.getChildren().contains(aboutPane);
+    }
+
+    private boolean isViewingResults() {
+        return contentPane.getChildren().contains(foundBlocksPane) ||
+                contentPane.getChildren().contains(foundAccountsPane) ||
+                contentPane.getChildren().contains(foundTxsPane) ||
+                contentPane.getChildren().contains(foundAccountsTxsPane);
+    }
+
+    public void handle(CustomEvent event){
+        switch (event.getEventType()) {
+            case INFO:
+                addInfo((CustomNotificationEvent) event);
+                break;
+            case SUCCESS:
+                addSuccess((CustomNotificationEvent) event);
+                break;
+            case WARNING:
+                addWarning((CustomNotificationEvent) event);
+                break;
+            case ERROR:
+                addError((CustomNotificationEvent) event);
+                break;
+            case START:
+                if(contentPane.getChildren().contains(blankPane))
+                    initialState();
+                break;
+            case ACCOUNTS_TXS_REMOVE:
+                removeFoundAccountsTxs();
+                break;
+            case SEARCH_SIZE_BLOCKS:
+                setNumFoundBlocks(((CustomSearchEvent) event).getSize());
+                break;
+            case SEARCH_SIZE_ACCOUNTS:
+                setNumFoundAccounts(((CustomSearchEvent) event).getSize());
+                break;
+            case SEARCH_SIZE_TXS:
+                setNumFoundTxs(((CustomSearchEvent) event).getSize());
+                break;
+            case SEARCH_SIZE_ACCOUNTS_TXS:
+                setNumFoundAccountsTxs(((CustomSearchEvent) event).getSize(),
+                        ((CustomSearchEvent) event).getAccountAddr());
+                break;
+            case SEARCH_SHOW:
+                addResultsButton();
+                break;
+            case SEARCH_REMOVE:
+                removeResultsButton();
+                break;
+            case REFRESH:
+                refresh(((CustomRefreshEvent) event).getViewType());
+                break;
+            case BLOCKCHAIN_READY:
+                blockchainReady();
+                break;
+            case WALLETS_READY:
+                walletsReady();
+                break;
+        }
+    }
+
+    private void blockchainReady() {
+        hasBlocks = true;
+        hasTransactions = true;
+        if(noBlocksTransactions != null) {
+            if(contentPane.getChildren().contains(noBlocksTransactions)) {
+                switch (noBlocksTransactionsController.getViewType()) {
+                    case BLOCKS:
+                        //removeNoBlocksTransactions(blocksPane);
+                        changeContent(blocksPane);
+                        break;
+                    case TRANSACTIONS:
+                        //removeNoBlocksTransactions(transactionsPane);
+                        changeContent(transactionsPane);
+                        break;
+                }
+            }
+            //noBlocksTransactions = null;
+            //noBlocksTransactionsController = null;
+
+        }
+    }
+
+    private void walletsReady() {
+        hasAccounts = true;
+        if(noBlocksTransactions != null) {
+            if(contentPane.getChildren().contains(noBlocksTransactions)) {
+                if(noBlocksTransactionsController.getViewType() == NoBlocksTransactionsController.ViewType.ACCOUNTS) {
+                    changeContent(accountsPane);
+                    //removeNoBlocksTransactions(accountsPane);
+                }
+            }
+            noBlocksTransactions = null;
+            noBlocksTransactionsController = null;
+        }
+    }
+
+    private void refresh(NoBlocksTransactionsController.ViewType viewType) {
+        switch (viewType) {
+            case BLOCKS:
+                refreshBlocks();
+                break;
+            case TRANSACTIONS:
+                refreshTransactions();
+                break;
+            case ACCOUNTS:
+                try {
+                    refreshAccounts();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+                break;
+        }
+    }
+
+    private void initialState() {
+        resetButtons();
+        blocksBtn.activate();
+        changeContent(blocksPane);
+    }
+
+    private void addInfo(CustomNotificationEvent event) {
+        Notification note = new Notification(Notification.NotificationType.INFO, event.getMessage());
+        notificationStack.notify(note, (int) event.getSeconds() * 1000);
+    }
+
+    private void addSuccess(CustomNotificationEvent event) {
+        Notification note = new Notification(Notification.NotificationType.SUCCESS, event.getMessage());
+        notificationStack.notify(note, (int) event.getSeconds() * 1000);
+    }
+
+    private void addError(CustomNotificationEvent event) {
+        Notification note = new Notification(Notification.NotificationType.ERROR, event.getMessage());
+        notificationStack.notify(note, (int) event.getSeconds() * 1000);
+    }
+
+    private void addWarning(CustomNotificationEvent event) {
+        Notification note = new Notification(Notification.NotificationType.WARNING, event.getMessage());
+        notificationStack.notify(note, (int) event.getSeconds() * 1000);
+    }
+
+    private void notify(Notification note, final int show ) {
+        notificationStack.notify(note, show);
+    }
 
     public CustomSearchBar getSearchBar() {
         return this.searchBar;
@@ -266,6 +629,14 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
 
     public ObservableList<Node> getInfo() {
         return info.getChildren();
+    }
+
+    public ObservableList<Node> getScrollButton() {
+        return scrollButton.getChildren();
+    }
+
+    public ObservableList<Node> getCloseButton() {
+        return closeButton.getChildren();
     }
 
     public ObservableList<Node> getBlocksPane() {
@@ -282,10 +653,6 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
 
     public ObservableList<Node> getAccountsPane() {
         return accountsPane.getChildren();
-    }
-
-    public ObservableList<Node> getSettingsPane() {
-        return settingsPane.getChildren();
     }
 
     public ObservableList<Node> getLogsPane() {
@@ -316,76 +683,20 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         return explorerPane.getChildren();
     }
 
-    public ObservableList<Node> getSearchPane() {
-        return searchPane.getChildren();
+    public ObservableList<Node> getFoundBlocksPane() {
+        return foundBlocksPane.getChildren();
     }
 
-    public void setExplorer(boolean explorer) {
-        this.explorer = explorer;
-        if(explorer) {
-            if(hasResult()) {
-                buttons.getChildren().remove(resultsBtn);
-                resultsBtn.setLayoutY(320.0);
-                buttons.getChildren().add(resultsBtn);
-            }
-            //270.0
-            buttons.getChildren().add(explorerBtn);
-        }
+    public ObservableList<Node> getFoundAccountsPane() {
+        return foundAccountsPane.getChildren();
     }
 
-
-    private void removeCreateButton() {
-        if(createButton != null) {
-            if(this.topButton.getChildren().contains(createButton)) {
-                this.topButton.getChildren().remove(createButton);
-                createButton = null;
-            }
-        }
+    public ObservableList<Node> getFoundTxsPane() {
+        return foundTxsPane.getChildren();
     }
 
-    public void handle(CustomEvent event){
-        switch (event.getEventType()) {
-            case INFO:
-                addInfo((CustomNotificationEvent) event);
-                break;
-            case SUCCESS:
-                addSuccess((CustomNotificationEvent) event);
-                break;
-            case WARNING:
-                addWarning((CustomNotificationEvent) event);
-                break;
-            case ERROR:
-                addError((CustomNotificationEvent) event);
-                break;
-            case START:
-                blocksBtn.activate();
-                changeContent(blocksPane);
-                break;
-        }
-    }
-
-    private void addInfo(CustomNotificationEvent event) {
-        Notification note = new Notification(Notification.NotificationType.INFO, event.getMessage());
-        notificationStack.notify(note, (int) event.getSeconds() * 1000);
-    }
-
-    private void addSuccess(CustomNotificationEvent event) {
-        Notification note = new Notification(Notification.NotificationType.SUCCESS, event.getMessage());
-        notificationStack.notify(note, (int) event.getSeconds() * 1000);
-    }
-
-    private void addError(CustomNotificationEvent event) {
-        Notification note = new Notification(Notification.NotificationType.ERROR, event.getMessage());
-        notificationStack.notify(note, (int) event.getSeconds() * 1000);
-    }
-
-    private void addWarning(CustomNotificationEvent event) {
-        Notification note = new Notification(Notification.NotificationType.WARNING, event.getMessage());
-        notificationStack.notify(note, (int) event.getSeconds() * 1000);
-    }
-
-    private void notify(Notification note, final int show ) {
-        notificationStack.notify(note, show);
+    public ObservableList<Node> getFoundAccountsTxsPane() {
+        return foundAccountsTxsPane.getChildren();
     }
 
 }

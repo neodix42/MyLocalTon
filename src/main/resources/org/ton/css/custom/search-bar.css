@@ -29,5 +29,11 @@
 }
 
 .clear-button {
-    -fx-fill: #F72B50;
+    -fx-fill: #888888;
+}
+
+
+
+.label-clear-button:hover > .clear-button {
+    -fx-fill: #555555;
 }

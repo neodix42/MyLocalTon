@@ -208,7 +208,7 @@ public class BlockController {
         content.putString(seq);
         clipboard.setContent(content);
         log.info(seq + " copied");
-        App.mainController.showInfoMsg(seq + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(seq + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -220,7 +220,7 @@ public class BlockController {
         content.putString(shortBlock);
         clipboard.setContent(content);
         log.info("{} copied", shortBlock);
-        App.mainController.showInfoMsg(shortBlock + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(shortBlock + " copied to clipboard", 2);
     }
 
     @FXML
@@ -231,7 +231,8 @@ public class BlockController {
         content.putString(fullBlock);
         clipboard.setContent(content);
         log.info("{} copied", fullBlock);
-        App.mainController.showInfoMsg(fullBlock + " copied to clipboard", 0.5);
+        String lightfullBlock = Utils.getLightAddress(roothash.getText() + ":" + filehash.getText());
+        App.mainController.showInfoMsg(lightfullBlock + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 }

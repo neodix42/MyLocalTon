@@ -24,7 +24,7 @@ public class ResetBlockchainPaneController implements Initializable {
     @FXML
     private void resetAction() {
         log.debug("do reset");
-        emit(new CustomActionEvent(CustomEvent.Type.DIALOG_RESET_CLOSE));
+        emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
         doReset();
     }
 

@@ -1,29 +1,40 @@
 package org.ton.ui.custom.media;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.animation.Interpolator;
 import javafx.animation.RotateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.shape.SVGPath;
 import javafx.util.Duration;
+import org.ton.ui.custom.events.CustomEvent;
+import org.ton.ui.custom.events.event.CustomActionEvent;
+import org.ton.ui.custom.events.event.CustomRefreshEvent;
 import org.ton.ui.custom.layout.CustomMainLayout;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class NoTransactionsController implements Initializable {
+import static org.ton.ui.custom.events.CustomEventBus.emit;
 
+public class NoBlocksTransactionsController implements Initializable {
+
+    @FXML
+    private JFXButton button;
+    @FXML
+    private Label label;
     @FXML
     private MediaView mediaView;
 
     @FXML
     private SVGPath svg;
 
-    private CustomMainLayout main;
+    private ViewType viewType;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -35,7 +46,8 @@ public class NoTransactionsController implements Initializable {
         player.play();
     }
 
-    public void refresh(ActionEvent actionEvent) {
+    @FXML
+    private void refresh() {
         RotateTransition rotator = new RotateTransition(Duration.seconds(0.3), svg);
         //rotator.setAxis(Rotate.X_AXIS);
         rotator.setFromAngle(0);
@@ -44,9 +56,33 @@ public class NoTransactionsController implements Initializable {
         rotator.setInterpolator(Interpolator.LINEAR);
         //rotator.setOnFinished(e -> main.removeNoTransactionsView());
         rotator.play();
+        emit(new CustomRefreshEvent(CustomEvent.Type.REFRESH, viewType));
     }
 
-    public void setMain(CustomMainLayout main) {
-        this.main = main;
+    public void setViewType(ViewType viewType) {
+        this.viewType = viewType;
+        switch (viewType) {
+            case BLOCKS:
+                label.setText("No Blocks...");
+                break;
+            case TRANSACTIONS:
+                label.setText("No Transactions...");
+                break;
+            case ACCOUNTS:
+                label.setText("No Accounts...");
+                break;
+        }
+
     }
+
+    public ViewType getViewType() {
+        return viewType;
+    }
+
+    public enum ViewType {
+        BLOCKS,
+        TRANSACTIONS,
+        ACCOUNTS;
+    }
+
 }

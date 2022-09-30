@@ -93,16 +93,23 @@
     -fx-background-color: rgba(255, 255, 255, 0.1);
 }
 
+/*
+ #0088CC;
+
+*/
 .jfx-tab-pane .headers-region {
-    -fx-background-color: #0088CC;
+    -fx-background-color: #FFFFFF;
 }
 .jfx-tab-pane .tab-header-background {
-    -fx-background-color: #0088CC;
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #1F1F1F;
 }
+
 .jfx-tab-pane .tab-selected-line {
     -fx-stroke: #0088CC;
     -fx-stroke-width: 3pt;
 }
+
 
 /* Fonts Used */
 .label-second-font-14 {
@@ -115,4 +122,37 @@
     -fx-font-family: "Mulish";
     -fx-text-fill: #1F1F1F;
     -fx-font-size: 16px;
+}
+/*
+#infoValidator > Label {
+        -fx-font-family: "Roboto Mono Medium";
+        -fx-text-fill: #1F1F1F;
+}
+*/
+
+#infoValidator > Label, #paneValidator1 > Label, #paneValidator2 > Label, #paneValidator3 > Label,
+#paneValidator4 > Label, #paneValidator5 > Label, #paneValidator6 > Label, #paneValidator7 > Label,
+#settingsPaneValidator1 > Label, #settingsPaneValidator1 > JFXTextField, #settingsPaneValidator2 > Label, #settingsPaneValidator2 > JFXTextField,
+#settingsPaneValidator3 > Label, #settingsPaneValidator3 > JFXTextField, #settingsPaneValidator4 > Label, #settingsPaneValidator4 > JFXTextField,
+#settingsPaneValidator5 > Label, #settingsPaneValidator5 > JFXTextField, #settingsPaneValidator6 > Label, #settingsPaneValidator6 > JFXTextField,
+#settingsPaneValidator7 > Label, #settingsPaneValidator7 > JFXTextField {
+        -fx-font-family: "Roboto Mono Medium";
+        -fx-text-fill: #1F1F1F;
+}
+/*
+#settingsPaneValidator1 > Label, #settingsPaneValidator1 > JFXTextField,
+#settingsPaneValidator2 > Label, #settingsPaneValidator2 > JFXTextField,
+#settingsPaneValidator3 > Label, #settingsPaneValidator3 > JFXTextField,
+#settingsPaneValidator4 > Label, #settingsPaneValidator4 > JFXTextField,
+#settingsPaneValidator5 > Label, #settingsPaneValidator5 > JFXTextField,
+#settingsPaneValidator6 > Label, #settingsPaneValidator6 > JFXTextField,
+#settingsPaneValidator7 > Label, #settingsPaneValidator7 > JFXTextField {
+    -fx-font-family: "Roboto Mono Medium";
+    -fx-text-fill: #1F1F1F;
+}
+*/
+
+.tab-label {
+    -fx-font-family: "Roboto Mono Medium";
+    -fx-text-fill: #1F1F1F;
 }

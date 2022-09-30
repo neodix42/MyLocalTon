@@ -1,19 +1,20 @@
 @font-face{
   font-family: 'Mulish Bold';
-  src: url('../fonts/Mulish-Bold.ttf') format('truetype');
+  src: url('../../fonts/Mulish-Bold.ttf') format('truetype');
 }
 
-.jfx-text-field {
+.jfx-text-field, .jfx-text-area {
     -fx-padding: 0 10 0 10;
     -fx-font-size: 16px;
 }
-.jfx-text-field .input-line{
+.jfx-text-field .input-line, .jfx-text-area .input-line {
 	-fx-pref-height: 0px;
 }
 
-.jfx-text-field .input-focused-line{
+.jfx-text-field .input-focused-line, .jfx-text-area .input-focused-line {
 	-fx-pref-height: 0px;
 }
+
 
 .jfx-combo-box {
     -fx-padding: 0 10 0 10;

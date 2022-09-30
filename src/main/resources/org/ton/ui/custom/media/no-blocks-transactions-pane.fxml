@@ -10,7 +10,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="650.0" prefWidth="1105.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.ton.ui.custom.media.NoTransactionsController" styleClass="content-pane"
+            fx:controller="org.ton.ui.custom.media.NoBlocksTransactionsController" styleClass="content-pane"
             AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
             AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
 
@@ -19,8 +19,9 @@
    </stylesheets>
 
    <children>
-      <Label prefHeight="30.0" prefWidth="150.0" text="No transactions..." AnchorPane.leftAnchor="512.5" AnchorPane.topAnchor="150.0"
-            styleClass="no-transactions-label"/>
+
+      <Label fx:id="label" prefHeight="30.0" prefWidth="150.0" text="" AnchorPane.leftAnchor="512.5" AnchorPane.topAnchor="150.0"
+            styleClass="no-blocks-transactions-label"/>
       <MediaView fx:id="mediaView" fitHeight="200.0" fitWidth="200.0" AnchorPane.leftAnchor="462.5" AnchorPane.topAnchor="190.0" />
       <JFXButton graphicTextGap="10.0" prefHeight="40.0" prefWidth="110.0"
                  styleClass="custom-button-btn" onAction="#refresh"

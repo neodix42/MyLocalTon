@@ -11,16 +11,16 @@
             fx:controller="org.ton.ui.controllers.AccountController">
     <center>
         <HBox prefHeight="120.0" prefWidth="863.0" BorderPane.alignment="CENTER">
-            <VBox prefHeight="22.0" prefWidth="550.0">
+            <VBox prefHeight="22.0" prefWidth="550.0" >
                 <GridPane fx:id="grid" alignment="center" hgap="10" vgap="5">
                     <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0"/>
                     </padding>
 
-                    <Label fx:id="hexAddrLabel" minWidth="190.0" styleClass="row-label-small-right" text="Hex:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                    <Label fx:id="hexAddrLabel" minWidth="190.0" styleClass="row-label-small-right" text="Hex:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
 
                     <Label fx:id="hexAddr" minWidth="500.0" onMouseClicked="#accRowHexAddrClick" styleClass="row-label-small-left"
-                           text="0:e50738dd6363b5e91d738e21d8eff5da3194ec1a34bccaa7a2d32e8136f8620c" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                           text="0:e50738dd6363b5e91d738e21d8eff5da3194ec1a34bccaa7a2d32e8136f8620c" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
                     <Label fx:id="b64AddrLabel" prefHeight="15.0" prefWidth="201.0" styleClass="row-label-small-right" text="Bounceable, base64:" GridPane.columnIndex="0"
                            GridPane.rowIndex="1"/>
@@ -34,7 +34,7 @@
                            GridPane.rowIndex="3"/>
                     <Label fx:id="nb64Addr" onMouseClicked="#accRowNb64AddrClick" styleClass="row-label-small-left" text="UQDlBzjdY2O16R1zjiHY7/XaMZTsGjS8yqei0y6BNvhiDEKV"
                            textAlignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                    <Label fx:id="nb64urlAddrLabel" styleClass="row-label-small-right" text="Non-Bounceable, base64url:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                    <Label fx:id="nb64urlAddrLabel" styleClass="row-label-small-right" text="Non-Bounceable, base64url:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
                     <Label fx:id="nb64urlAddr" onMouseClicked="#accRowNb64UrlAddrClick" styleClass="row-label-small-left" text="UQDlBzjdY2O16R1zjiHY7_XaMZTsGjS8yqei0y6BNvhiDEKV"
                            GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                     <columnConstraints>
@@ -51,7 +51,7 @@
                     </rowConstraints>
                 </GridPane>
             </VBox>
-            <VBox prefHeight="20.0" prefWidth="188.0">
+            <VBox prefHeight="20.0" prefWidth="188.0" >
                 <Label fx:id="balance" onMouseClicked="#accRowBalanceClick" prefHeight="18.0" prefWidth="188.0" styleClass="row-label-small" text="9,5623.20"/>
                 <Label fx:id="createdat" prefHeight="18.0" prefWidth="188.0" styleClass="row-label-small" text="2021.03.26 15:55:32"/>
                 <Label fx:id="status" prefHeight="18.0" prefWidth="188.0" styleClass="row-label-small" text="Active"/>
@@ -89,8 +89,8 @@
                     </JFXButton>
                 </HBox>
 
-                <HBox fx:id="hBoxInfoBtn" alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="30.0" styleClass="background-acc-info-button" BorderPane.alignment="CENTER">
-                    <JFXButton onAction="#accInfoBtn" prefHeight="30.0" prefWidth="30.0" contentDisplay="GRAPHIC_ONLY">
+<!--                <HBox fx:id="hBoxInfoBtn" alignment="CENTER" prefHeight="30.0" prefWidth="30.0" styleClass="background-acc-info-button" >-->
+                    <JFXButton onAction="#accInfoBtn" prefHeight="30.0" prefWidth="30.0" contentDisplay="CENTER" styleClass="acc-info-button">
                         <graphic>
                             <SVGPath content="M23.4835 15C23.4835 10.3222 19.678 6.51666 15.0002 6.51666C10.3224 6.51666 6.51685 10.3222 6.51685 15C6.51685 19.6778 10.3224 23.4833 15.0002 23.4833C19.678 23.4833 23.4835 19.6778 23.4835 15ZM8.06685 15C8.06685 11.1634 11.1636 8.06666 15.0002 8.06666C18.8368 8.06666 21.9335 11.1634 21.9335 15C21.9335 18.8366 18.8368 21.9333 15.0002 21.9333C11.1636 21.9333 8.06685 18.8366 8.06685 15ZM14.9881 13.5911C15.1976 13.5878 15.3996 13.6695 15.5479 13.8176C15.6665 13.9361 15.7427 14.089 15.7669 14.2516L15.7752 14.375L15.7752 18.9562C15.7791 19.2357 15.6323 19.4957 15.3909 19.6366C15.1495 19.7775 14.8509 19.7775 14.6095 19.6366C14.3983 19.5133 14.2594 19.2988 14.2307 19.0613L14.2252 18.9583L14.2252 14.3771C14.2196 13.9852 14.506 13.6569 14.8831 13.5998L14.9881 13.5911ZM15.9835 11.6667C15.9835 11.1236 15.5433 10.6833 15.0002 10.6833C14.4571 10.6833 14.0168 11.1236 14.0168 11.6667C14.0168 12.2097 14.4571 12.65 15.0002 12.65C15.5433 12.65 15.9835 12.2097 15.9835 11.6667Z"
                                      styleClass="acc-info-svg" />
@@ -99,7 +99,7 @@
                             <Tooltip text="Get account information"/>
                         </tooltip>
                     </JFXButton>
-                </HBox>
+<!--                </HBox>-->
 
 
             </HBox>

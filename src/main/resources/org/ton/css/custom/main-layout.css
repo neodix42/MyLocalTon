@@ -3,6 +3,11 @@
   src: url('../../fonts/Mulish-ExtraBold.ttf') format('truetype');
 }
 
+@font-face{
+  font-family: 'Mulish';
+  src: url('../../fonts/Mulish-Bold.ttf') format('truetype');
+}
+
 .background-pane {
     -fx-background-color: #FFFFFF;
 }

@@ -42,6 +42,8 @@ public class CustomExpandButton extends AnchorPane {
 
     private double buttonsHeight = 0.0;
 
+    private double gapBetweenButtons = 5.0;
+
     private final double TRANSITION_TIME = 0.25;
 
     private double mainButtonHeight = 0.0;
@@ -56,6 +58,7 @@ public class CustomExpandButton extends AnchorPane {
         fxmlLoader.load();
 
         ObservableListButtons = buttons.getChildren();
+
         buttons.getChildren().addListener(new ListChangeListener<Node>() {
 
             @Override
@@ -64,7 +67,7 @@ public class CustomExpandButton extends AnchorPane {
                     Node node = change.getList().get(change.getFrom());
                     node.setLayoutX(0.0);
                     node.setLayoutY(0.0);
-                    buttonsHeight += ((Region) node).getPrefHeight();
+                    buttonsHeight += ((Region) node).getPrefHeight() + gapBetweenButtons;
                     getChildren().add(index, node);
                     listbuttons.add(index, node);
                     index++;
@@ -73,6 +76,21 @@ public class CustomExpandButton extends AnchorPane {
 
         });
         mainButtonHeight = getPrefHeight();
+    }
+
+    public void addButton(CustomSubMenuButton button) {
+        buttons.getChildren().add(button);
+    }
+
+    public void removeButton(CustomSubMenuButton button) {
+        if(buttons.getChildren().contains(button)) {
+            buttons.getChildren().remove(button);
+        }
+        if(getChildren().contains(button)) {
+            getChildren().remove(button);
+            listbuttons.remove(button);
+            buttonsHeight -= (button.getPrefHeight() + gapBetweenButtons);
+        }
     }
 
     public String getMainSvgPath() {
@@ -118,7 +136,7 @@ public class CustomExpandButton extends AnchorPane {
             Node node = listbuttons.get(i);
             TranslateTransition tr =
                     new TranslateTransition(Duration.seconds((TRANSITION_TIME + 0.01)), node);
-            decreasePosition += ((Region) node).getPrefHeight();
+            decreasePosition += ((Region) node).getPrefHeight() + gapBetweenButtons;
             double y = toY - decreasePosition;
             tr.setToY(y);
             tr.play();
@@ -143,7 +161,7 @@ public class CustomExpandButton extends AnchorPane {
             t.play();
         } else {
             rotate(90.0);
-            double newHeight = mainButtonHeight + buttonsHeight;
+            double newHeight = mainButtonHeight + buttonsHeight + gapBetweenButtons;
             ResizeHeightTranslation t =
                     new ResizeHeightTranslation(Duration.seconds(TRANSITION_TIME), this, newHeight);
             slideButtonsDown(newHeight);

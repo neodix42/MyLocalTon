@@ -17,12 +17,20 @@
         </Label>
         <JFXTextField fx:id="textField" layoutX="40.0" text=""
                       prefHeight="40.0" prefWidth="560.0" promptText="Search for blocks, transactions, accounts..." />
-        <Label fx:id="clearButton" graphicTextGap="0.0" minHeight="10.0" minWidth="13.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY"
-               layoutX="575.0" layoutY="10.0" onMouseClicked="#clearText">
+        <Label fx:id="clearButton" graphicTextGap="0.0" minHeight="10.0" minWidth="13.0"
+               mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY"
+               layoutX="575.0" layoutY="10.0" onMouseClicked="#clearText" styleClass="label-clear-button">
+<!--            <graphic>-->
+<!--                <SVGPath scaleX="0.65" scaleY="0.65" styleClass="clear-button"-->
+<!--                         content="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm4.707,15.293-1.414,1.414L12,13.414,8.707,16.707,7.293,15.293,10.586,12,7.293,8.707,8.707,7.293,12,10.586l3.293-3.293,1.414,1.414L13.414,12Z"/>-->
+<!--            </graphic>-->
             <graphic>
-                <SVGPath scaleX="0.65" scaleY="0.65" styleClass="clear-button"
-                         content="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm4.707,15.293-1.414,1.414L12,13.414,8.707,16.707,7.293,15.293,10.586,12,7.293,8.707,8.707,7.293,12,10.586l3.293-3.293,1.414,1.414L13.414,12Z"/>
+                <SVGPath  styleClass="clear-button"
+                         content="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"/>
             </graphic>
+
+
+
         </Label>
     </children>
 

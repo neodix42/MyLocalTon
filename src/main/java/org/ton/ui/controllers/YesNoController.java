@@ -46,10 +46,10 @@ public class YesNoController implements Initializable {
     Label address;
 
     @FXML
-    CustomTextField subWalletId;
+    JFXTextField subWalletId;
 
     @FXML
-    CustomTextField workchain;
+    JFXTextField workchain;
 
     @FXML
     JFXTextField seqno;
@@ -62,15 +62,15 @@ public class YesNoController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        workchain.getTextField().textProperty().addListener((observable, oldValue, newValue) -> {
+        workchain.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("[\\d\\.\\-]+")) {
-                workchain.setFieldText(newValue.replaceAll("[^\\d\\.\\-]", ""));
+                workchain.setText(newValue.replaceAll("[^\\d\\.\\-]", ""));
             }
         });
 
-        subWalletId.getTextField().textProperty().addListener((observable, oldValue, newValue) -> {
+        subWalletId.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("[\\d\\.]+")) {
-                subWalletId.setFieldText(newValue.replaceAll("[^\\d\\.]", ""));
+                subWalletId.setText(newValue.replaceAll("[^\\d\\.]", ""));
             }
         });
 
@@ -101,31 +101,31 @@ public class YesNoController implements Initializable {
 //                mainController.yesNoDialog.close();
 //                doCreateAccount();
 //                break;
-            case "runmethod":
-                log.debug("runmethod");
-                doRunMethod();
-                break;
-            case "showmsg":
-                log.debug("showmsg");
-                mainController.yesNoDialog.close();
-                break;
-            case "delnode":
-                log.debug("delnode");
-                mainController.yesNoDialog.close();
-                doDelete();
-                break;
+//            case "runmethod":
+//                log.debug("runmethod");
+//                doRunMethod();
+//                break;
+//            case "showmsg":
+//                log.debug("showmsg");
+//                mainController.yesNoDialog.close();
+//                break;
+//            case "delnode":
+//                log.debug("delnode");
+//                mainController.yesNoDialog.close();
+//                doDelete();
+//                break;
             default:
                 log.debug("no action");
                 mainController.yesNoDialog.close();
         }
     }
 
-    private void doDelete() throws InterruptedException {
-        String nodeName = address.getText();
-        log.debug("do delete {}", nodeName);
-
-        Utils.doDelete(nodeName);
-    }
+//    private void doDelete() throws InterruptedException {
+//        String nodeName = address.getText();
+//        log.debug("do delete {}", nodeName);
+//
+//        Utils.doDelete(nodeName);
+//    }
 
     private void doRunMethod() {
         String smcAddress = address.getText();

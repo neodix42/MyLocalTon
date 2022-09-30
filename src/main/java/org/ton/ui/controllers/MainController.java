@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,16 +15,17 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,10 +51,8 @@ import org.ton.ui.custom.control.CustomTextField;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.ui.custom.events.event.CustomNotificationEvent;
-import org.ton.ui.custom.layout.AccountsCreatePaneController;
-import org.ton.ui.custom.layout.CustomLoadingPaneController;
-import org.ton.ui.custom.layout.CustomMainLayout;
-import org.ton.ui.custom.layout.SendCoinPaneController;
+import org.ton.ui.custom.events.event.CustomSearchEvent;
+import org.ton.ui.custom.layout.*;
 import org.ton.utils.Utils;
 import org.ton.wallet.WalletVersion;
 
@@ -77,7 +77,6 @@ import java.util.stream.LongStream;
 import static com.sun.javafx.PlatformUtil.*;
 import static java.util.Objects.*;
 import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
-import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
 
 import static org.ton.ui.custom.events.CustomEventBus.emit;
@@ -114,8 +113,8 @@ public class MainController implements Initializable {
     @FXML
     public CustomInfoLabel dbSizeId;
 
-    @FXML
-    public ImageView scrollBtnImageView;
+//    @FXML
+//    public ImageView scrollBtnImageView;
 
     @FXML
     public JFXListView<Node> blockslistviewid;
@@ -921,26 +920,20 @@ public class MainController implements Initializable {
 //    @FXML
 //    JFXTextField searchField;
 
-    @FXML
-    public Tab foundBlocks;
+//    @FXML
+//    public Tab foundBlocks;
+//
+//    @FXML
+//    public Tab foundAccounts;
+//
+//    @FXML
+//    public Tab foundTxs;
+
+//    @FXML
+//    public JFXTabPane foundTabs;
 
     @FXML
-    public Tab foundAccounts;
-
-    @FXML
-    public Tab foundTxs;
-
-    @FXML
-    public JFXTabPane foundTabs;
-
-    @FXML
-    public JFXListView<Node> foundBlockslistviewid;
-
-    @FXML
-    public JFXListView<Node> foundTxsvboxid;
-
-    @FXML
-    public JFXListView<Node> foundAccountsvboxid;
+    public JFXListView<Node> foundBlockslistviewid, foundTxsvboxid, foundAccountsvboxid, foundAccountsTxsvboxid;
 
     //@FXML
     //public Tab blocksTab;
@@ -965,6 +958,11 @@ public class MainController implements Initializable {
 
 //    @FXML
 //    private JFXButton scrollBtn;
+    @FXML
+    private Label scrollBtn;
+
+    @FXML
+    private SVGPath scrollPath;
 
     @FXML
     private CustomTextField validatorLogDir1, dhtLogDir1, myLocalTonLog, validatorLogDir2, validatorLogDir3,
@@ -988,14 +986,17 @@ public class MainController implements Initializable {
 
     private MyLocalTonSettings settings;
 
+
+
     JFXDialog sendDialog;
     JFXDialog yesNoDialog;
     private JFXDialog loadingDialog;
+    private JFXDialog createDialog;
     private HostServices hostServices;
 
-    public MainController() {
-        listenFor(CustomActionEvent.class, this::handle);
-    }
+//    public MainController() {
+//
+//    }
 
     public void showSendDialog(String srcAddr) {
         FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/send-coin-pane.fxml"));
@@ -1386,9 +1387,13 @@ public class MainController implements Initializable {
         MyLocalTon.getInstance().setAutoScroll(!MyLocalTon.getInstance().getAutoScroll());
 
         if (Boolean.TRUE.equals(MyLocalTon.getInstance().getAutoScroll())) {
-            scrollBtnImageView.setImage(new Image(requireNonNull(getClass().getResourceAsStream("/org/ton/images/scroll.png"))));
+            //scrollBtnImageView.setImage(new Image(requireNonNull(getClass().getResourceAsStream("/org/ton/images/scroll.png"))));
+            scrollPath.getStyleClass().clear();
+            scrollPath.getStyleClass().add("scroll-btn-path-on");
         } else {
-            scrollBtnImageView.setImage(new Image(requireNonNull(getClass().getResourceAsStream("/org/ton/images/scrolloff.png"))));
+            //scrollBtnImageView.setImage(new Image(requireNonNull(getClass().getResourceAsStream("/org/ton/images/scrolloff.png"))));
+            scrollPath.getStyleClass().clear();
+            scrollPath.getStyleClass().add("scroll-btn-path-off");
         }
         log.debug("auto scroll {}", MyLocalTon.getInstance().getAutoScroll());
     }
@@ -1412,6 +1417,13 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        superWindow.setOnMousePressed(pressEvent -> {
+            superWindow.setOnMouseDragged(dragEvent -> {
+                App.primaryStage.setX(dragEvent.getScreenX() - pressEvent.getSceneX());
+                App.primaryStage.setY(dragEvent.getScreenY() - pressEvent.getSceneY());
+            });
+        });
 
         settings = MyLocalTon.getInstance().getSettings();
 
@@ -1437,6 +1449,8 @@ public class MainController implements Initializable {
             }
         };
 
+        listenFor(CustomActionEvent.class, this::handle);
+        listenFor(CustomSearchEvent.class, this::handle);
         coinsPerWallet.getTextField().setOnKeyTyped(onlyDigits);
 
         configNodePublicPort1.setOnKeyTyped(onlyDigits);
@@ -1548,9 +1562,12 @@ public class MainController implements Initializable {
                 //clear previous results
                 //mainMenuTabs.getTabs().add(searchTab);
                 //mainMenuTabs.getSelectionModel().selectLast();
-                foundTabs.getTabs().add(foundBlocks);
-                foundTabs.getTabs().add(foundAccounts);
-                foundTabs.getTabs().add(foundTxs);
+
+
+
+//                foundTabs.getTabs().add(foundBlocks);
+//                foundTabs.getTabs().add(foundAccounts);
+//                foundTabs.getTabs().add(foundTxs);
 
                 String searchFor = mainLayout.getSearchBar().getSearchText();
 
@@ -1558,18 +1575,26 @@ public class MainController implements Initializable {
                 MyLocalTon.getInstance().showFoundBlocksInGui(foundBlocksEntities, searchFor);
 
                 List<TxEntity> foundTxsEntities = App.dbPool.searchTxs(searchFor);
-                MyLocalTon.getInstance().showFoundTxsInGui(((MainController) fxmlLoader.getController()).foundTxs, foundTxsEntities, searchFor, "");
+                //MyLocalTon.getInstance().showFoundTxsInGui(((MainController) fxmlLoader.getController()).foundTxs, foundTxsEntities, searchFor, "");
+                MyLocalTon.getInstance().showFoundTxsInGui(null, foundTxsEntities, searchFor, "");
 
                 List<WalletEntity> foundAccountsEntities = App.dbPool.searchAccounts(searchFor);
                 MyLocalTon.getInstance().showFoundAccountsInGui(foundAccountsEntities, searchFor);
+
+//                mainLayout.setNumFoundBlocks(foundBlockslistviewid.getItems().size());
+//                mainLayout.setNumFoundAccounts(foundAccountsvboxid.getItems().size());
+//                mainLayout.setNumFoundTxs(foundTxsvboxid.getItems().size());
+
+                //emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SHOW));
+                Platform.runLater(() -> emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SHOW)));
             }
         });
 
         //mainMenuTabs.getTabs().remove(searchTab);
 
-        foundTabs.getTabs().remove(foundBlocks);
-        foundTabs.getTabs().remove(foundAccounts);
-        foundTabs.getTabs().remove(foundTxs);
+//        foundTabs.getTabs().remove(foundBlocks);
+//        foundTabs.getTabs().remove(foundAccounts);
+//        foundTabs.getTabs().remove(foundTxs);
 
         //scrollBtn.setTooltip(new Tooltip("Autoscroll on/off"));
 
@@ -1825,25 +1850,25 @@ public class MainController implements Initializable {
         //mainMenuTabs.getTabs().add(searchTab);
         //mainMenuTabs.getSelectionModel().selectLast();
 
-        if (!foundTabs.getTabs().filtered(t -> t.getText().contains(Utils.getLightAddress(hexAddr))).isEmpty()) {
-            return;
-        }
+//        if (!foundTabs.getTabs().filtered(t -> t.getText().contains(Utils.getLightAddress(hexAddr))).isEmpty()) {
+//            return;
+//        }
 
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("foundtxstab.fxml"));
-        Tab newTab = fxmlLoader.load();
+//        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("foundtxstab.fxml"));
+//        Tab newTab = fxmlLoader.load();
 
-        newTab.setOnClosed(event -> {
-            if (foundTabs.getTabs().isEmpty()) {
-            //    mainMenuTabs.getTabs().remove(searchTab);
-            //    mainMenuTabs.getSelectionModel().selectFirst();
-            }
-        });
+//        newTab.setOnClosed(event -> {
+//            if (foundTabs.getTabs().isEmpty()) {
+//            //    mainMenuTabs.getTabs().remove(searchTab);
+//            //    mainMenuTabs.getSelectionModel().selectFirst();
+//            }
+//        });
 
-        foundTabs.getTabs().add(newTab);
-
-        List<TxEntity> foundTxsEntities = App.dbPool.searchTxs(hexAddr);
-        MyLocalTon.getInstance().showFoundTxsInGui(newTab, foundTxsEntities, hexAddr, hexAddr);
-        foundTabs.getSelectionModel().selectLast();
+//        foundTabs.getTabs().add(newTab);
+//
+        List<TxEntity> foundAccountTxsEntities = App.dbPool.searchTxs(hexAddr);
+        MyLocalTon.getInstance().showFoundTxsInGui(foundAccountsTxsvboxid, foundAccountTxsEntities, hexAddr, hexAddr);
+//        foundTabs.getSelectionModel().selectLast();
     }
 
     public void saveSettings() {
@@ -2005,7 +2030,7 @@ public class MainController implements Initializable {
         content.putString(lastCommand);
         clipboard.setContent(content);
         log.debug(lastCommand + " copied");
-        App.mainController.showInfoMsg("lite-client last command copied to clipboard", 0.5);
+        App.mainController.showInfoMsg("lite-client last command copied to clipboard", 2);
     }
 
     public void resetAction()  {
@@ -2048,15 +2073,22 @@ public class MainController implements Initializable {
     public void showDialogMessage(String header, String body) {
         Platform.runLater(() -> {
             try {
-                Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
+                FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/confirm-pane.fxml"));
+                Parent parent = loader.load();
+                ConfirmPaneController controller = loader.getController();
+                controller.setAction(ConfirmPaneController.Action.CONFIRM);
 
-                parent.lookup("#inputFields").setVisible(false);
-                parent.lookup("#body").setVisible(true);
-                parent.lookup("#header").setVisible(true);
+                controller.setHeader(header);
+                controller.setBody(body);
+                //Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
+
+                //parent.lookup("#inputFields").setVisible(false);
+                //parent.lookup("#body").setVisible(true);
+                //parent.lookup("#header").setVisible(true);
                 //((Label) parent.lookup("#action")).setText("reset"); // no action, simple dialog box
-                ((Label) parent.lookup("#header")).setText(header);
-                ((Label) parent.lookup("#body")).setText(body);
-                parent.lookup("#okBtn").setDisable(false);
+                //((Label) parent.lookup("#header")).setText(header);
+                //((Label) parent.lookup("#body")).setText(body);
+                //parent.lookup("#okBtn").setDisable(false);
 
                 JFXDialogLayout content = new JFXDialogLayout();
                 content.setBody(parent);
@@ -2070,7 +2102,7 @@ public class MainController implements Initializable {
                 );
                 yesNoDialog.show();
             } catch (IOException e) {
-                log.error("Cannot load resource org/ton/main/yesnodialog.fxml");
+                log.error("Cannot load resource org/ton/ui/custom/layout/confirm-pane.fxml");
                 e.printStackTrace();
             }
         });
@@ -2079,12 +2111,22 @@ public class MainController implements Initializable {
     public void showDialogConfirmDeleteNode(org.ton.settings.Node node) {
         Platform.runLater(() -> {
             try {
-                Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
+
+                FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/confirm-pane.fxml"));
+                Parent parent = loader.load();
+                ConfirmPaneController controller = loader.getController();
+                controller.setHeight(470.0);
+                controller.setAction(ConfirmPaneController.Action.DELETE_NODE);
+                controller.setHeader("Confirmation");
+                controller.setAddress(node.getNodeName());
+
+//                Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
 
                 String stopsWokring = "";
                 MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
                 if (isWindows()) {
-                    stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive. In comparison with Linux and MacOS versions of MyLocalTon, where you can remove validators until you maintain a two-thirds consensus, on Windows the whole blockchain stops working if you remove one node. If consensus is met upon restart you will be fine.";
+                    stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive. In comparison with Linux and MacOS versions of MyLocalTon, where you can remove validators until you maintain a two-thirds consensus, " +
+                            "on Windows the whole blockchain stops working if you remove one node. If consensus is met upon restart you will be fine.";
                 } else {
                     int cutoff = (int) Math.ceil(settings.getActiveNodes().size() * 66 / 100.0);
                     log.info("total active nodes {} vs minimum required {}", settings.getActiveNodes().size(), cutoff);
@@ -2093,14 +2135,15 @@ public class MainController implements Initializable {
                     }
                 }
 
-                parent.lookup("#inputFields").setVisible(false);
-                parent.lookup("#body").setVisible(true);
-                parent.lookup("#header").setVisible(true);
-                ((Label) parent.lookup("#action")).setText("delnode"); // no action, simple dialog box
-                ((Label) parent.lookup("#header")).setText("Confirmation");
-                ((Label) parent.lookup("#address")).setText(node.getNodeName()); // just reuse address field
-                ((Label) parent.lookup("#body")).setText("Are you sure you want to delete the selected validator? All data and funds will be lost and obviously validator will be removed from elections. Don't forget to collect all validation rewards." + stopsWokring);
-                parent.lookup("#okBtn").setDisable(false);
+                //parent.lookup("#inputFields").setVisible(false);
+                //parent.lookup("#body").setVisible(true);
+                //parent.lookup("#header").setVisible(true);
+                //((Label) parent.lookup("#action")).setText("delnode"); // no action, simple dialog box
+                //((Label) parent.lookup("#header")).setText("Confirmation");
+                //((Label) parent.lookup("#address")).setText(node.getNodeName()); // just reuse address field
+                //((Label) parent.lookup("#body")).setText("Are you sure you want to delete the selected validator? All data and funds will be lost and obviously validator will be removed from elections. Don't forget to collect all validation rewards." + stopsWokring);
+                controller.setBody("Are you sure you want to delete the selected validator? All data and funds will be lost and obviously validator will be removed from elections. Don't forget to collect all validation rewards." + stopsWokring);
+                //parent.lookup("#okBtn").setDisable(false);
 
                 JFXDialogLayout content = new JFXDialogLayout();
                 content.setBody(parent);
@@ -2114,7 +2157,7 @@ public class MainController implements Initializable {
                 );
                 yesNoDialog.show();
             } catch (IOException e) {
-                log.error("Cannot load resource org/ton/main/yesnodialog.fxml");
+                log.error("Cannot load resource org/ton/ui/custom/layout/confirm-pane.fxml");
                 e.printStackTrace();
             }
         });
@@ -2148,18 +2191,27 @@ public class MainController implements Initializable {
     }
     */
     public void showMessage(String msg) {
-
         try {
 
-            Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
-            parent.lookup("#inputFields").setVisible(false);
-            parent.lookup("#body").setVisible(true);
-            parent.lookup("#header").setVisible(true);
-            ((Label) parent.lookup("#action")).setText("showmsg");
-            ((Label) parent.lookup("#header")).setText("Message");
-            ((Label) parent.lookup("#body")).setText(msg);
-            parent.lookup("#okBtn").setDisable(false);
-            ((JFXButton) parent.lookup("#okBtn")).setText("Close");
+            FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/confirm-pane.fxml"));
+            Parent parent = loader.load();
+            ConfirmPaneController controller = loader.getController();
+            controller.setAction(ConfirmPaneController.Action.CONFIRM);
+
+            controller.setHeader("Message");
+            controller.setBody(msg);
+            controller.setOkButtonText("Close");
+
+
+            //Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
+            //parent.lookup("#inputFields").setVisible(false);
+            //parent.lookup("#body").setVisible(true);
+            //parent.lookup("#header").setVisible(true);
+            //((Label) parent.lookup("#action")).setText("showmsg");
+            //((Label) parent.lookup("#header")).setText("Message");
+            //((Label) parent.lookup("#body")).setText(msg);
+            //parent.lookup("#okBtn").setDisable(false);
+            //((JFXButton) parent.lookup("#okBtn")).setText("Close");
 
             JFXDialogLayout content = new JFXDialogLayout();
             content.setBody(parent);
@@ -2207,16 +2259,17 @@ public class MainController implements Initializable {
         content.setBody(parent);
         //content.setStyle("-fx-background-radius: 20;");
 
-        yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
+        createDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
 
-        yesNoDialog.setOnKeyPressed(keyEvent -> {
+        createDialog.setOnKeyPressed(keyEvent -> {
                     if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                        yesNoDialog.close();
+                        createDialog.close();
                     }
                 }
         );
 
-        yesNoDialog.show();
+        createDialog.show();
+
     }
 
     public void updateValidationTabInfo() {
@@ -2896,7 +2949,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -2907,7 +2961,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -2921,7 +2976,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -2932,7 +2988,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -2943,7 +3000,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -2954,7 +3012,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -2965,7 +3024,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -2977,7 +3037,7 @@ public class MainController implements Initializable {
         content.putString(electionId);
         clipboard.setContent(content);
         log.debug(electionId + " copied");
-        App.mainController.showInfoMsg(electionId + " copied to clipboard", 1);
+        App.mainController.showInfoMsg(electionId + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -2988,7 +3048,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -2999,7 +3060,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3013,7 +3075,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3024,7 +3087,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3035,7 +3099,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3046,7 +3111,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3057,7 +3123,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3068,7 +3135,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3079,7 +3147,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3093,7 +3162,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3104,7 +3174,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3115,7 +3186,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3126,7 +3198,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3137,7 +3210,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3148,7 +3222,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3159,7 +3234,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3173,7 +3249,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3184,7 +3261,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3195,7 +3273,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3206,7 +3285,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3217,7 +3297,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3228,7 +3309,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3239,7 +3321,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3253,7 +3336,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3264,7 +3348,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3275,7 +3360,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3286,7 +3372,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3297,7 +3384,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3308,7 +3396,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3319,7 +3408,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3333,7 +3423,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3344,7 +3435,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3355,7 +3447,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3366,7 +3459,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3377,7 +3471,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3388,7 +3483,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3399,7 +3495,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3413,7 +3510,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3424,7 +3522,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3435,7 +3534,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3446,7 +3546,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3457,7 +3558,8 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -3654,26 +3756,9 @@ public class MainController implements Initializable {
     }
 
     public void removeLoadingPane() {
+        Platform.runLater(() -> emit(new CustomActionEvent(CustomEvent.Type.START)));
         loadingDialog.close();
         loadingDialog = null;
-        emit(new CustomActionEvent(CustomEvent.Type.START));
-    }
-
-    public void setCurrentBlockNum(String text) {
-        //shardsNum
-    }
-
-    public void setShardsNum(String text) {
-        //shardsNum
-    }
-
-    public void setLiteClientInfo(String text) {
-        //liteClientInfo
-    }
-
-    public void setDbSizeId(String text) {
-        //dbSizeId
-
     }
 
     public void handle(CustomEvent event)  {
@@ -3690,18 +3775,65 @@ public class MainController implements Initializable {
                 sendDialog.close();
                 sendDialog = null;
                 break;
-            case DIALOG_RESET_CLOSE:
+            case DIALOG_YES_NO_CLOSE:
                 yesNoDialog.close();
                 yesNoDialog = null;
+                break;
+            case DIALOG_CREATE_CLOSE:
+                createDialog.close();
+                createDialog = null;
                 break;
             case SAVE_SETTINGS:
                 saveSettings();
                 break;
+            case SEARCH_CLEAR:
+                clearSearch();
+                break;
         }
+    }
+
+    private void clearSearch() {
+        foundBlockslistviewid.getItems().clear();
+        foundTxsvboxid.getItems().clear();
+        foundAccountsvboxid.getItems().clear();
+        Platform.runLater(() ->  {
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_BLOCKS, 0));
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, 0));
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, 0));
+        });
+//        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_BLOCKS, 0));
+//        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, 0));
+//        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, 0));
     }
 
     public void setHostServices(HostServices hostServices) {
         this.hostServices = hostServices;
+    }
+
+    @FXML
+    public void closeSearch(Event e) {
+        clearSearch();
+        foundAccountsTxsvboxid.getItems().clear();
+        Platform.runLater(() -> {
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_REMOVE));
+            emit(new CustomSearchEvent(CustomEvent.Type.ACCOUNTS_TXS_REMOVE));
+        });
+//        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_REMOVE));
+//        emit(new CustomSearchEvent(CustomEvent.Type.ACCOUNTS_TXS_REMOVE));
+    }
+
+    @FXML
+    public void closeAccountsTxs(Event e) {
+        foundAccountsTxsvboxid.getItems().clear();
+        Platform.runLater(() -> emit(new CustomSearchEvent(CustomEvent.Type.ACCOUNTS_TXS_REMOVE)));
+        //emit(new CustomSearchEvent(CustomEvent.Type.ACCOUNTS_TXS_REMOVE));
+    }
+
+    public void closeWindow(ActionEvent actionEvent) {
+        App.primaryStage.fireEvent(new WindowEvent(
+                App.primaryStage,
+                WindowEvent.WINDOW_CLOSE_REQUEST
+        ));
     }
 }
 

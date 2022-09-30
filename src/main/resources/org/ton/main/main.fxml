@@ -22,58 +22,90 @@
     <CustomMainLayout fx:id="mainLayout" prefHeight="720.0" prefWidth="1335.0" >
 
 
+        <scrollButton>
+            <Label fx:id="scrollBtn" contentDisplay="CENTER" graphicTextGap="0.0" onMouseClicked="#scrollBtnAction" >
+                <graphic>
+
+                    <SVGPath content="m 256,259.27802 c -1.80756,0 -3.27802,-1.47051 -3.27802,-3.27802 0,-1.8075 1.47052,-3.27802 3.27802,-3.27802 1.80751,0 3.27802,1.47052 3.27802,3.27802 0,1.80751 -1.47046,3.27802 -3.27802,3.27802 z m 0,-5.70093 c -1.33603,0 -2.42291,1.08688 -2.42291,2.42291 0,1.33604 1.08688,2.42292 2.42291,2.42292 1.33604,0 2.42292,-1.08688 2.42292,-2.42292 0,-1.33603 -1.08688,-2.42291 -2.42292,-2.42291 z m 0,16.42314 -5.886,-9.81 h 11.772 z m -4.37572,-8.9549 4.37572,7.29286 4.37573,-7.2928 h -8.75145 z m 10.26172,-9.23555 h -11.772 l 5.886,-9.81 z m -10.26172,-0.85511 h 8.75139 L 256,243.66181 Z M 256,242.83082 l 5.13087,8.55141 h -10.26173 z m 5.13087,17.78696 -5.13087,8.5514 -5.13086,-8.5514 z M 256,253.14954 c 1.57344,0 2.85047,1.27702 2.85047,2.85046 0,1.57344 -1.27703,2.85047 -2.85047,2.85047 -1.57344,0 -2.85046,-1.27703 -2.85046,-2.85047 0,-1.57344 1.27702,-2.85046 2.85046,-2.85046 z"
+                             fx:id="scrollPath" styleClass="scroll-btn-path-on"
+
+                    />
+                </graphic>
+            </Label>
+
+        </scrollButton>
+
+        <closeButton>
+            <JFXButton fx:id="closeBtn" prefWidth="30" prefHeight="30" contentDisplay="GRAPHIC_ONLY" styleClass="close-btn-background" onAction="#closeWindow">
+                <graphic>
+
+                    <SVGPath content="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"
+                             fx:id="closePath" styleClass="close-btn-path"
+
+                    />
+                </graphic>
+            </JFXButton>
+<!--            <Label fx:id="closeBtn" prefWidth="30" prefHeight="30" contentDisplay="GRAPHIC_ONLY" styleClass="close-btn-background" style="-fx-background-color: #D0312D">-->
+<!--                <graphic>-->
+
+<!--                    <SVGPath content="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"-->
+<!--                             fx:id="closePath" styleClass="close-btn-path"-->
+
+<!--                    />-->
+<!--                </graphic>-->
+<!--            </Label>-->
+        </closeButton>
+
         <info>
             <CustomInfoLabel fx:id="liteClientInfo" layoutX="10.0" layoutY="0.0" onMouseClicked="#liteServerClicked"
                              primaryText="Lite Server:" primaryWidth="80.0"
-                             secondaryText="127.0.0.1:4442" secondaryWidth="110.0" />
+                             secondaryText="" secondaryWidth="110.0" />
 
             <CustomInfoLabel fx:id="currentBlockNum" layoutX="10.0" layoutY="30.0"
                              primaryText="Current Block:" primaryWidth="100.0"
-                             secondaryText="42" secondaryWidth="90.0" />
+                             secondaryText="" secondaryWidth="90.0" />
 
             <CustomInfoLabel fx:id="shardsNum" layoutX="10.0" layoutY="60.0"
                              primaryText="Shards:" primaryWidth="55.0"
-                             secondaryText="127.0.0.1:4442" secondaryWidth="135.0" />
+                             secondaryText="" secondaryWidth="135.0" />
 
             <CustomInfoLabel fx:id="dbSizeId" layoutX="10.0" layoutY="90.0"
                              primaryText="Size:" primaryWidth="35.0"
-                             secondaryText="472.0MB" secondaryWidth="155.0" />
+                             secondaryText="" secondaryWidth="155.0" />
         </info>
 
         <blocksPane>
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <HBox prefHeight="44.0" BorderPane.alignment="CENTER" >
-                    <VBox prefHeight="55.0" prefWidth="99.0">
-                        <Label prefHeight="48.0" prefWidth="99.0" text="SEQNO"
+                <HBox prefHeight="44.0" >
+                    <VBox prefHeight="55.0" prefWidth="80.0">
+                        <Label prefHeight="48.0" prefWidth="80.0" text="SEQNO"
                                styleClass="content-header-label" />
 
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="110.0">
-                        <Label prefHeight="48.0" prefWidth="110.0" text="WORKCHAIN"
+                    <VBox prefHeight="55.0" prefWidth="120.0">
+                        <Label prefHeight="48.0" prefWidth="120.0" text="WORKCHAIN"
                                styleClass="content-header-label"/>
 
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="172.0">
-                        <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="172.0" text="SHARD"
-                               style="-fx-padding: 0 0 0 -20"
+                    <VBox prefHeight="55.0" prefWidth="183.0">
+                        <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="183.0" text="SHARD"
                                styleClass="content-header-label"/>
 
                     </VBox>
                     <VBox prefHeight="55.0" prefWidth="160.0">
-                        <Label prefHeight="48.0" prefWidth="160.0" text="MINED ON"
-                               style="-fx-padding: 0 0 0 10"
+                        <Label prefHeight="48.0" prefWidth="160.0" text="MINED ON" style="-fx-alignment: center;"
                                styleClass="content-header-label"/>
 
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="430.0">
-                        <Label prefHeight="48.0" prefWidth="430.0" text="FILE AND ROOT HASHES"
+                    <VBox prefHeight="55.0" prefWidth="480.0">
+                        <Label prefHeight="48.0" prefWidth="480.0" text="FILE AND ROOT HASHES"
                                styleClass="content-header-label"/>
                     </VBox>
                 </HBox>
                 <JFXListView fx:id="blockslistviewid" focusTraversable="false" maxHeight="-Infinity"
                              onScroll="#blocksOnScroll" prefHeight="582.0"
-                             layoutX="10"
-                             prefWidth="1019.0" styleClass="content-list-view"
+
+                             prefWidth="1001.0" styleClass="content-list-view"
                              >
                     <!-- add dynamic content here -->
                 </JFXListView>
@@ -86,28 +118,26 @@
 
 <!--            <VBox prefHeight="624.0" prefWidth="1079.0">-->
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <HBox prefHeight="44.0" prefWidth="978.0" BorderPane.alignment="CENTER">
-                    <VBox minWidth="205.0" prefHeight="55.0" prefWidth="205.0">
-                        <Label minWidth="205.0" prefHeight="48.0" prefWidth="205.0" styleClass="content-header-label" text="BLOCK/STATUS"/>
+                <HBox prefHeight="44.0" >
+                    <VBox prefHeight="55.0" prefWidth="195.0" >
+                        <Label prefHeight="48.0" prefWidth="195.0" styleClass="content-header-label" text="BLOCK/STATUS"/>
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="127.0">
-                        <Label prefHeight="48.0" prefWidth="127.0" styleClass="content-header-label" text="HASH/TIME"/>
+                    <VBox prefHeight="55.0" prefWidth="153.0" >
+                        <Label prefHeight="48.0" prefWidth="153.0" styleClass="content-header-label" text="HASH/TIME"/>
                     </VBox>
-                    <VBox prefHeight="44.0" prefWidth="128.0">
-                        <Label contentDisplay="CENTER" prefHeight="44.0" prefWidth="101.0"
-                               style="-fx-padding: 0 0 0 30"
-                               styleClass="content-header-label" text="TYPE"/>
+                    <VBox prefHeight="44.0" prefWidth="85.0" >
+                        <Label prefHeight="44.0" prefWidth="85.0"
+                               styleClass="content-header-label" text="TYPE" style="-fx-alignment: center;"/>
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="350.0">
-                        <Label prefHeight="44.0" prefWidth="361.0" styleClass="content-header-label" text="FROM/TO"/>
+                    <VBox prefHeight="55.0" prefWidth="445.0" >
+                        <Label prefHeight="44.0" prefWidth="445.0" styleClass="content-header-label" text="FROM/TO"/>
                     </VBox>
-                    <VBox prefHeight="43.0" prefWidth="226.0">
-                        <Label prefHeight="43.0" prefWidth="233.0"
-                               style="-fx-padding: 0 0 0 90"
+                    <VBox prefHeight="43.0" prefWidth="140.0" >
+                        <Label prefHeight="43.0" prefWidth="140.0"
                                styleClass="content-header-label" text="TONCOINS/FEES"/>
                     </VBox>
                 </HBox>
-                <JFXListView fx:id="transactionsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#txsOnScroll" prefHeight="582.0" prefWidth="1079.0"
+                <JFXListView fx:id="transactionsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#txsOnScroll" prefHeight="582.0" prefWidth="1001.0"
                              styleClass="content-list-view" BorderPane.alignment="CENTER">
                     <!-- add dynamic content here -->
                 </JFXListView>
@@ -119,33 +149,29 @@
 
         <accountsPane>
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <VBox prefHeight="620.0" prefWidth="1116.0">
-                    <HBox prefHeight="44.0" prefWidth="924.0" BorderPane.alignment="CENTER">
-                        <VBox prefHeight="44.0" prefWidth="740.0">
-                            <Label prefHeight="44.0" prefWidth="740.0" styleClass="content-header-label" text="ACCOUNT"/>
+                <VBox prefHeight="582.0" prefWidth="1001.0">
+                    <HBox prefHeight="44.0" prefWidth="924.0" >
+                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="208.0" >
+                            <Label prefHeight="48.0" prefWidth="208.0" styleClass="content-header-label"/>
+                        </HBox>
+                        <VBox prefHeight="44.0" prefWidth="505.0" >
+                            <Label prefHeight="44.0" prefWidth="505.0" styleClass="content-header-label" text="ACCOUNT"/>
                         </VBox>
-                        <VBox prefHeight="43.0" prefWidth="144.0">
+                        <VBox prefHeight="43.0" prefWidth="144.0" >
                             <Label prefHeight="43.0" prefWidth="143.0" styleClass="content-header-label" text="BALANCE"/>
                         </VBox>
 
-                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0" BorderPane.alignment="CENTER">
+                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0" >
                             <Label prefHeight="48.0" prefWidth="199.0" styleClass="content-header-label"/>
                         </HBox>
                     </HBox>
-                    <JFXListView fx:id="accountsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#accountsOnScroll" prefHeight="579.0" prefWidth="1077.0"
+                    <JFXListView fx:id="accountsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#accountsOnScroll" prefHeight="582.0" prefWidth="1001.0"
                                  styleClass="content-list-view" BorderPane.alignment="CENTER">
                         <!-- add dynamic content here
                         <fx:include fx:id="accs" source="accountrow.fxml"/>
                         -->
                     </JFXListView>
                 </VBox>
-<!--                <JFXButton layoutX="1030.0" layoutY="550" onAction="#createNewAccountBtn" prefHeight="48.0" prefWidth="73.0">-->
-<!--                    <graphic>-->
-<!--                        <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">-->
-<!--                            <Image url="@../images/addaccount.png"/>-->
-<!--                        </ImageView>-->
-<!--                    </graphic>-->
-<!--                </JFXButton>-->
             </VBox>
         </accountsPane>
 
@@ -155,9 +181,9 @@
             <JFXTabPane fx:id="validationTabs"
                         AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
                         AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <Tab text="Info">
+                <Tab text="Info" style="-fx-text-base-color: #1F1F1F;" >
                     <Pane>
-                        <GridPane hgap="10" prefHeight="601.0" prefWidth="1110.0" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                        <GridPane fx:id="infoValidator" hgap="10" prefHeight="601.0" prefWidth="1110.0" vgap="10" xmlns:fx="http://javafx.com/fxml">
                             <padding>
                                 <Insets bottom="25.0" left="25.0" right="25.0" top="20.0"/>
                             </padding>
@@ -297,7 +323,7 @@
                     </Pane>
                 </Tab>
                 <Tab fx:id="genesisnode1" style="-fx-background-color: firebrick;" text="Validator">
-                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                    <GridPane fx:id="paneValidator1" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                         <padding>
                             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                         </padding>
@@ -382,7 +408,7 @@
                 </Tab>
                 <Tab fx:id="validator2tab" style="-fx-background-color: firebrick;" text="Validator 2">
                     <Pane>
-                        <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                        <GridPane fx:id="paneValidator2" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                             <padding>
                                 <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                             </padding>
@@ -465,7 +491,7 @@
                             <Label fx:id="participatedInElections2" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn2" disable="true" layoutX="1030.0" layoutY="20.0" onAction="#deleteValidator2Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn2" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator2Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -480,7 +506,7 @@
                 </Tab>
                 <Tab fx:id="validator3tab" style="-fx-background-color: firebrick;" text="Validator 3">
                     <Pane>
-                        <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                        <GridPane fx:id="paneValidator3" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                             <padding>
                                 <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                             </padding>
@@ -563,7 +589,7 @@
                             <Label fx:id="participatedInElections3" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn3" disable="true" layoutX="1030.0" layoutY="20.0" onAction="#deleteValidator3Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn3" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator3Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -578,7 +604,7 @@
                 </Tab>
                 <Tab fx:id="validator4tab" style="-fx-background-color: firebrick;" text="Validator 4">
                     <Pane>
-                        <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                        <GridPane fx:id="paneValidator4" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                             <padding>
                                 <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                             </padding>
@@ -661,7 +687,7 @@
                             <Label fx:id="participatedInElections4" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn4" disable="true" layoutX="1030.0" layoutY="20.0" onAction="#deleteValidator4Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn4" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator4Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -676,7 +702,7 @@
                 </Tab>
                 <Tab fx:id="validator5tab" style="-fx-background-color: firebrick;" text="Validator 5">
                     <Pane>
-                        <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                        <GridPane fx:id="paneValidator5" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                             <padding>
                                 <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                             </padding>
@@ -759,7 +785,7 @@
                             <Label fx:id="participatedInElections5" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn5" disable="true" layoutX="1030.0" layoutY="20.0" onAction="#deleteValidator5Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn5" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator5Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -774,7 +800,7 @@
                 </Tab>
                 <Tab fx:id="validator6tab" style="-fx-background-color: firebrick;" text="Validator 6">
                     <Pane>
-                        <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                        <GridPane fx:id="paneValidator6" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                             <padding>
                                 <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                             </padding>
@@ -857,7 +883,7 @@
                             <Label fx:id="participatedInElections6" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn6" disable="true" layoutX="1030.0" layoutY="20.0" onAction="#deleteValidator6Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn6" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator6Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -872,7 +898,7 @@
                 </Tab>
                 <Tab fx:id="validator7tab" style="-fx-background-color: firebrick;" text="Validator 7">
                     <Pane>
-                        <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                        <GridPane fx:id="paneValidator7" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                             <padding>
                                 <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                             </padding>
@@ -955,7 +981,7 @@
                             <Label fx:id="participatedInElections7" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn7" disable="true" layoutX="1030.0" layoutY="20.0" onAction="#deleteValidator7Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn7" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator7Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -1424,7 +1450,7 @@
 
             <JFXTabPane AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                 <Tab text="Validator 1">
-                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                    <GridPane fx:id="settingsPaneValidator1" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                         <padding>
                             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                         </padding>
@@ -1508,7 +1534,7 @@
                     </GridPane>
                 </Tab>
                 <Tab text="Validator 2">
-                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                    <GridPane fx:id="settingsPaneValidator2" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                         <padding>
                             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                         </padding>
@@ -1588,7 +1614,7 @@
                     </GridPane>
                 </Tab>
                 <Tab text="Validator 3">
-                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                    <GridPane fx:id="settingsPaneValidator3" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                         <padding>
                             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                         </padding>
@@ -1668,7 +1694,7 @@
                     </GridPane>
                 </Tab>
                 <Tab text="Validator 4">
-                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                    <GridPane fx:id="settingsPaneValidator4" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                         <padding>
                             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                         </padding>
@@ -1748,7 +1774,7 @@
                     </GridPane>
                 </Tab>
                 <Tab text="Validator 5">
-                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                    <GridPane fx:id="settingsPaneValidator5" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                         <padding>
                             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                         </padding>
@@ -1828,7 +1854,7 @@
                     </GridPane>
                 </Tab>
                 <Tab text="Validator 6">
-                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                    <GridPane fx:id="settingsPaneValidator6" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                         <padding>
                             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                         </padding>
@@ -1908,7 +1934,7 @@
                     </GridPane>
                 </Tab>
                 <Tab text="Validator 7">
-                    <GridPane hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                    <GridPane fx:id="settingsPaneValidator7" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                         <padding>
                             <Insets bottom="25.0" left="25.0" right="25.0" top="25.0"/>
                         </padding>
@@ -1998,103 +2024,220 @@
             </VBox>
         </explorerPane>
 
-
-
-
-        <searchPane>
+        <foundBlocksPane>
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <JFXTabPane fx:id="foundTabs" tabClosingPolicy="ALL_TABS">
-                    <Tab fx:id="foundBlocks" text="Blocks">
-                        <BorderPane prefHeight="563.0" prefWidth="1079.0" style="-fx-background-color: dbedff;-fx-padding: 0 0 0 0;" xmlns:fx="http://javafx.com/fxml/1">
-                            <top>
-                                <VBox prefHeight="593.0" prefWidth="1079.0">
-                                    <HBox prefHeight="55.0" BorderPane.alignment="CENTER">
-                                        <VBox prefHeight="55.0" prefWidth="99.0">
-                                            <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SEQNO"/>
-                                        </VBox>
-                                        <VBox prefHeight="55.0" prefWidth="99.0">
-                                            <Label prefHeight="48.0" prefWidth="99.0" style="-fx-alignment: center; -fx-font-size: 16;" text="WORKCHAIN"/>
-                                        </VBox>
-                                        <VBox prefHeight="55.0" prefWidth="183.0">
-                                            <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="183.0" style="-fx-alignment: center;-fx-font-size: 16;" text="SHARD"/>
-                                        </VBox>
-                                        <VBox prefHeight="55.0" prefWidth="160.0">
-                                            <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="MINED ON"/>
-                                        </VBox>
-                                        <VBox prefHeight="55.0" prefWidth="430.0">
-                                            <Label prefHeight="48.0" prefWidth="430.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FILE AND ROOT HASHES"/>
-                                        </VBox>
-                                    </HBox>
-                                    <JFXListView fx:id="foundBlockslistviewid" focusTraversable="false" onScroll="#foundBlocksOnScroll" prefHeight="537.0" prefWidth="1079.0"
-                                                 style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
-                                        <!-- add dynamic content here -->
-                                    </JFXListView>
-                                </VBox>
-                            </top>
-                        </BorderPane>
-                    </Tab>
-                    <Tab fx:id="foundAccounts" text="Accounts">
-                        <BorderPane prefHeight="569.0" prefWidth="1079.0" style="-fx-background-color: dbedff;-fx-padding: 0 0 0 0;" xmlns:fx="http://javafx.com/fxml/1">
-                            <top>
-                                <VBox prefHeight="587.0" prefWidth="1079.0">
-                                    <HBox prefHeight="55.0" prefWidth="924.0" BorderPane.alignment="CENTER">
-                                        <VBox prefHeight="55.0" prefWidth="740.0">
-                                            <Label prefHeight="48.0" prefWidth="740.0" style="-fx-alignment: center;-fx-font-size: 16;" text="ACCOUNT"/>
-                                        </VBox>
-                                        <VBox prefHeight="55.0" prefWidth="168.0">
-                                            <Label prefHeight="48.0" prefWidth="168.0" style="-fx-alignment: center;-fx-font-size: 16;" text="BALANCE"/>
-                                        </VBox>
+                <HBox prefHeight="44.0" >
+                    <VBox prefHeight="55.0" prefWidth="80.0">
+                        <Label prefHeight="48.0" prefWidth="80.0" text="SEQNO"
+                               styleClass="content-header-label" />
 
-                                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0" BorderPane.alignment="CENTER">
-                                            <Label prefHeight="48.0" prefWidth="199.0" style="-fx-alignment: center-right;-fx-padding: 0 20 0 0; -fx-font-size: 16;"/>
-                                        </HBox>
-                                    </HBox>
-                                    <JFXListView fx:id="foundAccountsvboxid" focusTraversable="false" onScroll="#accountsOnScroll" prefHeight="555.0" prefWidth="1079.0"
-                                                 style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
-                                        <!-- add dynamic content here
-                                        <fx:include fx:id="accs" source="accountrow.fxml"/>
-                                        -->
-                                    </JFXListView>
-                                </VBox>
-                            </top>
-                        </BorderPane>
-                    </Tab>
-                    <Tab fx:id="foundTxs" text="TXs/Messages">
-                        <BorderPane prefHeight="592.0" prefWidth="1079.0" style="-fx-background-color: dbedff;-fx-padding: 0 0 0 0;" xmlns:fx="http://javafx.com/fxml/1">
-                            <top>
-                                <VBox prefHeight="595.0" prefWidth="1079.0">
-                                    <HBox prefHeight="44.0" prefWidth="978.0" BorderPane.alignment="CENTER">
-                                        <VBox minWidth="205.0" prefHeight="55.0" prefWidth="205.0">
-                                            <Label minWidth="205.0" prefHeight="48.0" prefWidth="205.0" style="-fx-alignment: center;-fx-font-size: 16;" text="BLOCK/STATUS"/>
-                                        </VBox>
-                                        <VBox prefHeight="55.0" prefWidth="127.0">
-                                            <Label prefHeight="48.0" prefWidth="127.0" style="-fx-alignment: center; -fx-font-size: 16;" text="HASH/TIME"/>
-                                        </VBox>
-                                        <VBox prefHeight="55.0" prefWidth="127.0">
-                                            <Label contentDisplay="CENTER" prefHeight="48.0" prefWidth="105.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TYPE"/>
-                                        </VBox>
-                                        <VBox prefHeight="55.0" prefWidth="350.0">
-                                            <Label prefHeight="48.0" prefWidth="350.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FROM/TO"/>
-                                        </VBox>
-                                        <VBox prefHeight="55.0" prefWidth="160.0">
-                                            <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TONCOINS/FEES"/>
-                                        </VBox>
-                                    </HBox>
-                                    <JFXListView fx:id="foundTxsvboxid" focusTraversable="false" onScroll="#foundTxsOnScroll" prefHeight="554.0" prefWidth="1079.0"
-                                                 style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
-                                        <!-- add dynamic content here -->
-                                    </JFXListView>
-                                </VBox>
-                            </top>
-                        </BorderPane>
-                    </Tab>
-                </JFXTabPane>
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="120.0">
+                        <Label prefHeight="48.0" prefWidth="120.0" text="WORKCHAIN"
+                               styleClass="content-header-label"/>
+
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="183.0">
+                        <Label contentDisplay="CENTER" prefHeight="53.0" prefWidth="183.0" text="SHARD"
+                               styleClass="content-header-label"/>
+
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="160.0">
+                        <Label prefHeight="48.0" prefWidth="160.0" text="MINED ON" style="-fx-alignment: center;"
+                               styleClass="content-header-label"/>
+
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="480.0">
+                        <Label prefHeight="48.0" prefWidth="480.0" text="FILE AND ROOT HASHES"
+                               styleClass="content-header-label"/>
+                    </VBox>
+                </HBox>
+
+                <JFXListView fx:id="foundBlockslistviewid" focusTraversable="false" onScroll="#foundBlocksOnScroll"
+                             prefHeight="582.0" prefWidth="1001.0" maxHeight="-Infinity"
+                             styleClass="content-list-view" >
+                    <!-- add dynamic content here -->
+                </JFXListView>
             </VBox>
-        </searchPane>
 
-<!--        <statusPane>-->
-<!--            <Label fx:id="statusBar" alignment="CENTER" prefHeight="39.0" prefWidth="1105.0" style="-fx-background-color: #dbedff;"/>-->
-<!--        </statusPane>-->
+            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
+                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeSearch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <graphic>
+                    <SVGPath styleClass="close-search-button" scaleY="0.75" scaleX="0.75"
+                             content="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm4.707,15.293-1.414,1.414L12,13.414,8.707,16.707,7.293,15.293,10.586,12,7.293,8.707,8.707,7.293,12,10.586l3.293-3.293,1.414,1.414L13.414,12Z"/>
+                </graphic>
+            </Label>
+        </foundBlocksPane>
+
+        <foundAccountsPane>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <VBox prefHeight="582.0" prefWidth="1001.0">
+                    <HBox prefHeight="44.0" prefWidth="924.0" >
+                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="208.0" >
+                            <Label prefHeight="48.0" prefWidth="208.0" styleClass="content-header-label"/>
+                        </HBox>
+                        <VBox prefHeight="44.0" prefWidth="505.0" >
+                            <Label prefHeight="44.0" prefWidth="505.0" styleClass="content-header-label" text="ACCOUNT"/>
+                        </VBox>
+                        <VBox prefHeight="43.0" prefWidth="144.0" >
+                            <Label prefHeight="43.0" prefWidth="143.0" styleClass="content-header-label" text="BALANCE"/>
+                        </VBox>
+
+                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0" >
+                            <Label prefHeight="48.0" prefWidth="199.0" styleClass="content-header-label"/>
+                        </HBox>
+                    </HBox>
+                    <JFXListView fx:id="foundAccountsvboxid" focusTraversable="false" onScroll="#accountsOnScroll"
+                                 maxHeight="-Infinity"  prefHeight="582.0" prefWidth="1001.0"
+                                 styleClass="content-list-view">
+                        <!-- add dynamic content here-->
+
+                    </JFXListView>
+                </VBox>
+            </VBox>
+<!--            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">-->
+<!--                <VBox prefHeight="620.0" prefWidth="1116.0">-->
+<!--                    <HBox prefHeight="44.0" prefWidth="924.0">-->
+<!--                        <VBox prefHeight="44.0" prefWidth="740.0">-->
+<!--                            <Label prefHeight="44.0" prefWidth="740.0" styleClass="content-header-label" text="ACCOUNT"/>-->
+<!--                        </VBox>-->
+<!--                        <VBox prefHeight="43.0" prefWidth="144.0">-->
+<!--                            <Label prefHeight="43.0" prefWidth="143.0" styleClass="content-header-label" text="BALANCE"/>-->
+<!--                        </VBox>-->
+
+<!--                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0">-->
+<!--                            <Label prefHeight="48.0" prefWidth="199.0" styleClass="content-header-label"/>-->
+<!--                        </HBox>-->
+<!--                    </HBox>-->
+<!--                    <JFXListView fx:id="foundAccountsvboxid" focusTraversable="false" onScroll="#accountsOnScroll"-->
+<!--                                 maxHeight="-Infinity"  prefHeight="579.0" prefWidth="1077.0"-->
+<!--                                 styleClass="content-list-view">-->
+<!--                        &lt;!&ndash; add dynamic content here&ndash;&gt;-->
+
+<!--                    </JFXListView>-->
+<!--                </VBox>-->
+<!--            </VBox>-->
+            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
+                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeSearch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <graphic>
+                    <SVGPath styleClass="close-search-button" scaleY="0.75" scaleX="0.75"
+                             content="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm4.707,15.293-1.414,1.414L12,13.414,8.707,16.707,7.293,15.293,10.586,12,7.293,8.707,8.707,7.293,12,10.586l3.293-3.293,1.414,1.414L13.414,12Z"/>
+                </graphic>
+            </Label>
+        </foundAccountsPane>
+
+        <foundTxsPane>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <HBox prefHeight="44.0" >
+                    <VBox prefHeight="55.0" prefWidth="195.0" >
+                        <Label prefHeight="48.0" prefWidth="195.0" styleClass="content-header-label" text="BLOCK/STATUS"/>
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="153.0" >
+                        <Label prefHeight="48.0" prefWidth="153.0" styleClass="content-header-label" text="HASH/TIME"/>
+                    </VBox>
+                    <VBox prefHeight="44.0" prefWidth="85.0" >
+                        <Label prefHeight="44.0" prefWidth="85.0"
+                               styleClass="content-header-label" text="TYPE" style="-fx-alignment: center;"/>
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="445.0" >
+                        <Label prefHeight="44.0" prefWidth="445.0" styleClass="content-header-label" text="FROM/TO"/>
+                    </VBox>
+                    <VBox prefHeight="43.0" prefWidth="140.0" >
+                        <Label prefHeight="43.0" prefWidth="140.0"
+                               styleClass="content-header-label" text="TONCOINS/FEES"/>
+                    </VBox>
+                </HBox>
+
+                <JFXListView fx:id="foundTxsvboxid" focusTraversable="false" maxHeight="-Infinity"
+                             onScroll="#foundTxsOnScroll" prefHeight="582.0" prefWidth="1001.0"
+                             styleClass="content-list-view">
+                    <!-- add dynamic content here -->
+                </JFXListView>
+            </VBox>
+
+            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
+                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeSearch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <graphic>
+                    <SVGPath styleClass="close-search-button" scaleY="0.75" scaleX="0.75"
+                             content="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm4.707,15.293-1.414,1.414L12,13.414,8.707,16.707,7.293,15.293,10.586,12,7.293,8.707,8.707,7.293,12,10.586l3.293-3.293,1.414,1.414L13.414,12Z"/>
+                </graphic>
+            </Label>
+        </foundTxsPane>
+
+        <foundAccountsTxsPane>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <VBox  prefHeight="100.0"  alignment="TOP_LEFT">
+                    <Label fx:id="labelAccountsTxs"
+                           styleClass="content-header-label" style="-fx-font-size: 18px;"/>
+                </VBox>
+
+                <HBox prefHeight="44.0" >
+                    <VBox prefHeight="55.0" prefWidth="195.0" >
+                        <Label prefHeight="48.0" prefWidth="195.0" styleClass="content-header-label" text="BLOCK/STATUS"/>
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="153.0" >
+                        <Label prefHeight="48.0" prefWidth="153.0" styleClass="content-header-label" text="HASH/TIME"/>
+                    </VBox>
+                    <VBox prefHeight="44.0" prefWidth="85.0" >
+                        <Label prefHeight="44.0" prefWidth="85.0"
+                               styleClass="content-header-label" text="TYPE" style="-fx-alignment: center;"/>
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="445.0" >
+                        <Label prefHeight="44.0" prefWidth="445.0" styleClass="content-header-label" text="FROM/TO"/>
+                    </VBox>
+                    <VBox prefHeight="43.0" prefWidth="140.0" >
+                        <Label prefHeight="43.0" prefWidth="140.0"
+                               styleClass="content-header-label" text="TONCOINS/FEES"/>
+                    </VBox>
+                </HBox>
+
+                <JFXListView fx:id="foundAccountsTxsvboxid" focusTraversable="false" maxHeight="-Infinity"
+                             onScroll="#foundTxsOnScroll" prefHeight="582.0" prefWidth="1001.0"
+                             styleClass="content-list-view">
+                    <!-- add dynamic content here -->
+                </JFXListView>
+            </VBox>
+<!--            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">-->
+
+<!--                <VBox minWidth="605.0" prefHeight="55.0" prefWidth="205.0">-->
+<!--                    <Label fx:id="labelAccountsTxs" minWidth="605.0" prefHeight="48.0" prefWidth="605.0" styleClass="content-header-label" text="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"/>-->
+<!--                </VBox>-->
+
+<!--                <HBox prefHeight="44.0" prefWidth="978.0" BorderPane.alignment="CENTER">-->
+<!--                    <VBox minWidth="205.0" prefHeight="55.0" prefWidth="205.0">-->
+<!--                        <Label minWidth="205.0" prefHeight="48.0" prefWidth="205.0" styleClass="content-header-label" text="BLOCK/STATUS"/>-->
+<!--                    </VBox>-->
+<!--                    <VBox prefHeight="55.0" prefWidth="127.0">-->
+<!--                        <Label prefHeight="48.0" prefWidth="127.0" styleClass="content-header-label" text="HASH/TIME"/>-->
+<!--                    </VBox>-->
+<!--                    <VBox prefHeight="44.0" prefWidth="128.0">-->
+<!--                        <Label contentDisplay="CENTER" prefHeight="44.0" prefWidth="101.0"-->
+<!--                               styleClass="content-header-label" text="TYPE"/>-->
+<!--                    </VBox>-->
+<!--                    <VBox prefHeight="55.0" prefWidth="350.0">-->
+<!--                        <Label prefHeight="44.0" prefWidth="361.0" styleClass="content-header-label" text="FROM/TO"/>-->
+<!--                    </VBox>-->
+<!--                    <VBox prefHeight="43.0" prefWidth="226.0">-->
+<!--                        <Label prefHeight="43.0" prefWidth="233.0"-->
+<!--                               style="-fx-padding: 0 0 0 90"-->
+<!--                               styleClass="content-header-label" text="TONCOINS/FEES"/>-->
+<!--                    </VBox>-->
+<!--                </HBox>-->
+
+<!--                <JFXListView fx:id="foundAccountsTxsvboxid" focusTraversable="false" maxHeight="-Infinity"-->
+<!--                             onScroll="#foundTxsOnScroll" prefHeight="582.0" prefWidth="1079.0"-->
+<!--                             styleClass="content-list-view">-->
+<!--                    &lt;!&ndash; add dynamic content here &ndash;&gt;-->
+<!--                </JFXListView>-->
+<!--            </VBox>-->
+            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
+                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeAccountsTxs" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <graphic>
+                    <SVGPath styleClass="close-search-button" scaleY="0.75" scaleX="0.75"
+                             content="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm4.707,15.293-1.414,1.414L12,13.414,8.707,16.707,7.293,15.293,10.586,12,7.293,8.707,8.707,7.293,12,10.586l3.293-3.293,1.414,1.414L13.414,12Z"/>
+                </graphic>
+            </Label>
+        </foundAccountsTxsPane>
 
     </CustomMainLayout>
 

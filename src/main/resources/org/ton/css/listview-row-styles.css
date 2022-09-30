@@ -5,14 +5,14 @@
 
 .row-label-normal {
     -fx-font-family: "Roboto Mono Medium";
-    -fx-alignment: center;
+    -fx-alignment: center_left;
     -fx-text-fill: #1F1F1F;
     -fx-font-size: 14px;
 }
 
 .row-label-small {
     -fx-font-family: "Roboto Mono Medium";
-    -fx-alignment: center;
+    -fx-alignment: center_left;
     -fx-text-fill: #1F1F1F;
     -fx-font-size: 12px;
 }
@@ -35,8 +35,9 @@
 .row-pane {
     -fx-background-color: #FFFFFF;
     -fx-border-style: hidden hidden solid hidden;
-    -fx-border-width: 2;
+    -fx-border-width: 0 0 2 0;
     -fx-border-color: #e7e7e7;
+    -fx-insets : 0.0, 0.0, 0.0, 0.0;
 }
 
 .row-pane:hover {
@@ -65,35 +66,9 @@
     -fx-border-color: #e7e7e7;
 }
 
-.background-info-button:hover {
-    -fx-background-color: #0088CC;
-    -size: 30;
-    -fx-min-height: -size;
-    -fx-min-width: -size;
-    -fx-max-height: -size;
-    -fx-max-width: -size;
-    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
-}
 
-.background-acc-info-button {
-    -fx-background-color: #FFFFFF;
-    -size: 30;
-    -fx-min-height: -size;
-    -fx-min-width: -size;
-    -fx-max-height: -size;
-    -fx-max-width: -size;
-    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
-}
 
-.background-acc-info-button:hover {
-    -fx-background-color: #E9F1FD;
-    -size: 30;
-    -fx-min-height: -size;
-    -fx-min-width: -size;
-    -fx-max-height: -size;
-    -fx-max-width: -size;
-    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
-}
+
 
 .background-acc-send-button {
     -fx-background-color: #FFFFFF;
@@ -136,26 +111,29 @@
 }
 
 
-.background-acc-delete-button-gray, .background-acc-send-button-gray, .background-acc-info-button-gray {
-    -fx-background-color: #F7F9FB;
-    -size: 30;
-    -fx-min-height: -size;
-    -fx-min-width: -size;
-    -fx-max-height: -size;
-    -fx-max-width: -size;
-    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
-}
+
 
 .info-svg {
     -fx-fill: #0088CC;
 }
 
-.background-info-button:hover>.button>.info-svg {
+.info-button:hover {
+    -fx-background-color: #0088CC;
+    -fx-background-radius: 8;
+}
+.info-button:hover>.info-svg {
     -fx-fill: #F7F9FB;
 }
 
+
 .acc-info-svg {
     -fx-fill: #0088CC;
+}
+
+
+.acc-info-button:hover {
+    -fx-background-color: #E9F1FD;
+    -fx-background-radius: 8;
 }
 
 .acc-send-svg {
@@ -174,12 +152,59 @@
     -fx-fill: #888888;
     -fx-opacity: 1.0 ;
 }
+
+/*
+
+
+.background-acc-info-button {
+    -fx-background-color: #FFFFFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-info-button:hover {
+    -fx-background-color: #E9F1FD;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+
+.background-info-button:hover {
+    -fx-background-color: #0088CC;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-delete-button-gray, .background-acc-send-button-gray, .background-acc-info-button-gray {
+    -fx-background-color: #F7F9FB;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+.background-info-button:hover>.button>.info-svg {
+    -fx-fill: #F7F9FB;
+}
 .background-info-button:hover>.button>.info-svg {
     -fx-fill: #F7F9FB;
 }
 
 
-/*
+
  {
     -fx-fill: #F7F9FB;
 }

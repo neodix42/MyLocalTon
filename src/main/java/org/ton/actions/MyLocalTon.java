@@ -50,6 +50,10 @@ import org.ton.parameters.ValidationParam;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
+import org.ton.ui.custom.events.CustomEvent;
+import org.ton.ui.custom.events.event.CustomActionEvent;
+import org.ton.ui.custom.events.event.CustomNotificationEvent;
+import org.ton.ui.custom.events.event.CustomSearchEvent;
 import org.ton.utils.Utils;
 import org.ton.wallet.Wallet;
 import org.ton.wallet.WalletAddress;
@@ -80,6 +84,7 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
+import static org.ton.ui.custom.events.CustomEventBus.emit;
 
 @Slf4j
 @Getter
@@ -709,7 +714,7 @@ public class MyLocalTon {
                     (accountRow.lookup("#accRowBorderPane")).getStyleClass().add("row-pane-gray");
                     (accountRow.lookup("#hBoxDeletetn")).getStyleClass().add("background-acc-delete-button-gray");
                     (accountRow.lookup("#hBoxSendBtn")).getStyleClass().add("background-acc-send-button-gray");
-                    (accountRow.lookup("#hBoxInfoBtn")).getStyleClass().add("background-acc-info-button-gray");
+                    //(accountRow.lookup("#hBoxInfoBtn")).getStyleClass().add("background-acc-info-button-gray");
 
 
 
@@ -761,7 +766,8 @@ public class MyLocalTon {
 
         ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress());
         if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
-            ((Label) accountRow.lookup("#hexAddr")).setTextFill(Color.GREEN);
+            //((Label) accountRow.lookup("#hexAddr")).setTextFill(Color.GREEN);
+            ((Label) accountRow.lookup("#hexAddr")).setStyle("-fx-text-fill: #00FF00;");
         }
 
         ((Label) accountRow.lookup("#b64Addr")).setText(walletEntity.getWallet().getBounceableAddressBase64());
@@ -891,7 +897,8 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#block")).setText(txEntity.getShortBlock());
         if (((Label) txRow.lookup("#block")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#block")).setTextFill(Color.GREEN);
+            //((Label) txRow.lookup("#block")).setTextFill(Color.GREEN);
+            ((Label) txRow.lookup("#block")).setStyle("-fx-text-fill: #00FF00;");
         }
         ((Label) txRow.lookup("#typeTx")).setText(txEntity.getTypeTx());
         ((Label) txRow.lookup("#typeMsg")).setText(txEntity.getTypeMsg());
@@ -903,26 +910,31 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#txid")).setText(txEntity.getTxHash().substring(0, 8) + "..." + txEntity.getTxHash().substring(56, 64));
         if (((Label) txRow.lookup("#txidHidden")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#txid")).setTextFill(Color.GREEN);
+            //((Label) txRow.lookup("#txid")).setTextFill(Color.GREEN);
+            ((Label) txRow.lookup("#txid")).setStyle("-fx-text-fill: #00FF00;");
         }
         ((Label) txRow.lookup("#from")).setText(txEntity.getFrom().getAddr());
         if (searchFor.length() >= 64) {
             if (((Label) txRow.lookup("#from")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
-                ((Label) txRow.lookup("#from")).setTextFill(Color.GREEN);
+                //((Label) txRow.lookup("#from")).setTextFill(Color.GREEN);
+                ((Label) txRow.lookup("#from")).setStyle("-fx-text-fill: #00FF00;");
             }
         }
         if (((Label) txRow.lookup("#from")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#from")).setTextFill(Color.GREEN);
+            //((Label) txRow.lookup("#from")).setTextFill(Color.GREEN);
+            ((Label) txRow.lookup("#from")).setStyle("-fx-text-fill: #00FF00;");
         }
 
         ((Label) txRow.lookup("#to")).setText(txEntity.getTo().getAddr());
         if (searchFor.length() >= 64) {
             if (((Label) txRow.lookup("#to")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
-                ((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
+                //((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
+                ((Label) txRow.lookup("#to")).setStyle("-fx-text-fill: #00FF00;");
             }
         }
         if (((Label) txRow.lookup("#to")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
+            //((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
+            ((Label) txRow.lookup("#to")).setStyle("-fx-text-fill: #00FF00;");
         }
         ((Label) txRow.lookup("#amount")).setText(txEntity.getAmount().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING).toPlainString());
 
@@ -1317,7 +1329,8 @@ public class MyLocalTon {
         MainController c = fxmlLoader.getController();
 
         if (foundBlocks.isEmpty()) {
-            c.foundBlocks.setText("Blocks (0)");
+            //c.foundBlocks.setText("Blocks (0)");
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_BLOCKS, 0));
             return;
         }
 
@@ -1357,28 +1370,31 @@ public class MyLocalTon {
         }
 
         log.debug("blockRows.size  {}", blockRows.size());
-        c.foundBlocks.setText("Blocks (" + blockRows.size() + ")");
+        //c.foundBlocks.setText("Blocks (" + blockRows.size() + ")");
 
         c.foundBlockslistviewid.getItems().addAll(blockRows);
+        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_BLOCKS, blockRows.size()));
 
     }
 
-    public void showFoundTxsInGui(Tab tab, List<TxEntity> foundTxs, String searchFor, String accountAddr) {
+    public void showFoundTxsInGui(JFXListView<javafx.scene.Node> listView, List<TxEntity> foundTxs, String searchFor, String accountAddr) {
 
         MainController c = fxmlLoader.getController();
 
-        tab.setOnClosed(e -> {
-            if (c.foundTabs.getTabs().isEmpty()) {
-            //    c.mainMenuTabs.getTabs().remove(c.searchTab);
-            //    c.mainMenuTabs.getSelectionModel().selectFirst();
-            }
-        });
+//        tab.setOnClosed(e -> {
+//            if (c.foundTabs.getTabs().isEmpty()) {
+//            //    c.mainMenuTabs.getTabs().remove(c.searchTab);
+//            //    c.mainMenuTabs.getSelectionModel().selectFirst();
+//            }
+//        });
 
         if (foundTxs.isEmpty()) {
+
             if (StringUtils.isNotEmpty(accountAddr)) {
-                tab.setText("Account " + Utils.getLightAddress(accountAddr) + " TXs (0)");
+                //tab.setText("Account " + Utils.getLightAddress(accountAddr) + " TXs (0)");
+                emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS_TXS, 0, accountAddr));
             } else {
-                tab.setText("TXs (0)");
+                emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, 0));
             }
             return;
         }
@@ -1388,18 +1404,19 @@ public class MyLocalTon {
         for (TxEntity tx : foundTxs) {
             try {
                 FXMLLoader fxmlLoaderRow = new FXMLLoader(App.class.getResource("txrow.fxml"));
-                javafx.scene.Node blockRow;
+                javafx.scene.Node txRow;
 
-                blockRow = fxmlLoaderRow.load();
+                txRow = fxmlLoaderRow.load();
 
-                populateTxRowWithData(blockRow, tx, searchFor);
+                populateTxRowWithData(txRow, tx, searchFor);
 
                 if (tx.getWc() == -1L) {
-                    blockRow.setStyle("-fx-background-color: e9f4ff;");
+                    //txRow.setStyle("-fx-background-color: e9f4ff;");
+                    txRow.getStyleClass().add("row-pane-gray");
                 }
                 log.debug("adding tx to found gui {} roothash {}", tx.getShortBlock(), tx.getTxHash());
 
-                txRows.add(blockRow);
+                txRows.add(txRow);
 
             } catch (IOException e) {
                 log.error("error loading txrow.fxml file, {}", e.getMessage());
@@ -1410,13 +1427,19 @@ public class MyLocalTon {
         log.debug("txRows.size {}", txRows.size());
 
         if (StringUtils.isNotEmpty(accountAddr)) {
-            tab.setText("Account " + Utils.getLightAddress(accountAddr) + " TXs (" + txRows.size() + ")");
+            //tab.setText("Account " + Utils.getLightAddress(accountAddr) + " TXs (" + txRows.size() + ")");
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS_TXS, txRows.size(), accountAddr));
+            listView.getItems().addAll(txRows);
         } else {
-            tab.setText("TXs (" + txRows.size() + ")");
+            //tab.setText("TXs (" + txRows.size() + ")");
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, txRows.size()));
+            c.foundTxsvboxid.getItems().addAll(txRows);
         }
+//
+        //emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, txRows.size()));
 
-        ((JFXListView<javafx.scene.Node>) tab.getContent().lookup("#foundTxsvboxid")).getItems().clear();
-        ((JFXListView<javafx.scene.Node>) tab.getContent().lookup("#foundTxsvboxid")).getItems().addAll(txRows);
+        //((JFXListView<javafx.scene.Node>) tab.getContent().lookup("#foundTxsvboxid")).getItems().clear();
+        //((JFXListView<javafx.scene.Node>) tab.getContent().lookup("#foundTxsvboxid")).getItems().addAll(txRows);
     }
 
     public void showFoundAccountsInGui(List<WalletEntity> foundAccounts, String searchFor) {
@@ -1424,7 +1447,8 @@ public class MyLocalTon {
         MainController c = fxmlLoader.getController();
 
         if (foundAccounts.isEmpty()) {
-            c.foundAccounts.setText("Accounts (0)");
+            //c.foundAccounts.setText("Accounts (0)");
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, 0));
             return;
         }
 
@@ -1440,7 +1464,9 @@ public class MyLocalTon {
                 populateAccountRowWithData(account, accountRow, searchFor);
 
                 if (account.getWc() == -1L) {
-                    accountRow.setStyle("-fx-background-color: e9f4ff; -fx-padding: 10 0 0 5;");
+                    //accountRow.setStyle("-fx-background-color: e9f4ff; -fx-padding: 10 0 0 5;");
+                    accountRow.getStyleClass().add("row-pane-gray");
+
                 }
                 log.debug("adding account to found gui {}", account.getFullAddress());
 
@@ -1453,9 +1479,10 @@ public class MyLocalTon {
         }
 
         log.debug("accRows.size  {}", accountRows.size());
-        c.foundAccounts.setText("Accounts (" + accountRows.size() + ")");
+        //c.foundAccounts.setText("Accounts (" + accountRows.size() + ")");
 
         c.foundAccountsvboxid.getItems().addAll(accountRows);
+        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, accountRows.size()));
     }
 
     public void populateBlockRowWithData(ResultLastBlock finalLastBlock, javafx.scene.Node blockRow, String searchFor) {
@@ -1464,15 +1491,18 @@ public class MyLocalTon {
         ((Label) blockRow.lookup("#shard")).setText(finalLastBlock.getShard());
         ((Label) blockRow.lookup("#seqno")).setText(finalLastBlock.getSeqno().toString());
         if (((Label) blockRow.lookup("#seqno")).getText().equals(searchFor)) {
-            ((Label) blockRow.lookup("#seqno")).setTextFill(Color.GREEN);
+            //((Label) blockRow.lookup("#seqno")).setTextFill(Color.GREEN);
+            ((Label) blockRow.lookup("#seqno")).setStyle("-fx-text-fill: #00FF00;");
         }
         ((Label) blockRow.lookup("#filehash")).setText(finalLastBlock.getFileHash());
         ((Label) blockRow.lookup("#roothash")).setText(finalLastBlock.getRootHash());
         if (((Label) blockRow.lookup("#filehash")).getText().equals(searchFor)) {
-            ((Label) blockRow.lookup("#filehash")).setTextFill(Color.GREEN);
+            //((Label) blockRow.lookup("#filehash")).setTextFill(Color.GREEN);
+            ((Label) blockRow.lookup("#filehash")).setStyle("-fx-text-fill: #00FF00;");
         }
         if (((Label) blockRow.lookup("#roothash")).getText().equals(searchFor)) {
-            ((Label) blockRow.lookup("#roothash")).setTextFill(Color.GREEN);
+            //((Label) blockRow.lookup("#roothash")).setTextFill(Color.GREEN);
+            ((Label) blockRow.lookup("#roothash")).setStyle("-fx-text-fill: #00FF00;");
         }
         //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy-MM-dd");

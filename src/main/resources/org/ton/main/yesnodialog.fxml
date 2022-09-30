@@ -4,7 +4,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
-<?import org.ton.ui.custom.control.CustomTextField?>
+
 <StackPane fx:id="stackYesNo" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="270.0" prefWidth="524.0" stylesheets="@../css/main-styles.css"
            xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.YesNoController" style="-fx-background-color: #FFFFFF;">
     <GridPane>
@@ -35,27 +35,27 @@
                 </GridPane.margin>
             </JFXTextField>
 
-            <CustomTextField fx:id="workchain" alignment="BOTTOM_LEFT" fieldPromptText="Workchain" prefWidth="450.0" GridPane.columnSpan="1" GridPane.rowIndex="1"/>
-<!--            <JFXTextField fx:id="workchain" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="Workchain" GridPane.columnSpan="1" GridPane.rowIndex="1">-->
-<!--                <padding>-->
-<!--                    <Insets left="10.0"/>-->
-<!--                </padding>-->
-<!--                <GridPane.margin>-->
-<!--                    <Insets left="20.0"/>-->
-<!--                </GridPane.margin>-->
-<!--            </JFXTextField>-->
+<!--            <CustomTextField fx:id="workchain" alignment="BOTTOM_LEFT" fieldPromptText="Workchain" prefWidth="450.0" GridPane.columnSpan="1" GridPane.rowIndex="1" />-->
+            <JFXTextField fx:id="workchain" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="Workchain" GridPane.columnSpan="1" GridPane.rowIndex="1">
+                <padding>
+                    <Insets left="10.0"/>
+                </padding>
+                <GridPane.margin>
+                    <Insets left="20.0"/>
+                </GridPane.margin>
+            </JFXTextField>
 
-            <CustomTextField fx:id="subWalletId" alignment="BOTTOM_LEFT" fieldPromptText="Sub-wallet ID" prefWidth="450.0" GridPane.columnSpan="1" GridPane.rowIndex="1"/>
-<!--            <JFXTextField fx:id="subWalletId" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="Sub-wallet ID" GridPane.columnSpan="1" GridPane.rowIndex="1">-->
-<!--                <padding>-->
-<!--                    <Insets left="10.0"/>-->
-<!--                </padding>-->
-<!--                <GridPane.margin>-->
-<!--                    <Insets left="20.0"/>-->
-<!--                </GridPane.margin>-->
-<!--            </JFXTextField>-->
+<!--            <CustomTextField fx:id="subWalletId" alignment="BOTTOM_LEFT" fieldPromptText="Sub-wallet ID" prefWidth="450.0" GridPane.columnSpan="1" GridPane.rowIndex="1"/>-->
+            <JFXTextField fx:id="subWalletId" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0" promptText="Sub-wallet ID" GridPane.columnSpan="1" GridPane.rowIndex="1">
+                <padding>
+                    <Insets left="10.0"/>
+                </padding>
+                <GridPane.margin>
+                    <Insets left="20.0"/>
+                </GridPane.margin>
+            </JFXTextField>
 
-            <CustomTextField fx:id="walletVersionTextField" alignment="BOTTOM_LEFT"  prefWidth="450.0" GridPane.columnSpan="1" GridPane.rowIndex="1" editableField="false"/>
+<!--            <CustomTextField fx:id="walletVersionTextField" alignment="BOTTOM_LEFT"  prefWidth="450.0" GridPane.columnSpan="1" GridPane.rowIndex="1" editableField="false"/>-->
 
             <VBox.margin>
                 <Insets left="50.0"/>

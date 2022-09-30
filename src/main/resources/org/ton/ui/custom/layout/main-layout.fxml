@@ -9,6 +9,7 @@
 <?import org.ton.ui.custom.control.CustomExpandButton?>
 <?import org.ton.ui.custom.control.CustomSubMenuButton?>
 <?import org.ton.ui.custom.toastr.NotificationAnchorStack?>
+<?import javafx.scene.layout.VBox?>
 <fx:root type="javafx.scene.layout.AnchorPane"
          xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
@@ -20,7 +21,7 @@
     <children>
 
         <HBox prefHeight="37.5" prefWidth="37.5" style="-fx-background-color: #0088CC; -fx-background-radius: 1000000;"
-              AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="5.0">
+              AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="10.0">
             <children>
                 <Label alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="37.5" prefWidth="37.5">
                     <graphic>
@@ -29,7 +30,7 @@
                 </Label>
             </children>
         </HBox>
-        <HBox  AnchorPane.leftAnchor="80.0" AnchorPane.topAnchor="15.0" >
+        <HBox  AnchorPane.leftAnchor="80.0" AnchorPane.topAnchor="20.0" >
             <children>
                 <Label alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0"  textFill="#303757">
                     <graphic>
@@ -41,13 +42,19 @@
     </children>
 </AnchorPane>
 
-<AnchorPane fx:id="search" prefHeight="50" prefWidth="1125" styleClass="background-pane"
-            AnchorPane.leftAnchor="210.0" AnchorPane.topAnchor="0.0">
+<AnchorPane fx:id="search" prefHeight="60" prefWidth="1125" styleClass="background-pane"
+            AnchorPane.leftAnchor="210.0" AnchorPane.topAnchor="0.0" >
 
-    <CustomSearchBar fx:id="searchBar" searchPromptText="Search for blocks, transactions, accounts..."
-                     AnchorPane.leftAnchor="40.0"/>
+    <VBox AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" alignment="CENTER" >
+        <CustomSearchBar fx:id="searchBar" searchPromptText="Search for blocks, transactions, accounts..." prefWidth="40"/>
+    </VBox>
 
-    <HBox fx:id="topButton" AnchorPane.rightAnchor="150.0" />
+
+    <HBox fx:id="topButton" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" alignment="CENTER"/>
+
+    <HBox fx:id="scrollButton" AnchorPane.rightAnchor="65.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" alignment="CENTER" />
+
+    <HBox fx:id="closeButton" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" alignment="TOP_LEFT" />
 
 </AnchorPane>
 
@@ -70,6 +77,7 @@
                           onMouseClicked="#clickValidation" prefHeight="50.0" prefWidth="170.0" styleClass="menu-button"
                           layoutX="20.0" layoutY="120.0" />
 
+
         <CustomMenuButton fx:id="accountsBtn" labelText="Accounts"
                           mainSvgPath="M17.7479 2.84996C18.0724 2.84546 18.3743 3.016 18.5379 3.29632C18.7015 3.57666 18.7015 3.92339 18.5379 4.20373C18.3947 4.44903 18.1457 4.61025 17.8697 4.64366L17.7499 4.65003H5.24995C4.90954 4.65003 4.64995 4.90962 4.64995 5.25003C4.64995 5.55639 4.86022 5.7973 5.15043 5.84242L5.24995 5.85003H18.7499C20.0117 5.85003 21.0593 6.84503 21.1444 8.08673L21.1499 8.25003V18.75C21.1499 20.0118 20.1549 21.0593 18.9132 21.1444L18.7499 21.15H5.24995C3.9882 21.15 2.9406 20.155 2.85549 18.9133L2.84991 18.75L2.84992 5.25133C2.84934 5.18517 2.85603 5.11918 2.86697 5.07477C2.95601 3.88495 3.91323 2.93574 5.0884 2.85545L5.24995 2.84995L17.7479 2.84996ZM18.7499 7.65003L4.64988 7.64988L4.64995 18.75C4.64995 19.0564 4.86022 19.2973 5.15043 19.3424L5.24995 19.35H18.7499C19.0563 19.35 19.2972 19.1398 19.3423 18.8495L19.3499 18.75V8.25003C19.3499 7.94366 19.1397 7.70275 18.8495 7.65763L18.7499 7.65003ZM18.1499 13.25C18.1499 12.4768 17.5231 11.85 16.7499 11.85C15.9767 11.85 15.3499 12.4768 15.3499 13.25C15.3499 14.0232 15.9767 14.65 16.7499 14.65C17.5231 14.65 18.1499 14.0232 18.1499 13.25ZM17.7479 2.84996C18.0724 2.84546 18.3743 3.016 18.5379 3.29632C18.7015 3.57666 18.7015 3.92339 18.5379 4.20373C18.3947 4.44903 18.1457 4.61025 17.8697 4.64366L17.7499 4.65003H5.24995C4.90954 4.65003 4.64995 4.90962 4.64995 5.25003C4.64995 5.55639 4.86022 5.7973 5.15043 5.84242L5.24995 5.85003H18.7499C20.0117 5.85003 21.0593 6.84503 21.1444 8.08673L21.1499 8.25003V18.75C21.1499 20.0118 20.1549 21.0593 18.9132 21.1444L18.7499 21.15H5.24995C3.9882 21.15 2.9406 20.155 2.85549 18.9133L2.84991 18.75L2.84992 5.25133C2.84934 5.18517 2.85603 5.11918 2.86697 5.07477C2.95601 3.88495 3.91323 2.93574 5.0884 2.85545L5.24995 2.84995L17.7479 2.84996ZM18.7499 7.65003L4.64988 7.64988L4.64995 18.75C4.64995 19.0564 4.86022 19.2973 5.15043 19.3424L5.24995 19.35H18.7499C19.0563 19.35 19.2972 19.1398 19.3423 18.8495L19.3499 18.75V8.25003C19.3499 7.94366 19.1397 7.70275 18.8495 7.65763L18.7499 7.65003ZM18.1499 13.25C18.1499 12.4768 17.5231 11.85 16.7499 11.85C15.9767 11.85 15.3499 12.4768 15.3499 13.25C15.3499 14.0232 15.9767 14.65 16.7499 14.65C17.5231 14.65 18.1499 14.0232 18.1499 13.25Z"
                           onMouseClicked="#clickAccount" prefHeight="50.0" prefWidth="170.0" styleClass="menu-button"
@@ -82,7 +90,7 @@
 
             <buttons>
 
-                <CustomSubMenuButton text="logs" onAction="#handleSettingsLogs"/>
+                <CustomSubMenuButton fx:id="logsBtn" text="logs" onAction="#handleSettingsLogs"/>
                 <CustomSubMenuButton text="Accounts &amp; Keys" onAction="#handleSettingsAccountsKeys" />
                 <CustomSubMenuButton text="Validators" onAction="#handleSettingsValidators" />
                 <CustomSubMenuButton text="Blockchain" onAction="#handleSettingsBlockchain" />
@@ -98,9 +106,9 @@
                             onMouseClicked="#clickExpandResults" prefHeight="50.0" prefWidth="170.0"
                             layoutX="20.0" layoutY="270.0">
             <buttons>
-                <CustomSubMenuButton text="Blocks (0)"/>
-                <CustomSubMenuButton text="Transaction (0)"/>
-                <CustomSubMenuButton text="Accounts (0)"/>
+                <CustomSubMenuButton fx:id="foundBlocksBtn" text="Blocks (0)" onAction="#handleFoundBlocks" />
+                <CustomSubMenuButton fx:id="foundTxsBtn" text="Transaction (0)" onAction="#handleFoundTxs" />
+                <CustomSubMenuButton fx:id="foundAccountsBtn" text="Accounts (0)" onAction="#handleFoundAccounts" />
             </buttons>
 
         </CustomExpandButton>
@@ -124,8 +132,8 @@
 
 </AnchorPane>
 
-<AnchorPane fx:id="contentPane" prefHeight="670" prefWidth="1125" style="-fx-background-color: gray"
-             AnchorPane.leftAnchor="210.0" AnchorPane.topAnchor="50.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+<AnchorPane fx:id="contentPane" prefHeight="660" prefWidth="1125" style="-fx-background-color: #EEEEEE"
+             AnchorPane.leftAnchor="210.0" AnchorPane.topAnchor="60.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
 
     <children>
 
@@ -145,15 +153,11 @@
                     AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
                     AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />
 
-        <AnchorPane fx:id="settingsPane" styleClass="content-pane" prefHeight="631" prefWidth="1105"
-                    AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
-                    AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />
+<!--        <AnchorPane fx:id="settingsPane" styleClass="content-pane" prefHeight="631" prefWidth="1105"-->
+<!--                    AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"-->
+<!--                    AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />-->
 
         <AnchorPane fx:id="explorerPane" styleClass="content-pane" prefHeight="631" prefWidth="1105"
-                    AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
-                    AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />
-
-        <AnchorPane fx:id="searchPane" styleClass="content-pane" prefHeight="631" prefWidth="1105"
                     AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
                     AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />
 
@@ -185,14 +189,28 @@
                     AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
                     AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />
 
+        <AnchorPane fx:id="foundBlocksPane" styleClass="content-pane" prefHeight="631" prefWidth="1105"
+                    AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
+                    AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />
+
+        <AnchorPane fx:id="foundAccountsPane" styleClass="content-pane" prefHeight="631" prefWidth="1105"
+                    AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
+                    AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />
+
+        <AnchorPane fx:id="foundTxsPane" styleClass="content-pane" prefHeight="631" prefWidth="1105"
+                    AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
+                    AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />
+
+        <AnchorPane fx:id="foundAccountsTxsPane" styleClass="content-pane" prefHeight="631" prefWidth="1105"
+                    AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
+                    AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />
+
 <!--        <AnchorPane fx:id="statusPane" styleClass="content-pane" prefHeight="39" prefWidth="1105"-->
 <!--                    AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="0.0" />-->
     </children>
 
-
-
 </AnchorPane>
 
-    <NotificationAnchorStack fx:id="notificationStack" AnchorPane.topAnchor="50.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0"/>
+    <NotificationAnchorStack fx:id="notificationStack" AnchorPane.topAnchor="50.0" AnchorPane.rightAnchor="0.0" />
 
 </fx:root>

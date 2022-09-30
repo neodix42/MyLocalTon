@@ -224,7 +224,7 @@ public class TxController {
         content.putString(seq);
         clipboard.setContent(content);
         log.info(seq + " copied");
-        App.mainController.showInfoMsg(seq + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(seq + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -235,7 +235,8 @@ public class TxController {
         content.putString(hash);
         clipboard.setContent(content);
         log.info(hash + " copied");
-        App.mainController.showInfoMsg(hash + " copied to clipboard", 0.5);
+        String lightHash = Utils.getLightAddress(hash);
+        App.mainController.showInfoMsg(lightHash + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -246,7 +247,8 @@ public class TxController {
         content.putString(src);
         clipboard.setContent(content);
         log.info(src + " copied");
-        App.mainController.showInfoMsg(src + " copied to clipboard", 0.5);
+        String lightSrc = Utils.getLightAddress(src);
+        App.mainController.showInfoMsg(lightSrc + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -257,7 +259,8 @@ public class TxController {
         content.putString(src);
         clipboard.setContent(content);
         log.info(src + " copied");
-        App.mainController.showInfoMsg(src + " copied to clipboard", 0.5);
+        String lightSrc = Utils.getLightAddress(src);
+        App.mainController.showInfoMsg(lightSrc + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -268,7 +271,7 @@ public class TxController {
         content.putString(src);
         clipboard.setContent(content);
         log.info(src + " copied");
-        App.mainController.showInfoMsg(src + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(src + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 }
