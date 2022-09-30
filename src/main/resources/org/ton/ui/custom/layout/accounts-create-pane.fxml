@@ -23,11 +23,9 @@
 
       <CustomTextField fx:id="subWalletID" fieldPromptText="Sub-wallet ID" prefWidth="450.0" layoutY="140.0" layoutX="30.0"/>
 
-      <!--      <CustomComboBox prefWidth="450.0" layoutY="200.0" layoutX="30.0"/>-->
       <CustomTextField fx:id="walletVersion" prefWidth="450.0" layoutY="200.0" layoutX="30.0" editableField="false"/>
-<!--      <CustomButton text="Create" prefWidth="120" layoutX="195" layoutY="280" styleClass="custom-button-form" />-->
+
       <JFXButton fx:id="createBtn" onAction="#doCreateAccount" text="Create" prefHeight="40" prefWidth="120" layoutX="195" layoutY="280" styleClass="custom-button-form" />
-      <!--      <CustomButton text="Create" prefWidth="100" layoutX="205" layoutY="280" />-->
 
    </children>
 </AnchorPane>

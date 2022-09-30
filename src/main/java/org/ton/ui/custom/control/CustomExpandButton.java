@@ -30,7 +30,6 @@ public class CustomExpandButton extends AnchorPane {
     @FXML
     private Label secondLabel;
 
-
     @FXML
     private HBox hBoxButton, buttons;
 
@@ -38,7 +37,6 @@ public class CustomExpandButton extends AnchorPane {
 
     private List<Node> listbuttons = new ArrayList<>();
 
-    //private AnchorPane view;
 
     private double buttonsHeight = 0.0;
 

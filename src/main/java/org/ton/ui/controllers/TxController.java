@@ -47,9 +47,6 @@ import static org.ton.utils.Utils.PATTERN;
 @Slf4j
 public class TxController {
 
-    //@FXML
-    //JFXButton txMsgBtn;
-
     @FXML
     Label block;
 

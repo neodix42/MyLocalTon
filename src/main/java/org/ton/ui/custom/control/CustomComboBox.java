@@ -17,9 +17,6 @@ public class CustomComboBox extends HBox {
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
         fxmlLoader.load();
-
-        //comboBox.getItems().addAll("Simple Wallet V3", "Simple Wallet V2", "Simple Wallet V1");
-        //comboBox.getSelectionModel().select(0);
     }
 
     public String getFieldPromptText() {

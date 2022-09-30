@@ -710,13 +710,9 @@ public class MyLocalTon {
                 }
 
                 if (walletEntity.getWc() == -1L) {
-                    //(accountRow.lookup("#accRowBorderPane")).setStyle("-fx-background-color: e9f4ff; -fx-padding: 10 0 0 5;");
                     (accountRow.lookup("#accRowBorderPane")).getStyleClass().add("row-pane-gray");
                     (accountRow.lookup("#hBoxDeletetn")).getStyleClass().add("background-acc-delete-button-gray");
                     (accountRow.lookup("#hBoxSendBtn")).getStyleClass().add("background-acc-send-button-gray");
-                    //(accountRow.lookup("#hBoxInfoBtn")).getStyleClass().add("background-acc-info-button-gray");
-
-
 
                 }
 
@@ -766,7 +762,6 @@ public class MyLocalTon {
 
         ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress());
         if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
-            //((Label) accountRow.lookup("#hexAddr")).setTextFill(Color.GREEN);
             ((Label) accountRow.lookup("#hexAddr")).setStyle("-fx-text-fill: #00FF00;");
         }
 
@@ -842,7 +837,6 @@ public class MyLocalTon {
                     }
 
                     if (txE.getTypeTx().equals("Message")) {
-                        //(txRow.lookup("#txRowBorderPane")).setStyle("-fx-background-color: #e9f4ff;");
                         (txRow.lookup("#txRowBorderPane")).getStyleClass().add("row-pane-gray");
                     }
 
@@ -897,7 +891,6 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#block")).setText(txEntity.getShortBlock());
         if (((Label) txRow.lookup("#block")).getText().equals(searchFor)) {
-            //((Label) txRow.lookup("#block")).setTextFill(Color.GREEN);
             ((Label) txRow.lookup("#block")).setStyle("-fx-text-fill: #00FF00;");
         }
         ((Label) txRow.lookup("#typeTx")).setText(txEntity.getTypeTx());
@@ -910,30 +903,25 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#txid")).setText(txEntity.getTxHash().substring(0, 8) + "..." + txEntity.getTxHash().substring(56, 64));
         if (((Label) txRow.lookup("#txidHidden")).getText().equals(searchFor)) {
-            //((Label) txRow.lookup("#txid")).setTextFill(Color.GREEN);
             ((Label) txRow.lookup("#txid")).setStyle("-fx-text-fill: #00FF00;");
         }
         ((Label) txRow.lookup("#from")).setText(txEntity.getFrom().getAddr());
         if (searchFor.length() >= 64) {
             if (((Label) txRow.lookup("#from")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
-                //((Label) txRow.lookup("#from")).setTextFill(Color.GREEN);
                 ((Label) txRow.lookup("#from")).setStyle("-fx-text-fill: #00FF00;");
             }
         }
         if (((Label) txRow.lookup("#from")).getText().equals(searchFor)) {
-            //((Label) txRow.lookup("#from")).setTextFill(Color.GREEN);
             ((Label) txRow.lookup("#from")).setStyle("-fx-text-fill: #00FF00;");
         }
 
         ((Label) txRow.lookup("#to")).setText(txEntity.getTo().getAddr());
         if (searchFor.length() >= 64) {
             if (((Label) txRow.lookup("#to")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
-                //((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
                 ((Label) txRow.lookup("#to")).setStyle("-fx-text-fill: #00FF00;");
             }
         }
         if (((Label) txRow.lookup("#to")).getText().equals(searchFor)) {
-            //((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
             ((Label) txRow.lookup("#to")).setStyle("-fx-text-fill: #00FF00;");
         }
         ((Label) txRow.lookup("#amount")).setText(txEntity.getAmount().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING).toPlainString());
@@ -1290,7 +1278,6 @@ public class MyLocalTon {
                         return;
                     }
                     if (finalLastBlock.getWc() == -1L) {
-                        //(blockRow.lookup("#blockRowBorderPane")).setStyle("-fx-background-color: #e9f4ff;");
                         (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
                     }
 
@@ -1318,8 +1305,6 @@ public class MyLocalTon {
                 //concurrentHashMap.truncate
             }
 
-            //blockRow.setStyle("-fx-background-color: #ffffff; -fx-border-style: " +
-            //        "hidden hidden solid hidden; -fx-border-width: 2; -fx-border-color: #e7e7e7;");
             c.blockslistviewid.getItems().add(0, blockRow);
         }
     }
@@ -1329,7 +1314,6 @@ public class MyLocalTon {
         MainController c = fxmlLoader.getController();
 
         if (foundBlocks.isEmpty()) {
-            //c.foundBlocks.setText("Blocks (0)");
             emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_BLOCKS, 0));
             return;
         }
@@ -1355,9 +1339,7 @@ public class MyLocalTon {
                 populateBlockRowWithData(resultLastBlock, blockRow, searchFor);
 
                 if (resultLastBlock.getWc() == -1L) {
-                    //blockRow.setStyle("-fx-background-color: e9f4ff;");
                     blockRow.getStyleClass().add("row-pane-gray");
-                    //(blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
                 }
                 log.debug("adding block to found gui {} roothash {}", block.getSeqno(), block.getRoothash());
 
@@ -1370,7 +1352,6 @@ public class MyLocalTon {
         }
 
         log.debug("blockRows.size  {}", blockRows.size());
-        //c.foundBlocks.setText("Blocks (" + blockRows.size() + ")");
 
         c.foundBlockslistviewid.getItems().addAll(blockRows);
         emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_BLOCKS, blockRows.size()));
@@ -1381,17 +1362,9 @@ public class MyLocalTon {
 
         MainController c = fxmlLoader.getController();
 
-//        tab.setOnClosed(e -> {
-//            if (c.foundTabs.getTabs().isEmpty()) {
-//            //    c.mainMenuTabs.getTabs().remove(c.searchTab);
-//            //    c.mainMenuTabs.getSelectionModel().selectFirst();
-//            }
-//        });
-
         if (foundTxs.isEmpty()) {
 
             if (StringUtils.isNotEmpty(accountAddr)) {
-                //tab.setText("Account " + Utils.getLightAddress(accountAddr) + " TXs (0)");
                 emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS_TXS, 0, accountAddr));
             } else {
                 emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, 0));
@@ -1411,7 +1384,6 @@ public class MyLocalTon {
                 populateTxRowWithData(txRow, tx, searchFor);
 
                 if (tx.getWc() == -1L) {
-                    //txRow.setStyle("-fx-background-color: e9f4ff;");
                     txRow.getStyleClass().add("row-pane-gray");
                 }
                 log.debug("adding tx to found gui {} roothash {}", tx.getShortBlock(), tx.getTxHash());
@@ -1427,19 +1399,13 @@ public class MyLocalTon {
         log.debug("txRows.size {}", txRows.size());
 
         if (StringUtils.isNotEmpty(accountAddr)) {
-            //tab.setText("Account " + Utils.getLightAddress(accountAddr) + " TXs (" + txRows.size() + ")");
             emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS_TXS, txRows.size(), accountAddr));
             listView.getItems().addAll(txRows);
         } else {
-            //tab.setText("TXs (" + txRows.size() + ")");
             emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, txRows.size()));
             c.foundTxsvboxid.getItems().addAll(txRows);
         }
-//
-        //emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, txRows.size()));
 
-        //((JFXListView<javafx.scene.Node>) tab.getContent().lookup("#foundTxsvboxid")).getItems().clear();
-        //((JFXListView<javafx.scene.Node>) tab.getContent().lookup("#foundTxsvboxid")).getItems().addAll(txRows);
     }
 
     public void showFoundAccountsInGui(List<WalletEntity> foundAccounts, String searchFor) {
@@ -1447,7 +1413,6 @@ public class MyLocalTon {
         MainController c = fxmlLoader.getController();
 
         if (foundAccounts.isEmpty()) {
-            //c.foundAccounts.setText("Accounts (0)");
             emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, 0));
             return;
         }
@@ -1464,7 +1429,6 @@ public class MyLocalTon {
                 populateAccountRowWithData(account, accountRow, searchFor);
 
                 if (account.getWc() == -1L) {
-                    //accountRow.setStyle("-fx-background-color: e9f4ff; -fx-padding: 10 0 0 5;");
                     accountRow.getStyleClass().add("row-pane-gray");
 
                 }
@@ -1479,7 +1443,6 @@ public class MyLocalTon {
         }
 
         log.debug("accRows.size  {}", accountRows.size());
-        //c.foundAccounts.setText("Accounts (" + accountRows.size() + ")");
 
         c.foundAccountsvboxid.getItems().addAll(accountRows);
         emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, accountRows.size()));
@@ -1491,23 +1454,18 @@ public class MyLocalTon {
         ((Label) blockRow.lookup("#shard")).setText(finalLastBlock.getShard());
         ((Label) blockRow.lookup("#seqno")).setText(finalLastBlock.getSeqno().toString());
         if (((Label) blockRow.lookup("#seqno")).getText().equals(searchFor)) {
-            //((Label) blockRow.lookup("#seqno")).setTextFill(Color.GREEN);
             ((Label) blockRow.lookup("#seqno")).setStyle("-fx-text-fill: #00FF00;");
         }
         ((Label) blockRow.lookup("#filehash")).setText(finalLastBlock.getFileHash());
         ((Label) blockRow.lookup("#roothash")).setText(finalLastBlock.getRootHash());
         if (((Label) blockRow.lookup("#filehash")).getText().equals(searchFor)) {
-            //((Label) blockRow.lookup("#filehash")).setTextFill(Color.GREEN);
             ((Label) blockRow.lookup("#filehash")).setStyle("-fx-text-fill: #00FF00;");
         }
         if (((Label) blockRow.lookup("#roothash")).getText().equals(searchFor)) {
-            //((Label) blockRow.lookup("#roothash")).setTextFill(Color.GREEN);
             ((Label) blockRow.lookup("#roothash")).setStyle("-fx-text-fill: #00FF00;");
         }
-        //SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm:ss");
-        //((Label) blockRow.lookup("#createdat")).setText(formatter.format(new Date(new Timestamp(finalLastBlock.getCreatedAt() * 1000).getTime())));
 
         ((Label) blockRow.lookup("#createdatDate")).setText(formatterDate.format(new Date(new Timestamp(finalLastBlock.getCreatedAt() * 1000).getTime())));
         ((Label) blockRow.lookup("#createdatTime")).setText(formatterTime.format(new Date(new Timestamp(finalLastBlock.getCreatedAt() * 1000).getTime())));

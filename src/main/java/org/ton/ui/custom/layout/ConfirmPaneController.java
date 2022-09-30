@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.ton.ui.custom.control.CustomButton;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
-import org.ton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.utils.Utils;
 
 import java.net.URL;
@@ -54,7 +53,6 @@ public class ConfirmPaneController implements Initializable {
     }
 
     private void doDeleteNode() {
-        //String nodeName = address.getText();
         log.debug("do delete {}", address);
         Platform.runLater(() -> {
             emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
@@ -96,7 +94,6 @@ public class ConfirmPaneController implements Initializable {
 
     public enum Action {
         DELETE_NODE,
-        NO_ACTION,
         CONFIRM;
 
     }

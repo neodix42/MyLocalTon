@@ -61,8 +61,6 @@ public class BlockController {
     @FXML
     public Label shard;
 
-    //@FXML
-    //public Label createdat;
     @FXML
     public Label createdatDate;
 

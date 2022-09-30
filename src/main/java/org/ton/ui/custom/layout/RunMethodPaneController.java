@@ -24,7 +24,6 @@ public class RunMethodPaneController {
     private String address;
 
     private void doRunMethod() {
-        //String smcAddress = address.getText();
         String methodId = methodIdField.getFieldText();
         if (StringUtils.isEmpty(methodId)) {
             return;

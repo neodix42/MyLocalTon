@@ -2,10 +2,7 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import java.net.URL?>
 <?import javafx.scene.shape.SVGPath?>
 <BorderPane fx:id="txRowBorderPane" prefHeight="46.0" prefWidth="1010.0" styleClass="row-pane"
             stylesheets="@../css/listview-row-styles.css" xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.TxController">

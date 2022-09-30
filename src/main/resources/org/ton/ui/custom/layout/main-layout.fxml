@@ -205,8 +205,6 @@
                     AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
                     AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />
 
-<!--        <AnchorPane fx:id="statusPane" styleClass="content-pane" prefHeight="39" prefWidth="1105"-->
-<!--                    AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="0.0" />-->
     </children>
 
 </AnchorPane>

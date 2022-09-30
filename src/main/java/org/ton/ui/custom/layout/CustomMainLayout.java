@@ -84,7 +84,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         fxmlLoader.setController(this);
         fxmlLoader.load();
 
-
+        //remove all the panes but the blank
         contentPane.getChildren().remove(blocksPane);
         contentPane.getChildren().remove(transactionsPane);
         contentPane.getChildren().remove(validationPane);
@@ -103,12 +103,13 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         contentPane.getChildren().remove(foundAccountsTxsPane);
 
         lastPane = blankPane;
+
         listenFor(CustomNotificationEvent.class, this::handle);
         listenFor(CustomActionEvent.class, this::handle);
         listenFor(CustomSearchEvent.class, this::handle);
         listenFor(CustomRefreshEvent.class, this::handle);
 
-
+        //remove explorer and results buttons
         buttons.getChildren().remove(explorerBtn);
         buttons.getChildren().remove(resultsBtn);
 
@@ -116,6 +117,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //move the buttons below settings buttons when open/close
         settingBtn.heightProperty().addListener(new ChangeListener<Number>() {
 
             @Override
@@ -137,11 +139,9 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         });
     }
 
-
-
     @FXML
     private void handleSettingsLogs(ActionEvent event) {
-                changeContent(logsPane);
+        changeContent(logsPane);
     }
     @FXML
     private void handleSettingsValidators(ActionEvent event) {
@@ -180,14 +180,6 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         changeContent(foundTxsPane);
     }
 
-    private boolean hasResult() {
-        return buttons.getChildren().contains(resultsBtn);
-    }
-
-    private boolean hasExplorer() {
-        return this.explorer;
-    }
-
     @FXML
     private void clickExpandSettings(MouseEvent e) {
         resetButtons();
@@ -204,8 +196,6 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         settingBtn.activate();
     }
 
-
-
     @FXML
     private void clickExpandResults(MouseEvent e) {
         resetButtons();
@@ -221,8 +211,6 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         resultsBtn.activate();
         resultsBtn.rotateIcon();
     }
-
-
 
     @FXML
     private void clickBlocks(Event e) {
@@ -242,6 +230,15 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
             changeContent(transactionsPane);
         else
             checkTransactions();
+    }
+
+
+    private boolean hasResult() {
+        return buttons.getChildren().contains(resultsBtn);
+    }
+
+    private boolean hasExplorer() {
+        return this.explorer;
     }
 
     private void loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType viewType) {
@@ -311,8 +308,6 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
             changeContent(accountsPane);
         }
     }
-
-
 
     @FXML
     private void clickValidation(Event e) {
@@ -535,39 +530,36 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void blockchainReady() {
-        hasBlocks = true;
-        hasTransactions = true;
         if(noBlocksTransactions != null) {
             if(contentPane.getChildren().contains(noBlocksTransactions)) {
                 switch (noBlocksTransactionsController.getViewType()) {
                     case BLOCKS:
-                        //removeNoBlocksTransactions(blocksPane);
                         changeContent(blocksPane);
                         break;
                     case TRANSACTIONS:
-                        //removeNoBlocksTransactions(transactionsPane);
                         changeContent(transactionsPane);
                         break;
                 }
             }
-            //noBlocksTransactions = null;
-            //noBlocksTransactionsController = null;
+            noBlocksTransactions = null;
+            noBlocksTransactionsController = null;
 
         }
+        hasBlocks = true;
+        hasTransactions = true;
     }
 
     private void walletsReady() {
-        hasAccounts = true;
         if(noBlocksTransactions != null) {
             if(contentPane.getChildren().contains(noBlocksTransactions)) {
                 if(noBlocksTransactionsController.getViewType() == NoBlocksTransactionsController.ViewType.ACCOUNTS) {
                     changeContent(accountsPane);
-                    //removeNoBlocksTransactions(accountsPane);
                 }
             }
             noBlocksTransactions = null;
             noBlocksTransactionsController = null;
         }
+        hasAccounts = true;
     }
 
     private void refresh(NoBlocksTransactionsController.ViewType viewType) {

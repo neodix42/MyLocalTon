@@ -17,7 +17,6 @@ public abstract class CustomEvent {
         DIALOG_CREATE_CLOSE,
         DIALOG_SEND_CLOSE,
         DIALOG_YES_NO_CLOSE,
-        SYSTEM_CLOSE,
         SAVE_SETTINGS,
         START,
         SEARCH_SIZE_BLOCKS,

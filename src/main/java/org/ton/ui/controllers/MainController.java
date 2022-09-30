@@ -95,12 +95,6 @@ public class MainController implements Initializable {
     @FXML
     public CustomMainLayout mainLayout;
 
-    //@FXML
-    //public JFXTabPane mainMenuTabs;
-
-    //@FXML
-    //public JFXTabPane settingTabs;
-
     @FXML
     public CustomInfoLabel currentBlockNum;
 
@@ -112,9 +106,6 @@ public class MainController implements Initializable {
 
     @FXML
     public CustomInfoLabel dbSizeId;
-
-//    @FXML
-//    public ImageView scrollBtnImageView;
 
     @FXML
     public JFXListView<Node> blockslistviewid;
@@ -139,15 +130,6 @@ public class MainController implements Initializable {
 
     @FXML
     public TextField nodeSyncBefore1;
-
-    //@FXML
-    //public Tab settingsTab;
-
-    //@FXML
-    //public Tab accountsTab;
-
-    //@FXML
-    //public Tab transactionsTab;
 
     @FXML
     public JFXButton myLocalTonDbDirBtn;
@@ -911,32 +893,11 @@ public class MainController implements Initializable {
     @FXML
     JFXCheckBox showMsgBodyCheckBox;
 
-    //@FXML
-    //public Tab searchTab;
-
     @FXML
     Label searchTabText;
 
-//    @FXML
-//    JFXTextField searchField;
-
-//    @FXML
-//    public Tab foundBlocks;
-//
-//    @FXML
-//    public Tab foundAccounts;
-//
-//    @FXML
-//    public Tab foundTxs;
-
-//    @FXML
-//    public JFXTabPane foundTabs;
-
     @FXML
     public JFXListView<Node> foundBlockslistviewid, foundTxsvboxid, foundAccountsvboxid, foundAccountsTxsvboxid;
-
-    //@FXML
-    //public Tab blocksTab;
 
     @FXML
     TextField configNodePublicPort1;
@@ -953,11 +914,6 @@ public class MainController implements Initializable {
     @FXML
     ImageView aboutLogo;
 
-//    @FXML
-//    Label statusBar;
-
-//    @FXML
-//    private JFXButton scrollBtn;
     @FXML
     private Label scrollBtn;
 
@@ -986,17 +942,11 @@ public class MainController implements Initializable {
 
     private MyLocalTonSettings settings;
 
-
-
     JFXDialog sendDialog;
     JFXDialog yesNoDialog;
     private JFXDialog loadingDialog;
     private JFXDialog createDialog;
     private HostServices hostServices;
-
-//    public MainController() {
-//
-//    }
 
     public void showSendDialog(String srcAddr) {
         FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/send-coin-pane.fxml"));
@@ -1009,9 +959,6 @@ public class MainController implements Initializable {
         }
         SendCoinPaneController controller = loader.getController();
         controller.setHiddenWalletAddr(srcAddr);
-        //Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/dialogsend.fxml")).load();
-
-        //((Label) parent.lookup("#hiddenWalletAddr")).setText(srcAddr);
 
         JFXDialogLayout content = new JFXDialogLayout();
         content.setBody(parent);
@@ -1023,7 +970,6 @@ public class MainController implements Initializable {
                     }
                 }
         );
-        //sendDialog.setOnDialogOpened(jfxDialogEvent -> parent.lookup("#destAddr").requestFocus());
         sendDialog.setOnDialogOpened(jfxDialogEvent -> controller.requestFocusToDestinationAddress());
         sendDialog.show();
     }
@@ -1033,62 +979,30 @@ public class MainController implements Initializable {
     public void showInfoMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
             emit(new CustomNotificationEvent(CustomEvent.Type.INFO, msg, durationSeconds));
-//            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: dbedff");
-//            Rectangle rect = new Rectangle();
-//            rect.setFill(Color.valueOf(LIGHT_BLUE));
-//            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-//            statusBar.setText(msg);
-//            animateBackgroundColor(statusBar, Color.valueOf(LIGHT_BLUE), Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
-//            animateFontColor(statusBar, Color.BLACK, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
         });
     }
 
     public void showSuccessMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
             emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, msg, durationSeconds));
-//            statusBar.setStyle("-fx-text-fill: white; -fx-background-color: green");
-//            Rectangle rect = new Rectangle();
-//            rect.setFill(Color.GREEN);
-//            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-//            statusBar.setText(msg);
-//
-//            animateBackgroundColor(statusBar, Color.GREEN, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
-//            animateFontColor(statusBar, Color.WHITE, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
         });
     }
 
     public void showErrorMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
             emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, msg, durationSeconds));
-//            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: lightcoral");
-//            Rectangle rect = new Rectangle();
-//            rect.setFill(Color.valueOf(LIGHT_BLUE));
-//            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-//            statusBar.setText(msg);
-//            animateBackgroundColor(statusBar, Color.valueOf("lightcoral"), Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
-//            animateFontColor(statusBar, Color.BLACK, Color.valueOf(LIGHT_BLUE), (int) (durationSeconds * 1000));
         });
     }
 
     public void showWarningMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
             emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds));
-//            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: orange");
-//            Rectangle rect = new Rectangle();
-//            rect.setFill(Color.ORANGE);
-//            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-//            statusBar.setText(msg);
         });
     }
 
     public void showShutdownMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
             emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds));
-//            statusBar.setStyle("-fx-text-fill: black; -fx-background-color: orange");
-//            Rectangle rect = new Rectangle();
-//            rect.setFill(Color.ORANGE);
-//            statusBar.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-//            statusBar.setText(msg);
 
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
             service.schedule(() -> {
@@ -1103,53 +1017,6 @@ public class MainController implements Initializable {
             }, 3, TimeUnit.SECONDS);
         });
     }
-
-//    public static void animateBackgroundColor(Control control, Color fromColor, Color toColor, int duration) {
-//
-//        Rectangle rect = new Rectangle();
-//        rect.setFill(fromColor);
-//
-//        Rectangle rectFont = new Rectangle();
-//        rectFont.setFill(Color.BLACK);
-//
-//        FillTransition tr = new FillTransition();
-//        tr.setShape(rect);
-//        tr.setDuration(Duration.millis(1000));
-//        tr.setFromValue(fromColor);
-//        tr.setToValue(toColor);
-//
-//        tr.setInterpolator(new Interpolator() {
-//            @Override
-//            protected double curve(double t) {
-//                control.setBackground(new Background(new BackgroundFill(rect.getFill(), CornerRadii.EMPTY, Insets.EMPTY)));
-//                return t;
-//            }
-//        });
-//        tr.setDelay(Duration.millis(duration));
-//        tr.play();
-//    }
-//
-//    public static void animateFontColor(Control control, Color fromColor, Color toColor, int duration) {
-//
-//        Rectangle rect = new Rectangle();
-//        rect.setFill(fromColor);
-//
-//        FillTransition tr = new FillTransition();
-//        tr.setShape(rect);
-//        tr.setDuration(Duration.millis(1000));
-//        tr.setFromValue(fromColor);
-//        tr.setToValue(toColor);
-//
-//        tr.setInterpolator(new Interpolator() {
-//            @Override
-//            protected double curve(double t) {
-//                ((Label) control).setTextFill(rect.getFill());
-//                return t;
-//            }
-//        });
-//        tr.setDelay(Duration.millis(duration));
-//        tr.play();
-//    }
 
     public void shutdown() {
         saveSettings();
@@ -1235,10 +1102,6 @@ public class MainController implements Initializable {
 
                             if (resultLastBlock.getWc() == -1L) {
                                 (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
-//                                blockRow.setStyle("-fx-background-color: e9f4ff;");
-                                //#F7F9FB
-                                //blockRow.setStyle("-fx-background-color: red; -fx-border-style: " +
-                                //        "hidden hidden solid hidden; -fx-border-width: 2; -fx-border-color: #e7e7e7;");
                             }
 
                             log.debug("Adding block {} roothash {}", block.getSeqno(), block.getRoothash());
@@ -1387,11 +1250,9 @@ public class MainController implements Initializable {
         MyLocalTon.getInstance().setAutoScroll(!MyLocalTon.getInstance().getAutoScroll());
 
         if (Boolean.TRUE.equals(MyLocalTon.getInstance().getAutoScroll())) {
-            //scrollBtnImageView.setImage(new Image(requireNonNull(getClass().getResourceAsStream("/org/ton/images/scroll.png"))));
             scrollPath.getStyleClass().clear();
             scrollPath.getStyleClass().add("scroll-btn-path-on");
         } else {
-            //scrollBtnImageView.setImage(new Image(requireNonNull(getClass().getResourceAsStream("/org/ton/images/scrolloff.png"))));
             scrollPath.getStyleClass().clear();
             scrollPath.getStyleClass().add("scroll-btn-path-off");
         }
@@ -1401,8 +1262,6 @@ public class MainController implements Initializable {
     private void showLoading(ActionEvent event) throws IOException {
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UNDECORATED);
-        //stage.initStyle(StageStyle.TRANSPARENT);
-        //stage.setFill(Color.TRANSPARENT);
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("modal_progress" + ".fxml"));
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
@@ -1428,20 +1287,6 @@ public class MainController implements Initializable {
         settings = MyLocalTon.getInstance().getSettings();
 
         WebEngine browser = webView.getEngine();
-
-//        walletsNumber.setOnMouseReleased(event -> {
-//            log.debug("walletsNumber released, {}", walletsNumber.getValue());
-//        });
-
-//        settingTabs.getSelectionModel().selectedItemProperty().addListener(e -> {
-//            log.debug("settings tab changed, save settings");
-//            saveSettings();
-//        });
-
-        //mainMenuTabs.getSelectionModel().selectedItemProperty().addListener(e -> {
-        //    log.debug("main menu changed, save settings");
-        //    saveSettings();
-        //});
 
         EventHandler<KeyEvent> onlyDigits = keyEvent -> {
             if (!((TextField) keyEvent.getSource()).getText().matches("[\\d\\.\\-]+")) {
@@ -1550,7 +1395,6 @@ public class MainController implements Initializable {
         maxFactor.setOnKeyTyped(onlyDigits);
         electionEndBefore.setOnKeyTyped(onlyDigits);
 
-        //searchField.setOnKeyPressed(event -> {
         mainLayout.getSearchBar().getTextField().setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 log.debug("search for {}", mainLayout.getSearchBar().getSearchText());
@@ -1559,44 +1403,19 @@ public class MainController implements Initializable {
                 foundTxsvboxid.getItems().clear();
                 foundAccountsvboxid.getItems().clear();
 
-                //clear previous results
-                //mainMenuTabs.getTabs().add(searchTab);
-                //mainMenuTabs.getSelectionModel().selectLast();
-
-
-
-//                foundTabs.getTabs().add(foundBlocks);
-//                foundTabs.getTabs().add(foundAccounts);
-//                foundTabs.getTabs().add(foundTxs);
-
                 String searchFor = mainLayout.getSearchBar().getSearchText();
 
                 List<BlockEntity> foundBlocksEntities = App.dbPool.searchBlocks(searchFor);
                 MyLocalTon.getInstance().showFoundBlocksInGui(foundBlocksEntities, searchFor);
 
                 List<TxEntity> foundTxsEntities = App.dbPool.searchTxs(searchFor);
-                //MyLocalTon.getInstance().showFoundTxsInGui(((MainController) fxmlLoader.getController()).foundTxs, foundTxsEntities, searchFor, "");
                 MyLocalTon.getInstance().showFoundTxsInGui(null, foundTxsEntities, searchFor, "");
 
                 List<WalletEntity> foundAccountsEntities = App.dbPool.searchAccounts(searchFor);
                 MyLocalTon.getInstance().showFoundAccountsInGui(foundAccountsEntities, searchFor);
-
-//                mainLayout.setNumFoundBlocks(foundBlockslistviewid.getItems().size());
-//                mainLayout.setNumFoundAccounts(foundAccountsvboxid.getItems().size());
-//                mainLayout.setNumFoundTxs(foundTxsvboxid.getItems().size());
-
-                //emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SHOW));
                 Platform.runLater(() -> emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SHOW)));
             }
         });
-
-        //mainMenuTabs.getTabs().remove(searchTab);
-
-//        foundTabs.getTabs().remove(foundBlocks);
-//        foundTabs.getTabs().remove(foundAccounts);
-//        foundTabs.getTabs().remove(foundTxs);
-
-        //scrollBtn.setTooltip(new Tooltip("Autoscroll on/off"));
 
         tickTockCheckBox.setSelected(settings.getUiSettings().isShowTickTockTransactions());
         mainConfigTxCheckBox.setSelected(settings.getUiSettings().isShowMainConfigTransactions());
@@ -1776,21 +1595,11 @@ public class MainController implements Initializable {
         myLogLevel.addItem("ERROR");
         myLogLevel.selectItem(settings.getGenesisNode().getMyLocalTonLogLevel());
 
-        // blockchain-explorer tab
         enableBlockchainExplorer.setVisible(false);
         enableBlockchainExplorerLabel.setVisible(false);
-        //mainMenuTabs.getTabs().remove(explorerTab);
 
         enableBlockchainExplorer.setVisible(true);
         enableBlockchainExplorerLabel.setVisible(true);
-
-        if (enableBlockchainExplorer.isSelected()) {
-        //    mainMenuTabs.getTabs().remove(searchTab);
-        //    mainMenuTabs.getTabs().remove(explorerTab);
-        //    mainMenuTabs.getTabs().add(explorerTab);
-        } else {
-        //    mainMenuTabs.getTabs().remove(explorerTab);
-        }
 
         if (isLinux() || isMac() || isWindows()) {
             addValidatorBtn.setVisible(true);
@@ -1845,30 +1654,8 @@ public class MainController implements Initializable {
     }
 
     public void showAccTxs(String hexAddr) throws IOException {
-
-        //mainMenuTabs.getTabs().remove(searchTab);
-        //mainMenuTabs.getTabs().add(searchTab);
-        //mainMenuTabs.getSelectionModel().selectLast();
-
-//        if (!foundTabs.getTabs().filtered(t -> t.getText().contains(Utils.getLightAddress(hexAddr))).isEmpty()) {
-//            return;
-//        }
-
-//        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("foundtxstab.fxml"));
-//        Tab newTab = fxmlLoader.load();
-
-//        newTab.setOnClosed(event -> {
-//            if (foundTabs.getTabs().isEmpty()) {
-//            //    mainMenuTabs.getTabs().remove(searchTab);
-//            //    mainMenuTabs.getSelectionModel().selectFirst();
-//            }
-//        });
-
-//        foundTabs.getTabs().add(newTab);
-//
         List<TxEntity> foundAccountTxsEntities = App.dbPool.searchTxs(hexAddr);
         MyLocalTon.getInstance().showFoundTxsInGui(foundAccountsTxsvboxid, foundAccountTxsEntities, hexAddr, hexAddr);
-//        foundTabs.getSelectionModel().selectLast();
     }
 
     public void saveSettings() {
@@ -2034,16 +1821,6 @@ public class MainController implements Initializable {
     }
 
     public void resetAction()  {
-
-//        Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
-//        parent.lookup("#inputFields").setVisible(false);
-//        parent.lookup("#body").setVisible(true);
-//        parent.lookup("#header").setVisible(true);
-//        ((Label) parent.lookup("#action")).setText("reset");
-//        ((Label) parent.lookup("#header")).setText("Reset TON blockchain");
-//        ((Label) parent.lookup("#body")).setText("You can reset current single-node TON blockchain to the new settings. All data will be lost and zero state will be created from scratch. Do you want to proceed?");
-//        parent.lookup("#okBtn").setDisable(false);
-
         FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/reset-blockchain-pane.fxml"));
 
         Parent parent = null;
@@ -2053,8 +1830,6 @@ public class MainController implements Initializable {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        //ResetBlockchainPaneController controller = loader.getController();
-
 
         JFXDialogLayout content = new JFXDialogLayout();
         content.setBody(parent);
@@ -2080,15 +1855,6 @@ public class MainController implements Initializable {
 
                 controller.setHeader(header);
                 controller.setBody(body);
-                //Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
-
-                //parent.lookup("#inputFields").setVisible(false);
-                //parent.lookup("#body").setVisible(true);
-                //parent.lookup("#header").setVisible(true);
-                //((Label) parent.lookup("#action")).setText("reset"); // no action, simple dialog box
-                //((Label) parent.lookup("#header")).setText(header);
-                //((Label) parent.lookup("#body")).setText(body);
-                //parent.lookup("#okBtn").setDisable(false);
 
                 JFXDialogLayout content = new JFXDialogLayout();
                 content.setBody(parent);
@@ -2120,8 +1886,6 @@ public class MainController implements Initializable {
                 controller.setHeader("Confirmation");
                 controller.setAddress(node.getNodeName());
 
-//                Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
-
                 String stopsWokring = "";
                 MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
                 if (isWindows()) {
@@ -2134,16 +1898,7 @@ public class MainController implements Initializable {
                         stopsWokring = "\n\nIf this node is an active validator your main workchain becomes inactive, i.e. stops working, since a two-thirds consensus of validators will not be reached.";
                     }
                 }
-
-                //parent.lookup("#inputFields").setVisible(false);
-                //parent.lookup("#body").setVisible(true);
-                //parent.lookup("#header").setVisible(true);
-                //((Label) parent.lookup("#action")).setText("delnode"); // no action, simple dialog box
-                //((Label) parent.lookup("#header")).setText("Confirmation");
-                //((Label) parent.lookup("#address")).setText(node.getNodeName()); // just reuse address field
-                //((Label) parent.lookup("#body")).setText("Are you sure you want to delete the selected validator? All data and funds will be lost and obviously validator will be removed from elections. Don't forget to collect all validation rewards." + stopsWokring);
                 controller.setBody("Are you sure you want to delete the selected validator? All data and funds will be lost and obviously validator will be removed from elections. Don't forget to collect all validation rewards." + stopsWokring);
-                //parent.lookup("#okBtn").setDisable(false);
 
                 JFXDialogLayout content = new JFXDialogLayout();
                 content.setBody(parent);
@@ -2202,17 +1957,6 @@ public class MainController implements Initializable {
             controller.setBody(msg);
             controller.setOkButtonText("Close");
 
-
-            //Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
-            //parent.lookup("#inputFields").setVisible(false);
-            //parent.lookup("#body").setVisible(true);
-            //parent.lookup("#header").setVisible(true);
-            //((Label) parent.lookup("#action")).setText("showmsg");
-            //((Label) parent.lookup("#header")).setText("Message");
-            //((Label) parent.lookup("#body")).setText(msg);
-            //parent.lookup("#okBtn").setDisable(false);
-            //((JFXButton) parent.lookup("#okBtn")).setText("Close");
-
             JFXDialogLayout content = new JFXDialogLayout();
             content.setBody(parent);
 
@@ -2232,32 +1976,18 @@ public class MainController implements Initializable {
 
     public void createNewAccountBtn() throws IOException {
 
-        //Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
         FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/accounts-create-pane.fxml"));
         Parent parent = loader.load();
         AccountsCreatePaneController controller = loader.getController();
-//        parent.lookup("#inputFields").setVisible(true);
-//        ((Label) parent.lookup("#action")).setText("create");
-//        ((Label) parent.lookup("#header")).setText("Create " + settings.getWalletSettings().getWalletVersion());
-        //((CustomTextField) parent.lookup("#walletVersionTextField")).setFieldText(settings.getWalletSettings().getWalletVersion().getValue());
+
         controller.setWalletVersionText(settings.getWalletSettings().getWalletVersion().getValue());
-//        parent.lookup("#body").setVisible(false);
-//        parent.lookup("#seqno").setVisible(false);
-//        parent.lookup("#walletVersionTextField").setVisible(true);
 
         if (!settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3)) {
-//            parent.lookup("#workchain").setVisible(true);
-//            parent.lookup("#subWalletId").setVisible(true);
             controller.hideSubWalletID();
-        }// else {
-//            parent.lookup("#workchain").setVisible(true);
-//            parent.lookup("#subWalletId").setVisible(false);
-        //}
-        //parent.lookup("#okBtn").setDisable(false);
+        }
 
         JFXDialogLayout content = new JFXDialogLayout();
         content.setBody(parent);
-        //content.setStyle("-fx-background-radius: 20;");
 
         createDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
 
@@ -3801,9 +3531,6 @@ public class MainController implements Initializable {
             emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, 0));
             emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, 0));
         });
-//        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_BLOCKS, 0));
-//        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, 0));
-//        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, 0));
     }
 
     public void setHostServices(HostServices hostServices) {
@@ -3818,15 +3545,12 @@ public class MainController implements Initializable {
             emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_REMOVE));
             emit(new CustomSearchEvent(CustomEvent.Type.ACCOUNTS_TXS_REMOVE));
         });
-//        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_REMOVE));
-//        emit(new CustomSearchEvent(CustomEvent.Type.ACCOUNTS_TXS_REMOVE));
     }
 
     @FXML
     public void closeAccountsTxs(Event e) {
         foundAccountsTxsvboxid.getItems().clear();
         Platform.runLater(() -> emit(new CustomSearchEvent(CustomEvent.Type.ACCOUNTS_TXS_REMOVE)));
-        //emit(new CustomSearchEvent(CustomEvent.Type.ACCOUNTS_TXS_REMOVE));
     }
 
     public void closeWindow(ActionEvent actionEvent) {

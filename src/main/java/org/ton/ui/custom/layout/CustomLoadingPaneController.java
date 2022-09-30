@@ -26,7 +26,6 @@ public class CustomLoadingPaneController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         rotator = new RotateTransition(Duration.seconds(1), svg);
-        //rotator.setAxis(Rotate.X_AXIS);
         rotator.setFromAngle(0);
         rotator.setToAngle(360);
         rotator.setCycleCount(Transition.INDEFINITE);

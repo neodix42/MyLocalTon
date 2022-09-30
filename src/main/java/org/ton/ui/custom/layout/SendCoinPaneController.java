@@ -83,15 +83,12 @@ public class SendCoinPaneController implements Initializable {
                         .fromSubWalletId(fromWallet.getSubWalletId())
                         .destAddr(destAddress)
                         .amount(amount)
-//                        .clearBounce(clearBounceFlag.isSelected())
                         .forceBounce(bounceFlag.isSelected())
                         .comment(message.getFieldText())
                         .build();
 
                 boolean sentOK = new Wallet().sendTonCoins(sendToncoinsParam);
 
-                //MainController c = fxmlLoader.getController();
-                //c.sendDialog.close();
                 emit(new CustomActionEvent(CustomEvent.Type.DIALOG_SEND_CLOSE));
 
                 if (sentOK) {

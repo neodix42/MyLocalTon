@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
-<?import java.net.URL?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -32,7 +31,6 @@
             </VBox>
 
             <VBox prefHeight="46.0" prefWidth="160.0">
-<!--                <Label fx:id="createdat" prefHeight="20.0" prefWidth="216.0" style="-fx-alignment: center; -fx-font-size: 11;" text="2021.03.26 15:55:32"/>-->
                 <Label fx:id="createdatDate" prefHeight="20.0" prefWidth="160.0"
                        styleClass="row-label-small" text="2021.03.26 15:55:32" style="-fx-alignment: center;"/>
                 <Label fx:id="createdatTime" prefHeight="20.0" prefWidth="160.0"
@@ -50,7 +48,6 @@
         </HBox>
     </center>
     <right>
-<!--        styleClass="background-info-button"-->
         <HBox alignment="CENTER" >
             <children>
                 <JFXButton onAction="#blockInfoBtn" prefHeight="30" prefWidth="30" contentDisplay="CENTER" styleClass="info-button">
