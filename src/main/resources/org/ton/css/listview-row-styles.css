@@ -1,23 +1,23 @@
 .row-pane {
     -fx-background-color: #FFFFFF;
     -fx-border-style: hidden hidden solid hidden;
-    -fx-border-width: 0 0 2 0;
-    -fx-border-color: #e7e7e7;
-    -fx-insets : 0.0, 0.0, 0.0, 0.0;
-}
-
-.row-pane:hover {
-    -fx-background-color: #E9F4FF;
-}
-.account-row-pane {
-    -fx-background-color: #FFFFFF;
-    -fx-border-style: hidden hidden solid hidden;
     -fx-border-width: 2;
     -fx-border-color: #e7e7e7;
 }
 
 .row-pane-gray {
     -fx-background-color: #F7F9FB;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 2;
+    -fx-border-color: #e7e7e7;
+}
+
+.row-pane:hover {
+    -fx-background-color: #E9F4FF;
+}
+
+.account-row-pane {
+    -fx-background-color: #FFFFFF;
     -fx-border-style: hidden hidden solid hidden;
     -fx-border-width: 2;
     -fx-border-color: #e7e7e7;

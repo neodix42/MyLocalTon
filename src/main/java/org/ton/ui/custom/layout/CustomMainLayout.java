@@ -394,6 +394,8 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void setNumFoundAccountsTxs(int num, String accountAddr) {
+        if(foundAccountsTxsBtn != null)
+            resultsBtn.removeButton(foundAccountsTxsBtn);
         try {
             foundAccountsTxsBtn = new CustomSubMenuButton();
         } catch (IOException e) {

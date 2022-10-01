@@ -762,7 +762,7 @@ public class MyLocalTon {
 
         ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress());
         if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
-            ((Label) accountRow.lookup("#hexAddr")).setStyle("-fx-text-fill: #00FF00;");
+            ((Label) accountRow.lookup("#hexAddr")).setStyle(accountRow.lookup("#hexAddr").getStyle() + "-fx-text-fill: #00FF00;");
         }
 
         ((Label) accountRow.lookup("#b64Addr")).setText(walletEntity.getWallet().getBounceableAddressBase64());
@@ -891,7 +891,7 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#block")).setText(txEntity.getShortBlock());
         if (((Label) txRow.lookup("#block")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#block")).setStyle("-fx-text-fill: #00FF00;");
+            txRow.lookup("#block").setStyle(txRow.lookup("#block").getStyle() + "-fx-text-fill: #00FF00;");
         }
         ((Label) txRow.lookup("#typeTx")).setText(txEntity.getTypeTx());
         ((Label) txRow.lookup("#typeMsg")).setText(txEntity.getTypeMsg());
@@ -903,26 +903,26 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#txid")).setText(txEntity.getTxHash().substring(0, 8) + "..." + txEntity.getTxHash().substring(56, 64));
         if (((Label) txRow.lookup("#txidHidden")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#txid")).setStyle("-fx-text-fill: #00FF00;");
+            txRow.lookup("#txid").setStyle(txRow.lookup("#txid").getStyle() + "-fx-text-fill: #00FF00;");
         }
         ((Label) txRow.lookup("#from")).setText(txEntity.getFrom().getAddr());
         if (searchFor.length() >= 64) {
             if (((Label) txRow.lookup("#from")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
-                ((Label) txRow.lookup("#from")).setStyle("-fx-text-fill: #00FF00;");
+                txRow.lookup("#from").setStyle(txRow.lookup("#from").getStyle() + "-fx-text-fill: #00FF00;");
             }
         }
         if (((Label) txRow.lookup("#from")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#from")).setStyle("-fx-text-fill: #00FF00;");
+            txRow.lookup("#from").setStyle(txRow.lookup("#from").getStyle() + "-fx-text-fill: #00FF00;");
         }
 
         ((Label) txRow.lookup("#to")).setText(txEntity.getTo().getAddr());
         if (searchFor.length() >= 64) {
             if (((Label) txRow.lookup("#to")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
-                ((Label) txRow.lookup("#to")).setStyle("-fx-text-fill: #00FF00;");
+                txRow.lookup("#to").setStyle(txRow.lookup("#to").getStyle() + "-fx-text-fill: #00FF00;");
             }
         }
         if (((Label) txRow.lookup("#to")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#to")).setStyle("-fx-text-fill: #00FF00;");
+            txRow.lookup("#to").setStyle(txRow.lookup("#to").getStyle() + "-fx-text-fill: #00FF00;");
         }
         ((Label) txRow.lookup("#amount")).setText(txEntity.getAmount().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING).toPlainString());
 
@@ -1454,15 +1454,15 @@ public class MyLocalTon {
         ((Label) blockRow.lookup("#shard")).setText(finalLastBlock.getShard());
         ((Label) blockRow.lookup("#seqno")).setText(finalLastBlock.getSeqno().toString());
         if (((Label) blockRow.lookup("#seqno")).getText().equals(searchFor)) {
-            ((Label) blockRow.lookup("#seqno")).setStyle("-fx-text-fill: #00FF00;");
+            blockRow.lookup("#seqno").setStyle(blockRow.lookup("#seqno").getStyle() + "-fx-text-fill: #00FF00;");
         }
         ((Label) blockRow.lookup("#filehash")).setText(finalLastBlock.getFileHash());
         ((Label) blockRow.lookup("#roothash")).setText(finalLastBlock.getRootHash());
         if (((Label) blockRow.lookup("#filehash")).getText().equals(searchFor)) {
-            ((Label) blockRow.lookup("#filehash")).setStyle("-fx-text-fill: #00FF00;");
+            blockRow.lookup("#filehash").setStyle(blockRow.lookup("#filehash").getStyle() + "-fx-text-fill: #00FF00;");
         }
         if (((Label) blockRow.lookup("#roothash")).getText().equals(searchFor)) {
-            ((Label) blockRow.lookup("#roothash")).setStyle("-fx-text-fill: #00FF00;");
+            blockRow.lookup("#roothash").setStyle(blockRow.lookup("#roothash").getStyle() + "-fx-text-fill: #00FF00;");
         }
         SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm:ss");
