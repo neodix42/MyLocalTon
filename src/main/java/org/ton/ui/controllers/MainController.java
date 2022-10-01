@@ -64,7 +64,10 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -1054,7 +1057,7 @@ public class MainController implements Initializable {
 
     @FXML
     void blocksOnScroll(ScrollEvent event) {
-
+        try {
         Node n1 = blockslistviewid.lookup(".scroll-bar");
 
         if (n1 instanceof ScrollBar) {
@@ -1066,7 +1069,10 @@ public class MainController implements Initializable {
                     long lastSeqno = Long.parseLong(((Label) ((Node) bp).lookup("#seqno")).getText());
                     long wc = Long.parseLong(((Label) ((Node) bp).lookup("#wc")).getText());
 
-                    long createdAt = Utils.datetimeToTimestamp(((Label) ((Node) bp).lookup("#createdat")).getText());
+                    String createdatDate = ((Label) ((Node) bp).lookup("#createdatDate")).getText();
+                    String createdatTime = ((Label) ((Node) bp).lookup("#createdatTime")).getText();
+
+                    long createdAt = Utils.datetimeToTimestamp(createdatDate + " " + createdatTime);
 
                     log.debug("bottom reached, seqno {}, time {}, hwm {} ", lastSeqno, Utils.toUtcNoSpace(createdAt), MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get());
 
@@ -1136,6 +1142,9 @@ public class MainController implements Initializable {
                 log.debug("top reached");
             }
         }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
     }
 
     @FXML
