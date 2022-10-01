@@ -1663,6 +1663,7 @@ public class MainController implements Initializable {
     }
 
     public void showAccTxs(String hexAddr) throws IOException {
+        foundAccountsTxsvboxid.getItems().clear();
         List<TxEntity> foundAccountTxsEntities = App.dbPool.searchTxs(hexAddr);
         MyLocalTon.getInstance().showFoundTxsInGui(foundAccountsTxsvboxid, foundAccountTxsEntities, hexAddr, hexAddr);
     }

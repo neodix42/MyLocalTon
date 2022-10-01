@@ -85,6 +85,7 @@ public class CustomExpandButton extends AnchorPane {
             buttons.getChildren().remove(button);
         }
         if(getChildren().contains(button)) {
+            index--;
             getChildren().remove(button);
             listbuttons.remove(button);
             buttonsHeight -= (button.getPrefHeight() + gapBetweenButtons);
