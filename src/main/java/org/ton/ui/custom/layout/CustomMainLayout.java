@@ -402,11 +402,11 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        foundAccountsTxsBtn.setText("Acc TXs (" + num + " )");
+        foundAccountsTxsBtn.setText("Acc TXs ( " + num + " )");
         foundAccountsTxsBtn.setOnAction(e -> handleFoundAccountsTxs());
         resultsBtn.addButton(foundAccountsTxsBtn);
 
-        ((Label)foundAccountsTxsPane.lookup("#labelAccountsTxs")).setText("Account " + accountAddr + " - TXs (" + num + " )");
+        ((Label)foundAccountsTxsPane.lookup("#labelAccountsTxs")).setText("Account " + accountAddr + " - TXs ( " + num + " )");
         if(settingBtn.isOpened()) {
             settingBtn.rotateIcon();
             settingBtn.deactivate();
