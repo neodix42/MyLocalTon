@@ -5,37 +5,36 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.web.WebView?>
-<?import java.net.URL?>
+<?import org.ton.ui.custom.control.*?>
 <?import org.ton.ui.custom.layout.CustomMainLayout?>
-<?import org.ton.ui.custom.control.CustomInfoLabel?>
-<?import org.ton.ui.custom.control.CustomTextField?>
-<?import org.ton.ui.custom.control.CustomDirectoryButton?>
-<?import org.ton.ui.custom.control.CustomComboBox?>
-<?import org.ton.ui.custom.control.CustomButton?>
-<?import javafx.scene.shape.SVGPath?>
-<StackPane fx:id="superWindow" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.MainController">
+<?import java.net.URL?>
+<StackPane fx:id="superWindow" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.ton.ui.controllers.MainController">
 
-    <CustomMainLayout fx:id="mainLayout" prefHeight="720.0" prefWidth="1335.0" >
-
+    <CustomMainLayout fx:id="mainLayout" prefHeight="720.0" prefWidth="1335.0">
 
         <scrollButton>
-            <Label fx:id="scrollBtn" contentDisplay="CENTER" graphicTextGap="0.0" onMouseClicked="#scrollBtnAction" >
+            <Label fx:id="scrollBtn" contentDisplay="CENTER" graphicTextGap="0.0" onMouseClicked="#scrollBtnAction">
                 <graphic>
 
-                    <SVGPath content="m 256,259.27802 c -1.80756,0 -3.27802,-1.47051 -3.27802,-3.27802 0,-1.8075 1.47052,-3.27802 3.27802,-3.27802 1.80751,0 3.27802,1.47052 3.27802,3.27802 0,1.80751 -1.47046,3.27802 -3.27802,3.27802 z m 0,-5.70093 c -1.33603,0 -2.42291,1.08688 -2.42291,2.42291 0,1.33604 1.08688,2.42292 2.42291,2.42292 1.33604,0 2.42292,-1.08688 2.42292,-2.42292 0,-1.33603 -1.08688,-2.42291 -2.42292,-2.42291 z m 0,16.42314 -5.886,-9.81 h 11.772 z m -4.37572,-8.9549 4.37572,7.29286 4.37573,-7.2928 h -8.75145 z m 10.26172,-9.23555 h -11.772 l 5.886,-9.81 z m -10.26172,-0.85511 h 8.75139 L 256,243.66181 Z M 256,242.83082 l 5.13087,8.55141 h -10.26173 z m 5.13087,17.78696 -5.13087,8.5514 -5.13086,-8.5514 z M 256,253.14954 c 1.57344,0 2.85047,1.27702 2.85047,2.85046 0,1.57344 -1.27703,2.85047 -2.85047,2.85047 -1.57344,0 -2.85046,-1.27703 -2.85046,-2.85047 0,-1.57344 1.27702,-2.85046 2.85046,-2.85046 z"
-                             fx:id="scrollPath" styleClass="scroll-btn-path-on" />
+                    <SVGPath
+                            content="m 256,259.27802 c -1.80756,0 -3.27802,-1.47051 -3.27802,-3.27802 0,-1.8075 1.47052,-3.27802 3.27802,-3.27802 1.80751,0 3.27802,1.47052 3.27802,3.27802 0,1.80751 -1.47046,3.27802 -3.27802,3.27802 z m 0,-5.70093 c -1.33603,0 -2.42291,1.08688 -2.42291,2.42291 0,1.33604 1.08688,2.42292 2.42291,2.42292 1.33604,0 2.42292,-1.08688 2.42292,-2.42292 0,-1.33603 -1.08688,-2.42291 -2.42292,-2.42291 z m 0,16.42314 -5.886,-9.81 h 11.772 z m -4.37572,-8.9549 4.37572,7.29286 4.37573,-7.2928 h -8.75145 z m 10.26172,-9.23555 h -11.772 l 5.886,-9.81 z m -10.26172,-0.85511 h 8.75139 L 256,243.66181 Z M 256,242.83082 l 5.13087,8.55141 h -10.26173 z m 5.13087,17.78696 -5.13087,8.5514 -5.13086,-8.5514 z M 256,253.14954 c 1.57344,0 2.85047,1.27702 2.85047,2.85046 0,1.57344 -1.27703,2.85047 -2.85047,2.85047 -1.57344,0 -2.85046,-1.27703 -2.85046,-2.85047 0,-1.57344 1.27702,-2.85046 2.85046,-2.85046 z"
+                            fx:id="scrollPath" styleClass="scroll-btn-path-on"/>
                 </graphic>
             </Label>
 
         </scrollButton>
 
         <closeButton>
-            <JFXButton fx:id="closeBtn" prefWidth="30" prefHeight="30" contentDisplay="GRAPHIC_ONLY" styleClass="close-btn-background" onAction="#closeWindow">
+            <JFXButton fx:id="closeBtn" prefWidth="30" prefHeight="30" contentDisplay="GRAPHIC_ONLY"
+                       styleClass="close-btn-background" onAction="#closeWindow">
                 <graphic>
 
-                    <SVGPath content="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"
-                             fx:id="closePath" styleClass="close-btn-path" />
+                    <SVGPath
+                            content="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"
+                            fx:id="closePath" styleClass="close-btn-path"/>
                 </graphic>
             </JFXButton>
         </closeButton>
@@ -43,27 +42,28 @@
         <info>
             <CustomInfoLabel fx:id="liteClientInfo" layoutX="10.0" layoutY="0.0" onMouseClicked="#liteServerClicked"
                              primaryText="Lite Server:" primaryWidth="80.0"
-                             secondaryText="" secondaryWidth="110.0" />
+                             secondaryText="" secondaryWidth="110.0"/>
 
             <CustomInfoLabel fx:id="currentBlockNum" layoutX="10.0" layoutY="30.0"
                              primaryText="Current Block:" primaryWidth="100.0"
-                             secondaryText="" secondaryWidth="90.0" />
+                             secondaryText="" secondaryWidth="90.0"/>
 
             <CustomInfoLabel fx:id="shardsNum" layoutX="10.0" layoutY="60.0"
                              primaryText="Shards:" primaryWidth="55.0"
-                             secondaryText="" secondaryWidth="135.0" />
+                             secondaryText="" secondaryWidth="135.0"/>
 
             <CustomInfoLabel fx:id="dbSizeId" layoutX="10.0" layoutY="90.0"
                              primaryText="Size:" primaryWidth="35.0"
-                             secondaryText="" secondaryWidth="155.0" />
+                             secondaryText="" secondaryWidth="155.0"/>
         </info>
 
         <blocksPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <HBox prefHeight="44.0" >
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <HBox prefHeight="44.0">
                     <VBox prefHeight="55.0" prefWidth="80.0">
                         <Label prefHeight="48.0" prefWidth="80.0" text="SEQNO"
-                               styleClass="content-header-label" />
+                               styleClass="content-header-label"/>
 
                     </VBox>
                     <VBox prefHeight="55.0" prefWidth="120.0">
@@ -90,36 +90,37 @@
                              onScroll="#blocksOnScroll" prefHeight="582.0"
 
                              prefWidth="1001.0" styleClass="content-list-view"
-                             >
+                >
                     <!-- add dynamic content here -->
                 </JFXListView>
             </VBox>
         </blocksPane>
 
-
-
         <transactionsPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <HBox prefHeight="44.0" >
-                    <VBox prefHeight="55.0" prefWidth="195.0" >
-                        <Label prefHeight="48.0" prefWidth="195.0" styleClass="content-header-label" text="BLOCK/STATUS"/>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <HBox prefHeight="44.0">
+                    <VBox prefHeight="55.0" prefWidth="195.0">
+                        <Label prefHeight="48.0" prefWidth="195.0" styleClass="content-header-label"
+                               text="BLOCK/STATUS"/>
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="153.0" >
+                    <VBox prefHeight="55.0" prefWidth="153.0">
                         <Label prefHeight="48.0" prefWidth="153.0" styleClass="content-header-label" text="HASH/TIME"/>
                     </VBox>
-                    <VBox prefHeight="44.0" prefWidth="85.0" >
+                    <VBox prefHeight="44.0" prefWidth="85.0">
                         <Label prefHeight="44.0" prefWidth="85.0"
                                styleClass="content-header-label" text="TYPE" style="-fx-alignment: center;"/>
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="445.0" >
+                    <VBox prefHeight="55.0" prefWidth="445.0">
                         <Label prefHeight="44.0" prefWidth="445.0" styleClass="content-header-label" text="FROM/TO"/>
                     </VBox>
-                    <VBox prefHeight="43.0" prefWidth="140.0" >
+                    <VBox prefHeight="43.0" prefWidth="140.0">
                         <Label prefHeight="43.0" prefWidth="140.0"
                                styleClass="content-header-label" text="TONCOINS/FEES"/>
                     </VBox>
                 </HBox>
-                <JFXListView fx:id="transactionsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#txsOnScroll" prefHeight="582.0" prefWidth="1001.0"
+                <JFXListView fx:id="transactionsvboxid" focusTraversable="false" maxHeight="-Infinity"
+                             onScroll="#txsOnScroll" prefHeight="582.0" prefWidth="1001.0"
                              styleClass="content-list-view" BorderPane.alignment="CENTER">
                     <!-- add dynamic content here -->
                 </JFXListView>
@@ -127,27 +128,29 @@
 
         </transactionsPane>
 
-
-
         <accountsPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
                 <VBox prefHeight="582.0" prefWidth="1001.0">
-                    <HBox prefHeight="44.0" prefWidth="924.0" >
-                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="208.0" >
+                    <HBox prefHeight="44.0" prefWidth="924.0">
+                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="208.0">
                             <Label prefHeight="48.0" prefWidth="208.0" styleClass="content-header-label"/>
                         </HBox>
-                        <VBox prefHeight="44.0" prefWidth="505.0" >
-                            <Label prefHeight="44.0" prefWidth="505.0" styleClass="content-header-label" text="ACCOUNT"/>
+                        <VBox prefHeight="44.0" prefWidth="505.0">
+                            <Label prefHeight="44.0" prefWidth="505.0" styleClass="content-header-label"
+                                   text="ACCOUNT"/>
                         </VBox>
-                        <VBox prefHeight="43.0" prefWidth="144.0" >
-                            <Label prefHeight="43.0" prefWidth="143.0" styleClass="content-header-label" text="BALANCE"/>
+                        <VBox prefHeight="43.0" prefWidth="144.0">
+                            <Label prefHeight="43.0" prefWidth="143.0" styleClass="content-header-label"
+                                   text="BALANCE"/>
                         </VBox>
 
-                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0" >
+                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0">
                             <Label prefHeight="48.0" prefWidth="199.0" styleClass="content-header-label"/>
                         </HBox>
                     </HBox>
-                    <JFXListView fx:id="accountsvboxid" focusTraversable="false" maxHeight="-Infinity" onScroll="#accountsOnScroll" prefHeight="582.0" prefWidth="1001.0"
+                    <JFXListView fx:id="accountsvboxid" focusTraversable="false" maxHeight="-Infinity"
+                                 onScroll="#accountsOnScroll" prefHeight="582.0" prefWidth="1001.0"
                                  styleClass="content-list-view" BorderPane.alignment="CENTER">
                         <!-- add dynamic content here
                         <fx:include fx:id="accs" source="accountrow.fxml"/>
@@ -157,15 +160,14 @@
             </VBox>
         </accountsPane>
 
-
-
         <validationPane>
             <JFXTabPane fx:id="validationTabs"
                         AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
                         AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <Tab text="Info" style="-fx-text-base-color: #1F1F1F;" >
+                <Tab text="Info" style="-fx-text-base-color: #1F1F1F;">
                     <Pane>
-                        <GridPane fx:id="infoValidator" hgap="10" prefHeight="601.0" prefWidth="1110.0" vgap="10" xmlns:fx="http://javafx.com/fxml">
+                        <GridPane fx:id="infoValidator" hgap="10" prefHeight="601.0" prefWidth="1110.0" vgap="10"
+                                  xmlns:fx="http://javafx.com/fxml">
                             <padding>
                                 <Insets bottom="25.0" left="25.0" right="25.0" top="20.0"/>
                             </padding>
@@ -219,20 +221,27 @@
                             <Label text="End of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
                             <Label fx:id="endCycle" text="" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                             <Label text="Start of elections" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                            <Label fx:id="startElections" onMouseClicked="#copyElectionId" text="" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                            <Label fx:id="startElections" onMouseClicked="#copyElectionId" text=""
+                                   GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                             <Label text="End of elections" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
                             <Label fx:id="endElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                             <Label text="Start of the next elections" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
                             <Label fx:id="nextElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                             <Label text="Minter address" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
-                            <Label fx:id="minterAddr" text="-1:00000000000000000000000000000000000000000000000000000000000" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+                            <Label fx:id="minterAddr"
+                                   text="-1:00000000000000000000000000000000000000000000000000000000000"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="8"/>
                             <Label fx:id="minterBalance" text="0" GridPane.columnIndex="2" GridPane.rowIndex="8"/>
                             <Label text="Configurator address" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
-                            <Label fx:id="configAddr" text="-1:33333333333333333333333333333333333333333333333333333333333" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                            <Label fx:id="configAddr"
+                                   text="-1:33333333333333333333333333333333333333333333333333333333333"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="9"/>
                             <Label fx:id="configBalance" text="0" GridPane.columnIndex="2" GridPane.rowIndex="9"/>
                             <Label text="Elector address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                            <Label fx:id="electorAddr" text="-1:55555555555555555555555555555555555555555555555555555555555" GridPane.columnIndex="1"
+                            <Label fx:id="electorAddr"
+                                   text="-1:55555555555555555555555555555555555555555555555555555555555"
+                                   GridPane.columnIndex="1"
                                    GridPane.rowIndex="10"/>
                             <Label fx:id="electorBalance" text="0" GridPane.columnIndex="2" GridPane.rowIndex="10"/>
                             <Label text="Validation period" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
@@ -245,7 +254,8 @@
                             <Label fx:id="minimumStake" text="0" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                             <Label text="Maximum stake" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
                             <Label fx:id="maximumStake" text="0" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
-                            <Pane fx:id="electionsChartPane" minHeight="130" visible="false" GridPane.columnSpan="3" GridPane.rowIndex="16">
+                            <Pane fx:id="electionsChartPane" minHeight="130" visible="false" GridPane.columnSpan="3"
+                                  GridPane.rowIndex="16">
 
                                 <Label fx:id="electionsRange1" layoutX="20" layoutY="20" minWidth="100"
                                        style="-fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
@@ -286,12 +296,15 @@
                                 <Label fx:id="legendHoldStake" layoutX="910" layoutY="110" minWidth="145.0"
                                        style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                        text="Stake Hold"/>
-                                <Separator fx:id="timeLine" layoutX="67.0" layoutY="10.0" orientation="VERTICAL" prefHeight="97.0" prefWidth="0.0"/>
+                                <Separator fx:id="timeLine" layoutX="67.0" layoutY="10.0" orientation="VERTICAL"
+                                           prefHeight="97.0" prefWidth="0.0"/>
                             </Pane>
-                            <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0" prefWidth="2035.0" GridPane.columnSpan="11"
+                            <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0"
+                                         prefWidth="2035.0" GridPane.columnSpan="11"
                                          GridPane.rowIndex="17"/>
                         </GridPane>
-                        <JFXButton fx:id="addValidatorBtn" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#createNewNodeBtn" prefHeight="48.0" prefWidth="73.0"
+                        <JFXButton fx:id="addValidatorBtn" disable="true" layoutX="1010.0" layoutY="20.0"
+                                   onAction="#createNewNodeBtn" prefHeight="48.0" prefWidth="73.0"
                                    visible="false">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -351,40 +364,53 @@
                         <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <Label fx:id="validator1AdnlAddress" onMouseClicked="#validation1AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                        <Label fx:id="validator1AdnlAddress" onMouseClicked="#validation1AdnlClicked"
+                               GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                         <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <Label fx:id="validator1PubKeyHex" onMouseClicked="#validation1PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                        <Label fx:id="validator1PubKeyHex" onMouseClicked="#validation1PubKeyHexClicked"
+                               GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                         <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                        <Label fx:id="validator1PubKeyInteger" onMouseClicked="#validation1PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                        <Label fx:id="validator1PubKeyInteger" onMouseClicked="#validation1PubKeyIntegerClicked"
+                               GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                         <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                         <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                        <Label fx:id="validator1AdnlAddressNext" onMouseClicked="#validation1AdnlClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                        <Label fx:id="validator1AdnlAddressNext" onMouseClicked="#validation1AdnlClickedNext"
+                               GridPane.columnIndex="1" GridPane.rowIndex="10"/>
                         <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                        <Label fx:id="validator1PubKeyHexNext" onMouseClicked="#validation1PubKeyHexClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                        <Label fx:id="validator1PubKeyHexNext" onMouseClicked="#validation1PubKeyHexClickedNext"
+                               GridPane.columnIndex="1" GridPane.rowIndex="11"/>
                         <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
-                        <Label fx:id="validator1PubKeyIntegerNext" onMouseClicked="#validation1PubKeyIntegerClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                        <Label fx:id="validator1PubKeyIntegerNext" onMouseClicked="#validation1PubKeyIntegerClickedNext"
+                               GridPane.columnIndex="1" GridPane.rowIndex="12"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                         <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
-                        <Label fx:id="validator1WalletAddress" onMouseClicked="#validation1WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                        <Label fx:id="validator1WalletAddress" onMouseClicked="#validation1WalletAddrClicked"
+                               GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                         <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
                         <Label fx:id="validator1WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
                         <Label text="Total collected" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
-                        <Label fx:id="validator1totalCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="16"/>
+                        <Label fx:id="validator1totalCollected" text="0" GridPane.columnIndex="1"
+                               GridPane.rowIndex="16"/>
                         <Label text="Last collected" GridPane.columnIndex="0" GridPane.rowIndex="17"/>
-                        <Label fx:id="validator1LastCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="17"/>
+                        <Label fx:id="validator1LastCollected" text="0" GridPane.columnIndex="1"
+                               GridPane.rowIndex="17"/>
                         <Label text="Total rewards (pure)" GridPane.columnIndex="0" GridPane.rowIndex="18"/>
-                        <Label fx:id="validator1TotalRewardsPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="18"/>
+                        <Label fx:id="validator1TotalRewardsPure" text="0" GridPane.columnIndex="1"
+                               GridPane.rowIndex="18"/>
                         <Label text="Last reward (pure)" GridPane.columnIndex="0" GridPane.rowIndex="19"/>
-                        <Label fx:id="validator1LastRewardPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="19"/>
+                        <Label fx:id="validator1LastRewardPure" text="0" GridPane.columnIndex="1"
+                               GridPane.rowIndex="19"/>
                         <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
-                        <Label fx:id="validator1AvgPureReward" text="0" GridPane.columnIndex="1" GridPane.rowIndex="20"/>
+                        <Label fx:id="validator1AvgPureReward" text="0" GridPane.columnIndex="1"
+                               GridPane.rowIndex="20"/>
                         <Label text="Participated times (ripped)" GridPane.columnIndex="0" GridPane.rowIndex="21"/>
-                        <Label fx:id="participatedInElections1" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
+                        <Label fx:id="participatedInElections1" text="0" GridPane.columnIndex="1"
+                               GridPane.rowIndex="21"/>
 
                     </GridPane>
                 </Tab>
@@ -436,44 +462,58 @@
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                            <Label fx:id="validator2AdnlAddress" onMouseClicked="#validation2AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                            <Label fx:id="validator2AdnlAddress" onMouseClicked="#validation2AdnlClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                            <Label fx:id="validator2PubKeyHex" onMouseClicked="#validation2PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                            <Label fx:id="validator2PubKeyHex" onMouseClicked="#validation2PubKeyHexClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                            <Label fx:id="validator2PubKeyInteger" onMouseClicked="#validation2PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                            <Label fx:id="validator2PubKeyInteger" onMouseClicked="#validation2PubKeyIntegerClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                            <Label fx:id="validator2AdnlAddressNext" onMouseClicked="#validation2AdnlClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                            <Label fx:id="validator2AdnlAddressNext" onMouseClicked="#validation2AdnlClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="10"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                            <Label fx:id="validator2PubKeyHexNext" onMouseClicked="#validation2PubKeyHexClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                            <Label fx:id="validator2PubKeyHexNext" onMouseClicked="#validation2PubKeyHexClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="11"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
-                            <Label fx:id="validator2PubKeyIntegerNext" onMouseClicked="#validation2PubKeyIntegerClickedNext" GridPane.columnIndex="1"
+                            <Label fx:id="validator2PubKeyIntegerNext"
+                                   onMouseClicked="#validation2PubKeyIntegerClickedNext" GridPane.columnIndex="1"
                                    GridPane.rowIndex="12"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                             <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
-                            <Label fx:id="validator2WalletAddress" onMouseClicked="#validation2WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                            <Label fx:id="validator2WalletAddress" onMouseClicked="#validation2WalletAddrClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                             <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
                             <Label fx:id="validator2WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
                             <Label text="Total collected" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
-                            <Label fx:id="validator2totalCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="16"/>
+                            <Label fx:id="validator2totalCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="16"/>
                             <Label text="Last collected" GridPane.columnIndex="0" GridPane.rowIndex="17"/>
-                            <Label fx:id="validator2LastCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="17"/>
+                            <Label fx:id="validator2LastCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="17"/>
                             <Label text="Total rewards (pure)" GridPane.columnIndex="0" GridPane.rowIndex="18"/>
-                            <Label fx:id="validator2TotalRewardsPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="18"/>
+                            <Label fx:id="validator2TotalRewardsPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="18"/>
                             <Label text="Last reward (pure)" GridPane.columnIndex="0" GridPane.rowIndex="19"/>
-                            <Label fx:id="validator2LastRewardPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="19"/>
+                            <Label fx:id="validator2LastRewardPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="19"/>
                             <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
-                            <Label fx:id="validator2AvgPureReward" text="0" GridPane.columnIndex="1" GridPane.rowIndex="20"/>
+                            <Label fx:id="validator2AvgPureReward" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="20"/>
                             <Label text="Participated times (ripped)" GridPane.columnIndex="0" GridPane.rowIndex="21"/>
-                            <Label fx:id="participatedInElections2" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
+                            <Label fx:id="participatedInElections2" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn2" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator2Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn2" disable="true" layoutX="1010.0" layoutY="20.0"
+                                   onAction="#deleteValidator2Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -534,44 +574,58 @@
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                            <Label fx:id="validator3AdnlAddress" onMouseClicked="#validation3AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                            <Label fx:id="validator3AdnlAddress" onMouseClicked="#validation3AdnlClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                            <Label fx:id="validator3PubKeyHex" onMouseClicked="#validation3PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                            <Label fx:id="validator3PubKeyHex" onMouseClicked="#validation3PubKeyHexClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                            <Label fx:id="validator3PubKeyInteger" onMouseClicked="#validation3PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                            <Label fx:id="validator3PubKeyInteger" onMouseClicked="#validation3PubKeyIntegerClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                            <Label fx:id="validator3AdnlAddressNext" onMouseClicked="#validation3AdnlClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                            <Label fx:id="validator3AdnlAddressNext" onMouseClicked="#validation3AdnlClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="10"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                            <Label fx:id="validator3PubKeyHexNext" onMouseClicked="#validation3PubKeyHexClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                            <Label fx:id="validator3PubKeyHexNext" onMouseClicked="#validation3PubKeyHexClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="11"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
-                            <Label fx:id="validator3PubKeyIntegerNext" onMouseClicked="#validation3PubKeyIntegerClickedNext" GridPane.columnIndex="1"
+                            <Label fx:id="validator3PubKeyIntegerNext"
+                                   onMouseClicked="#validation3PubKeyIntegerClickedNext" GridPane.columnIndex="1"
                                    GridPane.rowIndex="12"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                             <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
-                            <Label fx:id="validator3WalletAddress" onMouseClicked="#validation3WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                            <Label fx:id="validator3WalletAddress" onMouseClicked="#validation3WalletAddrClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                             <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
                             <Label fx:id="validator3WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
                             <Label text="Total collected" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
-                            <Label fx:id="validator3totalCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="16"/>
+                            <Label fx:id="validator3totalCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="16"/>
                             <Label text="Last collected" GridPane.columnIndex="0" GridPane.rowIndex="17"/>
-                            <Label fx:id="validator3LastCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="17"/>
+                            <Label fx:id="validator3LastCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="17"/>
                             <Label text="Total rewards (pure)" GridPane.columnIndex="0" GridPane.rowIndex="18"/>
-                            <Label fx:id="validator3TotalRewardsPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="18"/>
+                            <Label fx:id="validator3TotalRewardsPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="18"/>
                             <Label text="Last reward (pure)" GridPane.columnIndex="0" GridPane.rowIndex="19"/>
-                            <Label fx:id="validator3LastRewardPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="19"/>
+                            <Label fx:id="validator3LastRewardPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="19"/>
                             <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
-                            <Label fx:id="validator3AvgPureReward" text="0" GridPane.columnIndex="1" GridPane.rowIndex="20"/>
+                            <Label fx:id="validator3AvgPureReward" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="20"/>
                             <Label text="Participated times (ripped)" GridPane.columnIndex="0" GridPane.rowIndex="21"/>
-                            <Label fx:id="participatedInElections3" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
+                            <Label fx:id="participatedInElections3" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn3" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator3Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn3" disable="true" layoutX="1010.0" layoutY="20.0"
+                                   onAction="#deleteValidator3Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -632,44 +686,58 @@
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                            <Label fx:id="validator4AdnlAddress" onMouseClicked="#validation4AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                            <Label fx:id="validator4AdnlAddress" onMouseClicked="#validation4AdnlClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                            <Label fx:id="validator4PubKeyHex" onMouseClicked="#validation4PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                            <Label fx:id="validator4PubKeyHex" onMouseClicked="#validation4PubKeyHexClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                            <Label fx:id="validator4PubKeyInteger" onMouseClicked="#validation4PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                            <Label fx:id="validator4PubKeyInteger" onMouseClicked="#validation4PubKeyIntegerClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                            <Label fx:id="validator4AdnlAddressNext" onMouseClicked="#validation4AdnlClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                            <Label fx:id="validator4AdnlAddressNext" onMouseClicked="#validation4AdnlClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="10"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                            <Label fx:id="validator4PubKeyHexNext" onMouseClicked="#validation4PubKeyHexClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                            <Label fx:id="validator4PubKeyHexNext" onMouseClicked="#validation4PubKeyHexClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="11"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
-                            <Label fx:id="validator4PubKeyIntegerNext" onMouseClicked="#validation4PubKeyIntegerClickedNext" GridPane.columnIndex="1"
+                            <Label fx:id="validator4PubKeyIntegerNext"
+                                   onMouseClicked="#validation4PubKeyIntegerClickedNext" GridPane.columnIndex="1"
                                    GridPane.rowIndex="12"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                             <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
-                            <Label fx:id="validator4WalletAddress" onMouseClicked="#validation4WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                            <Label fx:id="validator4WalletAddress" onMouseClicked="#validation4WalletAddrClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                             <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
                             <Label fx:id="validator4WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
                             <Label text="Total collected" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
-                            <Label fx:id="validator4totalCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="16"/>
+                            <Label fx:id="validator4totalCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="16"/>
                             <Label text="Last collected" GridPane.columnIndex="0" GridPane.rowIndex="17"/>
-                            <Label fx:id="validator4LastCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="17"/>
+                            <Label fx:id="validator4LastCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="17"/>
                             <Label text="Total rewards (pure)" GridPane.columnIndex="0" GridPane.rowIndex="18"/>
-                            <Label fx:id="validator4TotalRewardsPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="18"/>
+                            <Label fx:id="validator4TotalRewardsPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="18"/>
                             <Label text="Last reward (pure)" GridPane.columnIndex="0" GridPane.rowIndex="19"/>
-                            <Label fx:id="validator4LastRewardPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="19"/>
+                            <Label fx:id="validator4LastRewardPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="19"/>
                             <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
-                            <Label fx:id="validator4AvgPureReward" text="0" GridPane.columnIndex="1" GridPane.rowIndex="20"/>
+                            <Label fx:id="validator4AvgPureReward" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="20"/>
                             <Label text="Participated times (ripped)" GridPane.columnIndex="0" GridPane.rowIndex="21"/>
-                            <Label fx:id="participatedInElections4" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
+                            <Label fx:id="participatedInElections4" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn4" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator4Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn4" disable="true" layoutX="1010.0" layoutY="20.0"
+                                   onAction="#deleteValidator4Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -730,44 +798,58 @@
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                            <Label fx:id="validator5AdnlAddress" onMouseClicked="#validation5AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                            <Label fx:id="validator5AdnlAddress" onMouseClicked="#validation5AdnlClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                            <Label fx:id="validator5PubKeyHex" onMouseClicked="#validation5PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                            <Label fx:id="validator5PubKeyHex" onMouseClicked="#validation5PubKeyHexClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                            <Label fx:id="validator5PubKeyInteger" onMouseClicked="#validation5PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                            <Label fx:id="validator5PubKeyInteger" onMouseClicked="#validation5PubKeyIntegerClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                            <Label fx:id="validator5AdnlAddressNext" onMouseClicked="#validation5AdnlClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                            <Label fx:id="validator5AdnlAddressNext" onMouseClicked="#validation5AdnlClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="10"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                            <Label fx:id="validator5PubKeyHexNext" onMouseClicked="#validation5PubKeyHexClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                            <Label fx:id="validator5PubKeyHexNext" onMouseClicked="#validation5PubKeyHexClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="11"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
-                            <Label fx:id="validator5PubKeyIntegerNext" onMouseClicked="#validation5PubKeyIntegerClickedNext" GridPane.columnIndex="1"
+                            <Label fx:id="validator5PubKeyIntegerNext"
+                                   onMouseClicked="#validation5PubKeyIntegerClickedNext" GridPane.columnIndex="1"
                                    GridPane.rowIndex="12"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                             <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
-                            <Label fx:id="validator5WalletAddress" onMouseClicked="#validation5WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                            <Label fx:id="validator5WalletAddress" onMouseClicked="#validation5WalletAddrClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                             <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
                             <Label fx:id="validator5WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
                             <Label text="Total collected" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
-                            <Label fx:id="validator5totalCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="16"/>
+                            <Label fx:id="validator5totalCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="16"/>
                             <Label text="Last collected" GridPane.columnIndex="0" GridPane.rowIndex="17"/>
-                            <Label fx:id="validator5LastCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="17"/>
+                            <Label fx:id="validator5LastCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="17"/>
                             <Label text="Total rewards (pure)" GridPane.columnIndex="0" GridPane.rowIndex="18"/>
-                            <Label fx:id="validator5TotalRewardsPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="18"/>
+                            <Label fx:id="validator5TotalRewardsPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="18"/>
                             <Label text="Last reward (pure)" GridPane.columnIndex="0" GridPane.rowIndex="19"/>
-                            <Label fx:id="validator5LastRewardPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="19"/>
+                            <Label fx:id="validator5LastRewardPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="19"/>
                             <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
-                            <Label fx:id="validator5AvgPureReward" text="0" GridPane.columnIndex="1" GridPane.rowIndex="20"/>
+                            <Label fx:id="validator5AvgPureReward" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="20"/>
                             <Label text="Participated times (ripped)" GridPane.columnIndex="0" GridPane.rowIndex="21"/>
-                            <Label fx:id="participatedInElections5" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
+                            <Label fx:id="participatedInElections5" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn5" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator5Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn5" disable="true" layoutX="1010.0" layoutY="20.0"
+                                   onAction="#deleteValidator5Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -828,44 +910,58 @@
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                            <Label fx:id="validator6AdnlAddress" onMouseClicked="#validation6AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                            <Label fx:id="validator6AdnlAddress" onMouseClicked="#validation6AdnlClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                             <Label text="Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                            <Label fx:id="validator6PubKeyHex" onMouseClicked="#validation6PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                            <Label fx:id="validator6PubKeyHex" onMouseClicked="#validation6PubKeyHexClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                            <Label fx:id="validator6PubKeyInteger" onMouseClicked="#validation6PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                            <Label fx:id="validator6PubKeyInteger" onMouseClicked="#validation6PubKeyIntegerClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                            <Label fx:id="validator6AdnlAddressNext" onMouseClicked="#validation6AdnlClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                            <Label fx:id="validator6AdnlAddressNext" onMouseClicked="#validation6AdnlClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="10"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                            <Label fx:id="validator6PubKeyHexNext" onMouseClicked="#validation6PubKeyHexClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                            <Label fx:id="validator6PubKeyHexNext" onMouseClicked="#validation6PubKeyHexClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="11"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
-                            <Label fx:id="validator6PubKeyIntegerNext" onMouseClicked="#validation6PubKeyIntegerClickedNext" GridPane.columnIndex="1"
+                            <Label fx:id="validator6PubKeyIntegerNext"
+                                   onMouseClicked="#validation6PubKeyIntegerClickedNext" GridPane.columnIndex="1"
                                    GridPane.rowIndex="12"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                             <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
-                            <Label fx:id="validator6WalletAddress" onMouseClicked="#validation1WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                            <Label fx:id="validator6WalletAddress" onMouseClicked="#validation1WalletAddrClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                             <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
                             <Label fx:id="validator6WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
                             <Label text="Total collected" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
-                            <Label fx:id="validator6totalCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="16"/>
+                            <Label fx:id="validator6totalCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="16"/>
                             <Label text="Last collected" GridPane.columnIndex="0" GridPane.rowIndex="17"/>
-                            <Label fx:id="validator6LastCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="17"/>
+                            <Label fx:id="validator6LastCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="17"/>
                             <Label text="Total rewards (pure)" GridPane.columnIndex="0" GridPane.rowIndex="18"/>
-                            <Label fx:id="validator6TotalRewardsPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="18"/>
+                            <Label fx:id="validator6TotalRewardsPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="18"/>
                             <Label text="Last reward (pure)" GridPane.columnIndex="0" GridPane.rowIndex="19"/>
-                            <Label fx:id="validator6LastRewardPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="19"/>
+                            <Label fx:id="validator6LastRewardPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="19"/>
                             <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
-                            <Label fx:id="validator6AvgPureReward" text="0" GridPane.columnIndex="1" GridPane.rowIndex="20"/>
+                            <Label fx:id="validator6AvgPureReward" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="20"/>
                             <Label text="Participated times (ripped)" GridPane.columnIndex="0" GridPane.rowIndex="21"/>
-                            <Label fx:id="participatedInElections6" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
+                            <Label fx:id="participatedInElections6" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn6" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator6Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn6" disable="true" layoutX="1010.0" layoutY="20.0"
+                                   onAction="#deleteValidator6Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -926,44 +1022,58 @@
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                            <Label fx:id="validator7AdnlAddress" onMouseClicked="#validation7AdnlClicked" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                            <Label fx:id="validator7AdnlAddress" onMouseClicked="#validation7AdnlClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                            <Label fx:id="validator7PubKeyHex" onMouseClicked="#validation7PubKeyHexClicked" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                            <Label fx:id="validator7PubKeyHex" onMouseClicked="#validation7PubKeyHexClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                            <Label fx:id="validator7PubKeyInteger" onMouseClicked="#validation7PubKeyIntegerClicked" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                            <Label fx:id="validator7PubKeyInteger" onMouseClicked="#validation7PubKeyIntegerClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
-                            <Label fx:id="validator7AdnlAddressNext" onMouseClicked="#validation7AdnlClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                            <Label fx:id="validator7AdnlAddressNext" onMouseClicked="#validation7AdnlClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="10"/>
                             <Label text="  Public key (hex)" GridPane.columnIndex="0" GridPane.rowIndex="11"/>
-                            <Label fx:id="validator7PubKeyHexNext" onMouseClicked="#validation7PubKeyHexClickedNext" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                            <Label fx:id="validator7PubKeyHexNext" onMouseClicked="#validation7PubKeyHexClickedNext"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="11"/>
                             <Label text="  Public key (integer)" GridPane.columnIndex="0" GridPane.rowIndex="12"/>
-                            <Label fx:id="validator7PubKeyIntegerNext" onMouseClicked="#validation7PubKeyIntegerClickedNext" GridPane.columnIndex="1"
+                            <Label fx:id="validator7PubKeyIntegerNext"
+                                   onMouseClicked="#validation7PubKeyIntegerClickedNext" GridPane.columnIndex="1"
                                    GridPane.rowIndex="12"/>
 
                             <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                             <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
-                            <Label fx:id="validator7WalletAddress" onMouseClicked="#validation7WalletAddrClicked" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
+                            <Label fx:id="validator7WalletAddress" onMouseClicked="#validation7WalletAddrClicked"
+                                   GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                             <Label text="Validator wallet balance" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
                             <Label fx:id="validator7WalletBalance" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
                             <Label text="Total collected" GridPane.columnIndex="0" GridPane.rowIndex="16"/>
-                            <Label fx:id="validator7totalCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="16"/>
+                            <Label fx:id="validator7totalCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="16"/>
                             <Label text="Last collected" GridPane.columnIndex="0" GridPane.rowIndex="17"/>
-                            <Label fx:id="validator7LastCollected" text="0" GridPane.columnIndex="1" GridPane.rowIndex="17"/>
+                            <Label fx:id="validator7LastCollected" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="17"/>
                             <Label text="Total rewards (pure)" GridPane.columnIndex="0" GridPane.rowIndex="18"/>
-                            <Label fx:id="validator7TotalRewardsPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="18"/>
+                            <Label fx:id="validator7TotalRewardsPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="18"/>
                             <Label text="Last reward (pure)" GridPane.columnIndex="0" GridPane.rowIndex="19"/>
-                            <Label fx:id="validator7LastRewardPure" text="0" GridPane.columnIndex="1" GridPane.rowIndex="19"/>
+                            <Label fx:id="validator7LastRewardPure" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="19"/>
                             <Label text="Average reward per cycle" GridPane.columnIndex="0" GridPane.rowIndex="20"/>
-                            <Label fx:id="validator7AvgPureReward" text="0" GridPane.columnIndex="1" GridPane.rowIndex="20"/>
+                            <Label fx:id="validator7AvgPureReward" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="20"/>
                             <Label text="Participated times (ripped)" GridPane.columnIndex="0" GridPane.rowIndex="21"/>
-                            <Label fx:id="participatedInElections7" text="0" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
+                            <Label fx:id="participatedInElections7" text="0" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="21"/>
 
                         </GridPane>
-                        <JFXButton fx:id="deleteValidatorBtn7" disable="true" layoutX="1010.0" layoutY="20.0" onAction="#deleteValidator7Btn" prefHeight="48.0"
+                        <JFXButton fx:id="deleteValidatorBtn7" disable="true" layoutX="1010.0" layoutY="20.0"
+                                   onAction="#deleteValidator7Btn" prefHeight="48.0"
                                    prefWidth="73.0">
                             <graphic>
                                 <ImageView fitHeight="40.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
@@ -985,7 +1095,8 @@
                         AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
                         AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                 <Tab fx:id="settingsLogsValidator1Tab" text="Validator 1">
-                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080" style="-fx-padding:0 0 0 50">
+                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080"
+                                style="-fx-padding:0 0 0 50">
 
                         <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
@@ -993,8 +1104,9 @@
                                 <VBox spacing="10.0">
                                     <Label text="Node logs directory" styleClass="label-second-font-14"/>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                        <CustomTextField fx:id="validatorLogDir1" editableField="false" prefWidth="600.0" />
-                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction1" />
+                                        <CustomTextField fx:id="validatorLogDir1" editableField="false"
+                                                         prefWidth="600.0"/>
+                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction1"/>
                                     </HBox>
                                 </VBox>
                             </VBox>
@@ -1003,8 +1115,8 @@
                                 <VBox spacing="10.0">
                                     <Label text="DHT server log directory" styleClass="label-second-font-14"/>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                        <CustomTextField fx:id="dhtLogDir1" editableField="false" prefWidth="600.0" />
-                                        <CustomDirectoryButton onMouseClicked="#dhtLogDirBtnAction1" />
+                                        <CustomTextField fx:id="dhtLogDir1" editableField="false" prefWidth="600.0"/>
+                                        <CustomDirectoryButton onMouseClicked="#dhtLogDirBtnAction1"/>
                                     </HBox>
                                 </VBox>
                             </VBox>
@@ -1013,8 +1125,9 @@
                                 <VBox spacing="10.0">
                                     <Label text="MyLocalTon log file" styleClass="label-second-font-14"/>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                        <CustomTextField fx:id="myLocalTonLog" editableField="false" prefWidth="600.0" fieldText="/home/alex/myLocalTon.log" />
-                                        <CustomDirectoryButton onMouseClicked="#myLocalTonFileBtnAction" />
+                                        <CustomTextField fx:id="myLocalTonLog" editableField="false" prefWidth="600.0"
+                                                         fieldText="/home/alex/myLocalTon.log"/>
+                                        <CustomDirectoryButton onMouseClicked="#myLocalTonFileBtnAction"/>
                                     </HBox>
                                 </VBox>
                             </VBox>
@@ -1022,13 +1135,13 @@
                             <VBox spacing="10.0">
                                 <Label text="MyLocalTon log level" styleClass="label-second-font-14"/>
                                 <HBox alignment="CENTER_LEFT" spacing="0.0">
-                                    <CustomComboBox fx:id="myLogLevel" fieldPromptText="INFO" prefWidth="600.0" />
+                                    <CustomComboBox fx:id="myLogLevel" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
                                 <HBox alignment="CENTER_LEFT" spacing="0.0">
-                                    <CustomComboBox fx:id="tonLogLevel" fieldPromptText="INFO" prefWidth="600.0" />
+                                    <CustomComboBox fx:id="tonLogLevel" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
 
@@ -1038,7 +1151,8 @@
 
                 <Tab text="Validator 2">
 
-                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080" style="-fx-padding:0 0 0 50">
+                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080"
+                                style="-fx-padding:0 0 0 50">
                         <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
                             <VBox spacing="20.0">
@@ -1046,9 +1160,10 @@
 
                                     <Label text="Node logs directory" styleClass="label-second-font-14"/>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                        <CustomTextField fx:id="validatorLogDir2" editableField="false" prefWidth="600.0" fieldText="/home/alex/validator/" />
+                                        <CustomTextField fx:id="validatorLogDir2" editableField="false"
+                                                         prefWidth="600.0" fieldText="/home/alex/validator/"/>
 
-                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction2" />
+                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction2"/>
                                     </HBox>
                                 </VBox>
                             </VBox>
@@ -1056,7 +1171,7 @@
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
                                 <HBox alignment="CENTER_LEFT" spacing="0.0">
-                                    <CustomComboBox fx:id="tonLogLevel2" fieldPromptText="INFO" prefWidth="600.0" />
+                                    <CustomComboBox fx:id="tonLogLevel2" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
 
@@ -1066,15 +1181,17 @@
                 </Tab>
                 <Tab text="Validator 3">
 
-                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080" style="-fx-padding:0 0 0 50">
+                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080"
+                                style="-fx-padding:0 0 0 50">
                         <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
                             <VBox spacing="20.0">
                                 <VBox spacing="10.0">
                                     <Label text="Node logs directory" styleClass="label-second-font-14"/>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                        <CustomTextField fx:id="validatorLogDir3" editableField="false" prefWidth="600.0" fieldText="/home/alex/validator/" />
-                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction3" />
+                                        <CustomTextField fx:id="validatorLogDir3" editableField="false"
+                                                         prefWidth="600.0" fieldText="/home/alex/validator/"/>
+                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction3"/>
                                     </HBox>
                                 </VBox>
                             </VBox>
@@ -1082,7 +1199,7 @@
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
                                 <HBox alignment="CENTER_LEFT" spacing="0.0">
-                                    <CustomComboBox fx:id="tonLogLevel3" fieldPromptText="INFO" prefWidth="600.0" />
+                                    <CustomComboBox fx:id="tonLogLevel3" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
 
@@ -1091,15 +1208,17 @@
 
                 </Tab>
                 <Tab text="Validator 4">
-                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080" style="-fx-padding:0 0 0 50">
+                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080"
+                                style="-fx-padding:0 0 0 50">
                         <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
                             <VBox spacing="20.0">
                                 <VBox spacing="10.0">
                                     <Label text="Node logs directory" styleClass="label-second-font-14"/>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                        <CustomTextField fx:id="validatorLogDir4" editableField="false" prefWidth="600.0" fieldText="/home/alex/validator/" />
-                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction4" />
+                                        <CustomTextField fx:id="validatorLogDir4" editableField="false"
+                                                         prefWidth="600.0" fieldText="/home/alex/validator/"/>
+                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction4"/>
                                     </HBox>
                                 </VBox>
                             </VBox>
@@ -1107,7 +1226,7 @@
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
                                 <HBox alignment="CENTER_LEFT" spacing="0.0">
-                                    <CustomComboBox fx:id="tonLogLevel4" fieldPromptText="INFO" prefWidth="600.0" />
+                                    <CustomComboBox fx:id="tonLogLevel4" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
 
@@ -1116,15 +1235,17 @@
 
                 </Tab>
                 <Tab text="Validator 5">
-                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080" style="-fx-padding:0 0 0 50">
+                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080"
+                                style="-fx-padding:0 0 0 50">
                         <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
                             <VBox spacing="20.0">
                                 <VBox spacing="10.0">
                                     <Label text="Node logs directory" styleClass="label-second-font-14"/>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                        <CustomTextField fx:id="validatorLogDir5" editableField="false" prefWidth="600.0" fieldText="/home/alex/validator/" />
-                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction5" />
+                                        <CustomTextField fx:id="validatorLogDir5" editableField="false"
+                                                         prefWidth="600.0" fieldText="/home/alex/validator/"/>
+                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction5"/>
                                     </HBox>
                                 </VBox>
                             </VBox>
@@ -1132,7 +1253,7 @@
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
                                 <HBox alignment="CENTER_LEFT" spacing="0.0">
-                                    <CustomComboBox fx:id="tonLogLevel5" fieldPromptText="INFO" prefWidth="600.0" />
+                                    <CustomComboBox fx:id="tonLogLevel5" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
 
@@ -1140,15 +1261,17 @@
                     </AnchorPane>
                 </Tab>
                 <Tab text="Validator 6">
-                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080" style="-fx-padding:0 0 0 50">
+                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080"
+                                style="-fx-padding:0 0 0 50">
                         <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
                             <VBox spacing="20.0">
                                 <VBox spacing="10.0">
                                     <Label text="Node logs directory" styleClass="label-second-font-14"/>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                        <CustomTextField fx:id="validatorLogDir6" editableField="false" prefWidth="600.0" fieldText="/home/alex/validator/" />
-                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction6" />
+                                        <CustomTextField fx:id="validatorLogDir6" editableField="false"
+                                                         prefWidth="600.0" fieldText="/home/alex/validator/"/>
+                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction6"/>
                                     </HBox>
                                 </VBox>
                             </VBox>
@@ -1156,7 +1279,7 @@
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
                                 <HBox alignment="CENTER_LEFT" spacing="0.0">
-                                    <CustomComboBox fx:id="tonLogLevel6" fieldPromptText="INFO" prefWidth="600.0" />
+                                    <CustomComboBox fx:id="tonLogLevel6" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
 
@@ -1164,15 +1287,17 @@
                     </AnchorPane>
                 </Tab>
                 <Tab text="Validator 7">
-                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080" style="-fx-padding:0 0 0 50">
+                    <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080"
+                                style="-fx-padding:0 0 0 50">
                         <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
                             <VBox spacing="20.0">
                                 <VBox spacing="10.0">
                                     <Label text="Node logs directory" styleClass="label-second-font-14"/>
                                     <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                        <CustomTextField fx:id="validatorLogDir7" editableField="false" prefWidth="600.0" fieldText="/home/alex/validator/" />
-                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction7" />
+                                        <CustomTextField fx:id="validatorLogDir7" editableField="false"
+                                                         prefWidth="600.0" fieldText="/home/alex/validator/"/>
+                                        <CustomDirectoryButton onMouseClicked="#valLogDirBtnAction7"/>
                                     </HBox>
                                 </VBox>
                             </VBox>
@@ -1180,7 +1305,7 @@
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
                                 <HBox alignment="CENTER_LEFT" spacing="0.0">
-                                    <CustomComboBox fx:id="tonLogLevel7" fieldPromptText="INFO" prefWidth="600.0" />
+                                    <CustomComboBox fx:id="tonLogLevel7" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
 
@@ -1193,14 +1318,15 @@
 
         <accountsKeysPane>
 
-            <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080" style="-fx-padding:0 0 0 50">
+            <AnchorPane xmlns:fx="http://javafx.com/fxml" prefHeight="600" prefWidth="1080"
+                        style="-fx-padding:0 0 0 50">
                 <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
                     <VBox spacing="20.0">
                         <VBox spacing="10.0">
                             <Label text="Number of preinstalled wallets" styleClass="label-second-font-14"/>
                             <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                <CustomTextField fx:id="walletsNumber"  prefWidth="600.0" />
+                                <CustomTextField fx:id="walletsNumber" prefWidth="600.0"/>
                             </HBox>
                         </VBox>
                     </VBox>
@@ -1212,21 +1338,20 @@
                             </tooltip>
                         </Label>
                         <HBox alignment="CENTER_LEFT" spacing="0.0">
-                            <CustomTextField fx:id="coinsPerWallet"  prefWidth="600.0" fieldText="30000" />
+                            <CustomTextField fx:id="coinsPerWallet" prefWidth="600.0" fieldText="30000"/>
                         </HBox>
                     </VBox>
 
                     <VBox spacing="10.0">
                         <Label text="Wallet type" styleClass="label-second-font-14"/>
                         <HBox alignment="CENTER_LEFT" spacing="0.0">
-                            <CustomComboBox fx:id="walletVersion" fieldPromptText="Wallet V1" prefWidth="600.0" />
+                            <CustomComboBox fx:id="walletVersion" fieldPromptText="Wallet V1" prefWidth="600.0"/>
                         </HBox>
                     </VBox>
 
                     <VBox spacing="10.0">
-                        <Label text="Wallet type" styleClass="label-second-font-14"/>
                         <Label styleClass="label-second-font-14" style="-fx-text-fill: #0088CC;"
-                               text="Change of these settings requires TON blockchain reset" />
+                               text="Change of these settings requires TON blockchain reset"/>
                     </VBox>
 
                 </VBox>
@@ -1235,29 +1360,40 @@
 
         <aboutPane>
 
-            <AnchorPane AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <AnchorPane AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                        AnchorPane.topAnchor="10.0">
                 <children>
-                    <VBox alignment="CENTER" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" >
+                    <VBox alignment="CENTER" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <children>
-                            <HBox alignment="CENTER" maxHeight="72.0" maxWidth="72.0" minHeight="72.0" minWidth="72.0" prefHeight="72.0" prefWidth="72.0" style="-fx-background-color: #0088CC; -fx-background-radius: 100000;">
+                            <HBox alignment="CENTER" maxHeight="72.0" maxWidth="72.0" minHeight="72.0" minWidth="72.0"
+                                  prefHeight="72.0" prefWidth="72.0"
+                                  style="-fx-background-color: #0088CC; -fx-background-radius: 100000;">
                                 <children>
                                     <Label alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0">
                                         <graphic>
-                                            <SVGPath content="M25.9828 24H46.1741C46.8885 24 47.6023 24.1048 48.3483 24.4526C49.2425 24.8694 49.7167 25.5264 50.0489 26.0123C50.0747 26.0501 50.0989 26.089 50.1213 26.1289C50.5119 26.8242 50.7132 27.5749 50.7132 28.3826C50.7132 29.1498 50.5306 29.9858 50.1213 30.7144C50.1174 30.7215 50.1134 30.7284 50.1094 30.7352L37.3528 52.6483C37.0715 53.1316 36.5538 53.4281 35.9946 53.426C35.4355 53.4241 34.9198 53.1239 34.6419 52.6386L22.1196 30.7724C22.116 30.7665 22.1124 30.7605 22.1088 30.7545C21.8222 30.2824 21.379 29.552 21.3015 28.6095C21.2302 27.7428 21.425 26.8746 21.8605 26.1216C22.296 25.3685 22.9516 24.7665 23.7401 24.3981C24.5856 24.0031 25.4424 24 25.9828 24ZM34.4349 26.9217H25.9828C25.4275 26.9217 25.2143 26.9559 25.0653 27.0256C24.8592 27.1219 24.6861 27.28 24.5704 27.4801C24.4547 27.6803 24.4024 27.9122 24.4214 28.1444C24.4323 28.2775 24.4866 28.4297 24.8066 28.9575C24.8133 28.9686 24.8198 28.9797 24.8263 28.9911L34.4349 45.7695V26.9217ZM37.5654 26.9217V45.8523L47.3966 28.9643C47.5075 28.7627 47.5828 28.4715 47.5828 28.174C47.5828 27.9325 47.5327 27.723 47.4209 27.507C47.3035 27.3381 47.232 27.2488 47.1722 27.1876C47.1209 27.1353 47.0815 27.1072 47.0257 27.0813C46.7932 26.9729 46.5553 26.9217 46.1741 26.9217H37.5654Z" fill="WHITE" />
+                                            <SVGPath
+                                                    content="M25.9828 24H46.1741C46.8885 24 47.6023 24.1048 48.3483 24.4526C49.2425 24.8694 49.7167 25.5264 50.0489 26.0123C50.0747 26.0501 50.0989 26.089 50.1213 26.1289C50.5119 26.8242 50.7132 27.5749 50.7132 28.3826C50.7132 29.1498 50.5306 29.9858 50.1213 30.7144C50.1174 30.7215 50.1134 30.7284 50.1094 30.7352L37.3528 52.6483C37.0715 53.1316 36.5538 53.4281 35.9946 53.426C35.4355 53.4241 34.9198 53.1239 34.6419 52.6386L22.1196 30.7724C22.116 30.7665 22.1124 30.7605 22.1088 30.7545C21.8222 30.2824 21.379 29.552 21.3015 28.6095C21.2302 27.7428 21.425 26.8746 21.8605 26.1216C22.296 25.3685 22.9516 24.7665 23.7401 24.3981C24.5856 24.0031 25.4424 24 25.9828 24ZM34.4349 26.9217H25.9828C25.4275 26.9217 25.2143 26.9559 25.0653 27.0256C24.8592 27.1219 24.6861 27.28 24.5704 27.4801C24.4547 27.6803 24.4024 27.9122 24.4214 28.1444C24.4323 28.2775 24.4866 28.4297 24.8066 28.9575C24.8133 28.9686 24.8198 28.9797 24.8263 28.9911L34.4349 45.7695V26.9217ZM37.5654 26.9217V45.8523L47.3966 28.9643C47.5075 28.7627 47.5828 28.4715 47.5828 28.174C47.5828 27.9325 47.5327 27.723 47.4209 27.507C47.3035 27.3381 47.232 27.2488 47.1722 27.1876C47.1209 27.1353 47.0815 27.1072 47.0257 27.0813C46.7932 26.9729 46.5553 26.9217 46.1741 26.9217H37.5654Z"
+                                                    fill="WHITE"/>
                                         </graphic>
                                     </Label>
                                 </children>
                             </HBox>
                             <Label contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0">
                                 <graphic>
-                                    <SVGPath content="M64.76 13.248V0H67.01V13.248H64.76ZM0 0.558V13.248H2.106V5.3037L5.706 13.248H7.092L10.71 5.26397V13.248H12.816V0.558H10.8L6.417 10.424L2.034 0.558H0ZM14.46 15.552L14.982 17.334C15.51 17.25 15.996 17.136 16.44 16.992C16.884 16.848 17.292 16.647 17.664 16.389C18.036 16.131 18.384 15.789 18.708 15.363C19.032 14.937 19.332 14.4 19.608 13.752L23.748 4.158H21.48L18.8798 10.6012L16.296 4.158H13.902L17.701 12.9994L17.466 13.554C17.298 13.95 17.088 14.274 16.836 14.526C16.584 14.778 16.266 14.982 15.882 15.138C15.498 15.294 15.024 15.432 14.46 15.552ZM25.316 13.248V0.558H27.638V11.286H33.614V13.248H25.316ZM38.9314 13.428C37.9945 13.428 37.184 13.236 36.5 12.852C35.816 12.468 35.285 11.9229 34.907 11.2168C34.529 10.5107 34.34 9.67069 34.34 8.69681C34.34 7.72294 34.529 6.885 34.907 6.183C35.285 5.481 35.8172 4.938 36.5037 4.554C37.1901 4.17 38.0001 3.978 38.9337 3.978C39.8672 3.978 40.679 4.17 41.369 4.554C42.059 4.938 42.593 5.4818 42.971 6.18539C43.349 6.88898 43.538 7.72594 43.538 8.69625C43.538 9.66675 43.349 10.506 42.971 11.214C42.593 11.922 42.0595 12.468 41.3705 12.852C40.6816 13.236 39.8685 13.428 38.9314 13.428ZM38.9289 11.7C39.6376 11.7 40.202 11.451 40.622 10.953C41.042 10.455 41.252 9.702 41.252 8.694C41.252 7.686 41.041 6.936 40.619 6.444C40.1971 5.952 39.6331 5.706 38.9272 5.706C38.2211 5.706 37.658 5.952 37.238 6.444C36.818 6.936 36.608 7.686 36.608 8.694C36.608 9.702 36.8176 10.455 37.2369 10.953C37.6561 11.451 38.2201 11.7 38.9289 11.7ZM49.358 13.428C48.422 13.428 47.603 13.236 46.901 12.852C46.199 12.468 45.656 11.919 45.272 11.205C44.888 10.491 44.696 9.642 44.696 8.658C44.696 7.674 44.891 6.834 45.281 6.138C45.671 5.442 46.214 4.908 46.91 4.536C47.606 4.164 48.422 3.978 49.358 3.978C49.958 3.978 50.543 4.071 51.113 4.257C51.683 4.443 52.148 4.71 52.508 5.058L51.824 6.624C51.5 6.324 51.137 6.099 50.735 5.949C50.333 5.799 49.94 5.724 49.556 5.724C48.752 5.724 48.125 5.976 47.675 6.48C47.225 6.984 47 7.716 47 8.676C47 9.636 47.225 10.374 47.675 10.89C48.125 11.406 48.752 11.664 49.556 11.664C49.928 11.664 50.315 11.592 50.717 11.448C51.119 11.304 51.488 11.082 51.824 10.782L52.508 12.33C52.136 12.678 51.665 12.948 51.095 13.14C50.525 13.332 49.946 13.428 49.358 13.428ZM57.41 13.428C56.618 13.428 55.922 13.239 55.322 12.861C54.722 12.483 54.254 11.94 53.918 11.232C53.582 10.524 53.414 9.678 53.414 8.694C53.414 7.71 53.582 6.867 53.918 6.165C54.254 5.463 54.722 4.923 55.322 4.545C55.922 4.167 56.618 3.978 57.41 3.978C58.178 3.978 58.853 4.167 59.435 4.545C59.8882 4.83934 60.2231 5.21189 60.4399 5.66266L60.596 4.158H62.756C62.72 4.53 62.687 4.908 62.657 5.292C62.627 5.676 62.612 6.054 62.612 6.426V13.248H60.38L60.3668 11.8766C60.1488 12.2724 59.8292 12.6035 59.408 12.87C58.82 13.242 58.154 13.428 57.41 13.428ZM58.04 11.7C58.748 11.7 59.318 11.451 59.75 10.953C60.182 10.455 60.398 9.702 60.398 8.694C60.398 7.686 60.182 6.936 59.75 6.444C59.318 5.952 58.748 5.706 58.04 5.706C57.332 5.706 56.762 5.952 56.33 6.444C55.898 6.936 55.682 7.686 55.682 8.694C55.682 9.702 55.895 10.455 56.321 10.953C56.747 11.451 57.32 11.7 58.04 11.7ZM73.126 2.466V13.248H75.448V2.466H79.642V0.558H68.932V2.466H73.126ZM81.07 12.852C81.754 13.236 82.5645 13.428 83.5014 13.428C84.4385 13.428 85.2516 13.236 85.9406 12.852C86.6295 12.468 87.163 11.922 87.541 11.214C87.919 10.506 88.108 9.66675 88.108 8.69625C88.108 7.72594 87.919 6.88898 87.541 6.18539C87.163 5.4818 86.629 4.938 85.939 4.554C85.249 4.17 84.4372 3.978 83.5037 3.978C82.5701 3.978 81.7601 4.17 81.0737 4.554C80.3872 4.938 79.855 5.481 79.477 6.183C79.099 6.885 78.91 7.72294 78.91 8.69681C78.91 9.67069 79.099 10.5107 79.477 11.2168C79.855 11.9229 80.386 12.468 81.07 12.852ZM85.192 10.953C84.772 11.451 84.2076 11.7 83.4989 11.7C82.7901 11.7 82.2261 11.451 81.8069 10.953C81.3876 10.455 81.178 9.702 81.178 8.694C81.178 7.686 81.388 6.936 81.808 6.444C82.228 5.952 82.7911 5.706 83.4972 5.706C84.2031 5.706 84.7671 5.952 85.189 6.444C85.611 6.936 85.822 7.686 85.822 8.694C85.822 9.702 85.612 10.455 85.192 10.953ZM89.752 6.426V13.248H92.002V8.118C92.002 7.398 92.206 6.822 92.614 6.39C93.022 5.958 93.574 5.742 94.27 5.742C94.834 5.742 95.257 5.901 95.539 6.219C95.821 6.537 95.962 7.062 95.962 7.794V13.248H98.212V7.686C98.212 6.414 97.942 5.478 97.402 4.878C96.862 4.278 96.058 3.978 94.99 3.978C94.246 3.978 93.592 4.149 93.028 4.491C92.5722 4.76738 92.2066 5.13976 91.931 5.60815L91.786 4.158H89.608C89.656 4.53 89.692 4.908 89.716 5.292C89.74 5.676 89.752 6.054 89.752 6.426Z" fill="#303757" />
+                                    <SVGPath
+                                            content="M64.76 13.248V0H67.01V13.248H64.76ZM0 0.558V13.248H2.106V5.3037L5.706 13.248H7.092L10.71 5.26397V13.248H12.816V0.558H10.8L6.417 10.424L2.034 0.558H0ZM14.46 15.552L14.982 17.334C15.51 17.25 15.996 17.136 16.44 16.992C16.884 16.848 17.292 16.647 17.664 16.389C18.036 16.131 18.384 15.789 18.708 15.363C19.032 14.937 19.332 14.4 19.608 13.752L23.748 4.158H21.48L18.8798 10.6012L16.296 4.158H13.902L17.701 12.9994L17.466 13.554C17.298 13.95 17.088 14.274 16.836 14.526C16.584 14.778 16.266 14.982 15.882 15.138C15.498 15.294 15.024 15.432 14.46 15.552ZM25.316 13.248V0.558H27.638V11.286H33.614V13.248H25.316ZM38.9314 13.428C37.9945 13.428 37.184 13.236 36.5 12.852C35.816 12.468 35.285 11.9229 34.907 11.2168C34.529 10.5107 34.34 9.67069 34.34 8.69681C34.34 7.72294 34.529 6.885 34.907 6.183C35.285 5.481 35.8172 4.938 36.5037 4.554C37.1901 4.17 38.0001 3.978 38.9337 3.978C39.8672 3.978 40.679 4.17 41.369 4.554C42.059 4.938 42.593 5.4818 42.971 6.18539C43.349 6.88898 43.538 7.72594 43.538 8.69625C43.538 9.66675 43.349 10.506 42.971 11.214C42.593 11.922 42.0595 12.468 41.3705 12.852C40.6816 13.236 39.8685 13.428 38.9314 13.428ZM38.9289 11.7C39.6376 11.7 40.202 11.451 40.622 10.953C41.042 10.455 41.252 9.702 41.252 8.694C41.252 7.686 41.041 6.936 40.619 6.444C40.1971 5.952 39.6331 5.706 38.9272 5.706C38.2211 5.706 37.658 5.952 37.238 6.444C36.818 6.936 36.608 7.686 36.608 8.694C36.608 9.702 36.8176 10.455 37.2369 10.953C37.6561 11.451 38.2201 11.7 38.9289 11.7ZM49.358 13.428C48.422 13.428 47.603 13.236 46.901 12.852C46.199 12.468 45.656 11.919 45.272 11.205C44.888 10.491 44.696 9.642 44.696 8.658C44.696 7.674 44.891 6.834 45.281 6.138C45.671 5.442 46.214 4.908 46.91 4.536C47.606 4.164 48.422 3.978 49.358 3.978C49.958 3.978 50.543 4.071 51.113 4.257C51.683 4.443 52.148 4.71 52.508 5.058L51.824 6.624C51.5 6.324 51.137 6.099 50.735 5.949C50.333 5.799 49.94 5.724 49.556 5.724C48.752 5.724 48.125 5.976 47.675 6.48C47.225 6.984 47 7.716 47 8.676C47 9.636 47.225 10.374 47.675 10.89C48.125 11.406 48.752 11.664 49.556 11.664C49.928 11.664 50.315 11.592 50.717 11.448C51.119 11.304 51.488 11.082 51.824 10.782L52.508 12.33C52.136 12.678 51.665 12.948 51.095 13.14C50.525 13.332 49.946 13.428 49.358 13.428ZM57.41 13.428C56.618 13.428 55.922 13.239 55.322 12.861C54.722 12.483 54.254 11.94 53.918 11.232C53.582 10.524 53.414 9.678 53.414 8.694C53.414 7.71 53.582 6.867 53.918 6.165C54.254 5.463 54.722 4.923 55.322 4.545C55.922 4.167 56.618 3.978 57.41 3.978C58.178 3.978 58.853 4.167 59.435 4.545C59.8882 4.83934 60.2231 5.21189 60.4399 5.66266L60.596 4.158H62.756C62.72 4.53 62.687 4.908 62.657 5.292C62.627 5.676 62.612 6.054 62.612 6.426V13.248H60.38L60.3668 11.8766C60.1488 12.2724 59.8292 12.6035 59.408 12.87C58.82 13.242 58.154 13.428 57.41 13.428ZM58.04 11.7C58.748 11.7 59.318 11.451 59.75 10.953C60.182 10.455 60.398 9.702 60.398 8.694C60.398 7.686 60.182 6.936 59.75 6.444C59.318 5.952 58.748 5.706 58.04 5.706C57.332 5.706 56.762 5.952 56.33 6.444C55.898 6.936 55.682 7.686 55.682 8.694C55.682 9.702 55.895 10.455 56.321 10.953C56.747 11.451 57.32 11.7 58.04 11.7ZM73.126 2.466V13.248H75.448V2.466H79.642V0.558H68.932V2.466H73.126ZM81.07 12.852C81.754 13.236 82.5645 13.428 83.5014 13.428C84.4385 13.428 85.2516 13.236 85.9406 12.852C86.6295 12.468 87.163 11.922 87.541 11.214C87.919 10.506 88.108 9.66675 88.108 8.69625C88.108 7.72594 87.919 6.88898 87.541 6.18539C87.163 5.4818 86.629 4.938 85.939 4.554C85.249 4.17 84.4372 3.978 83.5037 3.978C82.5701 3.978 81.7601 4.17 81.0737 4.554C80.3872 4.938 79.855 5.481 79.477 6.183C79.099 6.885 78.91 7.72294 78.91 8.69681C78.91 9.67069 79.099 10.5107 79.477 11.2168C79.855 11.9229 80.386 12.468 81.07 12.852ZM85.192 10.953C84.772 11.451 84.2076 11.7 83.4989 11.7C82.7901 11.7 82.2261 11.451 81.8069 10.953C81.3876 10.455 81.178 9.702 81.178 8.694C81.178 7.686 81.388 6.936 81.808 6.444C82.228 5.952 82.7911 5.706 83.4972 5.706C84.2031 5.706 84.7671 5.952 85.189 6.444C85.611 6.936 85.822 7.686 85.822 8.694C85.822 9.702 85.612 10.455 85.192 10.953ZM89.752 6.426V13.248H92.002V8.118C92.002 7.398 92.206 6.822 92.614 6.39C93.022 5.958 93.574 5.742 94.27 5.742C94.834 5.742 95.257 5.901 95.539 6.219C95.821 6.537 95.962 7.062 95.962 7.794V13.248H98.212V7.686C98.212 6.414 97.942 5.478 97.402 4.878C96.862 4.278 96.058 3.978 94.99 3.978C94.246 3.978 93.592 4.149 93.028 4.491C92.5722 4.76738 92.2066 5.13976 91.931 5.60815L91.786 4.158H89.608C89.656 4.53 89.692 4.908 89.716 5.292C89.74 5.676 89.752 6.054 89.752 6.426Z"
+                                            fill="#303757"/>
                                 </graphic>
                             </Label>
                             <VBox alignment="CENTER" spacing="5.0">
                                 <children>
-                                    <Label text="v1.0.3-alpha" styleClass="label-second-font-14" style="-fx-text-fill: #6E6E6E;"/>
-                                    <Label text="The Open Network" styleClass="label-second-font-14" style="-fx-text-fill: #6E6E6E;"/>
-                                    <Label text="telegram.me/neodix" styleClass="label-second-font-14" style="-fx-text-fill: #0088CC;" onMouseClicked="#openTelegramLink"/>
+                                    <Label text="v1.0.3-alpha" styleClass="label-second-font-14"
+                                           style="-fx-text-fill: #6E6E6E;"/>
+                                    <Label text="The Open Network" styleClass="label-second-font-14"
+                                           style="-fx-text-fill: #6E6E6E;"/>
+                                    <Label text="telegram.me/neodix" styleClass="label-second-font-14"
+                                           style="-fx-text-fill: #0088CC;" onMouseClicked="#openTelegramLink"/>
                                 </children>
                             </VBox>
                         </children>
@@ -1269,126 +1405,127 @@
 
         <blockchainPane>
 
-            <BorderPane AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" style="-fx-background-color: #FFFFFF;">
+            <BorderPane AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="10.0"
+                        AnchorPane.bottomAnchor="10.0" style="-fx-background-color: #FFFFFF;">
                 <center>
-            <ScrollPane  fitToHeight="true" fitToWidth="true" style="-fx-background-color: #FFFFFF;">
-                <VBox spacing="20.0"  style="-fx-padding: 0 0 20 0; -fx-background-color: #FFFFFF;" >
+                    <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #FFFFFF;">
+                        <VBox spacing="20.0" style="-fx-padding: 0 0 20 0; -fx-background-color: #FFFFFF;">
 
-                    <Label styleClass="label-second-font-16" style="-fx-text-fill: #F72B50;"
-                           text="Change of these settings requires TON blockchain reset"/>
+                            <Label styleClass="label-second-font-16" style="-fx-text-fill: #F72B50;"
+                                   text="Change of these settings requires TON blockchain reset"/>
 
-                    <HBox spacing="40.0">
-                        <VBox spacing="10.0">
-                            <Label text="Global ID" styleClass="label-second-font-14">
-                                <tooltip>
-                                    <Tooltip text="Negative value means a test instance of the blockchain"/>
-                                </tooltip>
-                            </Label>
-                            <CustomTextField fx:id="globalId" prefWidth="300.0"/>
-                        </VBox>
-                        <VBox spacing="10.0">
-                            <Label text="Initial balance" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="initialBalance" prefWidth="300.0"/>
-                        </VBox>
-                    </HBox>
+                            <HBox spacing="40.0">
+                                <VBox spacing="10.0">
+                                    <Label text="Global ID" styleClass="label-second-font-14">
+                                        <tooltip>
+                                            <Tooltip text="Negative value means a test instance of the blockchain"/>
+                                        </tooltip>
+                                    </Label>
+                                    <CustomTextField fx:id="globalId" prefWidth="300.0"/>
+                                </VBox>
+                                <VBox spacing="10.0">
+                                    <Label text="Initial balance" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="initialBalance" prefWidth="300.0"/>
+                                </VBox>
+                            </HBox>
 
-                    <HBox spacing="40.0">
-                        <VBox spacing="10.0">
-                            <Label text="max-validators" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="maxValidators" prefWidth="300.0"/>
-                        </VBox>
-                        <VBox spacing="10.0">
-                            <Label text="max-main-validators" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="maxMainValidators" prefWidth="300.0"/>
-                        </VBox>
-                    </HBox>
+                            <HBox spacing="40.0">
+                                <VBox spacing="10.0">
+                                    <Label text="max-validators" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="maxValidators" prefWidth="300.0"/>
+                                </VBox>
+                                <VBox spacing="10.0">
+                                    <Label text="max-main-validators" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="maxMainValidators" prefWidth="300.0"/>
+                                </VBox>
+                            </HBox>
 
-                    <HBox spacing="40.0">
-                        <VBox spacing="10.0">
-                            <Label text="min-validators" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="minValidators" prefWidth="300.0"/>
-                        </VBox>
-                        <VBox spacing="10.0">
-                            <Label text="elected-for" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="electedFor" prefWidth="300.0"/>
-                        </VBox>
-                    </HBox>
+                            <HBox spacing="40.0">
+                                <VBox spacing="10.0">
+                                    <Label text="min-validators" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="minValidators" prefWidth="300.0"/>
+                                </VBox>
+                                <VBox spacing="10.0">
+                                    <Label text="elected-for" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="electedFor" prefWidth="300.0"/>
+                                </VBox>
+                            </HBox>
 
-                    <HBox spacing="40.0">
-                        <VBox spacing="10.0">
-                            <Label text="min-stake" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="minStake" prefWidth="300.0"/>
-                        </VBox>
-                        <VBox spacing="10.0">
-                            <Label text="elect-start-before" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="electionStartBefore" prefWidth="300.0"/>
-                        </VBox>
-                    </HBox>
+                            <HBox spacing="40.0">
+                                <VBox spacing="10.0">
+                                    <Label text="min-stake" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="minStake" prefWidth="300.0"/>
+                                </VBox>
+                                <VBox spacing="10.0">
+                                    <Label text="elect-start-before" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="electionStartBefore" prefWidth="300.0"/>
+                                </VBox>
+                            </HBox>
 
-                    <HBox spacing="40.0">
-                        <VBox spacing="10.0">
-                            <Label text="max-stake" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="maxStake" prefWidth="300.0"/>
-                        </VBox>
-                        <VBox spacing="10.0">
-                            <Label text="min-total-stake" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="minTotalStake" prefWidth="300.0"/>
-                        </VBox>
-                    </HBox>
+                            <HBox spacing="40.0">
+                                <VBox spacing="10.0">
+                                    <Label text="max-stake" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="maxStake" prefWidth="300.0"/>
+                                </VBox>
+                                <VBox spacing="10.0">
+                                    <Label text="min-total-stake" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="minTotalStake" prefWidth="300.0"/>
+                                </VBox>
+                            </HBox>
 
-                    <HBox spacing="40.0">
-                        <VBox spacing="10.0">
-                            <Label text="stakes-frozen-for" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="stakesFrozenFor" prefWidth="300.0"/>
-                        </VBox>
-                        <VBox spacing="10.0">
-                            <Label text="max-factor" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="maxFactor" prefWidth="300.0"/>
-                        </VBox>
-                    </HBox>
+                            <HBox spacing="40.0">
+                                <VBox spacing="10.0">
+                                    <Label text="stakes-frozen-for" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="stakesFrozenFor" prefWidth="300.0"/>
+                                </VBox>
+                                <VBox spacing="10.0">
+                                    <Label text="max-factor" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="maxFactor" prefWidth="300.0"/>
+                                </VBox>
+                            </HBox>
 
-                    <HBox spacing="40.0">
-                        <VBox spacing="10.0">
-                            <Label text="gas-price-wc" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="gasPrice" prefWidth="300.0"/>
-                        </VBox>
-                        <VBox spacing="10.0">
-                            <Label text="gas-price-mc" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="gasPriceMc" prefWidth="300.0"/>
-                        </VBox>
-                    </HBox>
+                            <HBox spacing="40.0">
+                                <VBox spacing="10.0">
+                                    <Label text="gas-price-wc" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="gasPrice" prefWidth="300.0"/>
+                                </VBox>
+                                <VBox spacing="10.0">
+                                    <Label text="gas-price-mc" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="gasPriceMc" prefWidth="300.0"/>
+                                </VBox>
+                            </HBox>
 
-                    <HBox spacing="40.0">
-                        <VBox spacing="10.0">
-                            <Label text="cell-price-wc" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="cellPrice" prefWidth="300.0"/>
-                        </VBox>
-                        <VBox spacing="10.0">
-                            <Label text="cell-price-mc" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="cellPriceMc" prefWidth="300.0"/>
-                        </VBox>
-                    </HBox>
+                            <HBox spacing="40.0">
+                                <VBox spacing="10.0">
+                                    <Label text="cell-price-wc" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="cellPrice" prefWidth="300.0"/>
+                                </VBox>
+                                <VBox spacing="10.0">
+                                    <Label text="cell-price-mc" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="cellPriceMc" prefWidth="300.0"/>
+                                </VBox>
+                            </HBox>
 
-                    <HBox spacing="40.0">
-                        <VBox spacing="10.0">
-                            <Label text="elect-end-before" styleClass="label-second-font-14"/>
-                            <CustomTextField fx:id="electionEndBefore" prefWidth="300.0"/>
+                            <HBox spacing="40.0">
+                                <VBox spacing="10.0">
+                                    <Label text="elect-end-before" styleClass="label-second-font-14"/>
+                                    <CustomTextField fx:id="electionEndBefore" prefWidth="300.0"/>
+                                </VBox>
+                            </HBox>
+                            <HBox style="-fx-padding: 40 0 0 0;">
+                                <CustomButton onAction="#resetAction" prefWidth="220.0" text="Reset TON Blockchain"
+                                              styleClass="custom-button-btn"/>
+                            </HBox>
+
                         </VBox>
-                    </HBox>
-                    <HBox style="-fx-padding: 40 0 0 0;">
-                        <CustomButton onAction="#resetAction" prefWidth="220.0" text="Reset TON Blockchain" styleClass="custom-button-btn" />
-                    </HBox>
-
-
-                </VBox>
-            </ScrollPane>
+                    </ScrollPane>
                 </center>
             </BorderPane>
 
         </blockchainPane>
 
         <userInterfacePane>
-            <GridPane hgap="15" vgap="20" xmlns:fx="http://javafx.com/fxml" >
+            <GridPane hgap="15" vgap="20" xmlns:fx="http://javafx.com/fxml">
                 <padding>
                     <Insets bottom="50.0" left="50.0" right="50.0" top="50.0"/>
                 </padding>
@@ -1405,24 +1542,36 @@
                     <RowConstraints/>
                 </rowConstraints>
 
-                <Label text="Show Tick/Tock transactions" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="label-second-font-14"/>
-                <JFXCheckBox fx:id="tickTockCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label text="Show Tick/Tock transactions" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="tickTockCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="0"/>
 
-                <Label text="Show activities between main and config contracts" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="label-second-font-14"/>
-                <JFXCheckBox fx:id="mainConfigTxCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label text="Show activities between main and config contracts" GridPane.columnIndex="1"
+                       GridPane.rowIndex="1" styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="mainConfigTxCheckBox" checkedColor="#0088CC" selected="true"
+                             GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 
-                <Label text="Show in/out messages" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="label-second-font-14"/>
-                <JFXCheckBox fx:id="inOutMsgsCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label text="Show in/out messages" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="inOutMsgsCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="2"/>
 
-                <Label text="Show shard state in block dump" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="label-second-font-14"/>
-                <JFXCheckBox fx:id="shardStateCheckbox" checkedColor="#0088CC" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <Label text="Show shard state in block dump" GridPane.columnIndex="1" GridPane.rowIndex="3"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="shardStateCheckbox" checkedColor="#0088CC" GridPane.columnIndex="0"
+                             GridPane.rowIndex="3"/>
 
-                <Label text="Show body in messages" GridPane.columnIndex="1" GridPane.rowIndex="4" styleClass="label-second-font-14"/>
-                <JFXCheckBox fx:id="showMsgBodyCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <Label text="Show body in messages" GridPane.columnIndex="1" GridPane.rowIndex="4"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="showMsgBodyCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="4"/>
 
-                <Label fx:id="enableBlockchainExplorerLabel" text="Enable native blockchain-explorer" GridPane.columnIndex="1"
+                <Label fx:id="enableBlockchainExplorerLabel" text="Enable native blockchain-explorer"
+                       GridPane.columnIndex="1"
                        GridPane.rowIndex="5" styleClass="label-second-font-14"/>
-                <JFXCheckBox fx:id="enableBlockchainExplorer" checkedColor="#0088CC" selected="true" onMouseClicked="#BlockChainExplorerCheckBoxClick" GridPane.columnIndex="0"
+                <JFXCheckBox fx:id="enableBlockchainExplorer" checkedColor="#0088CC" selected="true"
+                             onMouseClicked="#BlockChainExplorerCheckBoxClick" GridPane.columnIndex="0"
                              GridPane.rowIndex="5"/>
 
             </GridPane>
@@ -1430,7 +1579,8 @@
 
         <settingsValidatorsPane>
 
-            <JFXTabPane AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <JFXTabPane AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                        AnchorPane.topAnchor="10.0">
                 <Tab text="Validator 1">
                     <GridPane fx:id="settingsPaneValidator1" hgap="10" vgap="10" xmlns:fx="http://javafx.com/fxml">
                         <padding>
@@ -1459,22 +1609,29 @@
                         </rowConstraints>
 
                         <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <JFXTextField fx:id="configNodeConsolePort1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <JFXTextField fx:id="configNodeConsolePort1" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="0"/>
                         <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                        <JFXTextField fx:id="configNodePublicPort1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <JFXTextField fx:id="configNodePublicPort1" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="1"/>
                         <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <JFXTextField fx:id="configLiteServerPort1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        <JFXTextField fx:id="configLiteServerPort1" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="2"/>
                         <Label text="DHT server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                        <JFXTextField fx:id="configDhtServerPort1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                        <JFXTextField fx:id="configDhtServerPort1" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="3"/>
+                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
+                               text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="4"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorWalletDeposit1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                        <JFXTextField fx:id="validatorWalletDeposit1" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="6"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                        <JFXTextField fx:id="validatorDefaultStake1" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                        <JFXTextField fx:id="validatorDefaultStake1" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="7"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
@@ -1483,7 +1640,8 @@
                                 <Tooltip text="State will be gc'd after this time (in seconds)"/>
                             </tooltip>
                         </Label>
-                        <JFXTextField fx:id="nodeStateTtl1" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="nodeStateTtl1" promptText="State will be gc'd after this time (in seconds)"
+                                      text="31536000" GridPane.columnIndex="1"
                                       GridPane.rowIndex="9"/>
 
                         <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="10">
@@ -1512,7 +1670,8 @@
                                 <Tooltip text="In initial sync download all blocks for last given seconds"/>
                             </tooltip>
                         </Label>
-                        <JFXTextField fx:id="nodeSyncBefore1" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="13"/>
+                        <JFXTextField fx:id="nodeSyncBefore1" text="31536000" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="13"/>
                     </GridPane>
                 </Tab>
                 <Tab text="Validator 2">
@@ -1542,19 +1701,25 @@
                         </rowConstraints>
 
                         <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <JFXTextField fx:id="configNodeConsolePort2" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <JFXTextField fx:id="configNodeConsolePort2" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="0"/>
                         <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                        <JFXTextField fx:id="configNodePublicPort2" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <JFXTextField fx:id="configNodePublicPort2" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="1"/>
                         <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <JFXTextField fx:id="configLiteServerPort2" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                        <JFXTextField fx:id="configLiteServerPort2" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="2"/>
+                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
+                               text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit2" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit2" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake2" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                        <JFXTextField fx:id="validatorDefaultStake2" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="6"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
 
@@ -1563,7 +1728,8 @@
                                 <Tooltip text="State will be gc'd after this time (in seconds)"/>
                             </tooltip>
                         </Label>
-                        <JFXTextField fx:id="nodeStateTtl2" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="nodeStateTtl2" promptText="State will be gc'd after this time (in seconds)"
+                                      text="31536000" GridPane.columnIndex="1"
                                       GridPane.rowIndex="8"/>
 
                         <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
@@ -1622,19 +1788,25 @@
                         </rowConstraints>
 
                         <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <JFXTextField fx:id="configNodeConsolePort3" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <JFXTextField fx:id="configNodeConsolePort3" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="0"/>
                         <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                        <JFXTextField fx:id="configNodePublicPort3" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <JFXTextField fx:id="configNodePublicPort3" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="1"/>
                         <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <JFXTextField fx:id="configLiteServerPort3" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                        <JFXTextField fx:id="configLiteServerPort3" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="2"/>
+                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
+                               text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit3" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit3" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake3" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                        <JFXTextField fx:id="validatorDefaultStake3" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="6"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
 
@@ -1643,7 +1815,8 @@
                                 <Tooltip text="State will be gc'd after this time (in seconds)"/>
                             </tooltip>
                         </Label>
-                        <JFXTextField fx:id="nodeStateTtl3" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="nodeStateTtl3" promptText="State will be gc'd after this time (in seconds)"
+                                      text="31536000" GridPane.columnIndex="1"
                                       GridPane.rowIndex="8"/>
 
                         <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
@@ -1702,19 +1875,25 @@
                         </rowConstraints>
 
                         <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <JFXTextField fx:id="configNodeConsolePort4" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <JFXTextField fx:id="configNodeConsolePort4" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="0"/>
                         <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                        <JFXTextField fx:id="configNodePublicPort4" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <JFXTextField fx:id="configNodePublicPort4" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="1"/>
                         <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <JFXTextField fx:id="configLiteServerPort4" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                        <JFXTextField fx:id="configLiteServerPort4" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="2"/>
+                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
+                               text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit4" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit4" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake4" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                        <JFXTextField fx:id="validatorDefaultStake4" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="6"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
 
@@ -1723,7 +1902,8 @@
                                 <Tooltip text="State will be gc'd after this time (in seconds)"/>
                             </tooltip>
                         </Label>
-                        <JFXTextField fx:id="nodeStateTtl4" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="nodeStateTtl4" promptText="State will be gc'd after this time (in seconds)"
+                                      text="31536000" GridPane.columnIndex="1"
                                       GridPane.rowIndex="8"/>
 
                         <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
@@ -1752,7 +1932,8 @@
                                 <Tooltip text="In initial sync download all blocks for last given seconds"/>
                             </tooltip>
                         </Label>
-                        <JFXTextField fx:id="nodeSyncBefore4" text="31536000" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                        <JFXTextField fx:id="nodeSyncBefore4" text="31536000" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="12"/>
                     </GridPane>
                 </Tab>
                 <Tab text="Validator 5">
@@ -1782,19 +1963,25 @@
                         </rowConstraints>
 
                         <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <JFXTextField fx:id="configNodeConsolePort5" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <JFXTextField fx:id="configNodeConsolePort5" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="0"/>
                         <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                        <JFXTextField fx:id="configNodePublicPort5" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <JFXTextField fx:id="configNodePublicPort5" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="1"/>
                         <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <JFXTextField fx:id="configLiteServerPort5" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                        <JFXTextField fx:id="configLiteServerPort5" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="2"/>
+                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
+                               text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit5" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit5" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake5" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                        <JFXTextField fx:id="validatorDefaultStake5" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="6"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
 
@@ -1803,7 +1990,8 @@
                                 <Tooltip text="State will be gc'd after this time (in seconds)"/>
                             </tooltip>
                         </Label>
-                        <JFXTextField fx:id="nodeStateTtl5" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="nodeStateTtl5" promptText="State will be gc'd after this time (in seconds)"
+                                      text="31536000" GridPane.columnIndex="1"
                                       GridPane.rowIndex="8"/>
 
                         <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
@@ -1862,19 +2050,25 @@
                         </rowConstraints>
 
                         <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <JFXTextField fx:id="configNodeConsolePort6" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <JFXTextField fx:id="configNodeConsolePort6" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="0"/>
                         <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                        <JFXTextField fx:id="configNodePublicPort6" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <JFXTextField fx:id="configNodePublicPort6" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="1"/>
                         <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <JFXTextField fx:id="configLiteServerPort6" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                        <JFXTextField fx:id="configLiteServerPort6" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="2"/>
+                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
+                               text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit6" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit6" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake6" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                        <JFXTextField fx:id="validatorDefaultStake6" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="6"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
 
@@ -1883,7 +2077,8 @@
                                 <Tooltip text="State will be gc'd after this time (in seconds)"/>
                             </tooltip>
                         </Label>
-                        <JFXTextField fx:id="nodeStateTtl6" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="nodeStateTtl6" promptText="State will be gc'd after this time (in seconds)"
+                                      text="31536000" GridPane.columnIndex="1"
                                       GridPane.rowIndex="8"/>
 
                         <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
@@ -1942,19 +2137,25 @@
                         </rowConstraints>
 
                         <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <JFXTextField fx:id="configNodeConsolePort7" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                        <JFXTextField fx:id="configNodeConsolePort7" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="0"/>
                         <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                        <JFXTextField fx:id="configNodePublicPort7" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <JFXTextField fx:id="configNodePublicPort7" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="1"/>
                         <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                        <JFXTextField fx:id="configLiteServerPort7" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;" text="Change of these settings requires TON blockchain reset"
+                        <JFXTextField fx:id="configLiteServerPort7" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="2"/>
+                        <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
+                               text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit7" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit7" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake7" maxWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                        <JFXTextField fx:id="validatorDefaultStake7" maxWidth="50" GridPane.columnIndex="1"
+                                      GridPane.rowIndex="6"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
 
@@ -1963,7 +2164,8 @@
                                 <Tooltip text="State will be gc'd after this time (in seconds)"/>
                             </tooltip>
                         </Label>
-                        <JFXTextField fx:id="nodeStateTtl7" promptText="State will be gc'd after this time (in seconds)" text="31536000" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="nodeStateTtl7" promptText="State will be gc'd after this time (in seconds)"
+                                      text="31536000" GridPane.columnIndex="1"
                                       GridPane.rowIndex="8"/>
 
                         <Label text="Node block TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
@@ -1999,19 +2201,21 @@
 
         </settingsValidatorsPane>
 
-
         <explorerPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" >
-                <WebView fx:id="webView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <WebView fx:id="webView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
             </VBox>
         </explorerPane>
 
         <foundBlocksPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <HBox prefHeight="44.0" >
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <HBox prefHeight="44.0">
                     <VBox prefHeight="55.0" prefWidth="80.0">
                         <Label prefHeight="48.0" prefWidth="80.0" text="SEQNO"
-                               styleClass="content-header-label" />
+                               styleClass="content-header-label"/>
 
                     </VBox>
                     <VBox prefHeight="55.0" prefWidth="120.0">
@@ -2037,13 +2241,15 @@
 
                 <JFXListView fx:id="foundBlockslistviewid" focusTraversable="false" onScroll="#foundBlocksOnScroll"
                              prefHeight="582.0" prefWidth="1001.0" maxHeight="-Infinity"
-                             styleClass="content-list-view" >
+                             styleClass="content-list-view">
                     <!-- add dynamic content here -->
                 </JFXListView>
             </VBox>
 
-            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
-                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeSearch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0"
+                   contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
+                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeSearch" AnchorPane.rightAnchor="10.0"
+                   AnchorPane.topAnchor="10.0">
                 <graphic>
                     <SVGPath styleClass="close-search-button" scaleY="0.75" scaleX="0.75"
                              content="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm4.707,15.293-1.414,1.414L12,13.414,8.707,16.707,7.293,15.293,10.586,12,7.293,8.707,8.707,7.293,12,10.586l3.293-3.293,1.414,1.414L13.414,12Z"/>
@@ -2052,33 +2258,38 @@
         </foundBlocksPane>
 
         <foundAccountsPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
                 <VBox prefHeight="582.0" prefWidth="1001.0">
-                    <HBox prefHeight="44.0" prefWidth="924.0" >
-                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="208.0" >
+                    <HBox prefHeight="44.0" prefWidth="924.0">
+                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="208.0">
                             <Label prefHeight="48.0" prefWidth="208.0" styleClass="content-header-label"/>
                         </HBox>
-                        <VBox prefHeight="44.0" prefWidth="505.0" >
-                            <Label prefHeight="44.0" prefWidth="505.0" styleClass="content-header-label" text="ACCOUNT"/>
+                        <VBox prefHeight="44.0" prefWidth="505.0">
+                            <Label prefHeight="44.0" prefWidth="505.0" styleClass="content-header-label"
+                                   text="ACCOUNT"/>
                         </VBox>
-                        <VBox prefHeight="43.0" prefWidth="144.0" >
-                            <Label prefHeight="43.0" prefWidth="143.0" styleClass="content-header-label" text="BALANCE"/>
+                        <VBox prefHeight="43.0" prefWidth="144.0">
+                            <Label prefHeight="43.0" prefWidth="143.0" styleClass="content-header-label"
+                                   text="BALANCE"/>
                         </VBox>
 
-                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0" >
+                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0">
                             <Label prefHeight="48.0" prefWidth="199.0" styleClass="content-header-label"/>
                         </HBox>
                     </HBox>
                     <JFXListView fx:id="foundAccountsvboxid" focusTraversable="false" onScroll="#accountsOnScroll"
-                                 maxHeight="-Infinity"  prefHeight="582.0" prefWidth="1001.0"
+                                 maxHeight="-Infinity" prefHeight="582.0" prefWidth="1001.0"
                                  styleClass="content-list-view">
                         <!-- add dynamic content here-->
 
                     </JFXListView>
                 </VBox>
             </VBox>
-            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
-                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeSearch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0"
+                   contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
+                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeSearch" AnchorPane.rightAnchor="10.0"
+                   AnchorPane.topAnchor="10.0">
                 <graphic>
                     <SVGPath styleClass="close-search-button" scaleY="0.75" scaleX="0.75"
                              content="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm4.707,15.293-1.414,1.414L12,13.414,8.707,16.707,7.293,15.293,10.586,12,7.293,8.707,8.707,7.293,12,10.586l3.293-3.293,1.414,1.414L13.414,12Z"/>
@@ -2087,22 +2298,24 @@
         </foundAccountsPane>
 
         <foundTxsPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <HBox prefHeight="44.0" >
-                    <VBox prefHeight="55.0" prefWidth="195.0" >
-                        <Label prefHeight="48.0" prefWidth="195.0" styleClass="content-header-label" text="BLOCK/STATUS"/>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <HBox prefHeight="44.0">
+                    <VBox prefHeight="55.0" prefWidth="195.0">
+                        <Label prefHeight="48.0" prefWidth="195.0" styleClass="content-header-label"
+                               text="BLOCK/STATUS"/>
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="153.0" >
+                    <VBox prefHeight="55.0" prefWidth="153.0">
                         <Label prefHeight="48.0" prefWidth="153.0" styleClass="content-header-label" text="HASH/TIME"/>
                     </VBox>
-                    <VBox prefHeight="44.0" prefWidth="85.0" >
+                    <VBox prefHeight="44.0" prefWidth="85.0">
                         <Label prefHeight="44.0" prefWidth="85.0"
                                styleClass="content-header-label" text="TYPE" style="-fx-alignment: center;"/>
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="445.0" >
+                    <VBox prefHeight="55.0" prefWidth="445.0">
                         <Label prefHeight="44.0" prefWidth="445.0" styleClass="content-header-label" text="FROM/TO"/>
                     </VBox>
-                    <VBox prefHeight="43.0" prefWidth="140.0" >
+                    <VBox prefHeight="43.0" prefWidth="140.0">
                         <Label prefHeight="43.0" prefWidth="140.0"
                                styleClass="content-header-label" text="TONCOINS/FEES"/>
                     </VBox>
@@ -2115,8 +2328,10 @@
                 </JFXListView>
             </VBox>
 
-            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
-                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeSearch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0"
+                   contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
+                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeSearch" AnchorPane.rightAnchor="10.0"
+                   AnchorPane.topAnchor="10.0">
                 <graphic>
                     <SVGPath styleClass="close-search-button" scaleY="0.75" scaleX="0.75"
                              content="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm4.707,15.293-1.414,1.414L12,13.414,8.707,16.707,7.293,15.293,10.586,12,7.293,8.707,8.707,7.293,12,10.586l3.293-3.293,1.414,1.414L13.414,12Z"/>
@@ -2125,27 +2340,29 @@
         </foundTxsPane>
 
         <foundAccountsTxsPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                <VBox  prefHeight="100.0"  alignment="TOP_LEFT">
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <VBox prefHeight="100.0" alignment="TOP_LEFT">
                     <Label fx:id="labelAccountsTxs"
                            styleClass="content-header-label" style="-fx-font-size: 18px;"/>
                 </VBox>
 
-                <HBox prefHeight="44.0" >
-                    <VBox prefHeight="55.0" prefWidth="195.0" >
-                        <Label prefHeight="48.0" prefWidth="195.0" styleClass="content-header-label" text="BLOCK/STATUS"/>
+                <HBox prefHeight="44.0">
+                    <VBox prefHeight="55.0" prefWidth="195.0">
+                        <Label prefHeight="48.0" prefWidth="195.0" styleClass="content-header-label"
+                               text="BLOCK/STATUS"/>
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="153.0" >
+                    <VBox prefHeight="55.0" prefWidth="153.0">
                         <Label prefHeight="48.0" prefWidth="153.0" styleClass="content-header-label" text="HASH/TIME"/>
                     </VBox>
-                    <VBox prefHeight="44.0" prefWidth="85.0" >
+                    <VBox prefHeight="44.0" prefWidth="85.0">
                         <Label prefHeight="44.0" prefWidth="85.0"
                                styleClass="content-header-label" text="TYPE" style="-fx-alignment: center;"/>
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="445.0" >
+                    <VBox prefHeight="55.0" prefWidth="445.0">
                         <Label prefHeight="44.0" prefWidth="445.0" styleClass="content-header-label" text="FROM/TO"/>
                     </VBox>
-                    <VBox prefHeight="43.0" prefWidth="140.0" >
+                    <VBox prefHeight="43.0" prefWidth="140.0">
                         <Label prefHeight="43.0" prefWidth="140.0"
                                styleClass="content-header-label" text="TONCOINS/FEES"/>
                     </VBox>
@@ -2158,8 +2375,10 @@
                 </JFXListView>
             </VBox>
 
-            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
-                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeAccountsTxs" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <Label graphicTextGap="0.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0"
+                   contentDisplay="GRAPHIC_ONLY" styleClass="label-close-search-button"
+                   layoutX="575.0" layoutY="10.0" onMouseClicked="#closeAccountsTxs" AnchorPane.rightAnchor="10.0"
+                   AnchorPane.topAnchor="10.0">
                 <graphic>
                     <SVGPath styleClass="close-search-button" scaleY="0.75" scaleX="0.75"
                              content="M12,0A12,12,0,1,0,24,12,12,12,0,0,0,12,0Zm4.707,15.293-1.414,1.414L12,13.414,8.707,16.707,7.293,15.293,10.586,12,7.293,8.707,8.707,7.293,12,10.586l3.293-3.293,1.414,1.414L13.414,12Z"/>
@@ -2168,8 +2387,6 @@
         </foundAccountsTxsPane>
 
     </CustomMainLayout>
-
-
 
     <stylesheets>
         <URL value="@../css/main-styles.css"/>

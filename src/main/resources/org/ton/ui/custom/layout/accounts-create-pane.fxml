@@ -1,34 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
-
 <?import org.ton.ui.custom.control.CustomTextField?>
-
 <?import java.net.URL?>
-<?import com.jfoenix.controls.JFXButton?>
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.ton.ui.custom.layout.AccountsCreatePaneController" styleClass="background-dialog-pane"
-            prefHeight="350.0" prefWidth="510.0" >
+            prefHeight="300.0" prefWidth="510.0">
 
-   <children>
-      <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Create Wallet" styleClass="modal-pane-label" />
+    <children>
+        <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Create Wallet" styleClass="modal-pane-label"/>
 
-      <Line endX="510.0" layoutY="60.0" stroke="#888888" />
+        <Line endX="510.0" layoutY="60.0" stroke="#888888"/>
 
-      <CustomTextField fx:id="workchain" fieldPromptText="Workchain" prefWidth="450.0" layoutY="80.0" layoutX="30.0"/>
+        <CustomTextField fx:id="workchain" fieldPromptText="Workchain" prefWidth="450.0" layoutY="80.0" layoutX="30.0"/>
 
-      <CustomTextField fx:id="subWalletID" fieldPromptText="Sub-wallet ID" prefWidth="450.0" layoutY="140.0" layoutX="30.0"/>
+        <CustomTextField fx:id="subWalletID" fieldPromptText="Sub-wallet ID" prefWidth="450.0" layoutY="140.0"
+                         layoutX="30.0"/>
 
-      <CustomTextField fx:id="walletVersion" prefWidth="450.0" layoutY="200.0" layoutX="30.0" editableField="false"/>
+        <CustomTextField fx:id="walletVersion" prefWidth="450.0" layoutY="200.0" layoutX="30.0" editableField="false"
+                         visible="false"/>
 
-      <JFXButton fx:id="createBtn" onAction="#doCreateAccount" text="Create" prefHeight="40" prefWidth="120" layoutX="195" layoutY="280" styleClass="custom-button-form" />
+        <JFXButton fx:id="createBtn" onAction="#doCreateAccount" text="Create" prefHeight="40" prefWidth="120"
+                   layoutX="195" layoutY="230" styleClass="custom-button-form"/>
 
-   </children>
-   <stylesheets>
-      <URL value="@../../../css/custom/main-layout.css" />
-      <URL value="@../../../css/global-font.css" />
-   </stylesheets>
+    </children>
+    <stylesheets>
+        <URL value="@../../../css/custom/main-layout.css"/>
+        <URL value="@../../../css/global-font.css"/>
+    </stylesheets>
 </AnchorPane>

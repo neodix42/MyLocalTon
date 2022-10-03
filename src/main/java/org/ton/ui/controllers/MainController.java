@@ -17,7 +17,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.web.WebEngine;
@@ -64,10 +66,7 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -78,10 +77,10 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static com.sun.javafx.PlatformUtil.*;
-import static java.util.Objects.*;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
 import static org.ton.main.App.mainController;
-
 import static org.ton.ui.custom.events.CustomEventBus.emit;
 import static org.ton.ui.custom.events.CustomEventBus.listenFor;
 
@@ -940,8 +939,7 @@ public class MainController implements Initializable {
     public JFXCheckBox inOutMsgsCheckBox;
 
     @FXML
-    public CustomComboBox myLogLevel, tonLogLevel, tonLogLevel2, tonLogLevel3, tonLogLevel4, tonLogLevel5,
-            tonLogLevel6, tonLogLevel7, walletVersion;
+    public CustomComboBox myLogLevel, tonLogLevel, tonLogLevel2, tonLogLevel3, tonLogLevel4, tonLogLevel5, tonLogLevel6, tonLogLevel7, walletVersion;
 
     private MyLocalTonSettings settings;
 
@@ -976,7 +974,6 @@ public class MainController implements Initializable {
         sendDialog.setOnDialogOpened(jfxDialogEvent -> controller.requestFocusToDestinationAddress());
         sendDialog.show();
     }
-
 
 
     public void showInfoMsg(String msg, double durationSeconds) {
@@ -1058,93 +1055,93 @@ public class MainController implements Initializable {
     @FXML
     void blocksOnScroll(ScrollEvent event) {
         try {
-        Node n1 = blockslistviewid.lookup(".scroll-bar");
+            Node n1 = blockslistviewid.lookup(".scroll-bar");
 
-        if (n1 instanceof ScrollBar) {
-            ScrollBar bar = (ScrollBar) n1;
+            if (n1 instanceof ScrollBar) {
+                ScrollBar bar = (ScrollBar) n1;
 
-            if (event.getDeltaY() < 0 && bar.getValue() > 0) { // bottom reached
-                Platform.runLater(() -> {
-                    BorderPane bp = (BorderPane) blockslistviewid.getItems().get(blockslistviewid.getItems().size() - 1);
-                    long lastSeqno = Long.parseLong(((Label) ((Node) bp).lookup("#seqno")).getText());
-                    long wc = Long.parseLong(((Label) ((Node) bp).lookup("#wc")).getText());
+                if (event.getDeltaY() < 0 && bar.getValue() > 0) { // bottom reached
+                    Platform.runLater(() -> {
+                        BorderPane bp = (BorderPane) blockslistviewid.getItems().get(blockslistviewid.getItems().size() - 1);
+                        long lastSeqno = Long.parseLong(((Label) ((Node) bp).lookup("#seqno")).getText());
+                        long wc = Long.parseLong(((Label) ((Node) bp).lookup("#wc")).getText());
 
-                    String createdatDate = ((Label) ((Node) bp).lookup("#createdatDate")).getText();
-                    String createdatTime = ((Label) ((Node) bp).lookup("#createdatTime")).getText();
+                        String createdatDate = ((Label) ((Node) bp).lookup("#createdatDate")).getText();
+                        String createdatTime = ((Label) ((Node) bp).lookup("#createdatTime")).getText();
 
-                    long createdAt = Utils.datetimeToTimestamp(createdatDate + " " + createdatTime);
+                        long createdAt = Utils.datetimeToTimestamp(createdatDate + " " + createdatTime);
 
-                    log.debug("bottom reached, seqno {}, time {}, hwm {} ", lastSeqno, Utils.toUtcNoSpace(createdAt), MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get());
+                        log.debug("bottom reached, seqno {}, time {}, hwm {} ", lastSeqno, Utils.toUtcNoSpace(createdAt), MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get());
 
-                    if (lastSeqno == 1L && wc == -1L) {
-                        return;
-                    }
-
-                    if (blockslistviewid.getItems().size() > MAX_ROWS_IN_GUI) {
-                        showWarningMsg("Maximum amount (" + MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get() + ") of visible blocks in GUI reached.", 5);
-                        return;
-                    }
-
-                    List<BlockEntity> blocks = App.dbPool.loadBlocksBefore(createdAt);
-                    MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().addAndGet(blocks.size());
-
-                    ObservableList<Node> blockRows = FXCollections.observableArrayList();
-
-                    for (BlockEntity block : blocks) {
-                        try {
-                            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("blockrow.fxml"));
-                            javafx.scene.Node blockRow = fxmlLoader.load();
-
-                            ResultLastBlock resultLastBlock = ResultLastBlock.builder()
-                                    .createdAt(block.getCreatedAt())
-                                    .seqno(block.getSeqno())
-                                    .rootHash(block.getRoothash())
-                                    .fileHash(block.getFilehash())
-                                    .wc(block.getWc())
-                                    .shard(block.getShard())
-                                    .build();
-
-                            MyLocalTon.getInstance().populateBlockRowWithData(resultLastBlock, blockRow, null);
-
-                            if (resultLastBlock.getWc() == -1L) {
-                                (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
-                            }
-
-                            log.debug("Adding block {} roothash {}", block.getSeqno(), block.getRoothash());
-
-                            blockRows.add(blockRow);
-
-                        } catch (IOException e) {
-                            log.error("Error loading blockrow.fxml file, {}", e.getMessage());
+                        if (lastSeqno == 1L && wc == -1L) {
                             return;
                         }
-                    }
 
-                    log.debug("blockRows.size  {}", blockRows.size());
+                        if (blockslistviewid.getItems().size() > MAX_ROWS_IN_GUI) {
+                            showWarningMsg("Maximum amount (" + MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get() + ") of visible blocks in GUI reached.", 5);
+                            return;
+                        }
 
-                    if ((blockRows.isEmpty()) && (lastSeqno < 10)) {
-                        log.debug("On start some blocks were skipped, load them now from 1 to {}", lastSeqno - 1);
+                        List<BlockEntity> blocks = App.dbPool.loadBlocksBefore(createdAt);
+                        MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().addAndGet(blocks.size());
 
-                        LongStream.range(1, lastSeqno).forEach(i -> { // TODO for loop big integer
+                        ObservableList<Node> blockRows = FXCollections.observableArrayList();
+
+                        for (BlockEntity block : blocks) {
                             try {
-                                ResultLastBlock block = LiteClientParser.parseBySeqno(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
-                                log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
-                                MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), block, false);
-                            } catch (Exception e) {
-                                e.printStackTrace();
+                                FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("blockrow.fxml"));
+                                javafx.scene.Node blockRow = fxmlLoader.load();
+
+                                ResultLastBlock resultLastBlock = ResultLastBlock.builder()
+                                        .createdAt(block.getCreatedAt())
+                                        .seqno(block.getSeqno())
+                                        .rootHash(block.getRoothash())
+                                        .fileHash(block.getFilehash())
+                                        .wc(block.getWc())
+                                        .shard(block.getShard())
+                                        .build();
+
+                                MyLocalTon.getInstance().populateBlockRowWithData(resultLastBlock, blockRow, null);
+
+                                if (resultLastBlock.getWc() == -1L) {
+                                    (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
+                                }
+
+                                log.debug("Adding block {} roothash {}", block.getSeqno(), block.getRoothash());
+
+                                blockRows.add(blockRow);
+
+                            } catch (IOException e) {
+                                log.error("Error loading blockrow.fxml file, {}", e.getMessage());
+                                return;
                             }
-                        });
-                    }
-                    blockslistviewid.getItems().addAll(blockRows);
-                });
+                        }
+
+                        log.debug("blockRows.size  {}", blockRows.size());
+
+                        if ((blockRows.isEmpty()) && (lastSeqno < 10)) {
+                            log.debug("On start some blocks were skipped, load them now from 1 to {}", lastSeqno - 1);
+
+                            LongStream.range(1, lastSeqno).forEach(i -> { // TODO for loop big integer
+                                try {
+                                    ResultLastBlock block = LiteClientParser.parseBySeqno(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
+                                    log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
+                                    MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), block, false);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        }
+                        blockslistviewid.getItems().addAll(blockRows);
+                    });
+                }
+                if (event.getDeltaY() > 0) { // top reached
+                    log.debug("top reached");
+                }
             }
-            if (event.getDeltaY() > 0) { // top reached
-                log.debug("top reached");
-            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
     }
 
     @FXML
@@ -1830,7 +1827,7 @@ public class MainController implements Initializable {
         App.mainController.showInfoMsg("lite-client last command copied to clipboard", 2);
     }
 
-    public void resetAction()  {
+    public void resetAction() {
         FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/reset-blockchain-pane.fxml"));
 
         Parent parent = null;
@@ -3501,7 +3498,7 @@ public class MainController implements Initializable {
         loadingDialog = null;
     }
 
-    public void handle(CustomEvent event)  {
+    public void handle(CustomEvent event) {
         switch (event.getEventType()) {
             case CLICK:
                 try {
@@ -3536,7 +3533,7 @@ public class MainController implements Initializable {
         foundBlockslistviewid.getItems().clear();
         foundTxsvboxid.getItems().clear();
         foundAccountsvboxid.getItems().clear();
-        Platform.runLater(() ->  {
+        Platform.runLater(() -> {
             emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_BLOCKS, 0));
             emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, 0));
             emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, 0));

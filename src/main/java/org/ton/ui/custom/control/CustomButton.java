@@ -12,7 +12,7 @@ public class CustomButton extends JFXButton {
     @FXML
     private SVGPath svg;
 
-    public CustomButton() throws IOException{
+    public CustomButton() throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("custom-button.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
@@ -26,7 +26,7 @@ public class CustomButton extends JFXButton {
         fxmlLoader.load();
         switch (type) {
             case CREATE:
-                this.setText("Create");
+                this.setText("Create wallet");
                 this.setGraphicTextGap(10.0);
                 this.setPrefWidth(width);
                 this.setSvgText(
@@ -40,7 +40,6 @@ public class CustomButton extends JFXButton {
             default:
                 break;
         }
-
     }
 
     public SVGPath getSvg() {

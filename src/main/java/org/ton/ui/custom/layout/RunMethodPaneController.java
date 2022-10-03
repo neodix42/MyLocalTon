@@ -3,7 +3,9 @@ package org.ton.ui.custom.layout;
 import com.jfoenix.controls.JFXTextArea;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.actions.MyLocalTon;
@@ -11,8 +13,11 @@ import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.ui.custom.control.CustomTextField;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 @Slf4j
-public class RunMethodPaneController {
+public class RunMethodPaneController implements Initializable {
 
     @FXML
     private JFXTextArea txtArea;
@@ -65,5 +70,14 @@ public class RunMethodPaneController {
 
     public void requestFocusToMethodId() {
         this.methodIdField.requestFocus();
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        methodIdField.getTextField().setOnKeyPressed(keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                doRunMethod();
+            }
+        });
     }
 }
