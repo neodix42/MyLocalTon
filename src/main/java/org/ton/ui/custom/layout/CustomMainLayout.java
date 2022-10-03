@@ -123,13 +123,13 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> arg0,
                                 Number arg1, Number arg2) {
-                if(arg1.doubleValue() > 0.0) {
-                    if(hasResult()) {
+                if (arg1.doubleValue() > 0.0) {
+                    if (hasResult()) {
                         TranslateTransition tr = new TranslateTransition(Duration.seconds(0.001), resultsBtn);
                         tr.setToY(arg2.doubleValue() - settingBtn.getMainButtonHeight());
                         tr.play();
                     }
-                    if(hasExplorer()) {
+                    if (hasExplorer()) {
                         TranslateTransition tr2 = new TranslateTransition(Duration.seconds(0.001), explorerBtn);
                         tr2.setToY(arg2.doubleValue() - explorerBtn.getPrefHeight());
                         tr2.play();
@@ -143,38 +143,47 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     private void handleSettingsLogs(ActionEvent event) {
         changeContent(logsPane);
     }
+
     @FXML
     private void handleSettingsValidators(ActionEvent event) {
         changeContent(settingsValidatorsPane);
     }
+
     @FXML
-    private void handleSettingsAccountsKeys(ActionEvent event){
+    private void handleSettingsAccountsKeys(ActionEvent event) {
         changeContent(accountsKeysPane);
     }
+
     @FXML
-    private void handleSettingsBlockchain(ActionEvent event){
+    private void handleSettingsBlockchain(ActionEvent event) {
         changeContent(blockchainPane);
     }
+
     @FXML
     private void handleSettingsUserInterface(ActionEvent event) {
         changeContent(userInterfacePane);
     }
+
     @FXML
     private void handleSettingsAbout(ActionEvent event) {
         changeContent(aboutPane);
     }
+
     @FXML
     private void handleFoundBlocks(ActionEvent event) {
         changeContent(foundBlocksPane);
     }
+
     @FXML
     private void handleFoundAccountsTxs() {
         changeContent(foundAccountsTxsPane);
     }
+
     @FXML
     private void handleFoundAccounts(ActionEvent event) {
         changeContent(foundAccountsPane);
     }
+
     @FXML
     private void handleFoundTxs(ActionEvent event) {
         changeContent(foundTxsPane);
@@ -184,10 +193,10 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     private void clickExpandSettings(MouseEvent e) {
         resetButtons();
         removeCreateButton();
-        if(resultsBtn.isOpened())
+        if (resultsBtn.isOpened())
             resultsBtn.rotateIcon();
-        if(!settingBtn.isOpened()) {
-            if(!isEditingSettings()) {
+        if (!settingBtn.isOpened()) {
+            if (!isEditingSettings()) {
                 logsBtn.requestFocus();
                 changeContent(logsPane);
             }
@@ -200,10 +209,10 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     private void clickExpandResults(MouseEvent e) {
         resetButtons();
         removeCreateButton();
-        if(settingBtn.isOpened())
+        if (settingBtn.isOpened())
             settingBtn.rotateIcon();
-        if(!resultsBtn.isOpened()) {
-            if(!isViewingResults()) {
+        if (!resultsBtn.isOpened()) {
+            if (!isViewingResults()) {
                 foundBlocksBtn.requestFocus();
                 changeContent(foundBlocksPane);
             }
@@ -216,9 +225,9 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     private void clickBlocks(Event e) {
         resetButtons();
         blocksBtn.activate();
-        if(hasBlocks)
+        if (hasBlocks)
             changeContent(blocksPane);
-        else 
+        else
             checkBlocks();
     }
 
@@ -226,7 +235,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     private void clickTransactions(Event e) {
         resetButtons();
         transactionsBtn.activate();
-        if(hasTransactions)
+        if (hasTransactions)
             changeContent(transactionsPane);
         else
             checkTransactions();
@@ -242,7 +251,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType viewType) {
-        if(noBlocksTransactions == null) {
+        if (noBlocksTransactions == null) {
             try {
                 FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/media/no-blocks-transactions-pane.fxml"));
 
@@ -260,21 +269,21 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void refreshTransactions() {
-        if(((JFXListView) transactionsPane.lookup("#transactionsvboxid")).getItems().size() > 0) {
+        if (((JFXListView) transactionsPane.lookup("#transactionsvboxid")).getItems().size() > 0) {
             hasTransactions = true;
             changeContent(transactionsPane);
         }
     }
 
     private void refreshBlocks() {
-        if(((JFXListView) blocksPane.lookup("#blockslistviewid")).getItems().size() > 0) {
+        if (((JFXListView) blocksPane.lookup("#blockslistviewid")).getItems().size() > 0) {
             hasBlocks = true;
             changeContent(blocksPane);
         }
     }
 
     private void refreshAccounts() throws IOException {
-        if(((JFXListView) accountsPane.lookup("#accountsvboxid")).getItems().size() > 0) {
+        if (((JFXListView) accountsPane.lookup("#accountsvboxid")).getItems().size() > 0) {
             hasAccounts = true;
             addCreateButton();
             changeContent(accountsPane);
@@ -282,7 +291,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void checkBlocks() {
-        if(((JFXListView) blocksPane.lookup("#blockslistviewid")).getItems().size() == 0) {
+        if (((JFXListView) blocksPane.lookup("#blockslistviewid")).getItems().size() == 0) {
             loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType.BLOCKS);
         } else {
             hasBlocks = true;
@@ -291,7 +300,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void checkTransactions() {
-        if(((JFXListView) transactionsPane.lookup("#transactionsvboxid")).getItems().size() == 0) {
+        if (((JFXListView) transactionsPane.lookup("#transactionsvboxid")).getItems().size() == 0) {
             loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType.TRANSACTIONS);
         } else {
             hasTransactions = true;
@@ -300,7 +309,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void checkAccounts() throws IOException {
-        if(((JFXListView) accountsPane.lookup("#accountsvboxid")).getItems().size() == 0) {
+        if (((JFXListView) accountsPane.lookup("#accountsvboxid")).getItems().size() == 0) {
             loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType.ACCOUNTS);
         } else {
             hasAccounts = true;
@@ -320,7 +329,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     private void clickAccount(Event e) throws IOException {
         resetButtons();
         accountsBtn.activate();
-        if(hasAccounts) {
+        if (hasAccounts) {
             addCreateButton();
             changeContent(accountsPane);
         } else
@@ -368,15 +377,15 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
             contentPane.getChildren().remove(lastPane);
             contentPane.getChildren().add(pane);
             lastPane = pane;
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void setExplorer(boolean explorer) {
         this.explorer = explorer;
-        if(explorer) {
-            if(hasResult()) {
+        if (explorer) {
+            if (hasResult()) {
                 resultsBtn.setLayoutY(320.0);
             }
             buttons.getChildren().add(explorerBtn);
@@ -386,15 +395,17 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     private void setNumFoundBlocks(int num) {
         foundBlocksBtn.setText("Blocks ( " + num + " )");
     }
+
     private void setNumFoundTxs(int num) {
         foundTxsBtn.setText("Transaction ( " + num + " )");
     }
+
     private void setNumFoundAccounts(int num) {
         foundAccountsBtn.setText("Accounts ( " + num + " )");
     }
 
     private void setNumFoundAccountsTxs(int num, String accountAddr) {
-        if(foundAccountsTxsBtn != null)
+        if (foundAccountsTxsBtn != null)
             resultsBtn.removeButton(foundAccountsTxsBtn);
         try {
             foundAccountsTxsBtn = new CustomSubMenuButton();
@@ -402,16 +413,16 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        foundAccountsTxsBtn.setText("Acc TXs ( " + num + " )");
+        foundAccountsTxsBtn.setText("Account TXs ( " + num + " )");
         foundAccountsTxsBtn.setOnAction(e -> handleFoundAccountsTxs());
         resultsBtn.addButton(foundAccountsTxsBtn);
 
-        ((Label)foundAccountsTxsPane.lookup("#labelAccountsTxs")).setText("Account " + accountAddr + " - TXs ( " + num + " )");
-        if(settingBtn.isOpened()) {
+        ((Label) foundAccountsTxsPane.lookup("#labelAccountsTxs")).setText("Account " + accountAddr + " - TXs ( " + num + " )");
+        if (settingBtn.isOpened()) {
             settingBtn.rotateIcon();
             settingBtn.deactivate();
         }
-        if(resultsBtn.isOpened()) {
+        if (resultsBtn.isOpened()) {
             resultsBtn.rotateIcon();
             resultsBtn.deactivate();
         }
@@ -424,22 +435,22 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
 
     private void removeFoundAccountsTxs() {
         resultsBtn.removeButton(foundAccountsTxsBtn);
-        ((Label)foundAccountsTxsPane.lookup("#labelAccountsTxs")).setText("");
+        ((Label) foundAccountsTxsPane.lookup("#labelAccountsTxs")).setText("");
         initialState();
     }
 
 
     private void addResultsButton() {
-        if(hasExplorer())
+        if (hasExplorer())
             resultsBtn.setLayoutY(320.0);
-        if(!buttons.getChildren().contains(resultsBtn))
+        if (!buttons.getChildren().contains(resultsBtn))
             buttons.getChildren().add(resultsBtn);
         removeCreateButton();
         resetButtons();
         resultsBtn.activate();
-        if(settingBtn.isOpened())
+        if (settingBtn.isOpened())
             settingBtn.rotateIcon();
-        if(!resultsBtn.isOpened()) {
+        if (!resultsBtn.isOpened()) {
             resultsBtn.rotateIcon();
         }
         foundBlocksBtn.requestFocus();
@@ -455,8 +466,8 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void removeCreateButton() {
-        if(createButton != null) {
-            if(this.topButton.getChildren().contains(createButton)) {
+        if (createButton != null) {
+            if (this.topButton.getChildren().contains(createButton)) {
                 this.topButton.getChildren().remove(createButton);
                 createButton = null;
             }
@@ -479,7 +490,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
                 contentPane.getChildren().contains(foundAccountsTxsPane);
     }
 
-    public void handle(CustomEvent event){
+    public void handle(CustomEvent event) {
         switch (event.getEventType()) {
             case INFO:
                 addInfo((CustomNotificationEvent) event);
@@ -494,7 +505,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
                 addError((CustomNotificationEvent) event);
                 break;
             case START:
-                if(contentPane.getChildren().contains(blankPane))
+                if (contentPane.getChildren().contains(blankPane))
                     initialState();
                 break;
             case ACCOUNTS_TXS_REMOVE:
@@ -532,8 +543,8 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void blockchainReady() {
-        if(noBlocksTransactions != null) {
-            if(contentPane.getChildren().contains(noBlocksTransactions)) {
+        if (noBlocksTransactions != null) {
+            if (contentPane.getChildren().contains(noBlocksTransactions)) {
                 switch (noBlocksTransactionsController.getViewType()) {
                     case BLOCKS:
                         changeContent(blocksPane);
@@ -552,9 +563,9 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void walletsReady() {
-        if(noBlocksTransactions != null) {
-            if(contentPane.getChildren().contains(noBlocksTransactions)) {
-                if(noBlocksTransactionsController.getViewType() == NoBlocksTransactionsController.ViewType.ACCOUNTS) {
+        if (noBlocksTransactions != null) {
+            if (contentPane.getChildren().contains(noBlocksTransactions)) {
+                if (noBlocksTransactionsController.getViewType() == NoBlocksTransactionsController.ViewType.ACCOUNTS) {
                     changeContent(accountsPane);
                 }
             }
@@ -609,7 +620,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         notificationStack.notify(note, (int) event.getSeconds() * 1000);
     }
 
-    private void notify(Notification note, final int show ) {
+    private void notify(Notification note, final int show) {
         notificationStack.notify(note, show);
     }
 

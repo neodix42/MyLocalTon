@@ -11,8 +11,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tab;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,8 +49,6 @@ import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
 import org.ton.ui.custom.events.CustomEvent;
-import org.ton.ui.custom.events.event.CustomActionEvent;
-import org.ton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.ui.custom.events.event.CustomSearchEvent;
 import org.ton.utils.Utils;
 import org.ton.wallet.Wallet;
@@ -100,6 +96,7 @@ public class MyLocalTon {
     public static final String EXTERNAL = "external";
     public static final String FROZEN = "Frozen";
     public static final long ONE_BLN = 1000000000L;
+    public static final String FOUND_COLOR_HIHGLIGHT = "-fx-text-fill: #0088CC;";
     private static MyLocalTon singleInstance = null;
     public static ScheduledExecutorService validatorsMonitor = null;
 
@@ -762,7 +759,7 @@ public class MyLocalTon {
 
         ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress());
         if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
-            ((Label) accountRow.lookup("#hexAddr")).setStyle(accountRow.lookup("#hexAddr").getStyle() + "-fx-text-fill: #00FF00;");
+            ((Label) accountRow.lookup("#hexAddr")).setStyle(accountRow.lookup("#hexAddr").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
 
         ((Label) accountRow.lookup("#b64Addr")).setText(walletEntity.getWallet().getBounceableAddressBase64());
@@ -802,11 +799,11 @@ public class MyLocalTon {
         String status = isNull(walletEntity.getAccountState().getStatus()) ? "" : walletEntity.getAccountState().getStatus();
         ((Label) accountRow.lookup("#status")).setText(status);
 
-        if(settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())) {
+        if (settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())) {
             accountRow.lookup("#walletDeleteBtn").setDisable(true);
             (accountRow.lookup("#hBoxDeletetn")).getStyleClass().clear();
         }
-        if(status.equals(UNINITIALIZED) ||
+        if (status.equals(UNINITIALIZED) ||
                 status.equals(FROZEN) ||
                 settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) ||
                 isNull(walletEntity.getWallet().getPrivateKeyLocation())) {
@@ -891,7 +888,7 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#block")).setText(txEntity.getShortBlock());
         if (((Label) txRow.lookup("#block")).getText().equals(searchFor)) {
-            txRow.lookup("#block").setStyle(txRow.lookup("#block").getStyle() + "-fx-text-fill: #00FF00;");
+            txRow.lookup("#block").setStyle(txRow.lookup("#block").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         ((Label) txRow.lookup("#typeTx")).setText(txEntity.getTypeTx());
         ((Label) txRow.lookup("#typeMsg")).setText(txEntity.getTypeMsg());
@@ -903,26 +900,26 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#txid")).setText(txEntity.getTxHash().substring(0, 8) + "..." + txEntity.getTxHash().substring(56, 64));
         if (((Label) txRow.lookup("#txidHidden")).getText().equals(searchFor)) {
-            txRow.lookup("#txid").setStyle(txRow.lookup("#txid").getStyle() + "-fx-text-fill: #00FF00;");
+            txRow.lookup("#txid").setStyle(txRow.lookup("#txid").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         ((Label) txRow.lookup("#from")).setText(txEntity.getFrom().getAddr());
         if (searchFor.length() >= 64) {
             if (((Label) txRow.lookup("#from")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
-                txRow.lookup("#from").setStyle(txRow.lookup("#from").getStyle() + "-fx-text-fill: #00FF00;");
+                txRow.lookup("#from").setStyle(txRow.lookup("#from").getStyle() + FOUND_COLOR_HIHGLIGHT);
             }
         }
         if (((Label) txRow.lookup("#from")).getText().equals(searchFor)) {
-            txRow.lookup("#from").setStyle(txRow.lookup("#from").getStyle() + "-fx-text-fill: #00FF00;");
+            txRow.lookup("#from").setStyle(txRow.lookup("#from").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
 
         ((Label) txRow.lookup("#to")).setText(txEntity.getTo().getAddr());
         if (searchFor.length() >= 64) {
             if (((Label) txRow.lookup("#to")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
-                txRow.lookup("#to").setStyle(txRow.lookup("#to").getStyle() + "-fx-text-fill: #00FF00;");
+                txRow.lookup("#to").setStyle(txRow.lookup("#to").getStyle() + FOUND_COLOR_HIHGLIGHT);
             }
         }
         if (((Label) txRow.lookup("#to")).getText().equals(searchFor)) {
-            txRow.lookup("#to").setStyle(txRow.lookup("#to").getStyle() + "-fx-text-fill: #00FF00;");
+            txRow.lookup("#to").setStyle(txRow.lookup("#to").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         ((Label) txRow.lookup("#amount")).setText(txEntity.getAmount().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING).toPlainString());
 
@@ -1454,15 +1451,15 @@ public class MyLocalTon {
         ((Label) blockRow.lookup("#shard")).setText(finalLastBlock.getShard());
         ((Label) blockRow.lookup("#seqno")).setText(finalLastBlock.getSeqno().toString());
         if (((Label) blockRow.lookup("#seqno")).getText().equals(searchFor)) {
-            blockRow.lookup("#seqno").setStyle(blockRow.lookup("#seqno").getStyle() + "-fx-text-fill: #00FF00;");
+            blockRow.lookup("#seqno").setStyle(blockRow.lookup("#seqno").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         ((Label) blockRow.lookup("#filehash")).setText(finalLastBlock.getFileHash());
         ((Label) blockRow.lookup("#roothash")).setText(finalLastBlock.getRootHash());
         if (((Label) blockRow.lookup("#filehash")).getText().equals(searchFor)) {
-            blockRow.lookup("#filehash").setStyle(blockRow.lookup("#filehash").getStyle() + "-fx-text-fill: #00FF00;");
+            blockRow.lookup("#filehash").setStyle(blockRow.lookup("#filehash").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         if (((Label) blockRow.lookup("#roothash")).getText().equals(searchFor)) {
-            blockRow.lookup("#roothash").setStyle(blockRow.lookup("#roothash").getStyle() + "-fx-text-fill: #00FF00;");
+            blockRow.lookup("#roothash").setStyle(blockRow.lookup("#roothash").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy-MM-dd");
         SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm:ss");

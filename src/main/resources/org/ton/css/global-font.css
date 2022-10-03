@@ -91,16 +91,25 @@
 .jfx-tab-pane .headers-region {
     -fx-background-color: #FFFFFF;
 }
+
 .jfx-tab-pane .tab-header-background {
     -fx-background-color: #FFFFFF;
     -fx-text-fill: #1F1F1F;
 }
 
+.jfx-tab-pane : selected {
+    -fx-background-color: #FFFFFF;
+}
+
 .jfx-tab-pane .tab-selected-line {
+    -fx-scale-x: 75%;
     -fx-stroke: #0088CC;
     -fx-stroke-width: 3pt;
 }
 
+.jfx-tab-pane .tab-header-area .tab-selected-line {
+    -fx-background-color: #0088CC;
+}
 
 /* All classes that uses Fonts */
 
@@ -170,7 +179,7 @@
 .textfield-font {
     -fx-font-size: 14px;
     -fx-text-fill: #6E6E6E;
-    -fx-font-family: "Mulish";
+    -fx-font-family: "Mulish SemiBold";
 }
 
 .combobox-font > .list-cell  {

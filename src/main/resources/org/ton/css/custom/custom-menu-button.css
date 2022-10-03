@@ -28,7 +28,7 @@
 /* Settings and Search slide buttons */
 
 .submenu-button:focused {
-    -fx-text-fill: #303757;
+    -fx-text-fill: #0088cc;
 }
 
 .submenu-button:focused > #svg {
