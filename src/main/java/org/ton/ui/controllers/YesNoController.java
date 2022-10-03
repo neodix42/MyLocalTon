@@ -15,6 +15,7 @@ import org.ton.db.entities.WalletEntity;
 import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.main.App;
+import org.ton.ui.custom.control.CustomTextField;
 import org.ton.utils.Utils;
 
 import java.net.URL;
@@ -85,45 +86,14 @@ public class YesNoController implements Initializable {
         MainController mainController = fxmlLoader.getController();
 
         switch (action.getText()) {
-            case "reset":
-                log.debug("do reset");
-                mainController.yesNoDialog.close();
-                //show msg
-                doReset();
-                break;
             case "transform":
                 log.debug("do transform");
                 mainController.yesNoDialog.close();
-                break;
-            case "create":
-                log.debug("create");
-                mainController.yesNoDialog.close();
-                doCreateAccount();
-                break;
-            case "runmethod":
-                log.debug("runmethod");
-                doRunMethod();
-                break;
-            case "showmsg":
-                log.debug("showmsg");
-                mainController.yesNoDialog.close();
-                break;
-            case "delnode":
-                log.debug("delnode");
-                mainController.yesNoDialog.close();
-                doDelete();
                 break;
             default:
                 log.debug("no action");
                 mainController.yesNoDialog.close();
         }
-    }
-
-    private void doDelete() throws InterruptedException {
-        String nodeName = address.getText();
-        log.debug("do delete {}", nodeName);
-
-        Utils.doDelete(nodeName);
     }
 
     private void doRunMethod() {
@@ -153,56 +123,4 @@ public class YesNoController implements Initializable {
         txtArea.setVisible(true);
     }
 
-    private void doCreateAccount() {
-        App.mainController.showInfoMsg("Creating new wallet...", 3);
-
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(() -> {
-            Thread.currentThread().setName("Create new wallet");
-            try {
-                long chain = Long.parseLong(StringUtils.isEmpty(workchain.getText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultWorkChain()) : workchain.getText());
-                long walletId = Long.parseLong(StringUtils.isEmpty(subWalletId.getText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultSubWalletId()) : subWalletId.getText());
-
-                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(
-                        MyLocalTon.getInstance().getSettings().getGenesisNode(),
-                        null,
-                        chain,
-                        walletId,
-                        MyLocalTon.getInstance().getSettings().getWalletSettings().getInitialAmount(),
-                        false);
-
-                if (nonNull(walletEntity) && walletEntity.getSeqno() != -1L) {
-                    App.mainController.showSuccessMsg("Wallet " + walletEntity.getFullAddress() + " created", 3);
-                } else {
-                    App.mainController.showErrorMsg("Error creating wallet " + walletEntity.getFullAddress() + ". See logs for details.", 4);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    private void doReset() {
-        try {
-            MainController mainController = fxmlLoader.getController();
-            mainController.saveSettings();
-            Thread.sleep(100);
-            if (isWindows()) {
-                if (Utils.doShutdown()) {
-                    log.info("restarting: cmd /c start java -jar {} restart", Utils.getMyPath());
-                    Runtime.getRuntime().exec("cmd /c start java -jar " + Utils.getMyPath() + " restart");
-                    System.exit(0);
-                }
-            } else {
-                if (Utils.doShutdown()) {
-                    // works on linux
-                    log.info("restarting: java -jar {}", Utils.getMyPath());
-                    Runtime.getRuntime().exec("java -jar " + Utils.getMyPath() + " restart");
-                    System.exit(0);
-                }
-            }
-        } catch (Exception e) {
-            log.error("Cannot restart MyLocalTon, error " + e.getMessage());
-        }
-    }
 }

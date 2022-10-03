@@ -37,7 +37,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="280.0" prefWidth="595.0" stylesheets="@../css/global-font.css"
-           xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.SendController">
+           xmlns="http://javafx.com/javafx/17.0.2" style="-fx-background-color: #FFFFFF;" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.ton.ui.controllers.SendController">
     <GridPane>
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" maxWidth="339.0" minWidth="10.0" percentWidth="83.0" prefWidth="339.0"/>

@@ -1,0 +1,29 @@
+.jfx-text-field {
+    -fx-padding: 0 20 0 20;
+    -fx-font-size: 16px;
+}
+
+.jfx-text-field .input-line{
+	-fx-pref-height: 0px;
+}
+
+.jfx-text-field .input-focused-line{
+	-fx-pref-height: 0px;
+}
+
+.search-background {
+    -fx-background-color: #EFEFEF;
+    -fx-background-radius: 10;
+}
+
+.search-svg {
+    -fx-fill: #888888;
+}
+
+.clear-button {
+    -fx-fill: #888888;
+}
+
+.label-clear-button:hover > .clear-button {
+    -fx-fill: #555555;
+}
