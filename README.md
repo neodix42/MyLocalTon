@@ -2,10 +2,11 @@
 
 ## What is it
 
-This is your personal local TON blockchain (www.ton.org) in a shape of cross-platform desktop application. It comes in a form of uber-jar with all dependencies and binaries. Please notice this an
+This is your personal local TON blockchain (www.ton.org) in a shape of cross-platform desktop application. It comes in a
+form of uber-jar with all dependencies and binaries. Please notice this an
 alpha version and cannot be treated as production ready.
 
-![demo animation](https://github.com/neodiX42/MyLocalTon/blob/main/screens/MyLocalTon-alpha-demo.gif)
+![demo animation](https://github.com/neodiX42/MyLocalTon/blob/main/screens/MyLocalTon-demo.mp4)
 
 ## Matrix of supported OS & Java
 
@@ -60,6 +61,7 @@ https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msv
 ## Installation and usage
 
 ### For x86_64 architecture
+
 Go to https://github.com/neodiX42/MyLocalTon/releases. Open Assets section and download MyLocalTon.jar.
 
 Open console and execute the following command:
@@ -72,7 +74,8 @@ Go to https://github.com/neodiX42/MyLocalTon/releases and select version with `a
 
 ## Upgrade
 
-Today upgrade is not supported, that means once you have a new version of MyLocalTon.jar just overwrite the existing MyLocalTon.jar and delete myLocalTon directory next to it. The upgrade
+Today upgrade is not supported, that means once you have a new version of MyLocalTon.jar just overwrite the existing
+MyLocalTon.jar and delete myLocalTon directory next to it. The upgrade
 functionality is in the backlog, so it will be implemented in future releases.
 
 ## Build from sources
