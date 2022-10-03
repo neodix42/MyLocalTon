@@ -18,11 +18,13 @@
         <scrollButton>
             <Label fx:id="scrollBtn" contentDisplay="CENTER" graphicTextGap="0.0" onMouseClicked="#scrollBtnAction">
                 <graphic>
-
                     <SVGPath
                             content="m 256,259.27802 c -1.80756,0 -3.27802,-1.47051 -3.27802,-3.27802 0,-1.8075 1.47052,-3.27802 3.27802,-3.27802 1.80751,0 3.27802,1.47052 3.27802,3.27802 0,1.80751 -1.47046,3.27802 -3.27802,3.27802 z m 0,-5.70093 c -1.33603,0 -2.42291,1.08688 -2.42291,2.42291 0,1.33604 1.08688,2.42292 2.42291,2.42292 1.33604,0 2.42292,-1.08688 2.42292,-2.42292 0,-1.33603 -1.08688,-2.42291 -2.42292,-2.42291 z m 0,16.42314 -5.886,-9.81 h 11.772 z m -4.37572,-8.9549 4.37572,7.29286 4.37573,-7.2928 h -8.75145 z m 10.26172,-9.23555 h -11.772 l 5.886,-9.81 z m -10.26172,-0.85511 h 8.75139 L 256,243.66181 Z M 256,242.83082 l 5.13087,8.55141 h -10.26173 z m 5.13087,17.78696 -5.13087,8.5514 -5.13086,-8.5514 z M 256,253.14954 c 1.57344,0 2.85047,1.27702 2.85047,2.85046 0,1.57344 -1.27703,2.85047 -2.85047,2.85047 -1.57344,0 -2.85046,-1.27703 -2.85046,-2.85047 0,-1.57344 1.27702,-2.85046 2.85046,-2.85046 z"
                             fx:id="scrollPath" styleClass="scroll-btn-path-on"/>
                 </graphic>
+                <tooltip>
+                    <Tooltip text="Enable/Disable auto-scrolling"/>
+                </tooltip>
             </Label>
 
         </scrollButton>
@@ -215,18 +217,18 @@
                             <Label text="Total participants" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                             <Label fx:id="totalParticipants" text="0" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                             <Label text="Blockchain was launched" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                            <Label fx:id="blockchainLaunched" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                            <Label fx:id="blockchainLaunched" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                             <Label text="Start of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                            <Label fx:id="startCycle" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                            <Label fx:id="startCycle" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                             <Label text="End of the validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-                            <Label fx:id="endCycle" text="" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                            <Label fx:id="endCycle" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                             <Label text="Start of elections" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                            <Label fx:id="startElections" onMouseClicked="#copyElectionId" text=""
+                            <Label fx:id="startElections" onMouseClicked="#copyElectionId"
                                    GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                             <Label text="End of elections" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                            <Label fx:id="endElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                            <Label fx:id="endElections" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                             <Label text="Start of the next elections" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                            <Label fx:id="nextElections" text="" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                            <Label fx:id="nextElections" GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
                             <Label text="Minter address" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
                             <Label fx:id="minterAddr"
@@ -453,11 +455,11 @@
                             <Label text="Status" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                             <Label fx:id="nodeStatus2" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                             <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                            <Label fx:id="nodeConsolePort2" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                            <Label fx:id="nodeConsolePort2" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                             <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                            <Label fx:id="nodePublicPort2" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                            <Label fx:id="nodePublicPort2" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                             <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                            <Label fx:id="liteServerPort2" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                            <Label fx:id="liteServerPort2" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
@@ -471,7 +473,7 @@
                             <Label fx:id="validator2PubKeyInteger" onMouseClicked="#validation2PubKeyIntegerClicked"
                                    GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                            <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
@@ -485,7 +487,7 @@
                                    onMouseClicked="#validation2PubKeyIntegerClickedNext" GridPane.columnIndex="1"
                                    GridPane.rowIndex="12"/>
 
-                            <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                             <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
                             <Label fx:id="validator2WalletAddress" onMouseClicked="#validation2WalletAddrClicked"
@@ -565,11 +567,11 @@
                             <Label text="Status" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                             <Label fx:id="nodeStatus3" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                             <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                            <Label fx:id="nodeConsolePort3" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                            <Label fx:id="nodeConsolePort3" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                             <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                            <Label fx:id="nodePublicPort3" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                            <Label fx:id="nodePublicPort3" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                             <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                            <Label fx:id="liteServerPort3" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                            <Label fx:id="liteServerPort3" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
@@ -583,7 +585,7 @@
                             <Label fx:id="validator3PubKeyInteger" onMouseClicked="#validation3PubKeyIntegerClicked"
                                    GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                            <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
@@ -677,11 +679,11 @@
                             <Label text="Status" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                             <Label fx:id="nodeStatus4" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                             <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                            <Label fx:id="nodeConsolePort4" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                            <Label fx:id="nodeConsolePort4" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                             <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                            <Label fx:id="nodePublicPort4" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                            <Label fx:id="nodePublicPort4" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                             <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                            <Label fx:id="liteServerPort4" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                            <Label fx:id="liteServerPort4" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
@@ -695,7 +697,7 @@
                             <Label fx:id="validator4PubKeyInteger" onMouseClicked="#validation4PubKeyIntegerClicked"
                                    GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                            <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
@@ -789,11 +791,11 @@
                             <Label text="Status" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                             <Label fx:id="nodeStatus5" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                             <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                            <Label fx:id="nodeConsolePort5" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                            <Label fx:id="nodeConsolePort5" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                             <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                            <Label fx:id="nodePublicPort5" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                            <Label fx:id="nodePublicPort5" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                             <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                            <Label fx:id="liteServerPort5" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                            <Label fx:id="liteServerPort5" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
@@ -807,7 +809,7 @@
                             <Label fx:id="validator5PubKeyInteger" onMouseClicked="#validation5PubKeyIntegerClicked"
                                    GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                            <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
@@ -821,7 +823,7 @@
                                    onMouseClicked="#validation5PubKeyIntegerClickedNext" GridPane.columnIndex="1"
                                    GridPane.rowIndex="12"/>
 
-                            <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                             <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
                             <Label fx:id="validator5WalletAddress" onMouseClicked="#validation5WalletAddrClicked"
@@ -901,11 +903,11 @@
                             <Label text="Status" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                             <Label fx:id="nodeStatus6" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                             <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                            <Label fx:id="nodeConsolePort6" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                            <Label fx:id="nodeConsolePort6" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                             <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                            <Label fx:id="nodePublicPort6" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                            <Label fx:id="nodePublicPort6" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                             <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                            <Label fx:id="liteServerPort6" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                            <Label fx:id="liteServerPort6" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
@@ -919,7 +921,7 @@
                             <Label fx:id="validator6PubKeyInteger" onMouseClicked="#validation6PubKeyIntegerClicked"
                                    GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                            <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
@@ -933,7 +935,7 @@
                                    onMouseClicked="#validation6PubKeyIntegerClickedNext" GridPane.columnIndex="1"
                                    GridPane.rowIndex="12"/>
 
-                            <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                             <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
                             <Label fx:id="validator6WalletAddress" onMouseClicked="#validation1WalletAddrClicked"
@@ -1013,11 +1015,11 @@
                             <Label text="Status" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
                             <Label fx:id="nodeStatus7" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                             <Label text="Node console port" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-                            <Label fx:id="nodeConsolePort7" text="" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                            <Label fx:id="nodeConsolePort7" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                             <Label text="Node public port" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-                            <Label fx:id="nodePublicPort7" text="" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                            <Label fx:id="nodePublicPort7" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                             <Label text="Lite Server port" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-                            <Label fx:id="liteServerPort7" text="" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                            <Label fx:id="liteServerPort7" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
 
                             <Label text="Current validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
@@ -1031,7 +1033,7 @@
                             <Label fx:id="validator7PubKeyInteger" onMouseClicked="#validation7PubKeyIntegerClicked"
                                    GridPane.columnIndex="1" GridPane.rowIndex="7"/>
 
-                            <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                             <Label text="Next validation cycle" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
                             <Label text="  ADNL address" GridPane.columnIndex="0" GridPane.rowIndex="10"/>
@@ -1045,7 +1047,7 @@
                                    onMouseClicked="#validation7PubKeyIntegerClickedNext" GridPane.columnIndex="1"
                                    GridPane.rowIndex="12"/>
 
-                            <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="13"/>
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="13"/>
 
                             <Label text="Validator wallet address" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
                             <Label fx:id="validator7WalletAddress" onMouseClicked="#validation7WalletAddrClicked"
@@ -1134,13 +1136,13 @@
 
                             <VBox spacing="10.0">
                                 <Label text="MyLocalTon log level" styleClass="label-second-font-14"/>
-                                <HBox alignment="CENTER_LEFT" spacing="0.0">
+                                <HBox alignment="CENTER_LEFT">
                                     <CustomComboBox fx:id="myLogLevel" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
-                                <HBox alignment="CENTER_LEFT" spacing="0.0">
+                                <HBox alignment="CENTER_LEFT">
                                     <CustomComboBox fx:id="tonLogLevel" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
@@ -1170,7 +1172,7 @@
 
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
-                                <HBox alignment="CENTER_LEFT" spacing="0.0">
+                                <HBox alignment="CENTER_LEFT">
                                     <CustomComboBox fx:id="tonLogLevel2" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
@@ -1198,7 +1200,7 @@
 
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
-                                <HBox alignment="CENTER_LEFT" spacing="0.0">
+                                <HBox alignment="CENTER_LEFT">
                                     <CustomComboBox fx:id="tonLogLevel3" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
@@ -1225,7 +1227,7 @@
 
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
-                                <HBox alignment="CENTER_LEFT" spacing="0.0">
+                                <HBox alignment="CENTER_LEFT">
                                     <CustomComboBox fx:id="tonLogLevel4" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
@@ -1252,7 +1254,7 @@
 
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
-                                <HBox alignment="CENTER_LEFT" spacing="0.0">
+                                <HBox alignment="CENTER_LEFT">
                                     <CustomComboBox fx:id="tonLogLevel5" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
@@ -1278,7 +1280,7 @@
 
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
-                                <HBox alignment="CENTER_LEFT" spacing="0.0">
+                                <HBox alignment="CENTER_LEFT">
                                     <CustomComboBox fx:id="tonLogLevel6" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
@@ -1304,7 +1306,7 @@
 
                             <VBox spacing="10.0">
                                 <Label text="Node log level" styleClass="label-second-font-14"/>
-                                <HBox alignment="CENTER_LEFT" spacing="0.0">
+                                <HBox alignment="CENTER_LEFT">
                                     <CustomComboBox fx:id="tonLogLevel7" fieldPromptText="INFO" prefWidth="600.0"/>
                                 </HBox>
                             </VBox>
@@ -1337,14 +1339,14 @@
                                 <Tooltip text="Used when wallet is created"/>
                             </tooltip>
                         </Label>
-                        <HBox alignment="CENTER_LEFT" spacing="0.0">
+                        <HBox alignment="CENTER_LEFT">
                             <CustomTextField fx:id="coinsPerWallet" prefWidth="600.0" fieldText="30000"/>
                         </HBox>
                     </VBox>
 
                     <VBox spacing="10.0">
                         <Label text="Wallet type" styleClass="label-second-font-14"/>
-                        <HBox alignment="CENTER_LEFT" spacing="0.0">
+                        <HBox alignment="CENTER_LEFT">
                             <CustomComboBox fx:id="walletVersion" fieldPromptText="Wallet V1" prefWidth="600.0"/>
                         </HBox>
                     </VBox>
@@ -1624,7 +1626,7 @@
                                text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="4"/>
 
-                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="5"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
                         <JFXTextField fx:id="validatorWalletDeposit1" maxWidth="50" GridPane.columnIndex="1"
@@ -1633,7 +1635,7 @@
                         <JFXTextField fx:id="validatorDefaultStake1" maxWidth="50" GridPane.columnIndex="1"
                                       GridPane.rowIndex="7"/>
 
-                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="8"/>
 
                         <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="9">
                             <tooltip>
@@ -1712,7 +1714,7 @@
                         <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
                                text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
-                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
                         <JFXTextField fx:id="validatorWalletDeposit2" maxWidth="50" GridPane.columnIndex="1"
@@ -1974,7 +1976,7 @@
                         <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
                                text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
-                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
                         <JFXTextField fx:id="validatorWalletDeposit5" maxWidth="50" GridPane.columnIndex="1"
@@ -1983,7 +1985,7 @@
                         <JFXTextField fx:id="validatorDefaultStake5" maxWidth="50" GridPane.columnIndex="1"
                                       GridPane.rowIndex="6"/>
 
-                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="7"/>
 
                         <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="8">
                             <tooltip>
@@ -2061,7 +2063,7 @@
                         <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
                                text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
-                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
                         <JFXTextField fx:id="validatorWalletDeposit6" maxWidth="50" GridPane.columnIndex="1"
@@ -2070,7 +2072,7 @@
                         <JFXTextField fx:id="validatorDefaultStake6" maxWidth="50" GridPane.columnIndex="1"
                                       GridPane.rowIndex="6"/>
 
-                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="7"/>
 
                         <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="8">
                             <tooltip>
@@ -2148,7 +2150,7 @@
                         <Label style="-fx-text-fill: #0088CC;-fx-font-size:10;"
                                text="Change of these settings requires TON blockchain reset"
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
-                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
                         <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
                         <JFXTextField fx:id="validatorWalletDeposit7" maxWidth="50" GridPane.columnIndex="1"
@@ -2157,7 +2159,7 @@
                         <JFXTextField fx:id="validatorDefaultStake7" maxWidth="50" GridPane.columnIndex="1"
                                       GridPane.rowIndex="6"/>
 
-                        <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="7"/>
 
                         <Label text="Node state TTL" GridPane.columnIndex="0" GridPane.rowIndex="8">
                             <tooltip>

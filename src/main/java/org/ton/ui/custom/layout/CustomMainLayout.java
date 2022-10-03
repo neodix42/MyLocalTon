@@ -397,7 +397,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void setNumFoundTxs(int num) {
-        foundTxsBtn.setText("Transaction ( " + num + " )");
+        foundTxsBtn.setText("TXs ( " + num + " )");
     }
 
     private void setNumFoundAccounts(int num) {
