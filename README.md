@@ -6,7 +6,7 @@ This is your personal local TON blockchain (www.ton.org) in a shape of cross-pla
 form of uber-jar with all dependencies and binaries. Please notice this an
 alpha version and cannot be treated as production ready.
 
-![demo animation](https://github.com/neodiX42/MyLocalTon/blob/main/screens/MyLocalTon-demo.mp4)
+![demo animation](https://github.com/neodiX42/MyLocalTon/blob/main/screens/MyLocalTon-demo.gif)
 
 ## Matrix of supported OS & Java
 
