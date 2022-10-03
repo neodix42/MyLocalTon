@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import java.net.URL?>
+<fx:root type="javafx.scene.layout.HBox"  prefHeight="50.0" prefWidth="170.0" styleClass="menu-button"
+         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <Label fx:id="mainLabel" graphicTextGap="20.0" styleClass="main-label" prefHeight="50.0" prefWidth="170.0" text="Settings">
+        <graphic>
+            <SVGPath fx:id="labelSvg" styleClass="svg-path" />
+        </graphic>
+        <opaqueInsets>
+            <Insets />
+        </opaqueInsets>
+    </Label>
+    <stylesheets>
+        <URL value="@../../../css/custom/custom-menu-button.css"/>
+        <URL value="@../../../css/global-font.css"/>
+    </stylesheets>
+</fx:root>

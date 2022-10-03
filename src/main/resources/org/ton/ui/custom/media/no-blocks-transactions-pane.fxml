@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="650.0" prefWidth="1105.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.ton.ui.custom.media.NoBlocksTransactionsController" styleClass="content-pane"
+            AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
+            AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
+
+    <children>
+
+        <Label fx:id="label" prefHeight="30.0" prefWidth="150.0" text="" AnchorPane.leftAnchor="512.5"
+               AnchorPane.topAnchor="150.0"
+               styleClass="no-blocks-transactions-label"/>
+        <!--
+        <MediaView fx:id="mediaView" fitHeight="200.0" fitWidth="200.0" AnchorPane.leftAnchor="462.5" AnchorPane.topAnchor="190.0" />
+        <JFXButton graphicTextGap="10.0" prefHeight="40.0" prefWidth="110.0"
+                   styleClass="custom-button-btn" onAction="#refresh"
+                   text="Refresh" AnchorPane.leftAnchor="507.5" AnchorPane.topAnchor="420.0">
+           <graphic>
+              <SVGPath fx:id="svg" styleClass="custom-button-svg"
+                      content="M14.3939 3.84853C14.0815 3.89989 13.8453 4.17336 13.85 4.49937L13.85 5.20894L13.665 5.06423C12.6161 4.28152 11.3405 3.84722 9.99998 3.84722C6.60927 3.84722 3.84998 6.60651 3.84998 9.99722C3.84998 13.3879 6.60927 16.1472 9.99998 16.1472C13.3907 16.1472 16.15 13.3879 16.15 9.99722C16.15 9.69955 16.1235 9.40106 16.0728 9.06651C16.0456 8.83573 15.8915 8.63394 15.6715 8.54499C15.4515 8.45604 15.2004 8.49407 15.0166 8.64421C14.8328 8.79435 14.7454 9.03273 14.7887 9.26609C14.829 9.53254 14.85 9.77081 14.85 9.99722C14.85 12.6818 12.6846 14.8472 9.99998 14.8472C7.31535 14.8472 5.14998 12.6818 5.14998 9.99722C5.14998 7.3126 7.31535 5.14722 9.99998 5.14722L10.2455 5.1534C11.2231 5.20275 12.1428 5.54591 12.9107 6.1292L12.974 6.17994L12.1666 6.18055C11.9344 6.17725 11.7163 6.30041 11.5981 6.50288C11.48 6.70535 11.48 6.95576 11.5981 7.15823C11.7163 7.3607 11.9344 7.48385 12.1688 7.48054L14.5 7.48056C14.859 7.48052 15.1499 7.18953 15.15 6.83057V4.49722C15.1525 4.32361 15.0837 4.15432 14.9593 4.0301C14.835 3.90593 14.6657 3.83737 14.4899 3.83996L14.3939 3.84853Z" />
+           </graphic>
+        </JFXButton>
+        -->
+    </children>
+
+    <stylesheets>
+        <URL value="@../../../css/custom/main-layout.css"/>
+        <URL value="@../../../css/global-font.css"/>
+    </stylesheets>
+</AnchorPane>

@@ -1,0 +1,47 @@
+.jfx-text-field, .jfx-text-area {
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 16px;
+}
+.jfx-text-field .input-line, .jfx-text-area .input-line {
+	-fx-pref-height: 0px;
+}
+
+.jfx-text-field .input-focused-line, .jfx-text-area .input-focused-line {
+	-fx-pref-height: 0px;
+}
+
+.jfx-combo-box {
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.combo-box {
+    -fx-padding: -6 10 -6 10;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+.jfx-combo-box .input-line {
+	-fx-pref-height: 0px;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.jfx-combo-box .input-focused-line {
+	-fx-pref-height: 0px;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.textfield-background {
+    -fx-padding: 10 0 10 0;
+    -fx-border-style: solid;
+    -fx-border-width: 1;
+    -fx-border-insets: 0;
+    -fx-border-radius: 10;
+    -fx-border-color: #888888;
+}

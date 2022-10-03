@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -16,6 +17,8 @@ import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
+import org.ton.ui.custom.events.CustomEvent;
+import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.utils.Utils;
 
 import java.awt.*;
@@ -28,6 +31,7 @@ import java.util.concurrent.Executors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.ton.ui.custom.events.CustomEventBus.emit;
 
 @Slf4j
 public class App extends Application {
@@ -38,29 +42,38 @@ public class App extends Application {
     public static MainController mainController;
     public static DbPool dbPool;
     public static boolean firstAppLaunch = true;
+    public static Stage primaryStage;
 
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage)  {
+        this.primaryStage = primaryStage;
         log.info("Starting application");
 
         fxmlLoader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/main.fxml"));
-        root = fxmlLoader.load();
+        try {
+            root = fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
         scene = new Scene(root);
         mainController = fxmlLoader.getController();
+        mainController.setHostServices(getHostServices());
 
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
+        primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
 
         primaryStage.setOnShown(windowEvent -> {
             log.debug("onShown, stage loaded");
 
             if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 0) {
-                Platform.runLater(() -> mainController.showWarningMsg("Initializing TON blockchain very first time. It can take up to 2 minutes, please wait.", 60 * 5L));
+                mainController.showLoadingPane("Initializing TON blockchain very first time.", "It can take up to 2 minutes, please wait.");
             } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
-                Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Should take no longer than 45 seconds.", 5 * 60L));
+                mainController.showLoadingPane("Starting TON blockchain...", "Should take no longer than 45 seconds.");
             } else {
-                Platform.runLater(() -> mainController.showWarningMsg("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, may take up to 3 minutes.", 5 * 60L));
+                mainController.showLoadingPane("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size(), " validators, may take up to 3 minutes.");
             }
         });
 
@@ -75,7 +88,7 @@ public class App extends Application {
         }
 
         mainController.saveSettings();
-        mainController.showShutdownMsg("Shutting down TON blockchain...", 5 * 60L);
+        mainController.showShutdownMsg("Shutting down TON blockchain...", 5);
     }
 
     public static void setRoot(String fxml) throws IOException {
@@ -170,15 +183,23 @@ public class App extends Application {
         }
 
         mainController.showSuccessMsg("TON blockchain is ready!", 2);
+        Platform.runLater(() -> emit(new CustomActionEvent(CustomEvent.Type.BLOCKCHAIN_READY)));
+        //mainController.removeLoadingPane();
+        try {
+            Platform.runLater(() -> mainController.removeLoadingPane());
 
-        Thread.sleep(2100);
+            Thread.sleep(2100);
 
-        myLocalTon.createPreInstalledWallets(genesisNode);
+            myLocalTon.createPreInstalledWallets(genesisNode);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         myLocalTon.runBlockchainExplorer();
 
         Thread.sleep(1000);
         mainController.showSuccessMsg("Wallets are ready. You are all set!", 5);
+        Platform.runLater(() -> emit(new CustomActionEvent(CustomEvent.Type.WALLETS_READY)));
 
         myLocalTon.runAccountsMonitor();
 
