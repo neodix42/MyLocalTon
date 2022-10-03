@@ -35,6 +35,8 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.main.App;
+import org.ton.ui.custom.layout.AccountsCreatePaneController;
+import org.ton.ui.custom.layout.RunMethodPaneController;
 import org.ton.utils.Utils;
 
 import java.io.IOException;
@@ -116,19 +118,6 @@ public class AccountController {
     public void accSendBtnAction() throws IOException {
         log.info("acc send {}", hexAddr.getText());
         App.mainController.showSendDialog(hexAddr.getText());
-    }
-
-    String style;
-
-    @FXML
-    void handleMouseEnter() {
-        style = accRowBorderPane.getStyle();
-        accRowBorderPane.setStyle("-fx-background-color: bedef4; -fx-padding: 10 0 0 5;");
-    }
-
-    @FXML
-    void handleMouseExit() {
-        accRowBorderPane.setStyle(style);
     }
 
     @FXML
@@ -231,7 +220,8 @@ public class AccountController {
         content.putString(hex);
         clipboard.setContent(content);
         log.debug(hex + " copied");
-        App.mainController.showInfoMsg(hex + " copied to clipboard", 0.5);
+        String lightHex = Utils.getLightAddress(hex);
+        App.mainController.showInfoMsg(lightHex + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -242,7 +232,8 @@ public class AccountController {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -253,7 +244,8 @@ public class AccountController {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -264,7 +256,8 @@ public class AccountController {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -275,7 +268,8 @@ public class AccountController {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        App.mainController.showInfoMsg(addr + " copied to clipboard", 0.5);
+        String lightAddr = Utils.getLightAddress(addr);
+        App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -286,7 +280,7 @@ public class AccountController {
         content.putString(coins);
         clipboard.setContent(content);
         log.debug(coins + " copied");
-        App.mainController.showInfoMsg(coins + " copied to clipboard", 0.5);
+        App.mainController.showInfoMsg(coins + " copied to clipboard", 2);
         mouseEvent.consume();
     }
 
@@ -297,24 +291,13 @@ public class AccountController {
 
     public void runMethodBtn() throws IOException {
         log.info("runMethodBtn");
-
-        Parent dialog = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
-        dialog.lookup("#header").setVisible(true);
-        dialog.lookup("#body").setVisible(false);
-        ((Label) dialog.lookup("#action")).setText("runmethod");
-        ((Label) dialog.lookup("#address")).setText(hexAddr.getText());
-        ((Label) dialog.lookup("#header")).setText("Execute runmethod");
-        ((Label) dialog.lookup("#body")).setText("For example, enter seqno or get_public_key against wallet contract");
-
-        dialog.lookup("#inputFields").setVisible(true);
-        dialog.lookup("#seqno").setVisible(true);
-        dialog.lookup("#workchain").setVisible(false);
-        dialog.lookup("#subWalletId").setVisible(false);
-
-        dialog.lookup("#okBtn").setDisable(false);
-
+        FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/run-pane.fxml"));
+        Parent parent = loader.load();
+        RunMethodPaneController controller = loader.getController();
+        controller.setAddress(hexAddr.getText());
+        controller.setHeader("Execute runmethod");
         JFXDialogLayout content = new JFXDialogLayout();
-        content.setBody(dialog);
+        content.setBody(parent);
 
         yesNoDialog = new JFXDialog(App.root, content, JFXDialog.DialogTransition.CENTER);
         yesNoDialog.setOnKeyPressed(keyEvent -> {
@@ -324,7 +307,7 @@ public class AccountController {
                 }
         );
         yesNoDialog.setOnDialogOpened(jfxDialogEvent -> {
-            dialog.lookup("#seqno").requestFocus();
+            controller.requestFocusToMethodId();
         });
         yesNoDialog.show();
     }

@@ -1,0 +1,40 @@
+.menu-button {
+    -fx-background-radius: 10;
+    -fx-background-color: #FFFFFF;
+}
+
+.menu-button:hover {
+    -fx-background-radius: 10;
+    -fx-background-color: #F7F9FB;
+}
+
+.menu-button:activated {
+    -fx-background-radius: 10;
+    -fx-background-color: #303757;
+}
+
+.svg-path {
+    -fx-fill: #0088CC;
+}
+
+.menu-button:activated > #mainLabel > #labelSvg {
+    -fx-fill: #FFFFFF;
+}
+
+.menu-button:activated > #secondLabel > #secondSvg {
+    -fx-fill: #FFFFFF;
+}
+
+/* Settings and Search slide buttons */
+
+.submenu-button:focused {
+    -fx-text-fill: #0088cc;
+}
+
+.submenu-button:focused > #svg {
+    -fx-fill: #303757;
+}
+
+.custom-submenu-button-svg {
+    -fx-fill: #6E6E6E;
+}

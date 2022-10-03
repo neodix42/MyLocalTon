@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.layout.HBox?>
+<?import java.net.URL?>
+<fx:root fx:id="hRoot" type="javafx.scene.layout.HBox" prefHeight="40.0" prefWidth="450.0"
+         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+         styleClass="textfield-background">
+
+    <children>
+        <JFXTextField fx:id="textField" styleClass="textfield-font" prefHeight="40.0" prefWidth="${hRoot.prefWidth}"/>
+    </children>
+
+    <stylesheets>
+        <URL value="@../../../css/custom/custom-form-components.css"/>
+        <URL value="@../../../css/global-font.css"/>
+    </stylesheets>
+</fx:root>

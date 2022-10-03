@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.shape.SVGPath?>
+<?import java.net.URL?>
+<fx:root type="com.jfoenix.controls.JFXButton" graphicTextGap="15.0" prefHeight="20.0" prefWidth="160.0"
+         styleClass="submenu-button" alignment="BASELINE_LEFT"
+         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" >
+   <graphic>
+      <SVGPath fx:id="svg" content="M 0 0 L 15 0 L 15 2 L 0 2 Z" styleClass="custom-submenu-button-svg"/>
+   </graphic>
+   <stylesheets>
+      <URL value="@../../../css/custom/custom-menu-button.css"/>
+      <URL value="@../../../css/global-font.css"/>
+   </stylesheets>
+</fx:root>

@@ -1,0 +1,142 @@
+.row-pane {
+    -fx-background-color: #FFFFFF;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 2;
+    -fx-border-color: #e7e7e7;
+}
+
+.row-pane-gray {
+    -fx-background-color: #F7F9FB;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 2;
+    -fx-border-color: #e7e7e7;
+}
+
+.row-pane:hover {
+    -fx-background-color: #E9F4FF;
+}
+
+.account-row-pane {
+    -fx-background-color: #FFFFFF;
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-width: 2;
+    -fx-border-color: #e7e7e7;
+}
+
+.background-acc-send-button {
+    -fx-background-color: #FFFFFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-send-button-gray {
+    -fx-background-color: #F7F9FB;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-send-button:hover {
+    -fx-background-color: #E5EAFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-send-button-gray:hover {
+    -fx-background-color: #E5EAFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-delete-button {
+    -fx-background-color: #FFFFFF;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-delete-button-gray {
+    -fx-background-color: #F7F9FB;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-delete-button:hover {
+    -fx-background-color: #FEE6EA;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.background-acc-delete-button-gray:hover {
+    -fx-background-color: #FEE6EA;
+    -size: 30;
+    -fx-min-height: -size;
+    -fx-min-width: -size;
+    -fx-max-height: -size;
+    -fx-max-width: -size;
+    -fx-shape: "M8 0h14s8 0 8 8v14s0 8 -8 8h-14s-8 0 -8 -8v-14s0 -8 8 -8";
+}
+
+.info-svg {
+    -fx-fill: #0088CC;
+}
+
+.info-button:hover {
+    -fx-background-color: #0088CC;
+    -fx-background-radius: 8;
+}
+.info-button:hover>.info-svg {
+    -fx-fill: #F7F9FB;
+}
+
+.acc-info-svg {
+    -fx-fill: #0088CC;
+}
+
+.acc-info-button:hover {
+    -fx-background-color: #E9F1FD;
+    -fx-background-radius: 8;
+}
+
+.acc-send-svg {
+    -fx-fill: #303757;
+}
+
+.acc-delete-svg {
+    -fx-fill: #F72B50;
+}
+
+.jfx-button:disabled>.acc-send-svg {
+    -fx-fill: #888888;
+    -fx-opacity: 1.0 ;
+}
+.jfx-button:disabled>.acc-delete-svg {
+    -fx-fill: #888888;
+    -fx-opacity: 1.0 ;
+}
