@@ -182,8 +182,34 @@
     -fx-font-family: "Mulish SemiBold";
 }
 
+.combobox-font {
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
 .combobox-font > .list-cell  {
-    -fx-font-size: 14px;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.combo-box-popup > .list-view  {
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.combobox-font .input-focused-line {
+	-fx-pref-height: 0px;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.combobox-font : selected {
+    -fx-font-size: 16px;
     -fx-font-family: "Mulish";
     -fx-text-fill: #6E6E6E;
 }

@@ -13,16 +13,28 @@
 .jfx-combo-box {
     -fx-padding: 0 10 0 10;
     -fx-font-size: 16px;
-}
-.combo-box {
-    -fx-padding: -6 10 -6 10;
-}
-.jfx-combo-box .input-line{
-	-fx-pref-height: 0px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
 }
 
-.jfx-combo-box .input-focused-line{
+.combo-box {
+    -fx-padding: -6 10 -6 10;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+.jfx-combo-box .input-line {
 	-fx-pref-height: 0px;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.jfx-combo-box .input-focused-line {
+	-fx-pref-height: 0px;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
 }
 
 .textfield-background {
