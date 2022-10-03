@@ -1,4 +1,15 @@
-![Atomix](https://ton.org/download/ton_symbol.svg)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Telegram Foundation Group][telegram-foundation-badge]][telegram-foundation-url]
+[![Based on TON][ton-svg]][ton]
+![GitHub last commit](https://img.shields.io/github/last-commit/neodiX42/myLocalTon)
+
+[telegram-foundation-url]: https://t.me/tonblockchain
+
+[telegram-foundation-badge]: https://img.shields.io/badge/-TON%20Foundation-2CA5E0?style=flat&logo=telegram&logoColor=white
+
+[ton-svg]: https://img.shields.io/badge/Based%20on-TON-blue
+
+[ton]: https://ton.org
 
 ## What is it
 
@@ -6,7 +17,7 @@ This is your personal local TON blockchain (www.ton.org) in a shape of cross-pla
 form of uber-jar with all dependencies and binaries. Please notice this an
 alpha version and cannot be treated as production ready.
 
-![demo animation](https://github.com/neodiX42/MyLocalTon/blob/main/screens/MyLocalTon-demo.gif)
+<img src='./screens/MyLocalTon-demo.gif'>
 
 ## Matrix of supported OS & Java
 
