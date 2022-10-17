@@ -58,20 +58,20 @@ jobs:
           rm -rf launch4*
           rm -rf MyLocalTon.jar
 
-      - name: Upload Generic Jar artifact
       - uses: actions/upload-artifact@v2
+      - name: Upload Generic Jar artifact
         with:
           name: MyLocalTon JAR x86-64
           path: MyLocalTonJar
 
-      - name: Upload Ubuntu artifact
       - uses: actions/upload-artifact@v2
+      - name: Upload Ubuntu artifact
         with:
           name: MyLocalTon Ubuntu x86-64
           path: MyLocalTonLinux
 
-      - name: Upload Windows artifact
       - uses: actions/upload-artifact@v2
+      - name: Upload Windows artifact
         with:
           name: MyLocalTon Windows x86-64
           path: MyLocalTonWindows
