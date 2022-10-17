@@ -114,8 +114,8 @@ jobs:
           draft: false
           prerelease: true
 
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v3
+      - name: Upload generic JAR x86-64 to release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: MyLocalTonJar/MyLocalTon-x86-64.jar
@@ -123,8 +123,8 @@ jobs:
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
 
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v3
+      - name: Upload Ubuntu x86-64 executable to release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: MyLocalTonLinux/MyLocalTon-x86-64
@@ -132,11 +132,20 @@ jobs:
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
 
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v3
+      - name: Upload Windows x86-64 executable to release
+        uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: MyLocalTonWindows/MyLocalTon.exe
           asset_name: MyLocalTon.exe
+          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
+          overwrite: true
+
+      - name: Upload generic arm64-aarch64 JAR to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: MyLocalTonJarArm/MyLocalTon-arm64.jar
+          asset_name: MyLocalTon-arm64.jar
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
