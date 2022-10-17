@@ -72,6 +72,7 @@ jobs:
 
       - name: Build arm64-aarch64 with Maven
         run: |
+          git fetch
           git checkout arm64-aarch64
           mvn clean package -DskipTests
 
