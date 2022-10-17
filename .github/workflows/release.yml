@@ -29,7 +29,7 @@ jobs:
           docker buildx version
           docker buildx ls
 
-      - name: Build with Maven
+      - name: Build x86-64 with Maven
         run: mvn package -DskipTests
 
       - name: Prepare JAR artifact
@@ -41,7 +41,7 @@ jobs:
           mkdir MyLocalTonLinux && cp target/MyLocalTon.jar MyLocalTonLinux/MyLocalTon.jar
           cd MyLocalTonLinux
           echo "java -jar" > MyLocalTon-x86-64
-          echo MyLocalTon.jar >> MyLocalTon-x86-64
+          cat MyLocalTon.jar >> MyLocalTon-x86-64
           rm MyLocalTon.jar
 
       - name: Prepare Windows artifact
@@ -58,19 +58,22 @@ jobs:
           rm -rf launch4*
           rm -rf MyLocalTon.jar
 
+      - name: Upload Generic Jar artifact
       - uses: actions/upload-artifact@v2
         with:
-          name: MyLocalTon JAR file
+          name: MyLocalTon JAR x86-64
           path: MyLocalTonJar
 
+      - name: Upload Ubuntu artifact
       - uses: actions/upload-artifact@v2
         with:
-          name: MyLocalTon Ubuntu executable
+          name: MyLocalTon Ubuntu x86-64
           path: MyLocalTonLinux
 
+      - name: Upload Windows artifact
       - uses: actions/upload-artifact@v2
         with:
-          name: MyLocalTon Windows executable
+          name: MyLocalTon Windows x86-64
           path: MyLocalTonWindows
 
       - name: Read CHANGELOG.md and use it as a body of new release
