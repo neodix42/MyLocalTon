@@ -6,7 +6,7 @@ on:
     branches:
       - main
       - arm64-aarch64
-      - test-release
+      - test-release-2
 
 jobs:
   build:
