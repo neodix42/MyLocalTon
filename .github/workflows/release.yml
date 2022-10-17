@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v2
@@ -23,12 +23,45 @@ jobs:
       - name: Build with Maven
         run: mvn package -DskipTests
 
-      - name: Upload artifact
-        run: mkdir MyLocalTon && cp target/MyLocalTon.jar MyLocalTon
+      - name: Prepare JAR artifact
+        run: |
+          mkdir MyLocalTonJar && cp target/MyLocalTon.jar MyLocalTon/MyLocalTon-x86-64.jar
+
+      - name: Prepare Ubuntu executable artifact
+        run: |
+          mkdir MyLocalTonLinux && cp target/MyLocalTon.jar MyLocalTonLinux/MyLocalTon.jar
+          cd MyLocalTonLinux
+          echo "java -jar" > MyLocalTon-x86-64
+          echo MyLocalTon.jar >> MyLocalTon-x86-64
+          rm MyLocalTon.jar
+
+      - name: Prepare Windows artifact
+        run: |
+          mkdir MyLocalTonWindows && cp target/MyLocalTon.jar MyLocalTonWindows/MyLocalTon.jar
+          cd MyLocalTonWindows
+          wget https://sourceforge.net/projects/launch4j/files/launch4j-3/3.14/launch4j-3.14-linux-x64.tgz
+          tar -xvf launch4j-3.14-linux-x64.tgz
+          cd launch4j
+          pwd
+          ./launch4jc ../.github/workflows/win.xml
+          cd ..
+          rm -rf launch4*
+
+
       - uses: actions/upload-artifact@v2
         with:
-          name: MyLocalTon
-          path: MyLocalTon
+          name: MyLocalTon JAR file
+          path: MyLocalTonJar
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: MyLocalTon Ubuntu executable
+          path: MyLocalTonLinux
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: MyLocalTon Windows executable
+          path: MyLocalTonWindows
 
       - name: Read CHANGELOG.md and use it as a body of new release
         id: read_release
