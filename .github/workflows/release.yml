@@ -25,7 +25,7 @@ jobs:
 
       - name: Prepare JAR artifact
         run: |
-          mkdir MyLocalTonJar && cp target/MyLocalTon.jar MyLocalTon/MyLocalTon-x86-64.jar
+          mkdir MyLocalTonJar && cp target/MyLocalTon.jar MyLocalTonJar/MyLocalTon-x86-64.jar
 
       - name: Prepare Ubuntu executable artifact
         run: |
