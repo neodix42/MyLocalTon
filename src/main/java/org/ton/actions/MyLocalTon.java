@@ -11,8 +11,6 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Tab;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,6 +27,7 @@ import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.enums.LiteClientEnum;
+import org.ton.exceptions.WrongSeqnoException;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
@@ -49,6 +48,8 @@ import org.ton.parameters.ValidationParam;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
+import org.ton.ui.custom.events.CustomEvent;
+import org.ton.ui.custom.events.event.CustomSearchEvent;
 import org.ton.utils.Utils;
 import org.ton.wallet.Wallet;
 import org.ton.wallet.WalletAddress;
@@ -79,6 +80,7 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
+import static org.ton.ui.custom.events.CustomEventBus.emit;
 
 @Slf4j
 @Getter
@@ -94,6 +96,7 @@ public class MyLocalTon {
     public static final String EXTERNAL = "external";
     public static final String FROZEN = "Frozen";
     public static final long ONE_BLN = 1000000000L;
+    public static final String FOUND_COLOR_HIHGLIGHT = "-fx-text-fill: #0088CC;";
     private static MyLocalTon singleInstance = null;
     public static ScheduledExecutorService validatorsMonitor = null;
 
@@ -372,7 +375,7 @@ public class MyLocalTon {
 
         if (installed < toInstall) {
             Thread.sleep(1000);
-            mainController.showWarningMsg("Creating initial wallets...", 5 * 60L);
+            mainController.showWarningMsg("Creating initial wallets...", 5);
         }
 
         while (installed < toInstall) {
@@ -411,7 +414,7 @@ public class MyLocalTon {
                 wallet.setSeqno(stateAndSeqno.getRight());
                 updateAccountsTabGui(wallet);
             } catch (Exception e) {
-                log.error("Error updating account state. Wallet {}, AccountState {}, seqno {}", wallet.getWallet().getFullWalletAddress(), stateAndSeqno.getLeft(), stateAndSeqno.getRight());
+                log.error("Error updating account state. Wallet {}, AccountState {}, seqno {}. {}", wallet.getWallet().getFullWalletAddress(), stateAndSeqno.getLeft(), stateAndSeqno.getRight(), e.getMessage());
             }
         }
     }
@@ -460,7 +463,7 @@ public class MyLocalTon {
             String size = Utils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + MY_LOCAL_TON);
             log.debug("size {}", size);
             Platform.runLater(() -> {
-                c.dbSizeId.setText(size);
+                c.dbSizeId.setSecondaryText(size);
 
             });
         }, 0L, 60L, TimeUnit.SECONDS);
@@ -676,7 +679,7 @@ public class MyLocalTon {
                     tx.getTxSeqno(), tx.getLt(), lastBlock.getShortBlockSeqno());
             WalletEntity walletEntity = insertNewAccountEntity(lastBlock, txDetails);
 
-            if (updateGuiNow) {
+            if (updateGuiNow && !isNull(walletEntity)) {
                 updateAccountsTabGui(walletEntity);
             }
         }
@@ -704,7 +707,10 @@ public class MyLocalTon {
                 }
 
                 if (walletEntity.getWc() == -1L) {
-                    (accountRow.lookup("#accRowBorderPane")).setStyle("-fx-background-color: e9f4ff; -fx-padding: 10 0 0 5;");
+                    (accountRow.lookup("#accRowBorderPane")).getStyleClass().add("row-pane-gray");
+                    (accountRow.lookup("#hBoxDeletetn")).getStyleClass().add("background-acc-delete-button-gray");
+                    (accountRow.lookup("#hBoxSendBtn")).getStyleClass().add("background-acc-send-button-gray");
+
                 }
 
                 showInGuiOnlyUniqueAccounts(walletEntity, c, accountRow);
@@ -753,7 +759,7 @@ public class MyLocalTon {
 
         ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress());
         if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
-            ((Label) accountRow.lookup("#hexAddr")).setTextFill(Color.GREEN);
+            ((Label) accountRow.lookup("#hexAddr")).setStyle(accountRow.lookup("#hexAddr").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
 
         ((Label) accountRow.lookup("#b64Addr")).setText(walletEntity.getWallet().getBounceableAddressBase64());
@@ -793,15 +799,17 @@ public class MyLocalTon {
         String status = isNull(walletEntity.getAccountState().getStatus()) ? "" : walletEntity.getAccountState().getStatus();
         ((Label) accountRow.lookup("#status")).setText(status);
 
-        accountRow.lookup("#walletDeleteBtn").setDisable(
-                settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress()));
-
-        accountRow.lookup("#accSendBtn").setDisable(
-                status.equals(UNINITIALIZED) ||
-                        status.equals(FROZEN) ||
-                        settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) ||
-                        isNull(walletEntity.getWallet().getPrivateKeyLocation())
-        );
+        if (settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())) {
+            accountRow.lookup("#walletDeleteBtn").setDisable(true);
+            (accountRow.lookup("#hBoxDeletetn")).getStyleClass().clear();
+        }
+        if (status.equals(UNINITIALIZED) ||
+                status.equals(FROZEN) ||
+                settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) ||
+                isNull(walletEntity.getWallet().getPrivateKeyLocation())) {
+            accountRow.lookup("#accSendBtn").setDisable(true);
+            (accountRow.lookup("#hBoxSendBtn")).getStyleClass().clear();
+        }
     }
 
     private void updateTxTabGui(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails, List<TxEntity> txEntities) {
@@ -826,7 +834,7 @@ public class MyLocalTon {
                     }
 
                     if (txE.getTypeTx().equals("Message")) {
-                        (txRow.lookup("#txRowBorderPane")).setStyle("-fx-background-color: #e9f4ff;");
+                        (txRow.lookup("#txRowBorderPane")).getStyleClass().add("row-pane-gray");
                     }
 
                     showInGuiOnlyUniqueTxs(lastBlock, tx, txDetails, c, txE, txRow);  //show in gui only unique values. some might come from scroll event
@@ -880,7 +888,7 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#block")).setText(txEntity.getShortBlock());
         if (((Label) txRow.lookup("#block")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#block")).setTextFill(Color.GREEN);
+            txRow.lookup("#block").setStyle(txRow.lookup("#block").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         ((Label) txRow.lookup("#typeTx")).setText(txEntity.getTypeTx());
         ((Label) txRow.lookup("#typeMsg")).setText(txEntity.getTypeMsg());
@@ -892,26 +900,26 @@ public class MyLocalTon {
 
         ((Label) txRow.lookup("#txid")).setText(txEntity.getTxHash().substring(0, 8) + "..." + txEntity.getTxHash().substring(56, 64));
         if (((Label) txRow.lookup("#txidHidden")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#txid")).setTextFill(Color.GREEN);
+            txRow.lookup("#txid").setStyle(txRow.lookup("#txid").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         ((Label) txRow.lookup("#from")).setText(txEntity.getFrom().getAddr());
         if (searchFor.length() >= 64) {
             if (((Label) txRow.lookup("#from")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
-                ((Label) txRow.lookup("#from")).setTextFill(Color.GREEN);
+                txRow.lookup("#from").setStyle(txRow.lookup("#from").getStyle() + FOUND_COLOR_HIHGLIGHT);
             }
         }
         if (((Label) txRow.lookup("#from")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#from")).setTextFill(Color.GREEN);
+            txRow.lookup("#from").setStyle(txRow.lookup("#from").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
 
         ((Label) txRow.lookup("#to")).setText(txEntity.getTo().getAddr());
         if (searchFor.length() >= 64) {
             if (((Label) txRow.lookup("#to")).getText().contains(StringUtils.substring(searchFor, 4, -2))) {
-                ((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
+                txRow.lookup("#to").setStyle(txRow.lookup("#to").getStyle() + FOUND_COLOR_HIHGLIGHT);
             }
         }
         if (((Label) txRow.lookup("#to")).getText().equals(searchFor)) {
-            ((Label) txRow.lookup("#to")).setTextFill(Color.GREEN);
+            txRow.lookup("#to").setStyle(txRow.lookup("#to").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         ((Label) txRow.lookup("#amount")).setText(txEntity.getAmount().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING).toPlainString());
 
@@ -1176,52 +1184,56 @@ public class MyLocalTon {
 
     public WalletEntity insertNewAccountEntity(ResultLastBlock lastBlock, Transaction txDetails) {
 
-        //AccountState accountState = LiteClientParser.parseGetAccount(LiteClientExecutor.getInstance().executeGetAccount(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr()));
-        Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-        log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
+        try {
+            Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
+            log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
 
-        Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(stateAndSeqno.getLeft());
+            Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(stateAndSeqno.getLeft());
 
-        WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
-                .wc(lastBlock.getWc())
-                .hexAddress(txDetails.getAccountAddr())
-                .build());
-
-        if (isNull(foundWallet)) {
-
-            WalletAddress wa = new Fift().convertAddr(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-
-            WalletAddress walletAddress = WalletAddress.builder()
+            WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
                     .wc(lastBlock.getWc())
-                    .hexWalletAddress(txDetails.getAccountAddr())
-                    .subWalletId(walletVersionAndId.getRight())
-                    .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr())
-                    .bounceableAddressBase64url(wa.getBounceableAddressBase64url())
-                    .nonBounceableAddressBase64Url(wa.getNonBounceableAddressBase64Url())
-                    .bounceableAddressBase64(wa.getBounceableAddressBase64())
-                    .nonBounceableAddressBase64(wa.getNonBounceableAddressBase64())
-                    .build();
+                    .hexAddress(txDetails.getAccountAddr())
+                    .build());
 
-            WalletEntity walletEntity = WalletEntity.builder()
-                    .wc(walletAddress.getWc())
-                    .hexAddress(walletAddress.getHexWalletAddress())
-                    .subWalletId(walletAddress.getSubWalletId())
-                    .walletVersion(walletVersionAndId.getLeft())
-                    .wallet(walletAddress)
-                    .accountState(stateAndSeqno.getLeft())
-                    .createdAt(txDetails.getNow())
-                    .build();
+            if (isNull(foundWallet)) {
 
-            App.dbPool.insertWallet(walletEntity);
+                WalletAddress wa = new Fift().convertAddr(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
 
-            return walletEntity;
-        } else {
-            foundWallet.setAccountState(stateAndSeqno.getLeft());
-            foundWallet.setSeqno(stateAndSeqno.getRight());
-            log.debug("Wallet found! Update state {}", foundWallet.getFullAddress()); // update state
-            App.dbPool.updateWalletStateAndSeqno(foundWallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
+                WalletAddress walletAddress = WalletAddress.builder()
+                        .wc(lastBlock.getWc())
+                        .hexWalletAddress(txDetails.getAccountAddr())
+                        .subWalletId(walletVersionAndId.getRight())
+                        .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr())
+                        .bounceableAddressBase64url(wa.getBounceableAddressBase64url())
+                        .nonBounceableAddressBase64Url(wa.getNonBounceableAddressBase64Url())
+                        .bounceableAddressBase64(wa.getBounceableAddressBase64())
+                        .nonBounceableAddressBase64(wa.getNonBounceableAddressBase64())
+                        .build();
 
-            return foundWallet;
+                WalletEntity walletEntity = WalletEntity.builder()
+                        .wc(walletAddress.getWc())
+                        .hexAddress(walletAddress.getHexWalletAddress())
+                        .subWalletId(walletAddress.getSubWalletId())
+                        .walletVersion(walletVersionAndId.getLeft())
+                        .wallet(walletAddress)
+                        .accountState(stateAndSeqno.getLeft())
+                        .createdAt(txDetails.getNow())
+                        .build();
+
+                App.dbPool.insertWallet(walletEntity);
+
+                return walletEntity;
+            } else {
+                foundWallet.setAccountState(stateAndSeqno.getLeft());
+                foundWallet.setSeqno(stateAndSeqno.getRight());
+                log.debug("Wallet found! Update state {}", foundWallet.getFullAddress()); // update state
+                App.dbPool.updateWalletStateAndSeqno(foundWallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
+
+                return foundWallet;
+            }
+        } catch (Exception e) {
+            log.error("Error executing insertNewAccountEntity: {}", e.getMessage());
+            return null;
         }
     }
 
@@ -1231,8 +1243,8 @@ public class MyLocalTon {
         Platform.runLater(() -> {
             try {
                 // update GUI
-                c.shardsNum.setText(String.valueOf(shardsNum));
-                c.liteClientInfo.setText(String.format("%s:%s", settings.getGenesisNode().getPublicIp(), settings.getGenesisNode().getLiteServerPort()));
+                c.shardsNum.setSecondaryText(String.valueOf(shardsNum));
+                c.liteClientInfo.setSecondaryText(String.format("%s:%s", settings.getGenesisNode().getPublicIp(), settings.getGenesisNode().getLiteServerPort()));
             } catch (Exception e) {
                 log.error("error updating top bar gui, {}", e.getMessage());
             }
@@ -1248,7 +1260,7 @@ public class MyLocalTon {
             try {
                 // update top bar
                 if (finalLastBlock.getWc().equals(-1L)) {
-                    c.currentBlockNum.setText(finalLastBlock.getSeqno().toString());
+                    c.currentBlockNum.setSecondaryText(finalLastBlock.getSeqno().toString());
                 }
 
                 if (Boolean.TRUE.equals(autoScroll)) {
@@ -1263,7 +1275,7 @@ public class MyLocalTon {
                         return;
                     }
                     if (finalLastBlock.getWc() == -1L) {
-                        (blockRow.lookup("#blockRowBorderPane")).setStyle("-fx-background-color: #e9f4ff;");
+                        (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
                     }
 
                     showInGuiOnlyUniqueBlocks(c, finalLastBlock, blockRow);
@@ -1289,6 +1301,7 @@ public class MyLocalTon {
                 c.blockslistviewid.getItems().remove(size - 1);
                 //concurrentHashMap.truncate
             }
+
             c.blockslistviewid.getItems().add(0, blockRow);
         }
     }
@@ -1298,7 +1311,7 @@ public class MyLocalTon {
         MainController c = fxmlLoader.getController();
 
         if (foundBlocks.isEmpty()) {
-            c.foundBlocks.setText("Blocks (0)");
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_BLOCKS, 0));
             return;
         }
 
@@ -1323,7 +1336,7 @@ public class MyLocalTon {
                 populateBlockRowWithData(resultLastBlock, blockRow, searchFor);
 
                 if (resultLastBlock.getWc() == -1L) {
-                    blockRow.setStyle("-fx-background-color: e9f4ff;");
+                    blockRow.getStyleClass().add("row-pane-gray");
                 }
                 log.debug("adding block to found gui {} roothash {}", block.getSeqno(), block.getRoothash());
 
@@ -1336,28 +1349,22 @@ public class MyLocalTon {
         }
 
         log.debug("blockRows.size  {}", blockRows.size());
-        c.foundBlocks.setText("Blocks (" + blockRows.size() + ")");
 
         c.foundBlockslistviewid.getItems().addAll(blockRows);
+        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_BLOCKS, blockRows.size()));
 
     }
 
-    public void showFoundTxsInGui(Tab tab, List<TxEntity> foundTxs, String searchFor, String accountAddr) {
+    public void showFoundTxsInGui(JFXListView<javafx.scene.Node> listView, List<TxEntity> foundTxs, String searchFor, String accountAddr) {
 
         MainController c = fxmlLoader.getController();
 
-        tab.setOnClosed(e -> {
-            if (c.foundTabs.getTabs().isEmpty()) {
-                c.mainMenuTabs.getTabs().remove(c.searchTab);
-                c.mainMenuTabs.getSelectionModel().selectFirst();
-            }
-        });
-
         if (foundTxs.isEmpty()) {
+
             if (StringUtils.isNotEmpty(accountAddr)) {
-                tab.setText("Account " + Utils.getLightAddress(accountAddr) + " TXs (0)");
+                emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS_TXS, 0, accountAddr));
             } else {
-                tab.setText("TXs (0)");
+                emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, 0));
             }
             return;
         }
@@ -1367,18 +1374,18 @@ public class MyLocalTon {
         for (TxEntity tx : foundTxs) {
             try {
                 FXMLLoader fxmlLoaderRow = new FXMLLoader(App.class.getResource("txrow.fxml"));
-                javafx.scene.Node blockRow;
+                javafx.scene.Node txRow;
 
-                blockRow = fxmlLoaderRow.load();
+                txRow = fxmlLoaderRow.load();
 
-                populateTxRowWithData(blockRow, tx, searchFor);
+                populateTxRowWithData(txRow, tx, searchFor);
 
                 if (tx.getWc() == -1L) {
-                    blockRow.setStyle("-fx-background-color: e9f4ff;");
+                    txRow.getStyleClass().add("row-pane-gray");
                 }
                 log.debug("adding tx to found gui {} roothash {}", tx.getShortBlock(), tx.getTxHash());
 
-                txRows.add(blockRow);
+                txRows.add(txRow);
 
             } catch (IOException e) {
                 log.error("error loading txrow.fxml file, {}", e.getMessage());
@@ -1389,13 +1396,13 @@ public class MyLocalTon {
         log.debug("txRows.size {}", txRows.size());
 
         if (StringUtils.isNotEmpty(accountAddr)) {
-            tab.setText("Account " + Utils.getLightAddress(accountAddr) + " TXs (" + txRows.size() + ")");
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS_TXS, txRows.size(), accountAddr));
+            listView.getItems().addAll(txRows);
         } else {
-            tab.setText("TXs (" + txRows.size() + ")");
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_TXS, txRows.size()));
+            c.foundTxsvboxid.getItems().addAll(txRows);
         }
 
-        ((JFXListView<javafx.scene.Node>) tab.getContent().lookup("#foundTxsvboxid")).getItems().clear();
-        ((JFXListView<javafx.scene.Node>) tab.getContent().lookup("#foundTxsvboxid")).getItems().addAll(txRows);
     }
 
     public void showFoundAccountsInGui(List<WalletEntity> foundAccounts, String searchFor) {
@@ -1403,7 +1410,7 @@ public class MyLocalTon {
         MainController c = fxmlLoader.getController();
 
         if (foundAccounts.isEmpty()) {
-            c.foundAccounts.setText("Accounts (0)");
+            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, 0));
             return;
         }
 
@@ -1419,7 +1426,8 @@ public class MyLocalTon {
                 populateAccountRowWithData(account, accountRow, searchFor);
 
                 if (account.getWc() == -1L) {
-                    accountRow.setStyle("-fx-background-color: e9f4ff; -fx-padding: 10 0 0 5;");
+                    accountRow.getStyleClass().add("row-pane-gray");
+
                 }
                 log.debug("adding account to found gui {}", account.getFullAddress());
 
@@ -1432,9 +1440,9 @@ public class MyLocalTon {
         }
 
         log.debug("accRows.size  {}", accountRows.size());
-        c.foundAccounts.setText("Accounts (" + accountRows.size() + ")");
 
         c.foundAccountsvboxid.getItems().addAll(accountRows);
+        emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, accountRows.size()));
     }
 
     public void populateBlockRowWithData(ResultLastBlock finalLastBlock, javafx.scene.Node blockRow, String searchFor) {
@@ -1443,18 +1451,22 @@ public class MyLocalTon {
         ((Label) blockRow.lookup("#shard")).setText(finalLastBlock.getShard());
         ((Label) blockRow.lookup("#seqno")).setText(finalLastBlock.getSeqno().toString());
         if (((Label) blockRow.lookup("#seqno")).getText().equals(searchFor)) {
-            ((Label) blockRow.lookup("#seqno")).setTextFill(Color.GREEN);
+            blockRow.lookup("#seqno").setStyle(blockRow.lookup("#seqno").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         ((Label) blockRow.lookup("#filehash")).setText(finalLastBlock.getFileHash());
         ((Label) blockRow.lookup("#roothash")).setText(finalLastBlock.getRootHash());
         if (((Label) blockRow.lookup("#filehash")).getText().equals(searchFor)) {
-            ((Label) blockRow.lookup("#filehash")).setTextFill(Color.GREEN);
+            blockRow.lookup("#filehash").setStyle(blockRow.lookup("#filehash").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
         if (((Label) blockRow.lookup("#roothash")).getText().equals(searchFor)) {
-            ((Label) blockRow.lookup("#roothash")).setTextFill(Color.GREEN);
+            blockRow.lookup("#roothash").setStyle(blockRow.lookup("#roothash").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        ((Label) blockRow.lookup("#createdat")).setText(formatter.format(new Date(new Timestamp(finalLastBlock.getCreatedAt() * 1000).getTime())));
+        SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm:ss");
+
+        ((Label) blockRow.lookup("#createdatDate")).setText(formatterDate.format(new Date(new Timestamp(finalLastBlock.getCreatedAt() * 1000).getTime())));
+        ((Label) blockRow.lookup("#createdatTime")).setText(formatterTime.format(new Date(new Timestamp(finalLastBlock.getCreatedAt() * 1000).getTime())));
+
     }
 
     public void insertBlockEntity(ResultLastBlock lastBlock) {
@@ -1496,10 +1508,13 @@ public class MyLocalTon {
         }, 0L, 5L, TimeUnit.SECONDS);
     }
 
-    Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) {
+    Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) throws WrongSeqnoException {
         AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(node, address));
         if (nonNull(accountState.getBalance())) {
             long seqno = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
+            if (seqno == -1L) {
+                throw new WrongSeqnoException("Cannot retrieve seqno from contract " + address);
+            }
             return Pair.of(accountState, seqno);
         }
         return Pair.of(null, -1L);

@@ -1,26 +1,40 @@
-![Atomix](https://ton.org/download/ton_symbol.svg)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Telegram Foundation Group][telegram-foundation-badge]][telegram-foundation-url]
+[![Based on TON][ton-svg]][ton]
+![GitHub last commit](https://img.shields.io/github/last-commit/neodiX42/myLocalTon)
+
+[telegram-foundation-url]: https://t.me/tonblockchain
+
+[telegram-foundation-badge]: https://img.shields.io/badge/-TON%20Foundation-2CA5E0?style=flat&logo=telegram&logoColor=white
+
+[ton-svg]: https://img.shields.io/badge/Based%20on-TON-blue
+
+[ton]: https://ton.org
 
 ## What is it
 
-This is your personal local TON blockchain (www.ton.org) in a shape of cross-platform desktop application. It comes in a form of uber-jar with all dependencies and binaries. Please notice this an
+This is your personal local TON blockchain (www.ton.org) in a shape of cross-platform desktop application. It comes in a
+form of uber-jar with all dependencies and binaries. Please notice this an
 alpha version and cannot be treated as production ready.
 
-![demo animation](https://github.com/neodiX42/MyLocalTon/blob/main/screens/MyLocalTon-alpha-demo.gif)
+<img src='./screens/MyLocalTon-demo.gif'>
 
 ## Matrix of supported OS & Java
 
-| OS \ Java   | 11  | 13  | 15  | 17  |
-|---|---|---|---|---|
-| Ubuntu 18.04  | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |
-| Ubuntu 20.04  | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:    |  |
+| OS \ Java            | 11  | 13  | 15  | 17  |
+|----------------------|---|---|---|---|
+| Ubuntu 18.04         | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |
+| Ubuntu 20.04         | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:    |  |
+| Ubuntu 22.04         | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
+| Ubuntu 18.04 aarch64 | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
 | Ubuntu 20.04 aarch64 | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
-| Ubuntu 22.04 | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
-| Debian 11.2  | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
-| MacOS 11.6.1 M1  | :heavy_check_mark:   | not tested   |  not tested | :heavy_check_mark:    |  |
-| MacOS 12.2.1 M1  | not tested   | not tested   |  not tested | :heavy_check_mark:    |  |
-| MacOS 12.01  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
-| MacOS 11.6  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
-| Windows 10  | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:   |  |
+| Ubuntu 22.04 aarch64 | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
+| Debian 11.2          | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
+| MacOS 11.6.1 M1      | :heavy_check_mark:   | not tested   |  not tested | :heavy_check_mark:    |  |
+| MacOS 12.2.1 M1      | not tested   | not tested   |  not tested | :heavy_check_mark:    |  |
+| MacOS 12.01          | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
+| MacOS 11.6           | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
+| Windows 10           | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:   |  |
 | Windows Server 2019  | :heavy_check_mark:   | :heavy_check_mark:   | not tested  | :heavy_check_mark:    |  |
 
 Please make sure you are not using headless (no GUI) Java and OS/Java combination matches as per table above.
@@ -57,20 +71,22 @@ https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msv
 
 ## Installation and usage
 
-Download MyLocalTon.jar from https://github.com/neodiX42/MyLocalTon/actions. Click the latest successful build executed against `main` branch and find MyLocalTon under Artifacts section. Open console,
-go to the location where you have just placed the executable and execute the following command.
+### For x86_64 architecture
+
+Go to https://github.com/neodiX42/MyLocalTon/releases. Open Assets section and download MyLocalTon.jar.
+
+Open console and execute the following command:
 
 `java -jar MyLocalTon.jar`
 
-Make sure you have write rights inside the directory.
+### For aarch64/arm64 architecture (MacOS M1 and Linux)
 
-### For MacOS M1 and Linux users with aarch64 architecture
-
-On the page https://github.com/neodiX42/MyLocalTon/actions please take the build from the branch `arm64-aarch64`
+Go to https://github.com/neodiX42/MyLocalTon/releases and select version with `arm64-aarch64` prefix.
 
 ## Upgrade
 
-Today upgrade is not supported, that means once you have a new version of MyLocalTon.jar just overwrite the existing MyLocalTon.jar and delete myLocalTon directory next to it. The upgrade
+Today upgrade is not supported, that means once you have a new version of MyLocalTon.jar just overwrite the existing
+MyLocalTon.jar and delete myLocalTon directory next to it. The upgrade
 functionality is in the backlog, so it will be implemented in future releases.
 
 ## Build from sources

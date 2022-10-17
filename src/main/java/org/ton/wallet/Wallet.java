@@ -83,6 +83,11 @@ public class Wallet {
                 sendToncoinsParam.getAmount(),
                 sendToncoinsParam.getDestAddr());
 
+        if (seqno == -1L) {
+            log.error("Error retrieving seqno from contract {}", sendToncoinsParam.getFromWallet().getFullWalletAddress());
+            return false;
+        }
+
         String externalMsgLocation = new Fift().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
 
         if (isNull(externalMsgLocation)) {

@@ -485,8 +485,7 @@ public class Utils {
             }
         } else if (lsb.contains("18.04")) {
             if (uname.contains("aarch64")) {
-                log.error("Ubuntu 18.04 aarch64-arm64 is not supported.");
-                return "";
+                return "18.04-arm64";
             } else {
                 return "18.04";
             }
@@ -539,6 +538,10 @@ public class Utils {
     public static String getLightAddress(String addr) {
         return StringUtils.substring(addr, 0, 6) + ".." + StringUtils.substring(addr, -4);
     }
+
+//    public static String getExtraLightAddress(String addr) {
+//        return StringUtils.substring(addr, 0, 6) + "...";
+//    }
 
     public static void replaceOutPortInConfigJson(String path, Integer port) throws IOException {
         String contentConfigJson = Files.readString(Paths.get(path + "config.json"), StandardCharsets.UTF_8);

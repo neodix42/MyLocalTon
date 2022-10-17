@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.SVGPath?>
+<fx:root type="javafx.scene.layout.AnchorPane" prefHeight="40.0" prefWidth="600.0"
+         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+         stylesheets="@../../../css/custom/search-bar.css" styleClass="search-background">
+
+    <children>
+        <Label alignment="CENTER_RIGHT" contentDisplay="GRAPHIC_ONLY" prefHeight="40.0" prefWidth="40.0">
+            <graphic>
+                <SVGPath styleClass="search-svg"
+                         content="M17.6501 10.25C17.6501 6.17195 14.3281 2.84998 10.2501 2.84998L10.0063 2.85394C6.04052 2.98316 2.8501 6.25351 2.8501 10.25C2.8501 14.328 6.17207 17.65 10.2501 17.65L10.571 17.6431L10.8895 17.6224C12.2643 17.5036 13.5627 17.0034 14.6597 16.1857L14.8011 16.074L19.6138 20.8863L19.7026 20.9671C19.9208 21.1402 20.212 21.2037 20.4879 21.1317C20.8033 21.0495 21.0496 20.8032 21.1318 20.4878L21.1545 20.3689L21.1609 20.2496C21.1579 20.0117 21.0606 19.7808 20.8843 19.6115L16.0741 14.801L16.1858 14.6595C17.1294 13.3938 17.6501 11.8599 17.6501 10.25ZM4.6501 10.25C4.6501 7.1483 7.14842 4.64998 10.2501 4.64998C13.3518 4.64998 15.8501 7.1483 15.8501 10.25C15.8501 11.7193 15.2843 13.0945 14.2875 14.1314C14.2333 14.1684 14.1685 14.2332 14.1146 14.3066C13.0946 15.2842 11.7194 15.85 10.2501 15.85C7.14842 15.85 4.6501 13.3517 4.6501 10.25Z"/>
+            </graphic>
+        </Label>
+        <JFXTextField fx:id="textField" layoutX="40.0"
+                      prefHeight="40.0" prefWidth="610.0" promptText="Search for blocks, transactions, accounts..."/>
+        <Label fx:id="clearButton" graphicTextGap="0.0" minHeight="10.0" minWidth="13.0"
+               mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY"
+               layoutX="625.0" layoutY="10.0" onMouseClicked="#clearText" styleClass="label-clear-button">
+
+            <graphic>
+                <SVGPath styleClass="clear-button"
+                         content="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z"/>
+            </graphic>
+
+        </Label>
+    </children>
+
+</fx:root>

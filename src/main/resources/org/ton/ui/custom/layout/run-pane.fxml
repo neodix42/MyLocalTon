@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+<?import org.ton.ui.custom.control.CustomButton?>
+<?import org.ton.ui.custom.control.CustomTextField?>
+<?import java.net.URL?>
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.ton.ui.custom.layout.RunMethodPaneController" styleClass="background-dialog-pane"
+            prefHeight="400.0" prefWidth="510.0">
+
+    <children>
+        <Label fx:id="header" layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Create Wallet"
+               styleClass="modal-pane-label"/>
+
+        <Line endX="510.0" layoutY="60.0" stroke="#888888"/>
+
+        <CustomTextField fx:id="methodIdField" fieldPromptText=" e.g. seqno or get_public_key"
+                         prefWidth="450.0" layoutY="80.0" layoutX="30.0"/>
+
+        <JFXTextArea fx:id="txtArea" visible="false" layoutX="30.0" layoutY="150.0" prefWidth="450.0"
+                     prefHeight="120.0">
+        </JFXTextArea>
+
+        <CustomButton text="Run" prefWidth="100" layoutX="205" layoutY="330"
+                      onAction="#runMethod" styleClass="custom-button-form"/>
+
+    </children>
+    <stylesheets>
+        <URL value="@../../../css/custom/main-layout.css"/>
+        <URL value="@../../../css/global-font.css"/>
+    </stylesheets>
+</AnchorPane>

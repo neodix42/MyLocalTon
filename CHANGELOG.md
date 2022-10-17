@@ -1,3 +1,2 @@
 ### Changes in this release
-- added CHANGELOG.md
-- added github action to automatically build releases
+- testing launch4j, make linux executable
