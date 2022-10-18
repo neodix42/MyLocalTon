@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.3" transformSequenceNumber="10">
-  <directoryPresets config="./target/MyLocalTon.jar" />
+  <directoryPresets config="/home/runner/work/MyLocalTon/MyLocalTon.jar" />
   <application name="My Local TON" applicationId="8429-1224-9413-4121" mediaDir="./target" shortName="MyLocalTon" publisherWeb="https://github.com/neodiX42/MyLocalTon" version="0.0.2" macVolumeId="d78ef100bf6958f0">
     <variables>
       <variable name="sys.ext.suppress.overwrittenFile" value="true" />
@@ -16,7 +16,7 @@
       <mountPoint id="31" />
     </mountPoints>
     <entries>
-      <fileEntry mountPoint="31" file="./target/MyLocalTon.jar" />
+      <fileEntry mountPoint="31" file="/home/runner/work/MyLocalTon/MyLocalTon.jar" />
     </entries>
   </files>
   <launchers>
@@ -24,7 +24,7 @@
       <executable name="MyLocalTon" iconSet="true" executableMode="gui" singleInstance="true" globalSingleInstance="true" />
       <java mainClass="org.ton.main.Main">
         <classPath>
-          <archive location="MyLocalTon.jar" failOnError="false" />
+          <archive location="/home/runner/work/MyLocalTon/MyLocalTon.jar" failOnError="false" />
         </classPath>
       </java>
       <vmOptionsFile mode="none" />
