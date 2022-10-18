@@ -7,6 +7,7 @@ on:
       - main
       - arm64-aarch64
       - test-release-2
+      - test-install4j
 
 jobs:
   build:
@@ -24,128 +25,10 @@ jobs:
       - name: Build x86-64 with Maven
         run: mvn package -DskipTests
 
-      - name: Prepare JAR x86-64 artifact
-        run: |
-          mkdir MyLocalTonJar && cp target/MyLocalTon.jar MyLocalTonJar/MyLocalTon-x86-64.jar
-
-      - name: Prepare Ubuntu x86-64 executable artifact
-        run: |
-          mkdir MyLocalTonLinux && cp target/MyLocalTon.jar MyLocalTonLinux/MyLocalTon.jar
-          cd MyLocalTonLinux
-          echo "java -jar" > MyLocalTon-x86-64
-          cat MyLocalTon.jar >> MyLocalTon-x86-64
-          rm MyLocalTon.jar
-
-      - name: Prepare Windows x86-64 artifact
-        run: |
-          mkdir MyLocalTonWindows && cp target/MyLocalTon.jar MyLocalTonWindows/MyLocalTon.jar
-          cd MyLocalTonWindows
-          wget https://sourceforge.net/projects/launch4j/files/launch4j-3/3.14/launch4j-3.14-linux-x64.tgz
-          tar -xvf launch4j-3.14-linux-x64.tgz
-          cd launch4j
-          pwd
-          find ../.. -name win.xml
-          ./launch4jc ../../.github/workflows/win.xml
-          cd ..
-          rm -rf launch4*
-          rm -rf MyLocalTon.jar
-
-      - name: Upload Generic x86-64 JAR artifact
-        uses: actions/upload-artifact@v3
+      - uses: luangong/setup-install4j
         with:
-          name: Cross-platform MyLocalTon JAR x86-64
-          path: MyLocalTonJar
-
-      - name: Upload Ubuntu x86-64 artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: MyLocalTon Ubuntu x86-64 executable
-          path: MyLocalTonLinux
-
-      - name: Upload Windows x86-64 artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: MyLocalTon Windows x86-64 executable
-          path: MyLocalTonWindows
-
-      # arm64
-
-      - name: Build arm64-aarch64 with Maven
-        run: |
-          git fetch
-          git checkout arm64-aarch64
-          mvn clean package -DskipTests
-
-      - name: Prepare JAR arm64-aarch64 artifact
-        run: |
-          mkdir MyLocalTonJarArm && cp target/MyLocalTon.jar MyLocalTonJarArm/MyLocalTon-arm64.jar
-
-      - name: Upload Generic arm64-aarch64 JAR
-        uses: actions/upload-artifact@v3
-        with:
-          name: Cross-platform MyLocalTon JAR arm64-aarch64
-          path: MyLocalTonJarArm
-
-      - name: Read CHANGELOG.md and use it as a body of new release
-        id: read_release
-        shell: bash
-        run: |
-          r=$(cat CHANGELOG.md)
-          r="${r//'%'/'%25'}"
-          r="${r//$'\n'/'%0A'}"
-          r="${r//$'\r'/'%0D'}"
-          echo "::set-output name=CHANGELOG_BODY::$r"
-
-      - name: Get the current branch name
-        shell: bash
-        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
-        id: myref
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          release_name: MyLocalTon v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          body: |
-            ${{ steps.read_release.outputs.CHANGELOG_BODY }}
-          draft: false
-          prerelease: true
-
-      - name: Upload generic JAR x86-64 to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: MyLocalTonJar/MyLocalTon-x86-64.jar
-          asset_name: MyLocalTon-x86-64.jar
-          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          overwrite: true
-
-      - name: Upload Ubuntu x86-64 executable to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: MyLocalTonLinux/MyLocalTon-x86-64
-          asset_name: MyLocalTon-x86-64
-          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          overwrite: true
-
-      - name: Upload Windows x86-64 executable to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: MyLocalTonWindows/MyLocalTon.exe
-          asset_name: MyLocalTon.exe
-          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          overwrite: true
-
-      - name: Upload generic arm64-aarch64 JAR to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: MyLocalTonJarArm/MyLocalTon-arm64.jar
-          asset_name: MyLocalTon-arm64.jar
-          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          overwrite: true
+          version: 10.0.3
+          license: ${{ secrets.INSTALL4J }}
+          cache: true
+      - run: |
+          install4jc --version
