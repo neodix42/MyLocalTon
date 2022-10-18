@@ -32,3 +32,6 @@ jobs:
           cache: true
       - run: |
           install4jc --version
+          install4jc ./github/workflows/config.install4j
+          pwd
+          ls target
