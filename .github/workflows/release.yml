@@ -33,7 +33,7 @@ jobs:
 
       - name: Build x86-64 with Maven
         run: |
-          git checkout main
+          git checkout test-install4j
           mvn clean package -DskipTests
 
       - uses: luangong/setup-install4j@main
@@ -44,18 +44,10 @@ jobs:
 
       - name: Create installers x86-64
         run: |
-          pwd
-          ls
-          ls .github
-          ls .github/workflows
           install4jc .github/workflows/config.install4j     
 
       - name: Create installers macos arm64
         run: |
-          pwd
-          ls
-          ls .github
-          ls .github/workflows
           install4jc .github/workflows/config.arm64.install4j     
 
       - name: Read CHANGELOG.md and use it as a body of new release
