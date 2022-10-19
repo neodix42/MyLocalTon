@@ -16,8 +16,8 @@
     </entries>
   </files>
   <launchers>
-    <launcher name="MyLocalTon.jar" id="26">
-      <executable name="MyLocalTon" iconSet="true" executableMode="gui" singleInstance="true" globalSingleInstance="true" />
+    <launcher name="MyLocalTon_macos_arm64.jar" id="26">
+      <executable name="MyLocalTon_macos_arm64" iconSet="true" executableMode="gui" singleInstance="true" globalSingleInstance="true" />
       <java mainClass="org.ton.main.Main">
         <classPath>
           <archive location="MyLocalTon.jar" failOnError="false" />
