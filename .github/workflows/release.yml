@@ -44,12 +44,18 @@ jobs:
 
       - name: Create installers x86-64
         run: |
-          install4jc --version
+          pwd
+          ls
+          ls .github
+          ls .github/workflows
           install4jc .github/workflows/config.install4j     
 
       - name: Create installers macos arm64
         run: |
-          install4jc --version
+          pwd
+          ls
+          ls .github
+          ls .github/workflows
           install4jc .github/workflows/config.arm64.install4j     
 
       - name: Read CHANGELOG.md and use it as a body of new release
