@@ -52,7 +52,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -64,7 +64,7 @@ jobs:
           prerelease: true
 
       - name: Upload generic JAR x86-64 to release
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@v3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon.jar
@@ -73,7 +73,7 @@ jobs:
           overwrite: true
 
       - name: Upload Ubuntu executable to release
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@v3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon_unix_0_0_2.sh
@@ -82,7 +82,7 @@ jobs:
           overwrite: true
 
       - name: Upload Windows x86-64 executable to release
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@v3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon_windows-x64_0_0_2.exe
@@ -91,28 +91,28 @@ jobs:
           overwrite: true
 
       - name: Upload Debian package to release
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@v3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: taerget/MyLocalTon_linux_0_0_2.deb
+          file: target/MyLocalTon_linux_0_0_2.deb
           asset_name: MyLocalTon_linux_0_0_2.deb
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
 
       - name: Upload RPM package to release
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@v3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: taerget/MyLocalTon_linux_0_0_2.rpm
+          file: target/MyLocalTon_linux_0_0_2.rpm
           asset_name: MyLocalTon_linux_0_0_2.rpm
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
 
       - name: Upload MacOS x86-64 dmg package to release
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@v3
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: taerget/MyLocalTon_macos_0_0_2.dmg
+          file: target/MyLocalTon_macos_0_0_2.dmg
           asset_name: MyLocalTon_macos_x86_64_0_0_2.dmg
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
