@@ -22,8 +22,19 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
+      # arm64
+      - name: Build arm64-aarch64 with Maven
+        run: |
+          git fetch
+          git checkout arm64-aarch64
+          mvn clean package -DskipTests
+      - name: Rename arm64 binary
+        run: mv target/MyLocalTon.jar target/MyLocalTon_macos_arm64.jar
+
       - name: Build x86-64 with Maven
-        run: mvn package -DskipTests
+        run: |
+          git checkout main
+          mvn clean package -DskipTests
 
       - uses: luangong/setup-install4j@main
         with:
@@ -31,10 +42,15 @@ jobs:
           license: ${{ secrets.INSTALL4J }}
           cache: true
 
-      - name: Create installers
+      - name: Create installers x86-64
         run: |
           install4jc --version
-          install4jc .github/workflows/config.install4j
+          install4jc .github/workflows/config.install4j     
+
+      - name: Create installers macos arm64
+        run: |
+          install4jc --version
+          install4jc .github/workflows/config.arm64.install4j     
 
       - name: Read CHANGELOG.md and use it as a body of new release
         id: read_release
@@ -45,6 +61,7 @@ jobs:
           r="${r//$'\n'/'%0A'}"
           r="${r//$'\r'/'%0D'}"
           echo "::set-output name=CHANGELOG_BODY::$r"
+
       - name: Get the current branch name
         shell: bash
         run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
@@ -114,5 +131,23 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon_macos_0_0_2.dmg
           asset_name: MyLocalTon_macos_x86_64_0_0_2.dmg
+          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
+          overwrite: true
+
+      - name: Upload MacOS arm64 dmg package to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/MyLocalTon_macos_arm64_0_0_1.dmg
+          asset_name: MyLocalTon_macos_arm64_0_0_1.dmg
+          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
+          overwrite: true
+
+      - name: Upload MacOS arm64 archive package to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: target/MyLocalTon_macos_arm64_0_0_1.tgz
+          asset_name: MyLocalTon_macos_arm64_0_0_1.tgz
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
