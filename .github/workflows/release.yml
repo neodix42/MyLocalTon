@@ -34,6 +34,7 @@ jobs:
       - name: Build x86-64 with Maven
         run: |
           git checkout test-install4j
+          ls -lart target/MyLocalTon_macos_arm64.jar
           mvn clean package -DskipTests
 
       - uses: luangong/setup-install4j@main

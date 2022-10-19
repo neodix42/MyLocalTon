@@ -24,7 +24,7 @@
       <executable name="MyLocalTon" iconSet="true" executableMode="gui" singleInstance="true" globalSingleInstance="true" />
       <java mainClass="org.ton.main.Main">
         <classPath>
-          <archive location="/home/runner/work/MyLocalTon/MyLocalTon/target/MyLocalTon.jar" failOnError="false" />
+          <archive location="/home/runner/work/MyLocalTon/MyLocalTon/target/MyLocalTon.jar" failOnError="true" />
         </classPath>
       </java>
       <vmOptionsFile mode="none" />
