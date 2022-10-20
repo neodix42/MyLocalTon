@@ -120,7 +120,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon_macos_0_0_1.dmg
-          asset_name: MyLocalTon_MacOS_x64.dmg
+          asset_name: MyLocalTon_MacOS_amd64.dmg
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
 

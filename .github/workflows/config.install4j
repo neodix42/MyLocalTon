@@ -20,7 +20,7 @@
     </entries>
   </files>
   <launchers>
-    <launcher name="MyLocalTon" id="26">
+    <launcher name="My Local TON" id="26">
       <executable name="MyLocalTon.jar" iconSet="true" iconFile="/home/runner/work/MyLocalTon/MyLocalTon/screens/ton.ico" executableMode="gui" singleInstance="true" globalSingleInstance="true" />
       <java mainClass="org.ton.main.Main">
         <classPath>
@@ -477,9 +477,6 @@ return console.askYesNo(message, true);
     <macosFolder name="macOS Folder" id="55" customInstallBaseDir="~">
       <jreBundle jreBundleSource="none" />
     </macosFolder>
-    <unixArchive name="Unix Archive" id="56">
-      <jreBundle jreBundleSource="none" />
-    </unixArchive>
     <linuxDeb name="Linux Deb Archive" id="58">
       <jreBundle jreBundleSource="none" />
     </linuxDeb>
