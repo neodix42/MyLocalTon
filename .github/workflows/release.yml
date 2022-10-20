@@ -34,7 +34,7 @@ jobs:
       - name: Build x86-64 with Maven
         run: |
           git checkout test-install4j
-          ls -lart ../..
+          ls -lart ..
           mvn clean package -DskipTests
 
       - uses: luangong/setup-install4j@main
@@ -93,7 +93,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon_unix_0_0_1.sh
-          asset_name: MyLocalTon_unix_0_0_1.sh
+          asset_name: MyLocalTon_unix.sh
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
 
@@ -102,7 +102,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon_windows-x64_0_0_1.exe
-          asset_name: MyLocalTon_windows-x64_0_0_1.exe
+          asset_name: MyLocalTon_x86_x64.exe
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
 
@@ -111,16 +111,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon_linux_0_0_1.deb
-          asset_name: MyLocalTon_linux_0_0_1.deb
-          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          overwrite: true
-
-      - name: Upload RPM package to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/MyLocalTon_linux_0_0_1.rpm
-          asset_name: MyLocalTon_linux_0_0_1.rpm
+          asset_name: MyLocalTon_Ubuntu.deb
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
 
@@ -129,7 +120,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon_macos_0_0_1.dmg
-          asset_name: MyLocalTon_macos_x86_64_0_0_1.dmg
+          asset_name: MyLocalTon_MacOS_x86_64.dmg
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true
 
@@ -138,15 +129,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: target/MyLocalTon_macos_arm64_0_0_1.dmg
-          asset_name: MyLocalTon_macos_arm64_0_0_1.dmg
-          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          overwrite: true
-
-      - name: Upload MacOS arm64 archive package to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/MyLocalTon_macos_arm64_0_0_1.tgz
-          asset_name: MyLocalTon_macos_arm64_0_0_1.tgz
+          asset_name: MyLocalTon_MacOS_arm64.dmg
           tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
           overwrite: true

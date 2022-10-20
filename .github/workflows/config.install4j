@@ -480,9 +480,6 @@ return console.askYesNo(message, true);
     <unixArchive name="Unix Archive" id="56">
       <jreBundle jreBundleSource="none" />
     </unixArchive>
-    <linuxRPM name="Linux RPM" id="57">
-      <jreBundle jreBundleSource="none" />
-    </linuxRPM>
     <linuxDeb name="Linux Deb Archive" id="58">
       <jreBundle jreBundleSource="none" />
     </linuxDeb>

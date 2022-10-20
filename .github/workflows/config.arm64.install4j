@@ -467,9 +467,6 @@ return console.askYesNo(message, true);
     <macosFolder name="macOS Folder" id="59" architecture="aarch64">
       <jreBundle jreBundleSource="none" />
     </macosFolder>
-    <macosFolderArchive name="macOS Folder Archive" id="64" archiveType="tgz" architecture="aarch64">
-      <jreBundle jreBundleSource="none" />
-    </macosFolderArchive>
   </mediaSets>
   <buildIds>
     <mediaSet refId="27" />
