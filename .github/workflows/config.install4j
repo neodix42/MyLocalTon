@@ -29,7 +29,7 @@
       </java>
       <vmOptionsFile mode="none" />
       <iconImageFiles>
-        <file path="/home/runner/work/MyLocalTon/MyLocalTon/screens/ton.png" />
+        <file path="/home/runner/work/MyLocalTon/MyLocalTon/screens/ton.png"/>
       </iconImageFiles>
     </launcher>
   </launchers>
@@ -487,6 +487,8 @@ return console.askYesNo(message, true);
   <buildIds>
     <mediaSet refId="27" />
     <mediaSet refId="49" />
+    <mediaSet refId="55" />
+    <mediaSet refId="58" />
   </buildIds>
   <buildOptions verbose="true" />
 </install4j>
