@@ -21,7 +21,7 @@
   </files>
   <launchers>
     <launcher name="My Local TON" id="26">
-      <executable name="MyLocalTon.jar" iconSet="true" iconFile="/home/runner/work/MyLocalTon/MyLocalTon/screens/ton.ico" executableMode="gui" singleInstance="true" globalSingleInstance="true" />
+      <executable name="MyLocalTon" iconSet="true" iconFile="/home/runner/work/MyLocalTon/MyLocalTon/screens/ton.ico" executableMode="gui" singleInstance="true" globalSingleInstance="true" />
       <java mainClass="org.ton.main.Main">
         <classPath>
           <archive location="/home/runner/work/MyLocalTon/MyLocalTon/target/MyLocalTon.jar" failOnError="true" />
