@@ -29,7 +29,7 @@ jobs:
           git checkout arm64-aarch64
           mvn clean package -DskipTests
       - name: Rename arm64 binary
-        run: mv target/MyLocalTon.jar ../../MyLocalTon_macos_arm64.jar
+        run: mv target/MyLocalTon.jar ../MyLocalTon_macos_arm64.jar
 
       - name: Build x86-64 with Maven
         run: |
