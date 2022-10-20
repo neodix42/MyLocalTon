@@ -1,3 +1,5 @@
 ### Changes in this release
 
-- integrating launch4j installers
+- adjust reset blockchain to new installers;
+- fix styling;
+- improve error handling;

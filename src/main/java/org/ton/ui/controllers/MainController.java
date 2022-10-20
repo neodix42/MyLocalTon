@@ -18,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -888,6 +889,7 @@ public class MainController implements Initializable {
 
     @FXML
     public Label tonDonationAddress;
+    public GridPane paneValidator3;
 
     @FXML
     JFXCheckBox shardStateCheckbox;
@@ -951,7 +953,7 @@ public class MainController implements Initializable {
 
     public void showSendDialog(String srcAddr) {
         FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/send-coin-pane.fxml"));
-        Parent parent = null;
+        Parent parent;
         try {
             parent = loader.load();
         } catch (IOException e) {
@@ -977,27 +979,19 @@ public class MainController implements Initializable {
 
 
     public void showInfoMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.INFO, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.INFO, msg, durationSeconds)));
     }
 
     public void showSuccessMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, msg, durationSeconds)));
     }
 
     public void showErrorMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, msg, durationSeconds)));
     }
 
     public void showWarningMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds)));
     }
 
     public void showShutdownMsg(String msg, double durationSeconds) {
@@ -2130,7 +2124,9 @@ public class MainController implements Initializable {
             validator1PubKeyHexNext.setText(node1.getValidationPubKeyHex());
             validator1PubKeyIntegerNext.setText(node1.getValidationPubKeyInteger());
             validator1WalletAddress.setText(node1.getWalletAddress().getFullWalletAddress());
-            validator1WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            if (nonNull(accountState.getBalance())) {
+                validator1WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            }
             nodePublicPort1.setText(node1.getPublicPort().toString());
             nodeConsolePort1.setText(node1.getConsolePort().toString());
             liteServerPort1.setText(node1.getLiteServerPort().toString());
@@ -2157,15 +2153,13 @@ public class MainController implements Initializable {
             validator2PubKeyHexNext.setText(node2.getValidationPubKeyHex());
             validator2PubKeyIntegerNext.setText(node2.getValidationPubKeyInteger());
             validator2WalletAddress.setText(node2.getWalletAddress().getFullWalletAddress());
-            validator2WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            if (nonNull(accountState.getBalance())) {
+                validator2WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            }
             nodePublicPort2.setText(node2.getPublicPort().toString());
             nodeConsolePort2.setText(node2.getConsolePort().toString());
             liteServerPort2.setText(node2.getLiteServerPort().toString());
-            if (isNull(node2.getWalletAddress())) {
-                deleteValidatorBtn2.setDisable(true);
-            } else {
-                deleteValidatorBtn2.setDisable(false);
-            }
+            deleteValidatorBtn2.setDisable(isNull(node2.getWalletAddress()));
         }
     }
 
@@ -2189,16 +2183,14 @@ public class MainController implements Initializable {
             validator3PubKeyHexNext.setText(node3.getValidationPubKeyHex());
             validator3PubKeyIntegerNext.setText(node3.getValidationPubKeyInteger());
             validator3WalletAddress.setText(node3.getWalletAddress().getFullWalletAddress());
-            validator3WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            if (nonNull(accountState.getBalance())) {
+                validator3WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            }
             nodePublicPort3.setText(node3.getPublicPort().toString());
             nodeConsolePort3.setText(node3.getConsolePort().toString());
             liteServerPort3.setText(node3.getLiteServerPort().toString());
 
-            if (isNull(node3.getWalletAddress())) {
-                deleteValidatorBtn3.setDisable(true);
-            } else {
-                deleteValidatorBtn3.setDisable(false);
-            }
+            deleteValidatorBtn3.setDisable(isNull(node3.getWalletAddress()));
         }
     }
 
@@ -2222,16 +2214,14 @@ public class MainController implements Initializable {
             validator4PubKeyHexNext.setText(node4.getValidationPubKeyHex());
             validator4PubKeyIntegerNext.setText(node4.getValidationPubKeyInteger());
             validator4WalletAddress.setText(node4.getWalletAddress().getFullWalletAddress());
-            validator4WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            if (nonNull(accountState.getBalance())) {
+                validator4WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            }
             nodePublicPort4.setText(node4.getPublicPort().toString());
             nodeConsolePort4.setText(node4.getConsolePort().toString());
             liteServerPort4.setText(node4.getLiteServerPort().toString());
 
-            if (isNull(node4.getWalletAddress())) {
-                deleteValidatorBtn4.setDisable(true);
-            } else {
-                deleteValidatorBtn4.setDisable(false);
-            }
+            deleteValidatorBtn4.setDisable(isNull(node4.getWalletAddress()));
         }
     }
 
@@ -2257,16 +2247,14 @@ public class MainController implements Initializable {
             validator5PubKeyHexNext.setText(node5.getValidationPubKeyHex());
             validator5PubKeyIntegerNext.setText(node5.getValidationPubKeyInteger());
             validator5WalletAddress.setText(node5.getWalletAddress().getFullWalletAddress());
-            validator5WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            if (nonNull(accountState.getBalance())) {
+                validator5WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            }
             nodePublicPort5.setText(node5.getPublicPort().toString());
             nodeConsolePort5.setText(node5.getConsolePort().toString());
             liteServerPort5.setText(node5.getLiteServerPort().toString());
 
-            if (isNull(node5.getWalletAddress())) {
-                deleteValidatorBtn5.setDisable(true);
-            } else {
-                deleteValidatorBtn5.setDisable(false);
-            }
+            deleteValidatorBtn5.setDisable(isNull(node5.getWalletAddress()));
         }
     }
 
@@ -2290,16 +2278,14 @@ public class MainController implements Initializable {
             validator6PubKeyHexNext.setText(node6.getValidationPubKeyHex());
             validator6PubKeyIntegerNext.setText(node6.getValidationPubKeyInteger());
             validator6WalletAddress.setText(node6.getWalletAddress().getFullWalletAddress());
-            validator6WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            if (nonNull(accountState.getBalance())) {
+                validator6WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            }
             nodePublicPort6.setText(node6.getPublicPort().toString());
             nodeConsolePort6.setText(node6.getConsolePort().toString());
             liteServerPort6.setText(node6.getLiteServerPort().toString());
 
-            if (isNull(node6.getWalletAddress())) {
-                deleteValidatorBtn6.setDisable(true);
-            } else {
-                deleteValidatorBtn6.setDisable(false);
-            }
+            deleteValidatorBtn6.setDisable(isNull(node6.getWalletAddress()));
         }
     }
 
@@ -2323,16 +2309,14 @@ public class MainController implements Initializable {
             validator7PubKeyHexNext.setText(node7.getValidationPubKeyHex());
             validator7PubKeyIntegerNext.setText(node7.getValidationPubKeyInteger() + " (used in participants list)");
             validator7WalletAddress.setText(node7.getWalletAddress().getFullWalletAddress());
-            validator7WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            if (nonNull(accountState.getBalance())) {
+                validator7WalletBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            }
             nodePublicPort7.setText(node7.getPublicPort().toString());
             nodeConsolePort7.setText(node7.getConsolePort().toString());
             liteServerPort7.setText(node7.getLiteServerPort().toString());
 
-            if (isNull(node7.getWalletAddress())) {
-                deleteValidatorBtn7.setDisable(true);
-            } else {
-                deleteValidatorBtn7.setDisable(false);
-            }
+            deleteValidatorBtn7.setDisable(isNull(node7.getWalletAddress()));
         }
     }
 
@@ -2422,8 +2406,8 @@ public class MainController implements Initializable {
 
         log.debug("startXHoldStakeLine3 {}, endHoldStake2 {}, endHoldStake3 {} holdStakeWidth {}", startXHoldStakeLine3, endHoldStake2, endHoldStake3, holdStakeWidth);
 
-        long fullWidthInPixels = 0;
-        long fullDurationSeconds = 0;
+        long fullWidthInPixels;
+        long fullDurationSeconds;
 
         if (settings.elections.size() > 1) {
             fullDurationSeconds = endHoldStake3 - v.getStartElections() + v.getValidationDuration();
@@ -3466,7 +3450,7 @@ public class MainController implements Initializable {
 
     public void showLoadingPane(String line1, String line2) {
         FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/loading-pane.fxml"));
-        Parent parent = null;
+        Parent parent;
         try {
             parent = loader.load();
         } catch (IOException e) {

@@ -388,12 +388,12 @@ public class Fift {
                 node.getWalletAddress().getBounceableAddressBase64url(),
                 String.valueOf(startElectionTime),
                 maxFactor.toPlainString(),
-                node.getValidationAndlKey(), // getValidatorAdnlAddrHex
-                node.getValidationSigningPubKey(), // getValidatorIdBase64
+                node.getValidationAndlKey(),
+                node.getValidationSigningPubKey(),
                 signatureFromElectionRequest);
 
         String resultStr = result.getRight().get();
-        log.debug(resultStr); // make debug
+        log.debug(resultStr);
 
         resultStr = resultStr.replace("\r\n", SPACE).replace("\n", SPACE);
 

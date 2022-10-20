@@ -70,7 +70,6 @@ import java.util.regex.Pattern;
 import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.ton.executors.liteclient.LiteClientParser.*;
 import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
 import static org.ton.settings.MyLocalTonSettings.SETTINGS_FILE;
@@ -383,7 +382,7 @@ public class Utils {
                     rt.exec("killall -9 " + "validator-engine-console");
                     rt.exec("killall -9 " + "lite-client");
                     rt.exec("killall -9 " + "dht-server");
-                    rt.exec("killall -2 " + "validator-engine"); // TODO look up for the shutdown order when multiple nodes are active
+                    rt.exec("killall -2 " + "validator-engine");
                 }
 
                 log.debug("Waiting for processes to be killed...");
@@ -397,27 +396,6 @@ public class Utils {
             log.error(ExceptionUtils.getStackTrace(e));
             return false;
         }
-    }
-
-    public static void killNode(Node node) {
-
-    }
-
-    public static ResultLastBlock fullBlockSeqno2Result(String fullBlockSeqno) {
-        String shortBlockSeqno = OPEN + sb(fullBlockSeqno, OPEN, CLOSE) + CLOSE;
-        String rootHashId = sb(fullBlockSeqno, ":", ":");
-        String fileHashId = fullBlockSeqno.substring(fullBlockSeqno.lastIndexOf(':') + 1);
-        String shard = sb(shortBlockSeqno, ",", ",");
-        BigInteger pureBlockSeqno = new BigInteger(sb(shortBlockSeqno, shard + ",", CLOSE));
-        Long wc = Long.parseLong(sb(shortBlockSeqno, OPEN, ","));
-
-        return ResultLastBlock.builder()
-                .seqno(pureBlockSeqno)
-                .wc(wc)
-                .shard(shard)
-                .fileHash(fileHashId)
-                .rootHash(rootHashId)
-                .build();
     }
 
     public static boolean isMacOsArm() {

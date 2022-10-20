@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.DbPool;
 import org.ton.executors.dhtserver.DhtServer;
@@ -22,7 +21,6 @@ import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.utils.Utils;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +43,7 @@ public class App extends Application {
     public static Stage primaryStage;
 
     @Override
-    public void start(Stage primaryStage)  {
+    public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         log.info("Starting application");
 
@@ -73,7 +71,7 @@ public class App extends Application {
             } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
                 mainController.showLoadingPane("Starting TON blockchain...", "Should take no longer than 45 seconds.");
             } else {
-                mainController.showLoadingPane("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size(), " validators, may take up to 3 minutes.");
+                mainController.showLoadingPane("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size(), "validators may take up to 3 minutes.");
             }
         });
 
@@ -97,17 +95,6 @@ public class App extends Application {
     }
 
     public static void main(String[] args) throws Throwable {
-
-        if (!Arrays.asList(args).isEmpty()) {
-            if (args[0].equalsIgnoreCase("restart")) {
-                log.info("R E S E T T I N G: {}", Arrays.asList(args));
-                Thread.sleep(1000);
-                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "MyLocalTonDB"));
-                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "genesis"));
-                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "templates"));
-                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "myLocalTon.log"));
-            }
-        }
 
         GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, Objects.requireNonNull(App.class.getClassLoader().getResourceAsStream("org/ton/fonts/RobotoMono-Medium.ttf"))));
 

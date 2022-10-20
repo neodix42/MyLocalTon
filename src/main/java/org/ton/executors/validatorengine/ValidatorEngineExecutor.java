@@ -45,6 +45,11 @@ public class ValidatorEngineExecutor {
             CompletableFuture onProcessExit = p.onExit();
 
             onProcessExit.thenAccept(ph -> {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 log.info("node {} with PID {} has stopped, exitValue {}", node.getNodeName(), ((Process) ph).pid(), ((Process) ph).exitValue());
 
                 if ((((Process) ph).exitValue() > 0) && (Main.appActive.get())) {
