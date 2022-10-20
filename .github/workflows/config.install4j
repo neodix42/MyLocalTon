@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.3" transformSequenceNumber="10">
-  <directoryPresets config="/home/runner/work/MyLocalTon/MyLocalTon/target/MyLocalTon.jar" />
-  <application name="My Local TON" applicationId="8429-1224-9413-4121" mediaDir="/home/runner/work/MyLocalTon/MyLocalTon/target" shortName="MyLocalTon" publisherWeb="https://github.com/neodiX42/MyLocalTon" version="0.0.1" macVolumeId="d78ef100bf6958f0">
+  <directoryPresets config="/home/runner/work/MyLocalTon/MyLocalTon/target" />
+  <application name="My Local TON" applicationId="8429-1224-9413-4121" mediaDir="/home/runner/work/MyLocalTon/MyLocalTon/target" shortName="MyLocalTon" publisher="neodiX" publisherWeb="https://github.com/neodiX42/MyLocalTon" version="0.0.1" macVolumeId="d78ef100bf6958f0">
     <variables>
       <variable name="sys.ext.suppress.overwrittenFile" value="true" />
     </variables>
@@ -152,7 +152,7 @@ return console.askOkCancel(message, true);
               </action>
               <action id="19" beanClass="com.install4j.runtime.beans.actions.desktop.RegisterAddRemoveAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
                 <serializedBean>
-                  <property name="itemName" type="string">${compiler:sys.fullName} ${compiler:sys.version}</property>
+                  <property name="itemName" type="string">${compiler:sys.fullName}</property>
                 </serializedBean>
               </action>
             </actions>

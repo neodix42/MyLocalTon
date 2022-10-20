@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.3" transformSequenceNumber="10">
   <directoryPresets config="/home/runner/work/MyLocalTon/MyLocalTon/target/../../MyLocalTon_macos_arm64.jar" />
-  <application name="My Local TON" applicationId="2236-4703-2212-7363" mediaDir="/home/runner/work/MyLocalTon/MyLocalTon/target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_arm64_${compiler:sys.version}" shortName="MyLocalTon" publisherWeb="https://github.com/neodiX42/MyLocalTon" version="0.0.1" macVolumeId="d78ef100bf6958f0">
+  <application name="My Local TON" applicationId="2236-4703-2212-7363" mediaDir="/home/runner/work/MyLocalTon/MyLocalTon/target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_arm64_${compiler:sys.version}" shortName="MyLocalTon" publisher="neodiX" publisherWeb="https://github.com/neodiX42/MyLocalTon" version="0.0.1" macVolumeId="d78ef100bf6958f0">
     <variables>
       <variable name="sys.ext.suppress.overwrittenFile" value="true" />
     </variables>
@@ -148,7 +148,7 @@ return console.askOkCancel(message, true);
               </action>
               <action id="19" beanClass="com.install4j.runtime.beans.actions.desktop.RegisterAddRemoveAction" actionElevationType="elevated" rollbackBarrierExitCode="0">
                 <serializedBean>
-                  <property name="itemName" type="string">${compiler:sys.fullName} ${compiler:sys.version}</property>
+                  <property name="itemName" type="string">${compiler:sys.fullName}</property>
                 </serializedBean>
               </action>
             </actions>

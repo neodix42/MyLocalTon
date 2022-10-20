@@ -33,8 +33,7 @@ jobs:
 
       - name: Build x86-64 with Maven
         run: |
-          git checkout test-install4j
-          ls -lart ..
+          git checkout test-install4j          
           mvn clean package -DskipTests
 
       - uses: luangong/setup-install4j@main
