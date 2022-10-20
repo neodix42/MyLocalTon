@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="10.0.3" transformSequenceNumber="10">
-  <directoryPresets config="/home/runner/work/MyLocalTon/MyLocalTon/target/MyLocalTon_macos_arm64.jar" />
+  <directoryPresets config="/home/runner/work/MyLocalTon/MyLocalTon/target/../../MyLocalTon_macos_arm64.jar" />
   <application name="My Local TON" applicationId="2236-4703-2212-7363" mediaDir="/home/runner/work/MyLocalTon/MyLocalTon/target" mediaFilePattern="${compiler:sys.shortName}_${compiler:sys.platform}_arm64_${compiler:sys.version}" shortName="MyLocalTon" publisherWeb="https://github.com/neodiX42/MyLocalTon" version="0.0.1" macVolumeId="d78ef100bf6958f0">
     <variables>
       <variable name="sys.ext.suppress.overwrittenFile" value="true" />
@@ -12,7 +12,7 @@
       <mountPoint id="31" />
     </mountPoints>
     <entries>
-      <fileEntry mountPoint="31" file="/home/runner/work/MyLocalTon/MyLocalTon/target/MyLocalTon_macos_arm64.jar" />
+      <fileEntry mountPoint="31" file="/home/runner/work/MyLocalTon/MyLocalTon/target/../../MyLocalTon_macos_arm64.jar" />
     </entries>
   </files>
   <launchers>
@@ -20,7 +20,7 @@
       <executable name="MyLocalTon" iconSet="true" executableMode="gui" singleInstance="true" globalSingleInstance="true" />
       <java mainClass="org.ton.main.Main">
         <classPath>
-          <archive location="/home/runner/work/MyLocalTon/MyLocalTon/target/MyLocalTon_macos_arm64.jar" failOnError="true" />
+          <archive location="/home/runner/work/MyLocalTon/MyLocalTon/target/../../MyLocalTon_macos_arm64.jar" failOnError="true" />
         </classPath>
       </java>
       <vmOptionsFile mode="none" />
