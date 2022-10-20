@@ -20,14 +20,17 @@
     </entries>
   </files>
   <launchers>
-    <launcher name="My Local TON" id="26">
-      <executable name="MyLocalTon" iconSet="true" iconFile="/home/runner/work/MyLocalTon/MyLocalTon/screens/ton.ico" executableMode="gui" singleInstance="true" globalSingleInstance="true" />
+    <launcher name="MyLocalTon" id="26" icnsFile="/home/runner/work/MyLocalTon/MyLocalTon/screens/ton.icns">
+      <executable name="MyLocalTon.jar" iconSet="true" iconFile="/home/runner/work/MyLocalTon/MyLocalTon/screens/ton.ico" executableMode="gui" singleInstance="true" globalSingleInstance="true" />
       <java mainClass="org.ton.main.Main">
         <classPath>
           <archive location="/home/runner/work/MyLocalTon/MyLocalTon/target/MyLocalTon.jar" failOnError="true" />
         </classPath>
       </java>
       <vmOptionsFile mode="none" />
+      <iconImageFiles>
+        <file path="/home/runner/work/MyLocalTon/MyLocalTon/screens/ton.png" />
+      </iconImageFiles>
     </launcher>
   </launchers>
   <installerGui>
