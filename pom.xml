@@ -23,6 +23,7 @@
         <logback.version>1.2.3</logback.version>
         <zip4j.version>2.7.0</zip4j.version>
         <jetty.version>11.0.2</jetty.version>
+        <rocksdb.version>7.7.3</rocksdb.version>
     </properties>
 
     <repositories>
@@ -237,6 +238,12 @@
             <artifactId>jProcesses</artifactId>
             <version>1.6.5</version>
         </dependency>
+        <dependency>
+            <groupId>org.rocksdb</groupId>
+            <artifactId>rocksdbjni</artifactId>
+            <version>${rocksdb.version}</version>
+        </dependency>
+
     </dependencies>
     <build>
         <resources>

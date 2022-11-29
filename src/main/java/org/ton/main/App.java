@@ -9,6 +9,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.DbPool;
 import org.ton.executors.dhtserver.DhtServer;
@@ -21,7 +24,9 @@ import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.utils.Utils;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -159,6 +164,22 @@ public class App extends Application {
 
         Utils.waitForBlockchainReady(genesisNode);
         Utils.waitForNodeSynchronized(genesisNode);
+
+        //------------
+        RocksDB.loadLibrary();
+        final Options options = new Options();
+        options.setCreateIfMissing(true);
+        File dbDir = new File(settings.getGenesisNode().getTonDbDir(), "celldb");
+        RocksDB db;
+        try {
+            Files.createDirectories(dbDir.getParentFile().toPath());
+            Files.createDirectories(dbDir.getAbsoluteFile().toPath());
+            db = RocksDB.open(options, dbDir.getAbsolutePath());
+        } catch (IOException | RocksDBException ex) {
+            log.error("Error initializing RocksDB, check configurations and permissions, exception: {}, message: {}, stackTrace: {}",
+                    ex.getCause(), ex.getMessage(), ex.getStackTrace());
+        }
+        log.info("RocksDB initialized and ready to use");
 
         myLocalTon.runBlockchainMonitor(genesisNode);
 
