@@ -19,6 +19,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Strings;
@@ -74,7 +75,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -1695,7 +1695,7 @@ public class MyLocalTon {
 
         if (!node.getNodeName().contains("genesis")) {
             node.setFlag("cloning");
-            if (isWindows()) {
+            if (SystemUtils.IS_OS_WINDOWS) {
 //               on Windows locked files cannot be copied. As an option, we can shut down genesis node, copy the files and start it again.
 //               but there is a connection issue with this on Windows.
 //               As an alternative, we can exclude locked files (LOCK), that's why Utils.copyDirectory is used.

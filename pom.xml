@@ -6,12 +6,12 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <java.version>11</java.version>
-        <maven.compiler.release>11</maven.compiler.release>
+        <java.version>19</java.version>
+        <maven.compiler.release>19</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <apache.commons.lang3.version>3.9</apache.commons.lang3.version>
-        <openjfx.version>17.0.2</openjfx.version>
-        <jfoenix.version>9.0.4</jfoenix.version>
+        <openjfx.version>19</openjfx.version>
+        <jfoenix.version>9.0.10</jfoenix.version>
         <commons-io.version>2.7</commons-io.version>
         <commons-codec.version>1.14</commons-codec.version>
         <lombok.version>1.18.22</lombok.version>
@@ -258,9 +258,14 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.5</version>
+                <version>0.0.8</version>
                 <configuration>
                     <options>
+                        <option>--add-modules</option>
+                        <option>
+                            javafx.controls,javafx.graphics,javafx.fxml,javafx.media,javafx.web,javafx.swing,javafx.base,javafx.web
+                        </option>
+
                         <option>--add-opens</option>
                         <option>javafx.graphics/javafx.css=ALL-UNNAMED</option>
                         <option>--add-opens</option>
@@ -277,6 +282,21 @@
                         <option>javafx.graphics/com.sun.javafx.stage=ALL-UNNAMED</option>
                         <option>--add-opens</option>
                         <option>javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>java.base/java.lang.reflect=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>javafx.graphics/com.sun.javafx.css=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>javafx.controls/com.sun.javafx.charts=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>javafx.graphics/com.sun.javafx.iio=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>javafx.graphics/com.sun.javafx.iio.common=ALL-UNNAMED</option>
+
+                        <option>--add-exports</option>
+                        <option>
+                            javafx.controls/com.sun.javafx.scene.control.LambdaMultiplePropertyChangeListenerHandler=com.jfoenix
+                        </option>
                         <option>--add-exports</option>
                         <option>javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix</option>
                         <option>--add-exports</option>

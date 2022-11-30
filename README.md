@@ -101,5 +101,61 @@ functionality is in the backlog, so it will be implemented in future releases.
 * In Settings - JavaFX specify path to SceneBuilder.
 * Now you can compile and run the application from IntelliJ.
 
+#### JavaFX 17 is not supported any longer, please install JavaFX 19
+
+* **Install JavaFX 19**
+
+1. Apparently JavaFX 17 is no longer available for download.
+2. Download x64 JavaFX 19 Windows SDK from [here](https://gluonhq.com/products/javafx/)
+3. Select Windows for the Operating System
+4. Select x64 for the Architecture
+5. Select SDK for the Type
+6. Copy the javafx-sdk-191 folder from the .zip file to C:\Program Files\Java\
+
+* **Set Project SDK to Java 17**
+
+1. Go to File → New Projects Setup → Structure
+2. Select Project under Project Settings on the left side
+3. Set SDK to 17 (if available); otherwise:
+4. Click Add SDK
+5. Select JDK and browse to C:\Program Files\Java\jdk-17.0.52
+6. Under Project language level select SDK default (17 - Sealed types, always-strict floating-point semantics)
+7. Click OK
+
+* **Set Project Global Library**
+
+1. Go to File → New Projects Setup → Structure
+2. Select Global Libraries under Platform Settings on the left side
+3. Click the + (plus symbol) in the upper left of the second column
+4. Select Java from the menu
+5. Browse to C:\Program Files\Java\javafx-sdk-19\lib (adjust to match version)
+6. Click OK twice
+
+* **Set Run Configuration Template for Application**
+
+1. Go to File → New Projects Setup → Run Configuration Templates...
+2. Select Application
+3. Click Modify options (or type Alt+M) and ensure Add VM options is checked
+4. Paste the following in VM options:
+
+```
+   --module-path "C:\Program Files\Java\javafx-sdk-19\lib"
+   --add-modules=javafx.controls,javafx.graphics,javafx.fxml,javafx.media,javafx.web,javafx.swing,javafx.base,javafx.web
+   --add-reads javafx.graphics=ALL-UNNAMED
+   --add-reads javafx.controls=ALL-UNNAMED
+   --add-opens javafx.controls/com.sun.javafx.charts=ALL-UNNAMED
+   --add-opens javafx.graphics/com.sun.javafx.iio=ALL-UNNAMED
+   --add-opens javafx.graphics/com.sun.javafx.iio.common=ALL-UNNAMED
+   --add-opens javafx.graphics/com.sun.javafx.css=ALL-UNNAMED
+   --add-opens javafx.base/com.sun.javafx.runtime=ALL-UNNAMED
+   --add-opens javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED
+   --add-opens javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED
+   --add-opens javafx.controls/com.sun.javafx.scene.control.LambdaMultiplePropertyChangeListenerHandler=ALL-UNNAMED
+   --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+```
+
+6. Here too, ensure that the version number matches what you downloaded
+7. Click OK
+
 | :point_up:    | On Windows don't forget to install Microsoft Visual C++ Redistributable installation (see above) |
 |---------------|:------------------------|

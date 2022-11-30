@@ -3,6 +3,7 @@ package org.ton.executors.func;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,8 +14,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import static com.sun.javafx.PlatformUtil.isUnix;
-import static com.sun.javafx.PlatformUtil.isWindows;
 
 @Slf4j
 public class FuncExecutor {
@@ -33,7 +32,7 @@ public class FuncExecutor {
 
     private void extractFunc() throws IOException {
         synchronized (FuncExecutor.class) {
-            if (isWindows()) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 if (Files.notExists(Paths.get(installDir + File.separator + FUNC_EXE), LinkOption.NOFOLLOW_LINKS)) {
                     log.info("extracting {} on Windows", FUNC_EXE);
                     Files.createDirectories(Paths.get(installDir));
@@ -44,7 +43,7 @@ public class FuncExecutor {
                 } else {
                     log.info("{} on Windows already extracted into {}, use it.", FUNC_EXE, installDir + File.separator + FUNC_EXE);
                 }
-            } else if (isUnix()) {
+            } else if (SystemUtils.IS_OS_LINUX) {
                 if (Files.notExists(Paths.get(installDir + File.separator + FUNC), LinkOption.NOFOLLOW_LINKS)) {
                     log.info("extracting {} on Unix", FUNC);
                     Files.createDirectories(Paths.get(installDir));
@@ -64,7 +63,7 @@ public class FuncExecutor {
 
     public String execute(final String command) {
 
-        String binaryPath = installDir + File.separator + (isWindows() ? FUNC_EXE : FUNC);
+        String binaryPath = installDir + File.separator + (SystemUtils.IS_OS_WINDOWS ? FUNC_EXE : FUNC);
         log.debug("binaryPath {}", binaryPath);
 
         String[] withBinaryCommand = {binaryPath};

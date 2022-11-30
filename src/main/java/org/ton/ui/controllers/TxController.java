@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -41,7 +42,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 
-import static com.sun.javafx.PlatformUtil.isMac;
 import static org.ton.utils.Utils.PATTERN;
 
 @Slf4j
@@ -122,7 +122,7 @@ public class TxController {
     }
 
     private void showTxDump(TxEntity txEntity, Transaction tx) throws IOException {
-        if (!isMac()) {
+        if (!SystemUtils.IS_OS_MAC) {
             FXMLLoader fxmlLoader = new FXMLLoader(TxController.class.getClassLoader().getResource("org/ton/main/rawdump.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();

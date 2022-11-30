@@ -1,11 +1,11 @@
 package org.ton.executors.fift;
 
-import com.sun.javafx.PlatformUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.db.entities.WalletEntity;
 import org.ton.executors.liteclient.api.AccountState;
@@ -60,7 +60,7 @@ public class Fift {
         String attachedBoc;
         String timeout = null;
 
-        if (PlatformUtil.isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             attachedBoc = (StringUtils.isEmpty(sendToncoinsParam.getBocLocation())) ? "" : "-B\"" + sendToncoinsParam.getBocLocation().trim() + "\"";
         } else {
             attachedBoc = (StringUtils.isEmpty(sendToncoinsParam.getBocLocation())) ? "" : "-B" + sendToncoinsParam.getBocLocation().trim();

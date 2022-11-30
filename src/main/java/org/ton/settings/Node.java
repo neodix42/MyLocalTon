@@ -1,6 +1,7 @@
 package org.ton.settings;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.jutils.jprocesses.JProcesses;
 import org.ton.utils.Extractor;
 import org.ton.wallet.WalletAddress;
@@ -10,7 +11,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.nonNull;
 
 public interface Node {
@@ -93,7 +93,7 @@ public interface Node {
         System.out.println("nodeShutdown " + nodeName + ", process " + nodePid);
 
         try {
-            if (isWindows()) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 //kill all lite-client processes of the particular node
                 Runtime.getRuntime().exec("WMIC PROCESS WHERE \"COMMANDLINE LIKE '%" + nodeName + "%lite-client%'\" CALL TERMINATE");
                 Thread.sleep(1000);
@@ -131,7 +131,7 @@ public interface Node {
         System.out.println("nodeShutdown " + nodeName + ", process " + nodePid);
 
         try {
-            if (isWindows()) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 //kill all lite-client processes of the particular node
                 Runtime.getRuntime().exec("WMIC PROCESS WHERE \"COMMANDLINE LIKE '%" + nodeName + "%lite-client%'\" CALL TERMINATE");
                 Thread.sleep(1000);

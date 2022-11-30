@@ -3,14 +3,13 @@ package org.ton.executors.createstate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.ton.settings.Node;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
-
-import static com.sun.javafx.PlatformUtil.isWindows;
 
 @Slf4j
 public class CreateStateExecutor {
@@ -20,7 +19,7 @@ public class CreateStateExecutor {
 
     public String execute(Node node, String... command) {
 
-        String binaryPath = node.getTonBinDir() + (isWindows() ? CREATE_STATE_EXE : CREATE_STATE);
+        String binaryPath = node.getTonBinDir() + (SystemUtils.IS_OS_WINDOWS ? CREATE_STATE_EXE : CREATE_STATE);
         String[] withBinaryCommand = {binaryPath};
         withBinaryCommand = ArrayUtils.addAll(withBinaryCommand, command);
 

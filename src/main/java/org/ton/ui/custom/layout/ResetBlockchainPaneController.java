@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.ui.custom.events.CustomEvent;
@@ -15,7 +16,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static org.ton.ui.custom.events.CustomEventBus.emit;
 
 @Slf4j
@@ -37,7 +37,7 @@ public class ResetBlockchainPaneController implements Initializable {
         try {
             emit(new CustomActionEvent(CustomEvent.Type.SAVE_SETTINGS));
             Thread.sleep(100);
-            if (isWindows()) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 if (Utils.doShutdown()) {
                     Thread.sleep(200);
                     MyLocalTon.getInstance().getSettings().setActiveNodes(new ConcurrentLinkedQueue<>());
