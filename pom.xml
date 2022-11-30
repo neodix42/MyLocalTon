@@ -6,12 +6,12 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <java.version>19</java.version>
-        <maven.compiler.release>19</maven.compiler.release>
+        <java.version>14</java.version>
+        <maven.compiler.release>14</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <apache.commons.lang3.version>3.9</apache.commons.lang3.version>
         <openjfx.version>19</openjfx.version>
-        <jfoenix.version>9.0.10</jfoenix.version>
+        <jfoenix.version>9.0.1</jfoenix.version>
         <commons-io.version>2.7</commons-io.version>
         <commons-codec.version>1.14</commons-codec.version>
         <lombok.version>1.18.22</lombok.version>
@@ -292,11 +292,23 @@
                         <option>javafx.graphics/com.sun.javafx.iio=ALL-UNNAMED</option>
                         <option>--add-opens</option>
                         <option>javafx.graphics/com.sun.javafx.iio.common=ALL-UNNAMED</option>
-
+                        <option>--add-opens</option>
+                        <option>javafx.fxml/javafx.fxml=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>java.base/java.lang.reflect=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>java.base/java.util=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>java.base/java.text=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>javafx.base/com.sun.javafx.reflect=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>javafx.base/com.sun.javafx.beans=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>java.desktop/java.awt.font=ALL-UNNAMED</option>
                         <option>--add-exports</option>
-                        <option>
-                            javafx.controls/com.sun.javafx.scene.control.LambdaMultiplePropertyChangeListenerHandler=com.jfoenix
-                        </option>
+                        <option>javafx.graphics/com.sun.javafx.util=ALL-UNNAMED</option>
+
                         <option>--add-exports</option>
                         <option>javafx.controls/com.sun.javafx.scene.control.behavior=com.jfoenix</option>
                         <option>--add-exports</option>
@@ -347,7 +359,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
