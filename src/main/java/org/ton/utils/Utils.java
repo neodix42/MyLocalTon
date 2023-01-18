@@ -690,7 +690,7 @@ public class Utils {
             } else {
                 log.error("Participation error. {} failed to send {} Toncoins to {}", node.getNodeName(), node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex());
                 node.getElectionsCounter().remove(v.getStartValidationCycle());
-                App.mainController.showErrorMsg(String.format("Participation error. {} failed to send %s Toncoins to %s", node.getDefaultValidatorStake(), node.getNodeName(), settings.getElectorSmcAddrHex()), 5);
+                App.mainController.showErrorMsg(String.format("Participation error. %s failed to send %s Toncoins to %s", node.getDefaultValidatorStake(), node.getNodeName(), settings.getElectorSmcAddrHex()), 5);
             }
         } catch (Exception e) {
             log.error("Error by {} participating in elections! Error {}", node.getNodeName(), e.getMessage());
@@ -701,7 +701,7 @@ public class Utils {
     public static MyLocalTonSettings loadSettings() {
         try {
             if (Files.exists(Paths.get(SETTINGS_FILE), LinkOption.NOFOLLOW_LINKS)) {
-                return new Gson().fromJson(new FileReader(new File(SETTINGS_FILE)), MyLocalTonSettings.class);
+                return new Gson().fromJson(new FileReader(SETTINGS_FILE), MyLocalTonSettings.class);
             } else {
                 log.info("No settings.json found. Very first launch with default settings.");
                 return new MyLocalTonSettings();
@@ -795,48 +795,32 @@ public class Utils {
 
         for (String n : Arrays.asList("genesis", "node2", "node3", "node4", "node5", "node6", "node7")) {
             if (!settings.getActiveNodes().contains(n)) {
-                switch (n) {
-                    case "genesis":
-                        return mainController.genesisnode1;
-                    case "node2":
-                        return mainController.validator2tab;
-                    case "node3":
-                        return mainController.validator3tab;
-                    case "node4":
-                        return mainController.validator4tab;
-                    case "node5":
-                        return mainController.validator5tab;
-                    case "node6":
-                        return mainController.validator6tab;
-                    case "node7":
-                        return mainController.validator7tab;
-                    default:
-                        return null;
-                }
+                return switch (n) {
+                    case "genesis" -> mainController.genesisnode1;
+                    case "node2" -> mainController.validator2tab;
+                    case "node3" -> mainController.validator3tab;
+                    case "node4" -> mainController.validator4tab;
+                    case "node5" -> mainController.validator5tab;
+                    case "node6" -> mainController.validator6tab;
+                    case "node7" -> mainController.validator7tab;
+                    default -> null;
+                };
             }
         }
         return null;
     }
 
     public static Tab getNodeTabByName(String nodeName) {
-        switch (nodeName) {
-            case "genesis":
-                return mainController.genesisnode1;
-            case "node2":
-                return mainController.validator2tab;
-            case "node3":
-                return mainController.validator3tab;
-            case "node4":
-                return mainController.validator4tab;
-            case "node5":
-                return mainController.validator5tab;
-            case "node6":
-                return mainController.validator6tab;
-            case "node7":
-                return mainController.validator7tab;
-            default:
-                return mainController.genesisnode1;
-        }
+        return switch (nodeName) {
+            case "genesis" -> mainController.genesisnode1;
+            case "node2" -> mainController.validator2tab;
+            case "node3" -> mainController.validator3tab;
+            case "node4" -> mainController.validator4tab;
+            case "node5" -> mainController.validator5tab;
+            case "node6" -> mainController.validator6tab;
+            case "node7" -> mainController.validator7tab;
+            default -> mainController.genesisnode1;
+        };
     }
 
     public static Label getNodeStatusLabelByName(String nodeName) {
