@@ -1,3 +1,5 @@
 ### Changes in this release
 
-- bug fixing; handle error retrieving seqno; https://github.com/neodiX42/MyLocalTon/issues/7
+- Upgrade binaries to TON 2022.12;
+- include blockchain-explorer executable to macOS x86-64 artifacts;
+- fix Windows blockchain-explorer executable;
