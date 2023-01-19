@@ -31,6 +31,7 @@ import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.ton.actions.MyLocalTon;
@@ -76,7 +77,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static com.sun.javafx.PlatformUtil.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
@@ -1006,7 +1006,6 @@ public class MainController implements Initializable {
 
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
             service.schedule(() -> {
-                log.info("final closing");
                 saveSettings();
                 Platform.exit(); // closes main form
 
@@ -1025,7 +1024,7 @@ public class MainController implements Initializable {
     @FXML
     void myLocalTonFileBtnAction() throws IOException {
         log.info("open mylocalton log {}", myLocalTonLog.getFieldText().trim());
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             Runtime.getRuntime().exec("cmd /c start notepad " + myLocalTonLog.getFieldText());
         } else {
             Runtime.getRuntime().exec("gio open " + myLocalTonLog.getFieldText());
@@ -1035,7 +1034,7 @@ public class MainController implements Initializable {
     @FXML
     void dhtLogDirBtnAction1() throws IOException {
         log.debug("open dht dir {}", dhtLogDir1.getFieldText().trim());
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             Runtime.getRuntime().exec("cmd /c start " + dhtLogDir1.getFieldText());
         } else {
             Runtime.getRuntime().exec("gio open " + dhtLogDir1.getFieldText());
@@ -1045,7 +1044,7 @@ public class MainController implements Initializable {
     @FXML
     void valLogDirBtnAction1() throws IOException {
         log.debug("open validator log dir {}", validatorLogDir1.getFieldText().trim());
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             Runtime.getRuntime().exec("cmd /c start " + validatorLogDir1.getFieldText());
         } else {
             Runtime.getRuntime().exec("gio open " + validatorLogDir1.getFieldText());
@@ -1607,9 +1606,7 @@ public class MainController implements Initializable {
         enableBlockchainExplorer.setVisible(true);
         enableBlockchainExplorerLabel.setVisible(true);
 
-        if (isLinux() || isMac() || isWindows()) {
-            addValidatorBtn.setVisible(true);
-        }
+        addValidatorBtn.setVisible(true);
 
         // validator-tabs
         validationTabs.getTabs().remove(validator2tab);
@@ -1803,10 +1800,10 @@ public class MainController implements Initializable {
         String lastCommand = LiteClient.getInstance(LiteClientEnum.GLOBAL).getLastCommand(MyLocalTon.getInstance().getSettings().getGenesisNode());
         log.info("show console with last command, {}", lastCommand);
 
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             log.info("cmd /c start cmd.exe /k \"echo " + lastCommand + " && " + lastCommand + "\"");
             Runtime.getRuntime().exec("cmd /c start cmd.exe /k \"echo " + lastCommand + " && " + lastCommand + "\"");
-        } else if (isLinux()) {
+        } else if (SystemUtils.IS_OS_LINUX) {
             if (Files.exists(Paths.get("/usr/bin/xterm"))) {
                 log.info("/usr/bin/xterm -hold -geometry 200 -e " + lastCommand);
                 Runtime.getRuntime().exec("/usr/bin/xterm -hold -geometry 200 -e " + lastCommand);
@@ -1895,7 +1892,7 @@ public class MainController implements Initializable {
 
                 String stopsWokring = "";
                 MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
-                if (isWindows()) {
+                if (SystemUtils.IS_OS_WINDOWS) {
                     stopsWokring = "\n\nIf you delete this node your main workchain becomes inactive. In comparison with Linux and MacOS versions of MyLocalTon, where you can remove validators until you maintain a two-thirds consensus, " +
                             "on Windows the whole blockchain stops working if you remove one node. If consensus is met upon restart you will be fine.";
                 } else {
@@ -3324,7 +3321,7 @@ public class MainController implements Initializable {
                         validationTabs.getTabs().add(newTab);
                     });
 
-//                    if (isWindows()) {
+//                    if (SystemUtils.IS_OS_WINDOWS) {
 //                        Utils.waitForBlockchainReady(node);
 //                        Utils.waitForNodeSynchronized(node);
 //                    }
@@ -3386,7 +3383,7 @@ public class MainController implements Initializable {
 
     public void valLogDirBtnAction2() throws IOException {
         log.info("open validator log dir {}", validatorLogDir2.getFieldText().trim());
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             Runtime.getRuntime().exec("cmd /c start " + validatorLogDir2.getFieldText());
         } else {
             Runtime.getRuntime().exec("gio open " + validatorLogDir2.getFieldText());
@@ -3395,7 +3392,7 @@ public class MainController implements Initializable {
 
     public void valLogDirBtnAction3() throws IOException {
         log.debug("open validator log dir {}", validatorLogDir3.getFieldText().trim());
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             Runtime.getRuntime().exec("cmd /c start " + validatorLogDir3.getFieldText());
         } else {
             Runtime.getRuntime().exec("gio open " + validatorLogDir3.getFieldText());
@@ -3404,7 +3401,7 @@ public class MainController implements Initializable {
 
     public void valLogDirBtnAction4() throws IOException {
         log.debug("open validator log dir {}", validatorLogDir4.getFieldText().trim());
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             Runtime.getRuntime().exec("cmd /c start " + validatorLogDir4.getFieldText());
         } else {
             Runtime.getRuntime().exec("gio open " + validatorLogDir4.getFieldText());
@@ -3413,7 +3410,7 @@ public class MainController implements Initializable {
 
     public void valLogDirBtnAction5() throws IOException {
         log.debug("open validator log dir {}", validatorLogDir5.getFieldText().trim());
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             Runtime.getRuntime().exec("cmd /c start " + validatorLogDir5.getFieldText());
         } else {
             Runtime.getRuntime().exec("gio open " + validatorLogDir5.getFieldText());
@@ -3422,7 +3419,7 @@ public class MainController implements Initializable {
 
     public void valLogDirBtnAction6() throws IOException {
         log.debug("open validator log dir {}", validatorLogDir6.getFieldText().trim());
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             Runtime.getRuntime().exec("cmd /c start " + validatorLogDir6.getFieldText());
         } else {
             Runtime.getRuntime().exec("gio open " + validatorLogDir6.getFieldText());
@@ -3431,7 +3428,7 @@ public class MainController implements Initializable {
 
     public void valLogDirBtnAction7() throws IOException {
         log.debug("open validator log dir {}", validatorLogDir7.getFieldText().trim());
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             Runtime.getRuntime().exec("cmd /c start " + validatorLogDir7.getFieldText());
         } else {
             Runtime.getRuntime().exec("gio open " + validatorLogDir7.getFieldText());

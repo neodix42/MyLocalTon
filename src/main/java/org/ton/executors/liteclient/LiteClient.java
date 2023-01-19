@@ -2,6 +2,7 @@ package org.ton.executors.liteclient;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.api.ResultLastBlock;
@@ -12,7 +13,6 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -44,7 +44,7 @@ public class LiteClient {
     public String getLastCommand(Node node) {
         String command = "last";
 
-        String binaryPath = node.getTonBinDir() + (isWindows() ? LITE_CLIENT_EXE : LITE_CLIENT);
+        String binaryPath = node.getTonBinDir() + (SystemUtils.IS_OS_WINDOWS ? LITE_CLIENT_EXE : LITE_CLIENT);
 
         String[] withBinaryCommand;
         switch (config) {

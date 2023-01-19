@@ -3,6 +3,7 @@ package org.ton.executors.liteclient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.enums.LiteClientEnum;
 import org.ton.main.Main;
@@ -15,7 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 
 @Slf4j
@@ -42,7 +42,7 @@ public class LiteClientExecutor {
 
     public Pair<Process, Future<String>> execute(Node node, String... command) {
 
-        String binaryPath = node.getTonBinDir() + (isWindows() ? LITE_CLIENT_EXE : LITE_CLIENT);
+        String binaryPath = node.getTonBinDir() + (SystemUtils.IS_OS_WINDOWS ? LITE_CLIENT_EXE : LITE_CLIENT);
         String[] withBinaryCommand;
         switch (config) {
             case GLOBAL:

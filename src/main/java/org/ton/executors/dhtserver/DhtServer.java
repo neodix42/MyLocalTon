@@ -3,6 +3,7 @@ package org.ton.executors.dhtserver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.executors.generaterandomid.RandomIdExecutor;
 import org.ton.settings.Node;
@@ -18,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 
 @Slf4j
@@ -124,7 +124,7 @@ public class DhtServer {
             if (file.length() == 64) { //take only hash files
                 log.debug("found keyring file {}", file);
 
-                if (isWindows()) {
+                if (SystemUtils.IS_OS_WINDOWS) {
                     dhtNodes.add(new RandomIdExecutor().execute(node, "-m", "dht", "-k", node.getDhtServerKeyringDir() + file,
                             "-a", "\"{\\\"@type\\\": \\\"adnl.addressList\\\",  \\\"addrs\\\":[{\\\"@type\\\": \\\"adnl.address.udp\\\", \\\"ip\\\": " + publicIpNum + ", \\\"port\\\": " + node.getDhtPort() + " } ], \\\"version\\\": 0, \\\"reinit_date\\\": 0, \\\"priority\\\": 0, \\\"expire_at\\\": 0}\""));
                 } else {

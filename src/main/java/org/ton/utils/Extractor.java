@@ -2,6 +2,7 @@ package org.ton.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
+import org.apache.commons.lang3.SystemUtils;
 import org.ton.settings.MyLocalTonSettings;
 
 import java.io.File;
@@ -11,8 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-
-import static com.sun.javafx.util.Utils.*;
 
 @Slf4j
 public class Extractor {
@@ -52,32 +51,26 @@ public class Extractor {
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "keyring"));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "log"));
 
-                if (isWindows()) {
+                if (SystemUtils.IS_OS_WINDOWS) {
                     extractWindowsBinaries();
-                } else if (isUnix()) {
+                } else if (SystemUtils.IS_OS_LINUX) {
                     if (Utils.getUbuntuVersion().equals("20.04")) {
                         extractUbuntuBinaries("ubuntu20");
-                    }
-                    else if (Utils.getUbuntuVersion().equals("20.04-arm64")) {
+                    } else if (Utils.getUbuntuVersion().equals("20.04-arm64")) {
                         extractUbuntuBinaries("ubuntu20-arm64");
-                    }
-                    else if (Utils.getUbuntuVersion().equals("18.04")) {
+                    } else if (Utils.getUbuntuVersion().equals("18.04")) {
                         extractUbuntuBinaries("ubuntu18");
-                    }
-                    else if (Utils.getUbuntuVersion().equals("18.04-arm64")) {
+                    } else if (Utils.getUbuntuVersion().equals("18.04-arm64")) {
                         extractUbuntuBinaries("ubuntu18-arm64");
-                    }
-                    else if (Utils.getUbuntuVersion().equals("22.04")) {
+                    } else if (Utils.getUbuntuVersion().equals("22.04")) {
                         extractUbuntuBinaries("ubuntu22");
-                    }
-                    else if (Utils.getUbuntuVersion().equals("22.04-arm64")) {
+                    } else if (Utils.getUbuntuVersion().equals("22.04-arm64")) {
                         extractUbuntuBinaries("ubuntu22-arm64");
-                    }
-                    else {
+                    } else {
                         log.error("This Linux system officially is not supported, but let's try to run TON binaries compiled on Ubuntu 20.04");
                         extractUbuntuBinaries("ubuntu20");
                     }
-                } else if (isMac()) {
+                } else if (SystemUtils.IS_OS_MAC) {
                     if (Utils.isMacOsArm()) {
                         extractMacBinaries("macos-arm64.zip");
                     } else {

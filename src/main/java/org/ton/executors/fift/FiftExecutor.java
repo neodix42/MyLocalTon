@@ -3,6 +3,7 @@ package org.ton.executors.fift;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.settings.Node;
 
@@ -14,8 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
-
 @Slf4j
 public class FiftExecutor {
 
@@ -24,7 +23,7 @@ public class FiftExecutor {
 
     public Pair<Process, Future<String>> execute(Node node, String... command) {
 
-        final String fiftBinaryPath = node.getTonBinDir() + (isWindows() ? FIFT_EXE : FIFT);
+        final String fiftBinaryPath = node.getTonBinDir() + (SystemUtils.IS_OS_WINDOWS ? FIFT_EXE : FIFT);
         String[] withBinaryCommand = {fiftBinaryPath, "-s"};
         String[] commandTrimmed = ArrayUtils.removeAllOccurences(command, "");
         withBinaryCommand = ArrayUtils.addAll(withBinaryCommand, commandTrimmed);
