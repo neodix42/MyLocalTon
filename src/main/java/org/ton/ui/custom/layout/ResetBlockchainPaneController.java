@@ -3,6 +3,7 @@ package org.ton.ui.custom.layout;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SystemUtils;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.utils.Utils;
@@ -10,7 +11,6 @@ import org.ton.utils.Utils;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static org.ton.ui.custom.events.CustomEventBus.emit;
 
 @Slf4j
@@ -32,7 +32,7 @@ public class ResetBlockchainPaneController implements Initializable {
         try {
             emit(new CustomActionEvent(CustomEvent.Type.SAVE_SETTINGS));
             Thread.sleep(100);
-            if (isWindows()) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 if (Utils.doShutdown()) {
                     log.info("restarting: cmd /c start java -jar {} restart", Utils.getMyPath());
                     Runtime.getRuntime().exec("cmd /c start java -jar " + Utils.getMyPath() + " restart");

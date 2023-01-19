@@ -24,6 +24,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -35,7 +36,6 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.main.App;
-import org.ton.ui.custom.layout.AccountsCreatePaneController;
 import org.ton.ui.custom.layout.RunMethodPaneController;
 import org.ton.utils.Utils;
 
@@ -44,7 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 
-import static com.sun.javafx.PlatformUtil.isMac;
 import static org.ton.main.App.mainController;
 import static org.ton.utils.Utils.PATTERN;
 
@@ -133,7 +132,7 @@ public class AccountController {
     }
 
     private void showAccountDump(WalletEntity walletEntity) throws IOException {
-        if (!isMac()) {
+        if (!SystemUtils.IS_OS_MAC) {
             FXMLLoader fxmlLoader = new FXMLLoader(BlockController.class.getClassLoader().getResource("org/ton/main/rawdump.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();

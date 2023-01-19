@@ -14,6 +14,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.fxmisc.richtext.GenericStyledArea;
@@ -67,7 +68,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.executors.liteclient.LiteClientParser.*;
@@ -324,15 +324,18 @@ public class Utils {
                     App.dbPool.closeDbs();
                 }
 
-                Main.fileLock.release();
-                Main.randomAccessFile.close();
-                FileUtils.deleteQuietly(Main.file);
+                try {
+                    Main.fileLock.release();
+                    Main.randomAccessFile.close();
+                    FileUtils.deleteQuietly(Main.file);
+                } catch (Exception e) {
+                }
                 log.info("Destroying external processes...");
 
                 Thread.sleep(1000);
 
                 Runtime rt = Runtime.getRuntime();
-                if (isWindows()) {
+                if (SystemUtils.IS_OS_WINDOWS) {
                     rt.exec("taskkill /F /IM " + "blockchain-explorer.exe");
                     rt.exec("taskkill /F /IM " + "validator-engine-console.exe");
                     rt.exec("taskkill /F /IM " + "lite-client.exe");
@@ -565,7 +568,7 @@ public class Utils {
     }
 
     public static boolean waitForNodeExited(Node node) throws Exception {
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             log.info("check exit value {}", node.getNodeName());
             return node.getNodeProcess().waitFor(90, TimeUnit.SECONDS);
         }
@@ -988,7 +991,7 @@ public class Utils {
 
     public static String getDirectorySizeUsingDu(String path) {
         String resultInput = "0MB";
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             try {
                 String cmd = System.getProperty("user.dir") + File.separator + "myLocalTon" + File.separator + "utils" + File.separator + "du.exe -hs " + path;
                 log.debug(cmd);
