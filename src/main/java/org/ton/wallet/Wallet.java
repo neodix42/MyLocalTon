@@ -2,6 +2,7 @@ package org.ton.wallet;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ton.enums.LiteClientEnum;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.ton.main.App.tonlib;
 
 @Slf4j
 public class Wallet {
@@ -41,8 +43,10 @@ public class Wallet {
             accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(fromNode, walletAddress.getFullWalletAddress()));
         } while (isNull(accountState) || (accountState.getStatus().equals("Uninitialized")));
 
-        FileUtils.deleteQuietly(new File(fromNode.getTonDbDir() + contractQueryBocFile));
-        log.debug("wallet contract installed, wallet {}, status {}", walletAddress.getFullWalletAddress(), accountState.getStatus());
+        if (StringUtils.isNotEmpty(contractQueryBocFile)) {
+            FileUtils.deleteQuietly(new File(fromNode.getTonDbDir() + contractQueryBocFile));
+        }
+        log.info("wallet contract installed, wallet {}, status {}", walletAddress.getFullWalletAddress(), accountState.getStatus());
         return true;
     }
 
@@ -57,15 +61,20 @@ public class Wallet {
     }
 
     public void installWalletSmartContract(Node fromNode, WalletAddress walletAddress) throws Exception {
-        log.debug("installing wallet smart-contract {}", walletAddress.getFullWalletAddress());
+        log.info("installing wallet smart-contract {}", walletAddress.getFullWalletAddress());
         //check if money arrived
         while (!walletHasEnoughFunds(fromNode, walletAddress, BigDecimal.valueOf(MINIMUM_TONCOINS))) ;
 
+        String resultSendBoc;
         // installing state-init
-        String resultSendBoc = liteClient.executeSendfile(fromNode, walletAddress.getWalletQueryFileBocLocation());
-        log.debug(resultSendBoc);
+        if (nonNull(walletAddress.getWalletQueryFileBocLocation())) {
+            resultSendBoc = liteClient.executeSendfile(fromNode, walletAddress.getWalletQueryFileBocLocation());
+            log.debug(resultSendBoc);
+        } else {
+            tonlib.sendRawMessage(walletAddress.getInitExternalMessage().message.toBocBase64(false));
+        }
 
-        while (!walletHasContractInstalled(fromNode, walletAddress, resultSendBoc)) ;
+        while (!walletHasContractInstalled(fromNode, walletAddress, "")) ;
 
     }
 
@@ -133,15 +142,19 @@ public class Wallet {
         switch (version) {
             case V1:
                 walletAddress = new Fift().createWalletV1QueryBoc(node, workchain);
-                log.debug("wallet created {}", walletAddress);
+                log.debug("wallet V1 created locally {}", walletAddress);
                 return walletAddress;
             case V2:
                 walletAddress = new Fift().createWalletV2QueryBoc(node, workchain);
-                log.debug("wallet created {}", walletAddress);
+                log.debug("wallet V2 created locally {}", walletAddress);
+                return walletAddress;
+            case V4:
+                walletAddress = new Fift().createWalletV4QueryBoc(node, workchain, subWalletId);
+                log.debug("wallet V4 created locally {}", walletAddress);
                 return walletAddress;
             default:
                 walletAddress = new Fift().createWalletV3QueryBoc(node, workchain, subWalletId);
-                log.debug("wallet created {}", walletAddress);
+                log.info("wallet V3 created locally {}", walletAddress);
                 return walletAddress;
         }
     }

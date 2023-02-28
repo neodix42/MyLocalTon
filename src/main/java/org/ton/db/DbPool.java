@@ -102,7 +102,11 @@ public class DbPool {
             ExecutorService threadPoolService = Executors.newFixedThreadPool(allDBs.size());
             List<FindWalletCallable> callablesList = new ArrayList<>();
             for (DB2 db : allDBs) {
-                FindWalletCallable callable = new FindWalletCallable(WalletCallbackParam.builder().db(db).walletPk(walletPk).build());
+                FindWalletCallable callable = new FindWalletCallable(
+                        WalletCallbackParam.builder()
+                                .db(db)
+                                .walletPk(walletPk)
+                                .build());
                 callablesList.add(callable);
             }
 
@@ -228,7 +232,9 @@ public class DbPool {
         if (activeDB.getEmf().isOpen()) {
             EntityManager em = activeDB.getEmf().createEntityManager();
             try {
-                if (isNull(findWallet(walletEntity.getPrimaryKey()))) {
+                WalletPk pk = walletEntity.getPrimaryKey();
+
+                if (isNull(findWallet(pk))) {
                     log.debug("Inserting into db wallet {}", walletEntity.getHexAddress());
                     em.getTransaction().begin();
                     em.persist(walletEntity);
@@ -241,6 +247,8 @@ public class DbPool {
                 if (e.getMessage().contains(TOO_MANY_PERSISTENT_OBJECTS_1000000)) {
                     spawnNewDb();
                     insertWallet(walletEntity); //repeat failed insert into newly spawned db
+                } else {
+                    log.error("Error inserting wallet into DB. Error: {}", e.getMessage());
                 }
             } catch (Exception e) {
                 log.error("Error inserting wallet into DB. Error: {}", e.getMessage());
@@ -373,7 +381,7 @@ public class DbPool {
     }
 
     public void updateWalletStateAndSeqno(WalletEntity walletEntity, AccountState accountState, long seqno) {
-        log.debug("updating account state, {},  {}", walletEntity.getFullAddress(), accountState);
+        log.info("updating account state in db, {},  {}", walletEntity.getFullAddress().toUpperCase(), accountState);
         try {
 
             ExecutorService threadPoolService = Executors.newFixedThreadPool(allDBs.size());

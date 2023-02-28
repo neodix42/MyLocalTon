@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 import org.ton.executors.liteclient.api.AccountState;
 import org.ton.wallet.WalletAddress;
 import org.ton.wallet.WalletVersion;
@@ -38,11 +39,11 @@ public class WalletEntity {
     public WalletPk getPrimaryKey() {
         return WalletPk.builder()
                 .wc(wc)
-                .hexAddress(hexAddress)
+                .hexAddress(StringUtils.upperCase(hexAddress))
                 .build();
     }
 
     public String getFullAddress() {
-        return wc + ":" + hexAddress;
+        return (wc + ":" + hexAddress).toUpperCase();
     }
 }

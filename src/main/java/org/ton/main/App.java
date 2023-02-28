@@ -14,6 +14,7 @@ import org.ton.actions.MyLocalTon;
 import org.ton.db.DbPool;
 import org.ton.executors.dhtserver.DhtServer;
 import org.ton.executors.validatorengine.ValidatorEngine;
+import org.ton.java.tonlib.Tonlib;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
@@ -41,11 +42,13 @@ public class App extends Application {
     public static FXMLLoader fxmlLoader;
     public static MainController mainController;
     public static DbPool dbPool;
+
+    public static Tonlib tonlib;
     public static boolean firstAppLaunch = true;
     public static Stage primaryStage;
 
     @Override
-    public void start(Stage primaryStage)  {
+    public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         log.info("Starting application");
 
@@ -174,6 +177,8 @@ public class App extends Application {
         Utils.waitForNodeSynchronized(genesisNode);
 
         myLocalTon.runBlockchainMonitor(genesisNode);
+
+//        myLocalTon.initTonlib(genesisNode);
 
         myLocalTon.runBlockchainSizeMonitor();
 

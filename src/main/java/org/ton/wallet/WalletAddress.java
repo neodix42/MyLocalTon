@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.ton.java.smartcontract.types.InitExternalMessage;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -24,6 +25,8 @@ public class WalletAddress implements Serializable {
     String publicKeyHex;
     String publicKeyBase64;
     String privateKeyHex;
+    String mnemonic;
+    transient InitExternalMessage initExternalMessage;
     String privateKeyLocation;
     String filenameBase;
     String filenameBaseLocation;

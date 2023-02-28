@@ -14,7 +14,6 @@ import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.utils.Extractor;
 import org.ton.utils.Utils;
-import org.ton.wallet.WalletAddress;
 
 import java.io.File;
 import java.io.IOException;
@@ -224,35 +223,35 @@ public class ValidatorEngine {
         String zerostateFileHashBoth = StringUtils.substring(piece, piece.indexOf("Zerostate file hash= ") + "Zerostate file hash= ".length());
 
         String[] mainWalletAddr = mainWalletAddrBoth.split(SPACE);
-        settings.setMainWalletAddrFull(mainWalletAddr[0].trim());
+        settings.setMainWalletAddrFull(mainWalletAddr[0].trim().toUpperCase());
         settings.setMainWalletAddrBase64(mainWalletAddr[1].trim());
 
         byte[] mainWalletPrvKey = FileUtils.readFileToByteArray(new File(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet.pk"));
         settings.setMainWalletPrvKey(Hex.encodeHexString(mainWalletPrvKey));
         settings.setMainWalletFilenameBaseLocation(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet");
 
-        String fullAddress = mainWalletAddr[0].trim();
+//        String fullAddress = mainWalletAddr[0].trim();
 
-        WalletAddress genesisWalletAddress = WalletAddress.builder()
-                .fullWalletAddress(fullAddress)
-                .bounceableAddressBase64url(mainWalletAddr[1].trim())
-                .wc(Long.parseLong(fullAddress.substring(0, fullAddress.indexOf(":"))))
-                .subWalletId(-1L)
-                .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
-                .filenameBaseLocation(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet")
-                .privateKeyLocation(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet.pk")
-                .privateKeyHex(Hex.encodeHexString(mainWalletPrvKey))
-                .build();
+//        WalletAddress genesisWalletAddress = WalletAddress.builder()
+//                .fullWalletAddress(fullAddress)
+//                .bounceableAddressBase64url(mainWalletAddr[1].trim())
+//                .wc(Long.parseLong(fullAddress.substring(0, fullAddress.indexOf(":"))))
+//                .subWalletId(-1L)
+//                .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
+//                .filenameBaseLocation(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet")
+//                .privateKeyLocation(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet.pk")
+//                .privateKeyHex(Hex.encodeHexString(mainWalletPrvKey))
+//                .build();
 
         // basically genesis node uses main-wallet and sends requests to elections on its behalf
         //node.setWalletAddress(genesisWalletAddress);//  TODO
 
         String[] electorSmcAddr = electorSmcAddrBoth.split(SPACE);
-        settings.setElectorSmcAddrHex(electorSmcAddr[0].trim());
+        settings.setElectorSmcAddrHex(electorSmcAddr[0].trim().toUpperCase());
         settings.setElectorSmcAddrBase64(electorSmcAddr[1].trim());
 
         String[] configSmcAddr = configSmcAddrBoth.split(SPACE);
-        settings.setConfigSmcAddrHex(configSmcAddr[0].trim());
+        settings.setConfigSmcAddrHex(configSmcAddr[0].trim().toUpperCase());
         settings.setConfigSmcAddrBase64(configSmcAddr[1].trim());
         byte[] configMasterPrvKey = FileUtils.readFileToByteArray(new File(node.getTonBinDir() + ZEROSTATE + File.separator + "config-master.pk"));
         settings.setConfigSmcPrvKey(Hex.encodeHexString(configMasterPrvKey));
@@ -281,13 +280,12 @@ public class ValidatorEngine {
         settings.setZeroStateRootHashHex(zeroStateRoot[0].trim());
         settings.setZeroStateRootHashHuman(zeroStateRoot[1].trim());
 
-        if (
-                (settings.getMasterStateFileHashHex().length() < 64) ||
-                        (settings.getMasterStateRootHashHex().length() < 64) ||
-                        (settings.getBaseStateFileHashHex().length() < 64) ||
-                        (settings.getBaseStateRootHashHex().length() < 64) ||
-                        (settings.getZeroStateRootHashHex().length() < 64) ||
-                        (settings.getZeroStateFileHashHex().length() < 64)
+        if ((settings.getMasterStateFileHashHex().length() < 64) ||
+                (settings.getMasterStateRootHashHex().length() < 64) ||
+                (settings.getBaseStateFileHashHex().length() < 64) ||
+                (settings.getBaseStateRootHashHex().length() < 64) ||
+                (settings.getZeroStateRootHashHex().length() < 64) ||
+                (settings.getZeroStateFileHashHex().length() < 64)
         ) {
             log.debug("gen-zerostate.fif generated wrong hashes, recreating...");
             Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "config-master.addr"));

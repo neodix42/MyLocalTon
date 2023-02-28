@@ -28,7 +28,6 @@ import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.enums.LiteClientEnum;
-import org.ton.exceptions.WrongSeqnoException;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
@@ -42,6 +41,8 @@ import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.executors.liteclient.api.block.Value;
 import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.executors.validatorengineconsole.ValidatorEngineConsole;
+import org.ton.java.tonlib.Tonlib;
+import org.ton.java.tonlib.types.VerbosityLevel;
 import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
@@ -78,8 +79,7 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.ton.main.App.fxmlLoader;
-import static org.ton.main.App.mainController;
+import static org.ton.main.App.*;
 import static org.ton.ui.custom.events.CustomEventBus.emit;
 
 @Slf4j
@@ -321,7 +321,7 @@ public class MyLocalTon {
 
         WalletEntity walletEntity = WalletEntity.builder()
                 .wc(walletAddress.getWc())
-                .hexAddress(walletAddress.getHexWalletAddress())
+                .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
                 .subWalletId(walletAddress.getSubWalletId())
                 .walletVersion(walletVersion)
                 .wallet(walletAddress)
@@ -357,7 +357,7 @@ public class MyLocalTon {
             Thread.sleep(2000);
 
             // install smart-contract into a new wallet
-            log.debug("installing wallet smc from node {}, boc {}", fromNode.getNodeName(), walletAddress.getWalletQueryFileBocLocation());
+            log.info("installing wallet smc from node {}, boc {}", fromNode.getNodeName(), walletAddress.getWalletQueryFileBocLocation());
             wallet.installWalletSmartContract(fromNode, walletAddress);
         } else {
             App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 3);
@@ -391,7 +391,7 @@ public class MyLocalTon {
             createWalletEntity(genesisNode, null, getSettings().getWalletSettings().getDefaultWorkChain(), getSettings().getWalletSettings().getDefaultSubWalletId(), settings.getWalletSettings().getInitialAmount(), false);
 
             installed = App.dbPool.getNumberOfPreinstalledWallets();
-            log.info("created {}", installed);
+            log.info("wallets created {}", installed);
         }
 
         if (isNull(genesisNode.getWalletAddress())) {
@@ -407,7 +407,7 @@ public class MyLocalTon {
             Pair<AccountState, Long> stateAndSeqno = Pair.of(null, -1L);
             try {
                 // always update account state on start
-                stateAndSeqno = getAccountStateAndSeqno(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress());
+                stateAndSeqno = getAccountStateAndSeqno(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress().toUpperCase());
                 App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
 
                 wallet.setAccountState(stateAndSeqno.getLeft());
@@ -427,7 +427,7 @@ public class MyLocalTon {
                 wallet = createWalletWithFundsAndSmartContract(settings.getGenesisNode(), node, workchain, subWalletid, amount);
                 log.debug("create wallet address {}", wallet.getHexAddress());
             } else { //read address of initially created wallet (main-wallet and config-master)
-                wallet = new Fift().getWalletByBasename(node, fileBaseName);
+                wallet = new Fift().getWalletByBasename(node, fileBaseName); // sets preinstalled true
                 log.debug("read wallet address: {}", wallet.getHexAddress());
             }
 
@@ -435,11 +435,13 @@ public class MyLocalTon {
                 node.setWalletAddress(wallet.getWallet());
             }
 
-            log.debug("updating account state {}", node.getNodeName());
+            log.info("updating account state on node {}", node.getNodeName());
 
             Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(node, wallet.getWc() + ":" + wallet.getHexAddress());
-            log.debug("new account state on {} = {}", node.getNodeName(), stateAndSeqno);
+
+            log.info("new account state on {} = {}", node.getNodeName(), stateAndSeqno);
             log.info("on node {}, created wallet {}", node.getNodeName(), wallet.getWc() + ":" + wallet.getHexAddress());
+
             App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
 
             wallet.setAccountState(stateAndSeqno.getLeft());
@@ -567,6 +569,20 @@ public class MyLocalTon {
         }
     }
 
+    public void initTonlib(Node node) throws IOException {
+        log.info("Initializing Tonlib with global config {}", node.getNodeGlobalConfigLocation());
+//        Files.copy(Path.of(node.getNodeGlobalConfigLocation()), Path.of(node.getTonlibKeystore() + "global.config.json"));
+        tonlib = Tonlib.builder()
+                .pathToTonlibSharedLib("G:/DOCKER/mnt/tonlibjson.dll")
+//                .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
+                .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
+//                .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+                .keystorePath("G:/DOCKER/mnt")
+//                .keystoreInMemory(true)
+                .verbosityLevel(VerbosityLevel.DEBUG)
+                .build();
+    }
+
     public void runBlockchainMonitor(Node node) {
         log.info("Starting node monitor");
 
@@ -675,8 +691,8 @@ public class MyLocalTon {
                         (txDetails.getOrigStatus().equals(UNINITIALIZED) && txDetails.getEndStatus().equals(UNINITIALIZED)) ||
                         (txDetails.getOrigStatus().equals(UNINITIALIZED) && txDetails.getEndStatus().equals(ACTIVE))
         ) {
-            log.info("New account detected! origStatus {}, endStatus {}, wallet created {}, txseqno {}, txLt {}, block {}", txDetails.getOrigStatus(), txDetails.getEndStatus(), txDetails.getAccountAddr(),
-                    tx.getTxSeqno(), tx.getLt(), lastBlock.getShortBlockSeqno());
+            log.info("New account detected! origStatus {}, endStatus {}, wallet created {}, txseqno {}, txLt {}, block {}",
+                    txDetails.getOrigStatus(), txDetails.getEndStatus(), txDetails.getAccountAddr(), tx.getTxSeqno(), tx.getLt(), lastBlock.getShortBlockSeqno());
             WalletEntity walletEntity = insertNewAccountEntity(lastBlock, txDetails);
 
             if (updateGuiNow && !isNull(walletEntity)) {
@@ -719,13 +735,13 @@ public class MyLocalTon {
     }
 
     private void showInGuiOnlyUniqueAccounts(WalletEntity walletEntity, MainController c, javafx.scene.Node accountRow) {
-        if (isNull(concurrentAccountsHashMap.get(walletEntity.getWallet().getFullWalletAddress()))) {
+        if (isNull(concurrentAccountsHashMap.get(walletEntity.getWallet().getFullWalletAddress().toUpperCase()))) {
             //show in gui only unique accounts. some might come from: scroll event, blockchain monitor or manual creation
             if (concurrentAccountsHashMap.size() > 100) {
                 concurrentAccountsHashMap.keySet().removeAll(Arrays.asList(concurrentAccountsHashMap.keySet().toArray()).subList(concurrentAccountsHashMap.size() / 2, concurrentAccountsHashMap.size())); // truncate
             }
 
-            concurrentAccountsHashMap.put(walletEntity.getWallet().getFullWalletAddress(), 1L);
+            concurrentAccountsHashMap.put(walletEntity.getWallet().getFullWalletAddress().toUpperCase(), 1L);
 
             populateAccountRowWithData(walletEntity, accountRow, "--------------------");
 
@@ -741,7 +757,7 @@ public class MyLocalTon {
                 log.debug("update account details {}, {}", walletEntity.getFullAddress(), walletEntity.getAccountState().getStatus());
                 for (javafx.scene.Node node : c.accountsvboxid.getItems()) {
 
-                    if (((Label) node.lookup("#hexAddr")).getText().equals(walletEntity.getFullAddress())) {
+                    if (((Label) node.lookup("#hexAddr")).getText().equals(walletEntity.getFullAddress().toUpperCase())) {
                         populateAccountRowWithData(walletEntity, node, "--------------------");
                     }
                 }
@@ -752,12 +768,12 @@ public class MyLocalTon {
     public void populateAccountRowWithData(WalletEntity walletEntity, javafx.scene.Node accountRow, String searchFor) {
 
         if (nonNull(walletEntity.getWallet())) {
-            ((Label) accountRow.lookup("#hexAddrLabel")).setText(Utils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress()) + "Hex:");
+            ((Label) accountRow.lookup("#hexAddrLabel")).setText(Utils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress().toUpperCase()) + "Hex:");
         } else {
             ((Label) accountRow.lookup("#hexAddrLabel")).setText("Hex:");
         }
 
-        ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress());
+        ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress().toUpperCase());
         if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
             ((Label) accountRow.lookup("#hexAddr")).setStyle(accountRow.lookup("#hexAddr").getStyle() + FOUND_COLOR_HIHGLIGHT);
         }
@@ -805,8 +821,9 @@ public class MyLocalTon {
         }
         if (status.equals(UNINITIALIZED) ||
                 status.equals(FROZEN) ||
-                settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) ||
-                isNull(walletEntity.getWallet().getPrivateKeyLocation())) {
+                settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress().toUpperCase())
+            //|| isNull(walletEntity.getWallet().getPrivateKeyLocation())
+        ) { // todo
             accountRow.lookup("#accSendBtn").setDisable(true);
             (accountRow.lookup("#hBoxSendBtn")).getStyleClass().clear();
         }
@@ -1186,13 +1203,13 @@ public class MyLocalTon {
 
         try {
             Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-            log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
+            log.info("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
 
             Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(stateAndSeqno.getLeft());
 
             WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
                     .wc(lastBlock.getWc())
-                    .hexAddress(txDetails.getAccountAddr())
+                    .hexAddress(txDetails.getAccountAddr().toUpperCase())
                     .build());
 
             if (isNull(foundWallet)) {
@@ -1201,9 +1218,9 @@ public class MyLocalTon {
 
                 WalletAddress walletAddress = WalletAddress.builder()
                         .wc(lastBlock.getWc())
-                        .hexWalletAddress(txDetails.getAccountAddr())
+                        .hexWalletAddress(txDetails.getAccountAddr().toUpperCase())
                         .subWalletId(walletVersionAndId.getRight())
-                        .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr())
+                        .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr().toUpperCase())
                         .bounceableAddressBase64url(wa.getBounceableAddressBase64url())
                         .nonBounceableAddressBase64Url(wa.getNonBounceableAddressBase64Url())
                         .bounceableAddressBase64(wa.getBounceableAddressBase64())
@@ -1212,7 +1229,7 @@ public class MyLocalTon {
 
                 WalletEntity walletEntity = WalletEntity.builder()
                         .wc(walletAddress.getWc())
-                        .hexAddress(walletAddress.getHexWalletAddress())
+                        .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
                         .subWalletId(walletAddress.getSubWalletId())
                         .walletVersion(walletVersionAndId.getLeft())
                         .wallet(walletAddress)
@@ -1508,13 +1525,21 @@ public class MyLocalTon {
         }, 0L, 5L, TimeUnit.SECONDS);
     }
 
-    Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) throws WrongSeqnoException {
+    Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) throws Exception {
+//        tonlib.getLast();
+//        org.ton.java.tonlib.types.FullAccountState as = tonlib.getAccountState(org.ton.java.address.Address.of(address));
+//        log.info("full as {}", as);
+
         AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(node, address));
         if (nonNull(accountState.getBalance())) {
-            long seqno = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
-            if (seqno == -1L) {
-                throw new WrongSeqnoException("Cannot retrieve seqno from contract " + address);
-            }
+            long seqno;
+            do {
+                seqno = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
+                Thread.sleep(500);
+//                if (seqno == -1L) {
+//                    throw new Exception("Cannot retrieve seqno from contract " + address);
+//                }
+            } while (seqno == -1);
             return Pair.of(accountState, seqno);
         }
         return Pair.of(null, -1L);
@@ -1651,7 +1676,8 @@ public class MyLocalTon {
         saveSettingsToGson();
     }
 
-    void createSigningKeyForValidation(Node node, long electionId, long electionEnd) throws ExecutionException, InterruptedException {
+    void createSigningKeyForValidation(Node node, long electionId, long electionEnd) throws
+            ExecutionException, InterruptedException {
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
 
         String signingKey = validatorEngineConsole.generateNewNodeKey(node);
@@ -1665,13 +1691,14 @@ public class MyLocalTon {
         validatorEngineConsole.addTempKey(node, signingKey, electionEnd);
     }
 
-    void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) throws ExecutionException, InterruptedException {
+    void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) throws
+            ExecutionException, InterruptedException {
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
         String adnlKey = validatorEngineConsole.generateNewNodeKey(node);
         log.debug("{} new adnlKey {} for current elections", node.getNodeName(), adnlKey);
 
         node.setPrevValidationAndlKey(node.getValidationAndlKey());
-        node.setValidationAndlKey(adnlKey); // shown on validator tab as ADNL address        
+        node.setValidationAndlKey(adnlKey); // shown on validator tab as ADNL address
 
         validatorEngineConsole.addAdnl(node, adnlKey);
         validatorEngineConsole.addValidatorAddr(node, signingKey, adnlKey, electionEnd);

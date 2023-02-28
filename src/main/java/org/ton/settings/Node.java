@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
 import static java.util.Objects.nonNull;
 
 public interface Node {
@@ -69,6 +68,10 @@ public interface Node {
 
     default String getTonCertsDir() {
         return getTonBinDir() + "certs" + File.separator;
+    }
+
+    default String getTonlibKeystore() {
+        return getTonBinDir() + "tonlib-keystore" + File.separator;
     }
 
     default String getValidatorKeyPubLocation() {

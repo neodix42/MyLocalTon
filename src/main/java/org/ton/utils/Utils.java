@@ -196,9 +196,10 @@ public class Utils {
             }
         }
 
-        if (nonNull(walletVersion) && walletVersion.equals(WalletVersion.V3)) { // TODO might be more wallets with walletId, e.g. highload-wallet
+        if (nonNull(walletVersion)
+                && walletVersion.equals(WalletVersion.V3)) { // TODO might be more wallets with walletId, e.g. highload-wallet
             try {
-                walletId = Long.parseLong(accountData.get(0).substring(8, 16));
+                walletId = Long.parseLong(accountData.get(0).substring(8, 16)); // TODO fix detect Wallet Id
             } catch (Exception e) {
                 walletId = -1L;
             }

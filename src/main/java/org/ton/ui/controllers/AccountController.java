@@ -121,7 +121,7 @@ public class AccountController {
 
     @FXML
     void accInfoBtn() throws IOException {
-        log.debug("clicked acc btn {}", hexAddr.getText());
+        log.info("clicked acc btn {}", hexAddr.getText());
         String[] wcAddr = hexAddr.getText().split(":");
         WalletPk walletPk = WalletPk.builder()
                 .wc(Long.parseLong(wcAddr[0]))

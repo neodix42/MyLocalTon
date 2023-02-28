@@ -21,6 +21,8 @@ public class Extractor {
     public static final String SMARTCONT = "smartcont";
     public static final String BIN = "bin";
     public static final String TEMPLATES = "templates";
+
+    public static final String TONLIB_KEYSTORE = "tonlib-keystore";
     public static final String UTILS = "utils";
     public static final String DB = "db";
 
@@ -43,6 +45,7 @@ public class Extractor {
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + UTILS));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN));
+                Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "tonlib-keystore"));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "wallets"));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "zerostate"));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "certs"));
@@ -50,6 +53,7 @@ public class Extractor {
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "static"));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "keyring"));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "log"));
+
 
                 if (SystemUtils.IS_OS_WINDOWS) {
                     extractWindowsBinaries();
