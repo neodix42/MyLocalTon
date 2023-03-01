@@ -178,7 +178,7 @@ public class App extends Application {
 
         myLocalTon.runBlockchainMonitor(genesisNode);
 
-//        myLocalTon.initTonlib(genesisNode);
+        myLocalTon.initTonlib(genesisNode);
 
         myLocalTon.runBlockchainSizeMonitor();
 

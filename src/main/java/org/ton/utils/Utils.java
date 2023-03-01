@@ -716,7 +716,7 @@ public class Utils {
             }
         } catch (Exception e) {
             log.error("Error by {} participating in elections! Error {}", node.getNodeName(), e.getMessage());
-            log.error(ExceptionUtils.getStackTrace(e));
+//            log.error(ExceptionUtils.getStackTrace(e));
         }
     }
 

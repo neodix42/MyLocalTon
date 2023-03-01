@@ -381,7 +381,7 @@ public class DbPool {
     }
 
     public void updateWalletStateAndSeqno(WalletEntity walletEntity, AccountState accountState, long seqno) {
-        log.info("updating account state in db, {},  {}", walletEntity.getFullAddress().toUpperCase(), accountState);
+        log.debug("updating account state in db, {},  {}", walletEntity.getFullAddress().toUpperCase(), accountState);
         try {
 
             ExecutorService threadPoolService = Executors.newFixedThreadPool(allDBs.size());

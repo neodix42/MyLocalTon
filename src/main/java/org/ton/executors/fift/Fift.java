@@ -85,7 +85,7 @@ public class Fift {
 
         result = new FiftExecutor().execute(sendToncoinsParam.getExecutionNode(),
                 "smartcont" + File.separator + walletScript,
-                sendToncoinsParam.getFromWallet().getFilenameBaseLocation(),
+                sendToncoinsParam.getFromWallet().getFilenameBaseLocation(), // todo - review - not all wallets have filebase
                 sendToncoinsParam.getDestAddr(),
                 (walletScript.equals("wallet-v3.fif")) ? String.valueOf(sendToncoinsParam.getFromSubWalletId()) : "",
                 String.valueOf(seqno),

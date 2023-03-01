@@ -42,7 +42,6 @@ import org.ton.executors.liteclient.api.block.Value;
 import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.executors.validatorengineconsole.ValidatorEngineConsole;
 import org.ton.java.tonlib.Tonlib;
-import org.ton.java.tonlib.types.VerbosityLevel;
 import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
@@ -570,16 +569,9 @@ public class MyLocalTon {
     }
 
     public void initTonlib(Node node) throws IOException {
-        log.info("Initializing Tonlib with global config {}", node.getNodeGlobalConfigLocation());
-//        Files.copy(Path.of(node.getNodeGlobalConfigLocation()), Path.of(node.getTonlibKeystore() + "global.config.json"));
         tonlib = Tonlib.builder()
-                .pathToTonlibSharedLib("G:/DOCKER/mnt/tonlibjson.dll")
-//                .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
                 .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
-//                .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
-                .keystorePath("G:/DOCKER/mnt")
-//                .keystoreInMemory(true)
-                .verbosityLevel(VerbosityLevel.DEBUG)
+                .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
                 .build();
     }
 
@@ -1203,7 +1195,7 @@ public class MyLocalTon {
 
         try {
             Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-            log.info("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
+            log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
 
             Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(stateAndSeqno.getLeft());
 
@@ -1284,7 +1276,7 @@ public class MyLocalTon {
 
                     // update blocks row
                     FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("blockrow.fxml"));
-                    javafx.scene.Node blockRow = null;
+                    javafx.scene.Node blockRow;
                     try {
                         blockRow = fxmlLoader.load();
                     } catch (IOException e) {
@@ -1526,9 +1518,7 @@ public class MyLocalTon {
     }
 
     Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) throws Exception {
-//        tonlib.getLast();
 //        org.ton.java.tonlib.types.FullAccountState as = tonlib.getAccountState(org.ton.java.address.Address.of(address));
-//        log.info("full as {}", as);
 
         AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(node, address));
         if (nonNull(accountState.getBalance())) {

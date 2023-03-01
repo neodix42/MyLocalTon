@@ -1072,10 +1072,6 @@ public class MainController implements Initializable {
 
                         log.debug("bottom reached, seqno {}, time {}, hwm {} ", lastSeqno, Utils.toUtcNoSpace(createdAt), MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get());
 
-                        if (lastSeqno == 1L && wc == -1L) {
-                            return;
-                        }
-
                         if (blockslistviewid.getItems().size() > MAX_ROWS_IN_GUI) {
                             showWarningMsg("Maximum amount (" + MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get() + ") of visible blocks in GUI reached.", 5);
                             return;
@@ -1121,12 +1117,13 @@ public class MainController implements Initializable {
                         if ((blockRows.isEmpty()) && (lastSeqno < 10)) {
                             log.debug("On start some blocks were skipped, load them now from 1 to {}", lastSeqno - 1);
 
-                            LongStream.range(1, lastSeqno).forEach(i -> { // TODO for loop big integer
+                            LongStream.range(1, 10).forEach(i -> {
                                 try {
                                     ResultLastBlock block = LiteClientParser.parseBySeqno(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
                                     log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
                                     MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), block, false);
                                 } catch (Exception e) {
+                                    log.error("cannot load missing blocks {}", e.getMessage());
                                     e.printStackTrace();
                                 }
                             });
@@ -1231,7 +1228,7 @@ public class MainController implements Initializable {
                     if ((txRows.isEmpty()) && (blockShortSeqno.getSeqno().compareTo(BigInteger.TEN) < 0)) {
                         log.debug("on start some blocks were skipped and thus some transactions get lost, load them from blocks 1");
 
-                        LongStream.range(1, blockShortSeqno.getSeqno().longValue()).forEach(i -> {
+                        LongStream.range(1, 10).forEach(i -> {
                             try {
                                 ResultLastBlock block = LiteClientParser.parseBySeqno(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
                                 log.debug("load missing block {}: {}", i, block.getFullBlockSeqno());
