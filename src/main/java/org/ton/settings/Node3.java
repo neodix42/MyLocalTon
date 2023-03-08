@@ -7,6 +7,7 @@ import org.ton.wallet.WalletAddress;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,8 +31,8 @@ public class Node3 implements Serializable, Node {
     transient String status = "not ready";
     String flag = "cloning";
 
-    BigDecimal initialValidatorWalletAmount = new BigDecimal("50005");
-    BigDecimal defaultValidatorStake = new BigDecimal("10001");
+    BigInteger initialValidatorWalletAmount = new BigInteger("50005000000000");
+    BigInteger defaultValidatorStake = new BigInteger("10001000000000");
     //startup settings, individual per node
     Long validatorStateTtl = 365 * 86400L; // 1 year, state will be gc'd after this time (in seconds) default=3600, 1 hour
     Long validatorBlockTtl = 365 * 86400L; // 1 year, blocks will be gc'd after this time (in seconds) default=7*86400, 7 days

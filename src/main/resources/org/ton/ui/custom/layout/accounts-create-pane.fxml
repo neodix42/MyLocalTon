@@ -1,33 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Line?>
-<?import org.ton.ui.custom.control.CustomTextField?>
 <?import java.net.URL?>
 <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="org.ton.ui.custom.layout.AccountsCreatePaneController" styleClass="background-dialog-pane"
-            prefHeight="300.0" prefWidth="510.0">
+            prefHeight="320.0" prefWidth="450.0">
+    <StackPane>
+        <children>
+            <VBox alignment="CENTER_LEFT">
+                <VBox.margin>
+                    <Insets top="20.0"/>
+                </VBox.margin>
+                <Label prefHeight="20.0" text="Create wallet" styleClass="modal-pane-label"
+                       style="-fx-padding: 20 0 20 20;"/>
 
-    <children>
-        <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Create Wallet" styleClass="modal-pane-label"/>
+                <Line endX="450.0" layoutY="60.0" stroke="#888888"/>
 
-        <Line endX="510.0" layoutY="60.0" stroke="#888888"/>
+                <VBox alignment="CENTER" spacing="20.0">
+                    <VBox.margin>
+                        <Insets top="30.0"/>
+                    </VBox.margin>
+                    <JFXTextField fx:id="workchain" promptText="Workchain" maxWidth="200.0"
+                                  styleClass="textfield-font"/>
+                    <JFXTextField fx:id="subWalletID" promptText="Sub-wallet ID" maxWidth="200.0"
+                                  styleClass="textfield-font"/>
 
-        <CustomTextField fx:id="workchain" fieldPromptText="Workchain" prefWidth="450.0" layoutY="80.0" layoutX="30.0"/>
-
-        <CustomTextField fx:id="subWalletID" fieldPromptText="Sub-wallet ID" prefWidth="450.0" layoutY="140.0"
-                         layoutX="30.0"/>
-
-        <CustomTextField fx:id="walletVersion" prefWidth="450.0" layoutY="200.0" layoutX="30.0" editableField="false"
-                         visible="false"/>
-
-        <JFXButton fx:id="createBtn" onAction="#doCreateAccount" text="Create" prefHeight="40" prefWidth="120"
-                   layoutX="195" layoutY="230" styleClass="custom-button-form"/>
-
-    </children>
+                </VBox>
+                <VBox alignment="CENTER">
+                    <VBox.margin>
+                        <Insets top="30.0"/>
+                    </VBox.margin>
+                    <JFXComboBox fx:id="newWalletVersion" maxWidth="200.0" styleClass="textfield-font"
+                                 style="-fx-padding: 0 0 0 0;"/>
+                </VBox>
+                <VBox alignment="CENTER">
+                    <VBox.margin>
+                        <Insets top="40.0"/>
+                    </VBox.margin>
+                    <JFXButton fx:id="createBtn" onAction="#doCreateAccount" text="Create" prefHeight="40"
+                               prefWidth="120"
+                               styleClass="custom-button-form"/>
+                </VBox>
+            </VBox>
+        </children>
+    </StackPane>
     <stylesheets>
         <URL value="@../../../css/custom/main-layout.css"/>
         <URL value="@../../../css/global-font.css"/>

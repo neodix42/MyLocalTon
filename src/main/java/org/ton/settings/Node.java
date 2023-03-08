@@ -9,6 +9,7 @@ import org.ton.wallet.WalletAddress;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Map;
 
 import static java.util.Objects.nonNull;
@@ -310,13 +311,13 @@ public interface Node {
 
     Long getValidatorKeyProofTtl();
 
-    BigDecimal getInitialValidatorWalletAmount();
+    BigInteger getInitialValidatorWalletAmount();
 
-    void setInitialValidatorWalletAmount(BigDecimal amount);
+    void setInitialValidatorWalletAmount(BigInteger amount);
 
-    BigDecimal getDefaultValidatorStake();
+    BigInteger getDefaultValidatorStake();
 
-    void setDefaultValidatorStake(BigDecimal amount);
+    void setDefaultValidatorStake(BigInteger amount);
 
 
 }

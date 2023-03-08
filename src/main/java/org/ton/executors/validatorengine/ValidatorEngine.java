@@ -17,7 +17,7 @@ import org.ton.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,8 +25,6 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.concurrent.Future;
-
-import static org.ton.actions.MyLocalTon.ONE_BLN;
 
 @Slf4j
 public class ValidatorEngine {
@@ -102,7 +100,7 @@ public class ValidatorEngine {
         if (Files.exists(Paths.get(node.getTonDbDir() + "state"))) {
             log.info("Found non-empty state; Skip initialization!");
         } else {
-            log.info("Initializing node validator, create keyrings and config.json...");
+            log.debug("Initializing node validator, create keyrings and config.json...");
 
             Files.copy(Paths.get(sharedGlobalConfig), Paths.get(node.getNodeGlobalConfigLocation()), StandardCopyOption.REPLACE_EXISTING);
 
@@ -128,7 +126,7 @@ public class ValidatorEngine {
 
             Pair<String, String> liteServerKeys = new GenerateRandomId().generateLiteServerKeys(node);
             String liteServers = "\"liteservers\" : [{\"id\":\"" + liteServerKeys.getRight() + "\",\"port\":\"" + node.getLiteServerPort() + "\"}";
-            log.info("liteservers: {} ", liteServers);
+            log.debug("liteservers: {} ", liteServers);
 
             //convert pub key to key
             String liteserverPubkeyBase64 = Utils.convertPubKeyToBase64(node.getTonDbKeyringDir() + "liteserver.pub");
@@ -164,7 +162,7 @@ public class ValidatorEngine {
                 FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
                 FileUtils.writeStringToFile(new File(node.getNodeLocalConfigLocation()), myGlobalTonConfigNew, StandardCharsets.UTF_8);
             }
-            log.info("lite-server enabled");
+            log.debug("lite-server enabled");
         }
     }
 
@@ -346,7 +344,7 @@ public class ValidatorEngine {
         String validatorPrvKeyHex = valHexBase64[0].trim();
         String validatorPrvKeyBase64 = valHexBase64[1].trim();
 
-        log.info("{}, validatorPrvKeyHex {}, validatorPrvKeyBase64 {}", node.getNodeName(), validatorPrvKeyHex, validatorPrvKeyBase64);
+        log.debug("{}, validatorPrvKeyHex {}, validatorPrvKeyBase64 {}", node.getNodeName(), validatorPrvKeyHex, validatorPrvKeyBase64);
 
         Files.copy(Paths.get(node.getTonDbKeyringDir() + VALIDATOR), Paths.get(node.getTonDbKeyringDir() + validatorPrvKeyHex), StandardCopyOption.REPLACE_EXISTING);
         //convert pub key to key
@@ -367,7 +365,8 @@ public class ValidatorEngine {
             // replace path to validator-key-1.pub in gen-zerostate.fif
             String genZeroStateFif = FileUtils.readFileToString(new File(node.getGenesisGenZeroStateFifLocation()), StandardCharsets.UTF_8);
             String genZeroStateFifNew = StringUtils.replace(genZeroStateFif, "// \"path_to_" + node.getNodeName() + "_pub_key\"", "\"" + node.getValidatorKeyPubLocation() + "\"");
-            genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), node.getDefaultValidatorStake().min(BigDecimal.ONE).multiply(BigDecimal.valueOf(ONE_BLN)).toString());
+//            genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), node.getDefaultValidatorStake().min(BigDecimal.ONE).multiply(BigDecimal.valueOf(ONE_BLN)).toString());
+            genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), node.getDefaultValidatorStake().min(BigInteger.ONE).toString());
             FileUtils.writeStringToFile(new File(node.getGenesisGenZeroStateFifLocation()), genZeroStateFifNew, StandardCharsets.UTF_8);
         }
     }

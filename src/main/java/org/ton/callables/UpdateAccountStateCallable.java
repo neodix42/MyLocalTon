@@ -2,14 +2,12 @@ package org.ton.callables;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.ton.callables.parameters.WalletCallbackParam;
 import org.ton.db.DB2;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
-import org.ton.executors.liteclient.api.AccountState;
-import org.ton.utils.Utils;
-import org.ton.wallet.WalletVersion;
+import org.ton.executors.liteclient.api.LiteClientAccountState;
+import org.ton.java.smartcontract.types.WalletVersion;
 
 import javax.persistence.EntityManager;
 import java.util.concurrent.Callable;
@@ -21,14 +19,17 @@ import static java.util.Objects.nonNull;
 public class UpdateAccountStateCallable implements Callable<WalletCallbackParam> {
     DB2 db;
     WalletPk walletPk;
-    AccountState accountState;
+    LiteClientAccountState accountState;
     Long seqno;
+    WalletVersion walletVersion;
+
 
     public UpdateAccountStateCallable(WalletCallbackParam walletCallbackParam) {
         this.db = walletCallbackParam.getDb();
         this.walletPk = walletCallbackParam.getWalletPk();
         this.accountState = walletCallbackParam.getAccountState();
         this.seqno = walletCallbackParam.getSeqno();
+        this.walletVersion = walletCallbackParam.getWalletVersion();
     }
 
     public WalletCallbackParam call() {
@@ -43,11 +44,7 @@ public class UpdateAccountStateCallable implements Callable<WalletCallbackParam>
                     em.getTransaction().begin();
                     walletFound.setAccountState(accountState);
                     walletFound.setSeqno(seqno);
-                    if ((!accountState.getStateCode().isEmpty()) && (!accountState.getStateData().isEmpty())) {
-                        Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(accountState);
-                        walletFound.setWalletVersion(walletVersionAndId.getLeft());
-                        walletFound.getWallet().setSubWalletId(walletVersionAndId.getRight());
-                    }
+                    walletFound.setWalletVersion(walletVersion);
                     em.getTransaction().commit();
                 }
             }

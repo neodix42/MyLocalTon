@@ -29,7 +29,7 @@ public class Main {
             log.error("You have headless version of Java installed. Please install full Java version.");
             System.exit(1);
         }
-        log.info("myLocalTon lock file location: {}", MyLocalTonSettings.LOCK_FILE);
+        log.debug("myLocalTon lock file location: {}", MyLocalTonSettings.LOCK_FILE);
 
         if (lockInstance()) {
 

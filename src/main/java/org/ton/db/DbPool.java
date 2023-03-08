@@ -6,7 +6,8 @@ import org.ton.callables.parameters.BlockCallbackParam;
 import org.ton.callables.parameters.TxCallbackParam;
 import org.ton.callables.parameters.WalletCallbackParam;
 import org.ton.db.entities.*;
-import org.ton.executors.liteclient.api.AccountState;
+import org.ton.executors.liteclient.api.LiteClientAccountState;
+import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.utils.Utils;
 
@@ -69,7 +70,7 @@ public class DbPool {
         if (!spawned.getAndSet(true)) {
 
             String dbName = UUID.randomUUID().toString();
-            log.info("Spawning new DB {}", dbName);
+            log.debug("Spawning new DB {}", dbName);
 
             activeDB = new DB2(dbName);
             allDBs.add(activeDB);
@@ -380,8 +381,8 @@ public class DbPool {
         }
     }
 
-    public void updateWalletStateAndSeqno(WalletEntity walletEntity, AccountState accountState, long seqno) {
-        log.debug("updating account state in db, {},  {}", walletEntity.getFullAddress().toUpperCase(), accountState);
+    public void updateWalletStateAndSeqno(WalletEntity walletEntity, LiteClientAccountState accountState, long seqno, WalletVersion walletVersion) {
+        log.debug("updating account state in db, {}, state {}", walletEntity.getFullAddress().toUpperCase(), accountState);
         try {
 
             ExecutorService threadPoolService = Executors.newFixedThreadPool(allDBs.size());
@@ -392,6 +393,7 @@ public class DbPool {
                         .walletPk(walletEntity.getPrimaryKey())
                         .accountState(accountState)
                         .seqno(seqno)
+                        .walletVersion(walletVersion)
                         .build());
                 callablesList.add(callable);
             }

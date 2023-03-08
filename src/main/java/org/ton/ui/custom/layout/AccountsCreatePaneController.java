@@ -1,14 +1,19 @@
 package org.ton.ui.custom.layout;
 
 import com.jfoenix.controls.JFXButton;
-import javafx.application.Platform;
+import com.jfoenix.controls.JFXComboBox;
+import com.jfoenix.controls.JFXTextField;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.actions.MyLocalTon;
-import org.ton.db.entities.WalletEntity;
-import org.ton.ui.custom.control.CustomTextField;
+import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.ui.custom.events.event.CustomNotificationEvent;
@@ -18,14 +23,15 @@ import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static java.util.Objects.nonNull;
 import static org.ton.ui.custom.events.CustomEventBus.emit;
 
 public class AccountsCreatePaneController implements Initializable {
 
+//    @FXML
+//    private CustomTextField workchain, subWalletID, walletVersion;
 
     @FXML
-    private CustomTextField workchain, subWalletID, walletVersion;
+    private JFXTextField workchain, subWalletID;
 
     @FXML
     private JFXButton createBtn;
@@ -33,9 +39,42 @@ public class AccountsCreatePaneController implements Initializable {
     @FXML
     private AnchorPane anchorPane;
 
+    @FXML
+    private JFXComboBox<String> newWalletVersion;
+
+    EventHandler<KeyEvent> onlyDigits = keyEvent -> {
+        if (!((TextField) keyEvent.getSource()).getText().matches("[\\d\\-]+")) {
+            ((TextField) keyEvent.getSource()).setText(((TextField) keyEvent.getSource()).getText().replaceAll("[^\\d\\-]", ""));
+        }
+    };
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        ObservableList<String> versions = FXCollections.observableArrayList(
+                WalletVersion.V1R1.getValue(), // todo
+                WalletVersion.V1R2.getValue(),
+                WalletVersion.V1R3.getValue(),
+                WalletVersion.V2R1.getValue(),
+                WalletVersion.V2R2.getValue(),
+                WalletVersion.V3R1.getValue(),
+                WalletVersion.V3R2.getValue(),
+                WalletVersion.V4R2.getValue()
+        );
 
+        newWalletVersion.setItems(versions);
+
+        newWalletVersion.valueProperty().addListener((value, oldValue, newValue) -> {
+            if (newValue.contains("V3") || newValue.contains("V4")) {
+                showSubWalletID();
+            } else {
+                hideSubWalletID();
+            }
+            newWalletVersion.setValue(newValue);
+        });
+
+        workchain.setOnKeyTyped(onlyDigits);
+        subWalletID.setOnKeyTyped(onlyDigits);
+        newWalletVersion.setValue(MyLocalTon.getInstance().getSettings().getWalletSettings().getWalletVersion().getValue());
     }
 
     @FXML
@@ -47,26 +86,19 @@ public class AccountsCreatePaneController implements Initializable {
         executorService.submit(() -> {
             Thread.currentThread().setName("Create new wallet");
             try {
-                long chain = Long.parseLong(StringUtils.isEmpty(workchain.getFieldText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultWorkChain()) : workchain.getFieldText());
-                long walletId = Long.parseLong(StringUtils.isEmpty(subWalletID.getFieldText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultSubWalletId()) : subWalletID.getFieldText());
+                long chain = Long.parseLong(StringUtils.isEmpty(workchain.getText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultWorkChain()) : workchain.getText());
+                long walletId = Long.parseLong(StringUtils.isEmpty(subWalletID.getText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultSubWalletId()) : subWalletID.getText());
+                WalletVersion walletVersion = WalletVersion.getKeyByValue(newWalletVersion.getValue());
 
-                WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(
+                MyLocalTon.getInstance().createWalletEntity(
                         MyLocalTon.getInstance().getSettings().getGenesisNode(),
                         null,
+                        walletVersion,
                         chain,
                         walletId,
                         MyLocalTon.getInstance().getSettings().getWalletSettings().getInitialAmount(),
                         false);
 
-                if (nonNull(walletEntity) && walletEntity.getSeqno() != -1L) {
-                    Platform.runLater(() -> {
-                        emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3));
-                    });
-                } else {
-                    Platform.runLater(() -> {
-                        emit(new CustomNotificationEvent(CustomEvent.Type.ERROR,"Error creating wallet " + walletEntity.getFullAddress() + ". See logs for details.", 4));
-                    });
-                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -74,14 +106,13 @@ public class AccountsCreatePaneController implements Initializable {
         });
     }
 
-    public void setWalletVersionText(String walletVersion) {
-        this.walletVersion.setFieldText(walletVersion);
+    public void hideSubWalletID() {
+        subWalletID.setEditable(false);
+        subWalletID.setDisable(true);
     }
 
-    public void hideSubWalletID() {
-        subWalletID.setVisible(false);
-        walletVersion.setLayoutY(140.0);
-        createBtn.setLayoutY(210.0);
-        anchorPane.setPrefHeight(280.0);
+    public void showSubWalletID() {
+        subWalletID.setEditable(true);
+        subWalletID.setDisable(false);
     }
 }

@@ -23,7 +23,6 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.jutils.jprocesses.JProcesses;
 import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
-import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.enums.LiteClientEnum;
@@ -31,14 +30,16 @@ import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.*;
+import org.ton.java.smartcontract.types.WalletCodes;
+import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.FullAccountState;
 import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
 import org.ton.parameters.ValidationParam;
 import org.ton.settings.*;
 import org.ton.ui.controllers.MainController;
-import org.ton.wallet.Wallet;
-import org.ton.wallet.WalletVersion;
+import org.ton.wallet.MyWallet;
 
 import java.io.File;
 import java.io.FileReader;
@@ -70,6 +71,8 @@ import java.util.regex.Pattern;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.ton.actions.MyLocalTon.getInstance;
+import static org.ton.actions.MyLocalTon.tonlib;
 import static org.ton.executors.liteclient.LiteClientParser.*;
 import static org.ton.main.App.fxmlLoader;
 import static org.ton.main.App.mainController;
@@ -165,52 +168,68 @@ public class Utils {
         }
     }
 
-    public static Pair<WalletVersion, Long> detectWalledVersionAndId(AccountState accountState) {
-        List<String> accountData = accountState.getStateData();
-        List<String> accountCode = accountState.getStateCode();
+    public static Pair<WalletVersion, Long> detectWalletVersionAndId(String accountCode, String accountData, String address) {
+
+//        RawAccountState accountState1 = tonlib.getRawAccountState(org.ton.java.address.Address.of(address));
+//        log.info("accountState raw {}", accountState1);
+
+        accountCode = Hex.encodeHexString(Base64.decodeBase64(accountCode)).toUpperCase();
+        log.info("accountCode  full {}", accountCode);
+
+
         WalletVersion walletVersion = null;
-        long walletId;
+        long subWalletId = -1;
 
-        if (nonNull(accountCode)) {
-            for (String codeLine : accountCode) {
-                if (codeLine.contains(WALLET_V3_CODE)) {
-                    walletVersion = WalletVersion.V3;
-                    break;
-                }
-                if (codeLine.contains(WALLET_V2_CODE)) {
-                    walletVersion = WalletVersion.V2;
-                    break;
-                }
-                if (codeLine.contains(WALLET_V1_CODE)) {
-                    walletVersion = WalletVersion.V1;
-                    break;
-                }
-                if (codeLine.contains(WALLET_MASTER)) {
-                    walletVersion = WalletVersion.MASTER;
-                    break;
-                }
-                if (codeLine.contains(WALLET_CONFIG)) {
-                    walletVersion = WalletVersion.CONFIG;
-                    break;
-                }
-            }
-        }
+        if (StringUtils.isNoneEmpty(accountCode)) {
 
-        if (nonNull(walletVersion)
-                && walletVersion.equals(WalletVersion.V3)) { // TODO might be more wallets with walletId, e.g. highload-wallet
-            try {
-                walletId = Long.parseLong(accountData.get(0).substring(8, 16)); // TODO fix detect Wallet Id
-            } catch (Exception e) {
-                walletId = -1L;
+//            log.info("wallet code from tonlib in base64 format? {}", Base64.isBase64(accountState.ge));
+//            if (Base64.isBase64(accountCode)) {
+//                accountCode = Hex.encodeHexString(Base64.decodeBase64(accountCode)).toUpperCase();
+//                log.info("decoded code from base64, hex string: {}", accountCode);
+//            }
+
+            if (WalletCodes.V1R1.getValue().contains(accountCode)) {
+                walletVersion = WalletVersion.V1R1;
+            } else if (WalletCodes.V1R2.getValue().contains(accountCode)) {
+                walletVersion = WalletVersion.V1R2;
+            } else if (WalletCodes.V1R3.getValue().contains(accountCode)) {
+                walletVersion = WalletVersion.V1R3;
+            } else if (WalletCodes.V2R1.getValue().contains(accountCode)) {
+                walletVersion = WalletVersion.V2R1;
+            } else if (WalletCodes.V2R2.getValue().contains(accountCode)) {
+                walletVersion = WalletVersion.V2R2;
+            } else if (WalletCodes.V3R1.getValue().contains(accountCode)) {
+                walletVersion = WalletVersion.V3R1;
+            } else if (WalletCodes.V3R2.getValue().contains(accountCode)) {
+                walletVersion = WalletVersion.V3R2;
+            } else if (WalletCodes.V4R2.getValue().contains(accountCode)) {
+                walletVersion = WalletVersion.V4R2;
+            } else if (accountCode.contains(WalletCodes.master.getValue())) {
+                walletVersion = WalletVersion.master;
+            } else if (accountCode.contains(WalletCodes.config.getValue())) {
+                walletVersion = WalletVersion.config;
+            } else {
+                log.warn("cannot identify wallet version by the code {}", accountCode);
             }
+            log.info("identified wallet {} version {}", address, walletVersion);
         } else {
-            walletId = -1L;
+            log.info("{} code is null, can't detect wallet version yet", address);
         }
 
-        return Pair.of(walletVersion, walletId);
-    }
+        if (nonNull(walletVersion)) {
 
-    //4 - debug, 3- info, 2 - warning, 1 - error, 0 - fatal
+            try {
+                if (walletVersion.getValue().contains("V4") || (walletVersion.getValue().contains("V3"))) {
+                    subWalletId = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSubWalletId(getInstance().getSettings().getGenesisNode(), address);
+                    FullAccountState accountState = tonlib.getAccountState(org.ton.java.address.Address.of(address));
+                    subWalletId = accountState.getAccount_state().getWallet_id();
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        return Pair.of(walletVersion, subWalletId);
+    }
 
     public void showThreads() {
 
@@ -262,6 +281,7 @@ public class Utils {
                 }
             }
         }
+
     }
 
     public static Long parseLong(String l) {
@@ -342,7 +362,7 @@ public class Utils {
                     rt.exec("taskkill /F /IM " + "lite-client.exe");
                     rt.exec("taskkill /F /IM " + "dht-server.exe");
 
-                    MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+                    MyLocalTonSettings settings = getInstance().getSettings();
                     for (String nodeName : settings.getActiveNodes()) {
                         Node node = settings.getNodeByName(nodeName);
                         if (nonNull(node.getNodeProcess())) {
@@ -563,7 +583,7 @@ public class Utils {
         do {
             Thread.sleep(5000);
             lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
-            log.error("{} is not ready", node.getNodeName());
+//            log.error("{} is not ready", node.getNodeName());
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
         node.setFlag("cloned");
     }
@@ -599,7 +619,7 @@ public class Utils {
         ResultConfig12 config12 = LiteClientParser.parseConfig12(liteClient.executeBlockchainInfo(node));
         log.debug("blockchain was launched at {}", Utils.toLocal(config12.getEnabledSince()));
 
-        long activeElectionId = liteClient.executeGetActiveElectionId(node, MyLocalTon.getInstance().getSettings().getElectorSmcAddrHex());
+        long activeElectionId = liteClient.executeGetActiveElectionId(node, getInstance().getSettings().getElectorSmcAddrHex());
         log.info("active election id {}, {}, current time {}", activeElectionId, Utils.toLocal(activeElectionId), Utils.toLocal(getCurrentTimeSeconds()));
 
         ResultConfig15 config15 = LiteClientParser.parseConfig15(liteClient.executeGetElections(node));
@@ -660,7 +680,7 @@ public class Utils {
     public static void participate(Node node, ValidationParam v) {
 
         try {
-            MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+            MyLocalTonSettings settings = getInstance().getSettings();
             long electionId = v.getStartValidationCycle();
 
             if (node.getElectionsCounter().getOrDefault(electionId, -1L) > YEAR_1971) {
@@ -682,7 +702,7 @@ public class Utils {
             node.getElectionsCounter().put(electionId, electionId);
 
             //can be done only once
-            MyLocalTon.getInstance().createValidatorPubKeyAndAdnlAddress(node, electionId);
+            getInstance().createValidatorPubKeyAndAdnlAddress(node, electionId);
 
             log.info("{} with wallet {} wants to participate in elections {} ({})", node.getNodeName(), node.getWalletAddress().getBounceableAddressBase64url(), electionId, Utils.toLocal(electionId));
 
@@ -690,7 +710,7 @@ public class Utils {
             String signature = fift.createValidatorElectionRequest(node, electionId, settings.getBlockchainSettings().getMaxFactor());
             fift.signValidatorElectionRequest(node, electionId, settings.getBlockchainSettings().getMaxFactor(), signature);
 
-            MyLocalTon.getInstance().saveSettingsToGson();
+            getInstance().saveSettingsToGson();
 
             // send stake and validator-query.boc to elector
             SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
@@ -704,7 +724,7 @@ public class Utils {
                     .timeout(600L)
                     .build();
 
-            boolean sentOK = new Wallet().sendTonCoins(sendToncoinsParam);
+            boolean sentOK = new MyWallet().sendTonCoins(sendToncoinsParam);
 
             if (sentOK) {
                 node.getElectionsCounter().put(v.getStartValidationCycle(), v.getStartValidationCycle());
@@ -725,7 +745,7 @@ public class Utils {
             if (Files.exists(Paths.get(SETTINGS_FILE), LinkOption.NOFOLLOW_LINKS)) {
                 return new Gson().fromJson(new FileReader(new File(SETTINGS_FILE)), MyLocalTonSettings.class);
             } else {
-                log.info("No settings.json found. Very first launch with default settings.");
+                log.debug("No settings.json found. Very first launch with default settings.");
                 return new MyLocalTonSettings();
             }
         } catch (Exception e) {
@@ -755,7 +775,7 @@ public class Utils {
     }
 
     public static Node getNewNode() {
-        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+        MyLocalTonSettings settings = getInstance().getSettings();
 
         for (String n : Arrays.asList("genesis", "node2", "node3", "node4", "node5", "node6", "node7")) {
             if (!settings.getActiveNodes().contains(n)) {
@@ -783,7 +803,7 @@ public class Utils {
     }
 
     public static void resetNodeSettings(String nodeName) throws InterruptedException {
-        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+        MyLocalTonSettings settings = getInstance().getSettings();
 
         switch (nodeName) {
             case "genesis":
@@ -809,11 +829,11 @@ public class Utils {
                 break;
         }
 
-        MyLocalTon.getInstance().saveSettingsToGson();
+        getInstance().saveSettingsToGson();
     }
 
     public static Tab getNewNodeTab() {
-        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+        MyLocalTonSettings settings = getInstance().getSettings();
 
         for (String n : Arrays.asList("genesis", "node2", "node3", "node4", "node5", "node6", "node7")) {
             if (!settings.getActiveNodes().contains(n)) {
@@ -883,7 +903,7 @@ public class Utils {
     }
 
     public static String getNodeNameByWalletAddress(String walletAddress) {
-        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+        MyLocalTonSettings settings = getInstance().getSettings();
         if (nonNull(settings.getGenesisNode().getWalletAddress()) && walletAddress.equals(settings.getGenesisNode().getWalletAddress().getFullWalletAddress())) {
             return "Validator genesis, ";
         } else if (nonNull(settings.getNode2().getWalletAddress()) && walletAddress.equals(settings.getNode2().getWalletAddress().getFullWalletAddress())) {
@@ -939,7 +959,7 @@ public class Utils {
 
     public static void syncWithGenesis() throws IOException {
 
-        MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
+        MyLocalTonSettings settings = getInstance().getSettings();
 
         for (String nodeName : settings.getActiveNodes()) {
             if (!nodeName.contains("genesis")) {
@@ -1030,8 +1050,8 @@ public class Utils {
     public static void doDelete(String nodeName) {
         try {
             log.info("deleting node {}", nodeName);
-            Node node = MyLocalTon.getInstance().getSettings().getNodeByName(nodeName);
-            MyLocalTon.getInstance().getSettings().getActiveNodes().remove(nodeName);
+            Node node = getInstance().getSettings().getNodeByName(nodeName);
+            getInstance().getSettings().getActiveNodes().remove(nodeName);
 
             // clean wallet db and UI
             Utils.deleteWalletByFullAddress(node.getWalletAddress().getFullWalletAddress());

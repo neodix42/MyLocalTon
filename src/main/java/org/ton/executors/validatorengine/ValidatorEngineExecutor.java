@@ -33,7 +33,7 @@ public class ValidatorEngineExecutor {
         withBinaryCommand = ArrayUtils.addAll(withBinaryCommand, command);
 
         try {
-            log.info("execute: {}", String.join(" ", withBinaryCommand));
+            log.debug("execute: {}", String.join(" ", withBinaryCommand));
 
             ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -45,7 +45,7 @@ public class ValidatorEngineExecutor {
             CompletableFuture onProcessExit = p.onExit();
 
             onProcessExit.thenAccept(ph -> {
-                log.info("node {} with PID {} has stopped, exitValue {}", node.getNodeName(), ((Process) ph).pid(), ((Process) ph).exitValue());
+                log.debug("node {} with PID {} has stopped, exitValue {}", node.getNodeName(), ((Process) ph).pid(), ((Process) ph).exitValue());
 
                 if ((((Process) ph).exitValue() > 0) && (Main.appActive.get())) {
 

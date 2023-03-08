@@ -45,6 +45,7 @@ import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.*;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.executors.liteclient.api.config.Validator;
+import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.main.App;
 import org.ton.parameters.ValidationParam;
 import org.ton.settings.*;
@@ -57,7 +58,6 @@ import org.ton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.ui.custom.events.event.CustomSearchEvent;
 import org.ton.ui.custom.layout.*;
 import org.ton.utils.Utils;
-import org.ton.wallet.WalletVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -1006,6 +1006,7 @@ public class MainController implements Initializable {
 
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
             service.schedule(() -> {
+                Thread.currentThread().setName("MyLocalTon - Shutdown");
                 saveSettings();
                 Platform.exit(); // closes main form
 
@@ -1428,13 +1429,18 @@ public class MainController implements Initializable {
 
         walletsNumber.setFieldText(settings.getWalletSettings().getNumberOfPreinstalledWallets().toString());
         coinsPerWallet.setFieldText(settings.getWalletSettings().getInitialAmount().toString());
-        walletVersion.addItem(WalletVersion.V1.getValue());
-        walletVersion.addItem(WalletVersion.V2.getValue());
-        walletVersion.addItem(WalletVersion.V3.getValue());
+        walletVersion.addItem(WalletVersion.V1R1.getValue());
+        walletVersion.addItem(WalletVersion.V1R2.getValue());
+        walletVersion.addItem(WalletVersion.V1R3.getValue());
+        walletVersion.addItem(WalletVersion.V2R1.getValue());
+        walletVersion.addItem(WalletVersion.V2R2.getValue());
+        walletVersion.addItem(WalletVersion.V3R1.getValue());
+        walletVersion.addItem(WalletVersion.V3R2.getValue());
+        walletVersion.addItem(WalletVersion.V4R2.getValue());
         walletVersion.selectItem(settings.getWalletSettings().getWalletVersion().getValue());
 
         validatorLogDir1.setFieldText(settings.getGenesisNode().getTonLogDir());
-        myLocalTonLog.setFieldText(settings.LOG_FILE);
+        myLocalTonLog.setFieldText(MyLocalTonSettings.LOG_FILE);
         dhtLogDir1.setFieldText(settings.getGenesisNode().getDhtServerDir());
 
         validatorLogDir2.setFieldText(settings.getNode2().getTonLogDir());
@@ -1669,7 +1675,7 @@ public class MainController implements Initializable {
         settings.getUiSettings().setShowShardStateInBlockDump(shardStateCheckbox.isSelected());
 
         settings.getWalletSettings().setNumberOfPreinstalledWallets(Long.parseLong(walletsNumber.getFieldText()));
-        settings.getWalletSettings().setInitialAmount(new BigDecimal(coinsPerWallet.getFieldText()));
+        settings.getWalletSettings().setInitialAmount(new BigInteger(coinsPerWallet.getFieldText()));
         settings.getWalletSettings().setWalletVersion(WalletVersion.getKeyByValue(walletVersion.getValue()));
 
         settings.getBlockchainSettings().setMinValidators(Long.valueOf(minValidators.getFieldText()));
@@ -1703,8 +1709,8 @@ public class MainController implements Initializable {
         settings.getGenesisNode().setConsolePort(Integer.valueOf(configNodeConsolePort1.getText()));
         settings.getGenesisNode().setLiteServerPort(Integer.valueOf(configLiteServerPort1.getText()));
         settings.getGenesisNode().setDhtPort(Integer.valueOf(configDhtServerPort1.getText()));
-        settings.getGenesisNode().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit1.getText()));
-        settings.getGenesisNode().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake1.getText()));
+        settings.getGenesisNode().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit1.getText()));
+        settings.getGenesisNode().setDefaultValidatorStake(new BigInteger(validatorDefaultStake1.getText()));
 
         settings.getNode2().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl2.getText()));
         settings.getNode2().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl2.getText()));
@@ -1714,8 +1720,8 @@ public class MainController implements Initializable {
         settings.getNode2().setPublicPort(Integer.valueOf(configNodePublicPort2.getText()));
         settings.getNode2().setConsolePort(Integer.valueOf(configNodeConsolePort2.getText()));
         settings.getNode2().setLiteServerPort(Integer.valueOf(configLiteServerPort2.getText()));
-        settings.getNode2().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit2.getText()));
-        settings.getNode2().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake2.getText()));
+        settings.getNode2().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit2.getText()));
+        settings.getNode2().setDefaultValidatorStake(new BigInteger(validatorDefaultStake2.getText()));
         settings.getNode2().setTonLogLevel(tonLogLevel2.getValue());
 
         settings.getNode3().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl3.getText()));
@@ -1726,8 +1732,8 @@ public class MainController implements Initializable {
         settings.getNode3().setPublicPort(Integer.valueOf(configNodePublicPort3.getText()));
         settings.getNode3().setConsolePort(Integer.valueOf(configNodeConsolePort3.getText()));
         settings.getNode3().setLiteServerPort(Integer.valueOf(configLiteServerPort3.getText()));
-        settings.getNode3().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit3.getText()));
-        settings.getNode3().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake3.getText()));
+        settings.getNode3().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit3.getText()));
+        settings.getNode3().setDefaultValidatorStake(new BigInteger(validatorDefaultStake3.getText()));
         settings.getNode3().setTonLogLevel(tonLogLevel3.getValue());
 
         settings.getNode4().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl4.getText()));
@@ -1738,8 +1744,8 @@ public class MainController implements Initializable {
         settings.getNode4().setPublicPort(Integer.valueOf(configNodePublicPort4.getText()));
         settings.getNode4().setConsolePort(Integer.valueOf(configNodeConsolePort4.getText()));
         settings.getNode4().setLiteServerPort(Integer.valueOf(configLiteServerPort4.getText()));
-        settings.getNode4().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit4.getText()));
-        settings.getNode4().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake4.getText()));
+        settings.getNode4().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit4.getText()));
+        settings.getNode4().setDefaultValidatorStake(new BigInteger(validatorDefaultStake4.getText()));
         settings.getNode4().setTonLogLevel(tonLogLevel4.getValue());
 
         settings.getNode5().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl5.getText()));
@@ -1750,8 +1756,8 @@ public class MainController implements Initializable {
         settings.getNode5().setPublicPort(Integer.valueOf(configNodePublicPort5.getText()));
         settings.getNode5().setConsolePort(Integer.valueOf(configNodeConsolePort5.getText()));
         settings.getNode5().setLiteServerPort(Integer.valueOf(configLiteServerPort5.getText()));
-        settings.getNode5().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit5.getText()));
-        settings.getNode5().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake5.getText()));
+        settings.getNode5().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit5.getText()));
+        settings.getNode5().setDefaultValidatorStake(new BigInteger(validatorDefaultStake5.getText()));
         settings.getNode5().setTonLogLevel(tonLogLevel5.getValue());
 
         settings.getNode6().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl6.getText()));
@@ -1762,8 +1768,8 @@ public class MainController implements Initializable {
         settings.getNode6().setPublicPort(Integer.valueOf(configNodePublicPort6.getText()));
         settings.getNode6().setConsolePort(Integer.valueOf(configNodeConsolePort6.getText()));
         settings.getNode6().setLiteServerPort(Integer.valueOf(configLiteServerPort6.getText()));
-        settings.getNode6().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit6.getText()));
-        settings.getNode6().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake6.getText()));
+        settings.getNode6().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit6.getText()));
+        settings.getNode6().setDefaultValidatorStake(new BigInteger(validatorDefaultStake6.getText()));
         settings.getNode6().setTonLogLevel(tonLogLevel6.getValue());
 
         settings.getNode7().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl7.getText()));
@@ -1774,8 +1780,8 @@ public class MainController implements Initializable {
         settings.getNode7().setPublicPort(Integer.valueOf(configNodePublicPort7.getText()));
         settings.getNode7().setConsolePort(Integer.valueOf(configNodeConsolePort7.getText()));
         settings.getNode7().setLiteServerPort(Integer.valueOf(configLiteServerPort7.getText()));
-        settings.getNode7().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit7.getText()));
-        settings.getNode7().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake7.getText()));
+        settings.getNode7().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit7.getText()));
+        settings.getNode7().setDefaultValidatorStake(new BigInteger(validatorDefaultStake7.getText()));
         settings.getNode7().setTonLogLevel(tonLogLevel7.getValue());
 
         Utils.saveSettingsToGson(settings);
@@ -1981,9 +1987,15 @@ public class MainController implements Initializable {
         Parent parent = loader.load();
         AccountsCreatePaneController controller = loader.getController();
 
-        controller.setWalletVersionText(settings.getWalletSettings().getWalletVersion().getValue());
+//        controller.setWalletVersionText(settings.getWalletSettings().getWalletVersion().getValue());
 
-        if (!settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3)) {
+        if (
+                (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3R1))
+                        || (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3R2))
+                        || (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V4R2))
+        ) {
+            controller.showSubWalletID();
+        } else {
             controller.hideSubWalletID();
         }
 
@@ -2071,7 +2083,7 @@ public class MainController implements Initializable {
             //every 30 sec
             //MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
-            AccountState accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
             minterBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
 
             accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
@@ -2119,7 +2131,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node1.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node1.getWalletAddress().getFullWalletAddress()));
             validator1AdnlAddressNext.setText(node1.getValidationAndlKey());
             validator1PubKeyHexNext.setText(node1.getValidationPubKeyHex());
             validator1PubKeyIntegerNext.setText(node1.getValidationPubKeyInteger());
@@ -2146,7 +2158,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node2.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node2.getWalletAddress().getFullWalletAddress()));
             validator2AdnlAddressNext.setText(node2.getValidationAndlKey());
             validator2PubKeyHexNext.setText(node2.getValidationPubKeyHex());
             validator2PubKeyIntegerNext.setText(node2.getValidationPubKeyInteger());
@@ -2178,7 +2190,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node3.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node3.getWalletAddress().getFullWalletAddress()));
             validator3AdnlAddressNext.setText(node3.getValidationAndlKey());
             validator3PubKeyHexNext.setText(node3.getValidationPubKeyHex());
             validator3PubKeyIntegerNext.setText(node3.getValidationPubKeyInteger());
@@ -2211,7 +2223,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node4.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node4.getWalletAddress().getFullWalletAddress()));
             validator4AdnlAddressNext.setText(node4.getValidationAndlKey());
             validator4PubKeyHexNext.setText(node4.getValidationPubKeyHex());
             validator4PubKeyIntegerNext.setText(node4.getValidationPubKeyInteger());
@@ -2246,7 +2258,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node5.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node5.getWalletAddress().getFullWalletAddress()));
             validator5AdnlAddressNext.setText(node5.getValidationAndlKey());
             validator5PubKeyHexNext.setText(node5.getValidationPubKeyHex());
             validator5PubKeyIntegerNext.setText(node5.getValidationPubKeyInteger());
@@ -2279,7 +2291,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node6.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node6.getWalletAddress().getFullWalletAddress()));
             validator6AdnlAddressNext.setText(node6.getValidationAndlKey());
             validator6PubKeyHexNext.setText(node6.getValidationPubKeyHex());
             validator6PubKeyIntegerNext.setText(node6.getValidationPubKeyInteger());
@@ -2312,7 +2324,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node7.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node7.getWalletAddress().getFullWalletAddress()));
             validator7AdnlAddressNext.setText(node7.getValidationAndlKey());
             validator7PubKeyHexNext.setText(node7.getValidationPubKeyHex());
             validator7PubKeyIntegerNext.setText(node7.getValidationPubKeyInteger() + " (used in participants list)");
@@ -2443,7 +2455,6 @@ public class MainController implements Initializable {
             long electionsDelta = v.getNextElections() - v.getStartElections();
 
             if ((currentTime - v.getStartElections()) > (electionsDelta * 2)) {
-                log.info("redraw to the closest");
                 Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];
                 v = settings.elections.get(lastKey);
             }
@@ -3329,8 +3340,8 @@ public class MainController implements Initializable {
                     showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been cloned from genesis, now synchronizing and creating main wallet.");
 
                     log.info("Creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
-                    WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
-                    node.setWalletAddress(walletEntity.getWallet());
+                    MyLocalTon.getInstance().createWalletEntity(node, null, WalletVersion.V3R2, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
+                    //node.setWalletAddress(walletEntity.getWallet()); // double check
 
                     mainController.addValidatorBtn.setDisable(false);
                     App.mainController.showInfoMsg("Main wallet for validator " + node.getNodeName() + " has been successfully created.", 5);

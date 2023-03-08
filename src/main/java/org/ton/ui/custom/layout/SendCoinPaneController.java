@@ -15,10 +15,11 @@ import org.ton.ui.custom.control.CustomTextField;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.ui.custom.events.event.CustomNotificationEvent;
-import org.ton.wallet.Wallet;
+import org.ton.wallet.MyWallet;
 import org.ton.wallet.WalletAddress;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -73,21 +74,22 @@ public class SendCoinPaneController implements Initializable {
                 WalletEntity fromWallet = App.dbPool.findWallet(walletPk);
                 WalletAddress fromWalletAddress = fromWallet.getWallet();
 
-                BigDecimal amount = new BigDecimal(strAmount);
+                BigInteger amount = (new BigDecimal(strAmount)).multiply(BigDecimal.valueOf(1_000_000_000)).toBigInteger();
+//                BigDecimal amount = new BigDecimal(strAmount);
                 log.info("Sending {} Toncoins from {} ({}) to {}", amount, fromWalletAddress.getFullWalletAddress(), fromWallet.getWalletVersion(), destAddress);
 
                 SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                         .executionNode(MyLocalTon.getInstance().getSettings().getGenesisNode())
                         .fromWallet(fromWalletAddress)
                         .fromWalletVersion(fromWallet.getWalletVersion())
-                        .fromSubWalletId(fromWallet.getSubWalletId())
+                        .fromSubWalletId(fromWallet.getWallet().getSubWalletId())
                         .destAddr(destAddress)
                         .amount(amount)
                         .forceBounce(bounceFlag.isSelected())
                         .comment(message.getFieldText())
                         .build();
 
-                boolean sentOK = new Wallet().sendTonCoins(sendToncoinsParam);
+                boolean sentOK = new MyWallet().sendTonCoins(sendToncoinsParam);
 
                 emit(new CustomActionEvent(CustomEvent.Type.DIALOG_SEND_CLOSE));
 

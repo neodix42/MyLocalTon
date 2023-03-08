@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @Getter
 @ToString
-public class AccountState implements Serializable {
+public class LiteClientAccountState implements Serializable {
     private Long wc;
     private String address;
     private Value balance;
@@ -22,8 +22,8 @@ public class AccountState implements Serializable {
     private BigDecimal storageLastTxLt;
     //duepayment TODO
     private String status;
-    private List<String> stateCode;
-    private List<String> stateData;
+    private String stateCode;
+    private String stateData;
     private List<Library> stateLibrary;
     private BigInteger lastTxLt;
     private String lastTxHash;

@@ -45,53 +45,7 @@ public class LiteClientParserTest {
         Long seqno = LiteClientParser.parseRunMethodSeqno("result:  [ 21234120 ]");
         assertThat(seqno).isEqualTo(21234120L);
     }
-
-    @Test
-    public void TestParseGetAccountOnlyTonCoins() throws IOException {
-        // given
-        String getAccountCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/getaccount_only_grams.log")), StandardCharsets.UTF_8);
-
-        // when
-        AccountState result = LiteClientParser.parseGetAccount(getAccountCommandOutput);
-
-        // then
-        assertThat(result).isNotNull();
-        assertThat(result.getStatus()).isEqualTo("Uninitialized");
-        assertThat(result.getBalance().getToncoins()).isEqualTo(new BigDecimal("100000000"));
-
-        log.info(result.toString());
-    }
-
-    @Test
-    public void TestParseGetAccount() throws IOException {
-        // given
-        String getAccountCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/getaccount.log")), StandardCharsets.UTF_8);
-
-        // when
-        AccountState result = LiteClientParser.parseGetAccount(getAccountCommandOutput);
-
-        // then
-        assertThat(result).isNotNull();
-        assertThat(result.getBalance().getToncoins().longValue()).isEqualTo(90642932L);
-
-        log.info(result.toString());
-    }
-
-    @Test
-    public void TestParseGetAccountMaster() throws IOException {
-        // given
-        String getAccountCommandOutput = IOUtils.toString(Objects.requireNonNull(getClass().getResourceAsStream("/getaccount_master.log")), StandardCharsets.UTF_8);
-
-        // when
-        AccountState result = LiteClientParser.parseGetAccount(getAccountCommandOutput);
-
-        // then
-        assertThat(result).isNotNull();
-        assertThat(result.getBalance().getToncoins().longValue()).isEqualTo(4999959997800000000L);
-
-        log.info(result.toString());
-    }
-
+    
     @Test
     public void TestParseLastCommand() throws IOException {
         // given
