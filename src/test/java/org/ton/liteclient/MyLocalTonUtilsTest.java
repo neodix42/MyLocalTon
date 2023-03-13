@@ -12,7 +12,7 @@ import org.junit.runners.JUnit4;
 import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.settings.GenesisNode;
 import org.ton.settings.Node;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 
 @Slf4j
 @RunWith(JUnit4.class)
-public class UtilsTest {
+public class MyLocalTonUtilsTest {
 
     private static final String CURRENT_DIR = System.getProperty("user.dir");
 
@@ -44,18 +44,18 @@ public class UtilsTest {
         String friendlyAddress3c = "0QB3LaeLjxJUZV97uB5f7e33Tom1TwDie1gEZFj222+vGHcN"; // result -1:187144bfa1e0e930d88af5a9fb995d51d9dae3b5c13f6b826340f2d533488b05
         String friendlyAddress3d = "0QB3LaeLjxJUZV97uB5f7e33Tom1TwDie1gEZFj222-vGHcN"; // result -1:187144bfa1e0e930d88af5a9fb995d51d9dae3b5c13f6b826340f2d533488b05
 
-        assertEquals("-1:187144BFA1E0E930D88AF5A9FB995D51D9DAE3B5C13F6B826340F2D533488B05", Utils.friendlyAddrToHex(friendlyAddress1));
-        assertEquals("0:D2E06942864672B09673A76D77C8D488298C0019E70EE55559B05DF340B1C4D4", Utils.friendlyAddrToHex(friendlyAddress2a));
-        assertEquals("0:D2E06942864672B09673A76D77C8D488298C0019E70EE55559B05DF340B1C4D4", Utils.friendlyAddrToHex(friendlyAddress2b));
-        assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", Utils.friendlyAddrToHex(friendlyAddress3a));
-        assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", Utils.friendlyAddrToHex(friendlyAddress3b));
-        assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", Utils.friendlyAddrToHex(friendlyAddress3c));
-        assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", Utils.friendlyAddrToHex(friendlyAddress3d));
+        assertEquals("-1:187144BFA1E0E930D88AF5A9FB995D51D9DAE3B5C13F6B826340F2D533488B05", MyLocalTonUtils.friendlyAddrToHex(friendlyAddress1));
+        assertEquals("0:D2E06942864672B09673A76D77C8D488298C0019E70EE55559B05DF340B1C4D4", MyLocalTonUtils.friendlyAddrToHex(friendlyAddress2a));
+        assertEquals("0:D2E06942864672B09673A76D77C8D488298C0019E70EE55559B05DF340B1C4D4", MyLocalTonUtils.friendlyAddrToHex(friendlyAddress2b));
+        assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", MyLocalTonUtils.friendlyAddrToHex(friendlyAddress3a));
+        assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", MyLocalTonUtils.friendlyAddrToHex(friendlyAddress3b));
+        assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", MyLocalTonUtils.friendlyAddrToHex(friendlyAddress3c));
+        assertEquals("0:772DA78B8F1254655F7BB81E5FEDEDF74E89B54F00E27B58046458F6DB6FAF18", MyLocalTonUtils.friendlyAddrToHex(friendlyAddress3d));
     }
 
     @Test
     public void getDirectorySizeTest() {
-        BigDecimal size = Utils.getDirectorySizeInMegabytes(CURRENT_DIR + File.separator + "myLocalTon");
+        BigDecimal size = MyLocalTonUtils.getDirectorySizeInMegabytes(CURRENT_DIR + File.separator + "myLocalTon");
         log.info("DB size in MB {}", size);
         String unitOfMeasurement = (size.compareTo(BigDecimal.valueOf(1024L)) >= 1) ? "GB" : "MB";
         log.info("DB size {}", String.format("%.1f%s", (size.compareTo(BigDecimal.valueOf(1000L)) >= 1) ? size.divide(BigDecimal.valueOf(1024L)) : size, unitOfMeasurement));
@@ -63,7 +63,7 @@ public class UtilsTest {
 
     @Test
     public void getDirectorySizeUsingDuTest() {
-        String size = Utils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + "myLocalTon");
+        String size = MyLocalTonUtils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + "myLocalTon");
         log.info("final size \"{}\"", size);
         assertTrue(StringUtils.isNotEmpty(size));
     }
@@ -134,11 +134,11 @@ public class UtilsTest {
     @Test
     public void TestToUtcNospace() {
         long millis = System.currentTimeMillis();
-        log.info("file with datetime {}", Utils.toUtcNoSpace(millis / 1000));
-        log.info("file with datetime {}", Utils.toUtcNoSpace(Instant.now().getEpochSecond()));
+        log.info("file with datetime {}", MyLocalTonUtils.toUtcNoSpace(millis / 1000));
+        log.info("file with datetime {}", MyLocalTonUtils.toUtcNoSpace(Instant.now().getEpochSecond()));
         log.info(DateTimeFormatter.ofPattern("yyyy.MM.dd_HH:mm:ss").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault())));
-        log.info("file with datetime {}", Utils.toUTC(Instant.now().getEpochSecond()));
-        log.info("file with datetime {}", Utils.toLocal(Instant.now().getEpochSecond()));
+        log.info("file with datetime {}", MyLocalTonUtils.toUTC(Instant.now().getEpochSecond()));
+        log.info("file with datetime {}", MyLocalTonUtils.toLocal(Instant.now().getEpochSecond()));
         log.info("{}", LocalDateTime.ofEpochSecond(millis / 1000, 0, ZoneOffset.UTC));
         log.info("{}", LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()));
         assertTrue(true);
@@ -159,7 +159,7 @@ public class UtilsTest {
 
     @Test
     public void TestLightAddr() {
-        String a = Utils.getLightAddress("EC16395E9CFE922017787CCCC4A100BB907148E0879E9ECE1BDF17E7B0896A89");
+        String a = MyLocalTonUtils.getLightAddress("EC16395E9CFE922017787CCCC4A100BB907148E0879E9ECE1BDF17E7B0896A89");
         assertEquals("EC1639..6A89", a);
     }
 }

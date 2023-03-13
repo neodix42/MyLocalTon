@@ -37,7 +37,7 @@ import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.main.App;
 import org.ton.ui.custom.layout.RunMethodPaneController;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -45,7 +45,7 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 
 import static org.ton.main.App.mainController;
-import static org.ton.utils.Utils.PATTERN;
+import static org.ton.utils.MyLocalTonUtils.PATTERN;
 
 @Slf4j
 public class AccountController {
@@ -171,7 +171,7 @@ public class AccountController {
             codeArea.setEditable(false);
             codeArea.getVisibleParagraphs().addModificationObserver
                     (
-                            new Utils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
+                            new MyLocalTonUtils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
                     );
 
             codeArea.replaceText(0, 0, gson.toJson(walletEntity));
@@ -219,7 +219,7 @@ public class AccountController {
         content.putString(hex);
         clipboard.setContent(content);
         log.debug(hex + " copied");
-        String lightHex = Utils.getLightAddress(hex);
+        String lightHex = MyLocalTonUtils.getLightAddress(hex);
         App.mainController.showInfoMsg(lightHex + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -231,7 +231,7 @@ public class AccountController {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -243,7 +243,7 @@ public class AccountController {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -255,7 +255,7 @@ public class AccountController {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -267,7 +267,7 @@ public class AccountController {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -285,7 +285,7 @@ public class AccountController {
 
     public void walletDeleteBtnAction() {
         log.debug("deleting wallet");
-        Utils.deleteWalletByFullAddress(hexAddr.getText());
+        MyLocalTonUtils.deleteWalletByFullAddress(hexAddr.getText());
     }
 
     public void runMethodBtn() throws IOException {

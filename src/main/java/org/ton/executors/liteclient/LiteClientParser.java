@@ -699,7 +699,7 @@ public class LiteClientParser {
             if (Strings.isNotEmpty(srcAddr)) {
                 srcAddr = srcAddr.substring(1);
             }
-            Address sourceAddr = Address.builder().wc(srcWc).addr(srcAddr).build();
+            LiteClientAddress sourceAddr = LiteClientAddress.builder().wc(srcWc).addr(srcAddr).build();
 
             String dest = sbb(message, "dest:(");
             Long destWc = parseLongSpace(dest, WORKCHAIN_ID_COLON);
@@ -707,7 +707,7 @@ public class LiteClientParser {
             if (Strings.isNotEmpty(destAddr)) {
                 destAddr = destAddr.substring(1);
             }
-            Address destinationAddr = Address.builder().wc(destWc).addr(destAddr).build();
+            LiteClientAddress destinationAddr = LiteClientAddress.builder().wc(destWc).addr(destAddr).build();
 
             Value grams = readValue(sbb(inMsgDescr, "value:(currencies"));
 //add import_fee handling
@@ -826,7 +826,7 @@ public class LiteClientParser {
                 if (Strings.isNotEmpty(srcAddr)) {
                     srcAddr = srcAddr.substring(1);
                 }
-                Address sourceAddr = Address.builder().wc(srcWc).addr(srcAddr).build();
+                LiteClientAddress sourceAddr = LiteClientAddress.builder().wc(srcWc).addr(srcAddr).build();
 
                 String dest = sbb(message, "dest:(");
                 Long destWc = parseLongSpace(dest, WORKCHAIN_ID_COLON);
@@ -834,7 +834,7 @@ public class LiteClientParser {
                 if (Strings.isNotEmpty(destAddr)) {
                     destAddr = destAddr.substring(1);
                 }
-                Address destinationAddr = Address.builder().wc(destWc).addr(destAddr).build();
+                LiteClientAddress destinationAddr = LiteClientAddress.builder().wc(destWc).addr(destAddr).build();
 
                 Value toncoins = readValue(sbb(message, "value:(currencies"));
 

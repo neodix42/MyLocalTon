@@ -34,7 +34,7 @@ import org.ton.db.entities.TxPk;
 import org.ton.executors.liteclient.api.BlockShortSeqno;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.main.App;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -42,7 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 
-import static org.ton.utils.Utils.PATTERN;
+import static org.ton.utils.MyLocalTonUtils.PATTERN;
 
 @Slf4j
 public class TxController {
@@ -102,7 +102,7 @@ public class TxController {
                 .build();
 
         TxPk txPk = TxPk.builder()
-                .createdAt(Utils.datetimeToTimestamp(time.getText()))
+                .createdAt(MyLocalTonUtils.datetimeToTimestamp(time.getText()))
                 .seqno(blockShortSeqno.getSeqno())
                 .wc(blockShortSeqno.getWc())
                 .shard(blockShortSeqno.getShard())
@@ -113,7 +113,7 @@ public class TxController {
                 .typeMsg(typeMsg.getText())
                 .build();
 
-        log.debug("tx infobtn,  block {}, txPk {}, createdAt {}, seconds {}", blockShortSeqno, txPk, time.getText(), Utils.datetimeToTimestamp(time.getText()));
+        log.debug("tx infobtn,  block {}, txPk {}, createdAt {}, seconds {}", blockShortSeqno, txPk, time.getText(), MyLocalTonUtils.datetimeToTimestamp(time.getText()));
 
         TxEntity txEntity = App.dbPool.findTx(txPk);
         Transaction tx = txEntity.getTx();
@@ -169,7 +169,7 @@ public class TxController {
             codeArea.setEditable(false);
             codeArea.getVisibleParagraphs().addModificationObserver
                     (
-                            new Utils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
+                            new MyLocalTonUtils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
                     );
 
             if (txEntity.getTypeTx().equals("Message")) {
@@ -232,7 +232,7 @@ public class TxController {
         content.putString(hash);
         clipboard.setContent(content);
         log.info(hash + " copied");
-        String lightHash = Utils.getLightAddress(hash);
+        String lightHash = MyLocalTonUtils.getLightAddress(hash);
         App.mainController.showInfoMsg(lightHash + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -244,7 +244,7 @@ public class TxController {
         content.putString(src);
         clipboard.setContent(content);
         log.info(src + " copied");
-        String lightSrc = Utils.getLightAddress(src);
+        String lightSrc = MyLocalTonUtils.getLightAddress(src);
         App.mainController.showInfoMsg(lightSrc + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -256,7 +256,7 @@ public class TxController {
         content.putString(src);
         clipboard.setContent(content);
         log.info(src + " copied");
-        String lightSrc = Utils.getLightAddress(src);
+        String lightSrc = MyLocalTonUtils.getLightAddress(src);
         App.mainController.showInfoMsg(lightSrc + " copied to clipboard", 2);
         mouseEvent.consume();
     }

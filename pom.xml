@@ -37,7 +37,7 @@
         <dependency>
             <groupId>io.github.neodix42</groupId>
             <artifactId>smartcontract</artifactId>
-            <version>0.1.2</version>
+            <version>0.1.4</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>

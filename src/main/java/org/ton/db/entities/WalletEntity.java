@@ -5,9 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
-import org.ton.executors.liteclient.api.LiteClientAccountState;
 import org.ton.java.smartcontract.types.WalletVersion;
-import org.ton.java.tonlib.types.AccountState;
+import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.wallet.WalletAddress;
 
 import javax.persistence.Entity;
@@ -30,8 +29,9 @@ public class WalletEntity {
 
     WalletVersion walletVersion;
     WalletAddress wallet;
-    LiteClientAccountState accountState;
-    Boolean preinstalled;
+    RawAccountState accountState;
+    String accountStatus;
+
     Boolean mainWalletInstalled;
     Boolean configWalletInstalled;
     Long createdAt;
@@ -43,11 +43,20 @@ public class WalletEntity {
                 .build();
     }
 
+    public void setAccountState(RawAccountState accountState) {
+        this.accountState = accountState;
+        this.accountStatus = getStatusFromCode(accountState);
+    }
+
     public String getFullAddress() {
         return (wc + ":" + hexAddress).toUpperCase();
     }
 
-    private String getStateFromCode(AccountState state) {
+    public String getAccountStatus() {
+        return getStatusFromCode(accountState);
+    }
+
+    private String getStatusFromCode(RawAccountState state) {
         if (StringUtils.isEmpty(state.getCode())) {
             if (StringUtils.isEmpty(state.getFrozen_hash())) {
                 return "uninitialized";

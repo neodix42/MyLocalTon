@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,16 +33,16 @@ public class ResetBlockchainPaneController implements Initializable {
             emit(new CustomActionEvent(CustomEvent.Type.SAVE_SETTINGS));
             Thread.sleep(100);
             if (SystemUtils.IS_OS_WINDOWS) {
-                if (Utils.doShutdown()) {
-                    log.info("restarting: cmd /c start java -jar {} restart", Utils.getMyPath());
-                    Runtime.getRuntime().exec("cmd /c start java -jar " + Utils.getMyPath() + " restart");
+                if (MyLocalTonUtils.doShutdown()) {
+                    log.info("restarting: cmd /c start java -jar {} restart", MyLocalTonUtils.getMyPath());
+                    Runtime.getRuntime().exec("cmd /c start java -jar " + MyLocalTonUtils.getMyPath() + " restart");
                     System.exit(0);
                 }
             } else {
-                if (Utils.doShutdown()) {
+                if (MyLocalTonUtils.doShutdown()) {
                     // works on linux
-                    log.info("restarting: java -jar {}", Utils.getMyPath());
-                    Runtime.getRuntime().exec("java -jar " + Utils.getMyPath() + " restart");
+                    log.info("restarting: java -jar {}", MyLocalTonUtils.getMyPath());
+                    Runtime.getRuntime().exec("java -jar " + MyLocalTonUtils.getMyPath() + " restart");
                     System.exit(0);
                 }
             }

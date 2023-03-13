@@ -6,10 +6,10 @@ import org.ton.callables.parameters.BlockCallbackParam;
 import org.ton.callables.parameters.TxCallbackParam;
 import org.ton.callables.parameters.WalletCallbackParam;
 import org.ton.db.entities.*;
-import org.ton.executors.liteclient.api.LiteClientAccountState;
 import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.settings.MyLocalTonSettings;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
@@ -79,7 +79,7 @@ public class DbPool {
             poolInSettings.put(dbName, "ACTIVE");
 
             settings.setDbPool(poolInSettings);
-            Utils.saveSettingsToGson(settings);
+            MyLocalTonUtils.saveSettingsToGson(settings);
 
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.schedule(() -> {
@@ -236,7 +236,7 @@ public class DbPool {
                 WalletPk pk = walletEntity.getPrimaryKey();
 
                 if (isNull(findWallet(pk))) {
-                    log.debug("Inserting into db wallet {}", walletEntity.getHexAddress());
+                    log.debug("Inserting into db wallet {}", walletEntity.getWallet().getFullWalletAddress());
                     em.getTransaction().begin();
                     em.persist(walletEntity);
                     em.getTransaction().commit();
@@ -381,7 +381,7 @@ public class DbPool {
         }
     }
 
-    public void updateWalletStateAndSeqno(WalletEntity walletEntity, LiteClientAccountState accountState, long seqno, WalletVersion walletVersion) {
+    public void updateWalletStateAndSeqno(WalletEntity walletEntity, RawAccountState accountState, long seqno, WalletVersion walletVersion) {
         log.debug("updating account state in db, {}, state {}", walletEntity.getFullAddress().toUpperCase(), accountState);
         try {
 
@@ -403,30 +403,6 @@ public class DbPool {
             threadPoolService.shutdown();
         } catch (Exception e) {
             log.error("Error updating account's state, {}" + e.getMessage());
-        }
-    }
-
-    public long getNumberOfPreinstalledWallets() {
-        long result = 0;
-        try {
-            ExecutorService threadPoolService = Executors.newFixedThreadPool(poolInSettings.size());
-            List<PreinstalledCountCallable> callablesList = new ArrayList<>();
-            for (Map.Entry<String, String> entry : poolInSettings.entrySet()) {
-                PreinstalledCountCallable callable = new PreinstalledCountCallable(entry.getKey());
-                callablesList.add(callable);
-            }
-
-            List<Future<String>> futures = threadPoolService.invokeAll(callablesList);
-
-            for (Future<String> future : futures) {
-                result = result + Long.parseLong(future.get());
-            }
-
-            threadPoolService.shutdown();
-            return result;
-        } catch (Exception e) {
-            log.error("Error getNumberOfPreinstalledWallets(), {}" + e.getMessage());
-            return result;
         }
     }
 

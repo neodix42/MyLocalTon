@@ -13,7 +13,7 @@ import org.ton.executors.generaterandomid.RandomIdExecutor;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.utils.Extractor;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,11 +40,11 @@ public class ValidatorEngine {
         log.info("starting validator-engine {}", node.getNodeName());
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
                 "-t", "2",
                 "-C", myGlobalConfig,
                 "--db", node.getTonDbDir(),
-                "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
+                "-l", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
                 "--ip", node.getPublicIp() + ":" + node.getPublicPort(),
                 "-S", node.getValidatorSyncBefore().toString(), // initial sync download all blocks for last given seconds, default 3600
                 "-s", node.getValidatorStateTtl().toString(), // state will be gc'd after this time (in seconds), default 3600
@@ -57,44 +57,25 @@ public class ValidatorEngine {
     }
 
     public Pair<Process, Future<String>> startValidatorWithoutParams(Node node, String myGlobalConfig) {
-        log.info("starting validator-engine without params {}", node.getNodeName());
+        log.debug("starting validator-engine without params {}", node.getNodeName());
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
                 "-t", "2",
                 "-C", myGlobalConfig,
                 "--db", node.getTonDbDir(),
-                "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
+                "-l", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
                 "--ip", node.getPublicIp() + ":" + node.getPublicPort());
 
         node.setNodeProcess(validator.getLeft());
-        return validator;
-    }
-
-    public Pair<Process, Future<String>> startValidatorRestore(Node node, String myGlobalConfig) {
-        log.info("starting validator-engine without params {}", node.getNodeName());
-
-        Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
-                "-t", "2",
-                "-C", myGlobalConfig,
-                "--db", node.getTonDbDir(),
-                "-U", "0",
-                "-l", node.getTonLogDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
-                "--ip", node.getPublicIp() + ":" + node.getPublicPort());
-
-        node.setNodeProcess(validator.getLeft());
-        //wait for start to finish
-
         return validator;
     }
 
     /**
      * run full-node very first time
      *
-     * @param node
-     * @param sharedGlobalConfig
-     * @throws Exception
+     * @param node               Node
+     * @param sharedGlobalConfig String
      */
     public void initFullnode(Node node, String sharedGlobalConfig) throws Exception {
         if (Files.exists(Paths.get(node.getTonDbDir() + "state"))) {
@@ -106,9 +87,7 @@ public class ValidatorEngine {
 
             String s = startValidatorWithoutParams(node, sharedGlobalConfig).getRight().get();
 
-            //log.debug("Initialized {} validator, result {}", node.getNodeName(), validatorGenesisInit.getRight().get());
-
-            Utils.replaceOutPortInConfigJson(node.getTonDbDir(), node.getOutPort());
+            MyLocalTonUtils.replaceOutPortInConfigJson(node.getTonDbDir(), node.getOutPort());
 
             //enable access to full node from validator-engine-console - required if you want to become validator later
             GenerateRandomId generateRandomId = new GenerateRandomId();
@@ -129,12 +108,12 @@ public class ValidatorEngine {
             log.debug("liteservers: {} ", liteServers);
 
             //convert pub key to key
-            String liteserverPubkeyBase64 = Utils.convertPubKeyToBase64(node.getTonDbKeyringDir() + "liteserver.pub");
-            int publicIpNum = Utils.getIntegerIp(node.getPublicIp());
+            String liteserverPubkeyBase64 = MyLocalTonUtils.convertPubKeyToBase64(node.getTonDbKeyringDir() + "liteserver.pub");
+            int publicIpNum = MyLocalTonUtils.getIntegerIp(node.getPublicIp());
 
             // replace lite servers array in config.json
             String configJson = FileUtils.readFileToString(new File(node.getTonDbDir() + "config.json"), StandardCharsets.UTF_8);
-            String existingLiteservers = "\"liteservers\" : " + Utils.sbb(configJson, "\"liteservers\" : [");
+            String existingLiteservers = "\"liteservers\" : " + MyLocalTonUtils.sbb(configJson, "\"liteservers\" : [");
             String configJsonNew = StringUtils.replace(configJson, existingLiteservers, liteServers + "\n]");
             FileUtils.writeStringToFile(new File(node.getTonDbDir() + "config.json"), configJsonNew, StandardCharsets.UTF_8);
             // done with config.json
@@ -146,7 +125,7 @@ public class ValidatorEngine {
 
             if (myGlobalTonConfig.contains("liteservers")) {
                 //add new lite-server to the global config
-                String existingLiteserver = Utils.sbb(myGlobalTonConfig, "\"liteservers\":[");
+                String existingLiteserver = MyLocalTonUtils.sbb(myGlobalTonConfig, "\"liteservers\":[");
                 liteServerConfigNew = "{\"id\":{\"key\":\"" + liteserverPubkeyBase64 + "\", \"@type\":\"pub.ed25519\"}, \"port\": " + node.getLiteServerPort() + ", \"ip\": " + publicIpNum + "}\n]";
                 //liteServerConfigBoth = StringUtils.substring(existingLiteserver, 0, -1) + "," + liteServerConfigNew;
                 //myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, existingLiteserver, liteServerConfigBoth);
@@ -181,7 +160,7 @@ public class ValidatorEngine {
         settings.setZeroStateRootHashBase64(Base64.encodeBase64String(zerostateRootHashFile));
 
         log.debug(settings.toString());
-        Utils.saveSettingsToGson(settings);
+        MyLocalTonUtils.saveSettingsToGson(settings);
 
         //mv zerostate.boc ../db/static/$ZEROSTATE_FILEHASH
         Files.move(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.boc"), Paths.get(node.getTonDbStaticDir() + settings.getZeroStateFileHashHex()), StandardCopyOption.REPLACE_EXISTING);
@@ -356,7 +335,7 @@ public class ValidatorEngine {
         node.setValidatorPubKeyHex(Hex.encodeHexString(removed4bytes));
         node.setValidatorPubKeyBase64(Base64.encodeBase64String(validatorPubKey));
 
-        Utils.saveSettingsToGson(MyLocalTon.getInstance().getSettings());
+        MyLocalTonUtils.saveSettingsToGson(MyLocalTon.getInstance().getSettings());
 
         // create validator-keys-1.pub
         Files.write(Paths.get(node.getValidatorKeyPubLocation()), Hex.decodeHex(node.getValidatorPubKeyHex()), StandardOpenOption.CREATE); // "validator-keys-1.pub"

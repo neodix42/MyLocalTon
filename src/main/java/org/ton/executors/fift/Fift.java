@@ -9,9 +9,9 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
-import org.ton.executors.liteclient.api.LiteClientAccountState;
 import org.ton.executors.validatorengineconsole.ValidatorEngineConsoleExecutor;
 import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.main.App;
 import org.ton.parameters.SendToncoinsParam;
 import org.ton.settings.Node;
@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
@@ -50,35 +49,17 @@ public class Fift {
         if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.config) || sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.master)) {
             walletScript = "wallet.fif";
         } else {
-            throw new Error("this wallet version should be executed by ton4j");
+            throw new Error("for this wallet version send toncoins using ton4j");
         }
-//        if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1) || sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.master)) {
-//            walletScript = "wallet.fif";
-//        } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V2R2)) {
-//            walletScript = "wallet-v2.fif";
-//        } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V3R2)) {
-//            walletScript = "wallet-v3.fif";
-//        } else {
-//            walletScript = "wallet.fif";
-//        }
 
         log.debug("{} sending using {}", sendToncoinsParam.getExecutionNode().getNodeName(), walletScript);
         String attachedBoc;
-//        String timeout = null;
 
         if (SystemUtils.IS_OS_WINDOWS) {
             attachedBoc = (StringUtils.isEmpty(sendToncoinsParam.getBocLocation())) ? "" : "-B\"" + sendToncoinsParam.getBocLocation().trim() + "\"";
         } else {
             attachedBoc = (StringUtils.isEmpty(sendToncoinsParam.getBocLocation())) ? "" : "-B" + sendToncoinsParam.getBocLocation().trim();
         }
-
-//        if (walletScript.equals("wallet-v3.fif")) {
-//            if (isNull(sendToncoinsParam.getTimeout())) {
-//                sendToncoinsParam.setTimeout(60L);
-//            }
-//
-//            timeout = sendToncoinsParam.getTimeout().toString();
-//        }
 
         result = new FiftExecutor().execute(sendToncoinsParam.getExecutionNode(),
                 "smartcont" + File.separator + walletScript,
@@ -156,11 +137,11 @@ public class Fift {
                 .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
                 .walletVersion(walletVersion)
                 .wallet(walletAddress)
-                .accountState(LiteClientAccountState.builder().build())
+                .accountState(RawAccountState.builder().build())
                 .createdAt(Instant.now().getEpochSecond())
                 .build();
 
-        walletEntity.setPreinstalled(true);
+//        walletEntity.setPreinstalled(true);
 
         if (fileBaseName.contains("main-wallet")) {
             walletEntity.setMainWalletInstalled(true);
@@ -169,9 +150,11 @@ public class Fift {
         }
 
         App.dbPool.insertWallet(walletEntity);
+
         return walletEntity;
     }
 
+    /*
     public WalletAddress convertAddress(Node node, String wcHexAddress) {
         Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "convert-addr.fif", wcHexAddress);
 
@@ -195,12 +178,9 @@ public class Fift {
             return WalletAddress.builder().build();
         }
     }
+    */
 
-    /**
-     * Generates Ton wallet address
-     *
-     * @return TonWalletAddress with path to boc file.
-     */
+/*
     public WalletAddress createWalletV1QueryBoc(Node node, long workchainId) throws Exception { // todo
 
         String fileNameBase = UUID.randomUUID().toString();
@@ -250,7 +230,7 @@ public class Fift {
                 .build();
     }
 
-    public WalletAddress createWalletV2QueryBoc(Node node, long workchainId) throws Exception {
+    public WalletAddress createWalletV2QueryBoc(Node node, long workchainId) throws Exception { // todo
 
         String fileNameBase = UUID.randomUUID().toString();
         String fileNameBaseFullPath = node.getTonBinDir() + "wallets" + File.separator + fileNameBase;
@@ -344,6 +324,7 @@ public class Fift {
                 .walletQueryFileBocLocation(walletQueryFileBocLocation)
                 .build();
     }
+*/
 
     /**
      * Creating a request to participate in validator elections at time startElectionTime

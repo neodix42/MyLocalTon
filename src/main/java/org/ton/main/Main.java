@@ -3,7 +3,7 @@ package org.ton.main;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ton.settings.MyLocalTonSettings;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.awt.*;
 import java.io.File;
@@ -40,7 +40,7 @@ public class Main {
                 log.debug(ExceptionUtils.getStackTrace(e));
             });
 
-            log.info("Starting application at path {}", Utils.getMyPath());
+            log.info("Starting application at path {}", MyLocalTonUtils.getMyPath());
 
             App.main(args);
 
@@ -57,7 +57,7 @@ public class Main {
             if (nonNull(fileLock)) {
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     log.debug("Shutdown hook triggered...");
-                    Utils.doShutdown();
+                    MyLocalTonUtils.doShutdown();
                 }));
                 return true;
             }

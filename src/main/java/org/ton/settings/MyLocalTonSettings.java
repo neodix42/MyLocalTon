@@ -125,7 +125,7 @@ public class MyLocalTonSettings implements Serializable {
     @Getter
     @Setter
     public static class WalletSettings implements Serializable {
-        Long numberOfPreinstalledWallets = 3L;
+        Long numberOfInitialWallets = 3L;
         BigInteger initialAmount = new BigInteger("778000000000");
         WalletVersion walletVersion = WalletVersion.V3R2;
         Long defaultWorkChain = 0L;

@@ -57,7 +57,7 @@ import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.ui.custom.events.event.CustomSearchEvent;
 import org.ton.ui.custom.layout.*;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -1010,7 +1010,7 @@ public class MainController implements Initializable {
                 saveSettings();
                 Platform.exit(); // closes main form
 
-                if (Utils.doShutdown()) {
+                if (MyLocalTonUtils.doShutdown()) {
                     log.info("system exit 0");
                     System.exit(0);
                 }
@@ -1069,9 +1069,9 @@ public class MainController implements Initializable {
                         String createdatDate = ((Label) ((Node) bp).lookup("#createdatDate")).getText();
                         String createdatTime = ((Label) ((Node) bp).lookup("#createdatTime")).getText();
 
-                        long createdAt = Utils.datetimeToTimestamp(createdatDate + " " + createdatTime);
+                        long createdAt = MyLocalTonUtils.datetimeToTimestamp(createdatDate + " " + createdatTime);
 
-                        log.debug("bottom reached, seqno {}, time {}, hwm {} ", lastSeqno, Utils.toUtcNoSpace(createdAt), MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get());
+                        log.debug("bottom reached, seqno {}, time {}, hwm {} ", lastSeqno, MyLocalTonUtils.toUtcNoSpace(createdAt), MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get());
 
                         if (blockslistviewid.getItems().size() > MAX_ROWS_IN_GUI) {
                             showWarningMsg("Maximum amount (" + MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get() + ") of visible blocks in GUI reached.", 5);
@@ -1158,7 +1158,7 @@ public class MainController implements Initializable {
                     BorderPane bp = (BorderPane) transactionsvboxid.getItems().get(transactionsvboxid.getItems().size() - 1);
                     String shortseqno = ((Label) ((Node) bp).lookup("#block")).getText();
 
-                    long createdAt = Utils.datetimeToTimestamp(((Label) ((Node) bp).lookup("#time")).getText());
+                    long createdAt = MyLocalTonUtils.datetimeToTimestamp(((Label) ((Node) bp).lookup("#time")).getText());
 
                     BlockShortSeqno blockShortSeqno = BlockShortSeqno.builder()
                             .wc(Long.valueOf(StringUtils.substringBetween(shortseqno, "(", ",")))
@@ -1166,7 +1166,7 @@ public class MainController implements Initializable {
                             .seqno(new BigInteger(StringUtils.substring(StringUtils.substringAfterLast(shortseqno, ","), 0, -1)))
                             .build();
 
-                    log.debug("bottom reached, seqno {}, hwm {}, createdAt {}, utc {}", blockShortSeqno.getSeqno(), MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get(), createdAt, Utils.toUtcNoSpace(createdAt));
+                    log.debug("bottom reached, seqno {}, hwm {}, createdAt {}, utc {}", blockShortSeqno.getSeqno(), MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get(), createdAt, MyLocalTonUtils.toUtcNoSpace(createdAt));
 
                     if (blockShortSeqno.getSeqno().compareTo(BigInteger.ONE) == 0) {
                         return;
@@ -1427,7 +1427,7 @@ public class MainController implements Initializable {
         showMsgBodyCheckBox.setSelected(settings.getUiSettings().isShowBodyInMessage());
         shardStateCheckbox.setSelected(settings.getUiSettings().isShowShardStateInBlockDump());
 
-        walletsNumber.setFieldText(settings.getWalletSettings().getNumberOfPreinstalledWallets().toString());
+        walletsNumber.setFieldText(settings.getWalletSettings().getNumberOfInitialWallets().toString());
         coinsPerWallet.setFieldText(settings.getWalletSettings().getInitialAmount().toString());
         walletVersion.addItem(WalletVersion.V1R1.getValue());
         walletVersion.addItem(WalletVersion.V1R2.getValue());
@@ -1674,7 +1674,7 @@ public class MainController implements Initializable {
         settings.getUiSettings().setEnableBlockchainExplorer(enableBlockchainExplorer.isSelected());
         settings.getUiSettings().setShowShardStateInBlockDump(shardStateCheckbox.isSelected());
 
-        settings.getWalletSettings().setNumberOfPreinstalledWallets(Long.parseLong(walletsNumber.getFieldText()));
+        settings.getWalletSettings().setNumberOfInitialWallets(Long.parseLong(walletsNumber.getFieldText()));
         settings.getWalletSettings().setInitialAmount(new BigInteger(coinsPerWallet.getFieldText()));
         settings.getWalletSettings().setWalletVersion(WalletVersion.getKeyByValue(walletVersion.getValue()));
 
@@ -1784,7 +1784,7 @@ public class MainController implements Initializable {
         settings.getNode7().setDefaultValidatorStake(new BigInteger(validatorDefaultStake7.getText()));
         settings.getNode7().setTonLogLevel(tonLogLevel7.getValue());
 
-        Utils.saveSettingsToGson(settings);
+        MyLocalTonUtils.saveSettingsToGson(settings);
     }
 
     public void accountsOnScroll(ScrollEvent scrollEvent) {
@@ -2033,41 +2033,41 @@ public class MainController implements Initializable {
             String next = "Next validators (available only within a Break time): " + System.lineSeparator() + config36.getValidators().getValidators().stream().map(i -> i.getPublicKey() + "  " + i.getAdnlAddress() + "  " + i.getWeight()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
             totalValidators.setTooltip(new Tooltip(previous + current + next));
 
-            blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+            blockchainLaunched.setText(MyLocalTonUtils.toLocal(v.getBlockchainLaunchTime()));
 
             colorValidationTiming(v);
 
-            long validationStartInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartValidationCycle());
+            long validationStartInAgoSeconds = Math.abs(MyLocalTonUtils.getCurrentTimeSeconds() - v.getStartValidationCycle());
             String startsValidationDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationStartInAgoSeconds).toMillis(), "HH:mm:ss", true);
-            if ((Utils.getCurrentTimeSeconds() - v.getStartValidationCycle()) > 0) {
-                startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Started ago (" + startsValidationDuration + ")");
+            if ((MyLocalTonUtils.getCurrentTimeSeconds() - v.getStartValidationCycle()) > 0) {
+                startCycle.setText(MyLocalTonUtils.toLocal(v.getStartValidationCycle()) + "  Started ago (" + startsValidationDuration + ")");
             } else {
-                startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Starts in (" + startsValidationDuration + ")");
+                startCycle.setText(MyLocalTonUtils.toLocal(v.getStartValidationCycle()) + "  Starts in (" + startsValidationDuration + ")");
             }
             long validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
             String validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            endCycle.setText(Utils.toLocal(v.getEndValidationCycle()) + "  Duration (" + validation1Duration + ")");
+            endCycle.setText(MyLocalTonUtils.toLocal(v.getEndValidationCycle()) + "  Duration (" + validation1Duration + ")");
 
-            long electionsStartsInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartElections());
+            long electionsStartsInAgoSeconds = Math.abs(MyLocalTonUtils.getCurrentTimeSeconds() - v.getStartElections());
             String startsElectionDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionsStartsInAgoSeconds).toMillis(), "HH:mm:ss", true);
-            if ((Utils.getCurrentTimeSeconds() - v.getStartElections()) > 0) {
-                startElections.setText(Utils.toLocal(v.getStartElections()) + "  Started ago (" + startsElectionDuration + ") Election Id " + v.getStartValidationCycle());
-                startElections.setTooltip(new Tooltip("Election Id (" + Utils.toLocal(v.getStartValidationCycle()) + ")"));
+            if ((MyLocalTonUtils.getCurrentTimeSeconds() - v.getStartElections()) > 0) {
+                startElections.setText(MyLocalTonUtils.toLocal(v.getStartElections()) + "  Started ago (" + startsElectionDuration + ") Election Id " + v.getStartValidationCycle());
+                startElections.setTooltip(new Tooltip("Election Id (" + MyLocalTonUtils.toLocal(v.getStartValidationCycle()) + ")"));
             } else {
-                startElections.setText(Utils.toLocal(v.getStartElections()) + "  Starts in (" + startsElectionDuration + ")");
+                startElections.setText(MyLocalTonUtils.toLocal(v.getStartElections()) + "  Starts in (" + startsElectionDuration + ")");
                 startElections.setTooltip(null);
             }
             long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
             String elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
 
-            endElections.setText(Utils.toLocal(v.getEndElections()) + "  Duration (" + elections1Duration + ")");
+            endElections.setText(MyLocalTonUtils.toLocal(v.getEndElections()) + "  Duration (" + elections1Duration + ")");
 
-            long nextElectionsStartsInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getNextElections());
+            long nextElectionsStartsInAgoSeconds = Math.abs(MyLocalTonUtils.getCurrentTimeSeconds() - v.getNextElections());
             String nextElectionDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(nextElectionsStartsInAgoSeconds).toMillis(), "HH:mm:ss", true);
-            if ((Utils.getCurrentTimeSeconds() - v.getNextElections()) > 0) {
-                nextElections.setText(Utils.toLocal(v.getNextElections()) + "  Started ago (" + nextElectionDuration + ")");
+            if ((MyLocalTonUtils.getCurrentTimeSeconds() - v.getNextElections()) > 0) {
+                nextElections.setText(MyLocalTonUtils.toLocal(v.getNextElections()) + "  Started ago (" + nextElectionDuration + ")");
             } else {
-                nextElections.setText(Utils.toLocal(v.getNextElections()) + "  Starts in (" + nextElectionDuration + ")");
+                nextElections.setText(MyLocalTonUtils.toLocal(v.getNextElections()) + "  Starts in (" + nextElectionDuration + ")");
             }
 
             minterAddr.setText(v.getMinterAddr());
@@ -2446,7 +2446,7 @@ public class MainController implements Initializable {
 
     public void drawTimeLine() {
         log.debug("draw time-line");
-        long currentTime = Utils.getCurrentTimeSeconds();
+        long currentTime = MyLocalTonUtils.getCurrentTimeSeconds();
 
         if (nonNull(settings.getTimeLineScale())) {
 
@@ -2471,9 +2471,9 @@ public class MainController implements Initializable {
                 xcoord = 0 + (x * settings.getTimeLineScale());
             }
 
-            log.debug("electionsDelta {}, electionsDeltaWidth {}, timeScale {}, xcoord {}, x {}, v.getStartElections() {}, sizeElections {}", electionsDelta, electionsDeltaWidth, settings.getTimeLineScale(), xcoord, x, Utils.toLocal(v.getStartElections()), settings.elections.size());
+            log.debug("electionsDelta {}, electionsDeltaWidth {}, timeScale {}, xcoord {}, x {}, v.getStartElections() {}, sizeElections {}", electionsDelta, electionsDeltaWidth, settings.getTimeLineScale(), xcoord, x, MyLocalTonUtils.toLocal(v.getStartElections()), settings.elections.size());
             timeLine.setLayoutX(xcoord);
-            timeLine.setTooltip(new Tooltip(Utils.toLocal(currentTime)));
+            timeLine.setTooltip(new Tooltip(MyLocalTonUtils.toLocal(currentTime)));
             saveSettings();
         }
     }
@@ -2567,96 +2567,96 @@ public class MainController implements Initializable {
 
         if (settings.elections.size() == 1) {
             elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds1).toMillis(), "HH:mm:ss", true);
-            elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getStartElections()), Utils.toLocal(v1.getEndElections()), elections1Duration);
+            elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getStartElections()), MyLocalTonUtils.toLocal(v1.getEndElections()), elections1Duration);
             electionsRange1.setTooltip(new Tooltip(elections1ToolTip));
 
             pauseDurationInSeconds = v1.getStartValidationCycle() - v1.getEndElections();
             pause1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getEndElections()), Utils.toLocal(v1.getStartValidationCycle()), pause1Duration);
+            String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getEndElections()), MyLocalTonUtils.toLocal(v1.getStartValidationCycle()), pause1Duration);
             pauseRange1.setTooltip(new Tooltip(pause1ToolTip));
 
             validationDurationInSeconds = v1.getEndValidationCycle() - v1.getStartValidationCycle();
             validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getStartValidationCycle()), Utils.toLocal(v1.getEndValidationCycle()), validation1Duration);
+            String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getStartValidationCycle()), MyLocalTonUtils.toLocal(v1.getEndValidationCycle()), validation1Duration);
             validationRange1.setTooltip(new Tooltip(validation1ToolTip));
 
             stakeHoldDurationInSeconds = v1.getHoldPeriod();
             stakeHold1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getEndValidationCycle()), Utils.toLocal(java.time.Duration.ofSeconds(v1.getEndValidationCycle()).plusSeconds(v1.getHoldPeriod()).toSeconds()), stakeHold1Duration);
+            String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getEndValidationCycle()), MyLocalTonUtils.toLocal(java.time.Duration.ofSeconds(v1.getEndValidationCycle()).plusSeconds(v1.getHoldPeriod()).toSeconds()), stakeHold1Duration);
             stakeHoldRange1.setTooltip(new Tooltip(holdStake1ToolTip));
 
             //2
             long endElections2 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionDurationInSeconds1).toSeconds();
-            String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getNextElections()), Utils.toLocal(endElections2), elections1Duration);
+            String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getNextElections()), MyLocalTonUtils.toLocal(endElections2), elections1Duration);
             electionsRange2.setTooltip(new Tooltip(elections2ToolTip));
 
             long endPause2 = java.time.Duration.ofSeconds(endElections2).plusSeconds(pauseDurationInSeconds).toSeconds();
-            String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections2), Utils.toLocal(endPause2), pause1Duration);
+            String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endElections2), MyLocalTonUtils.toLocal(endPause2), pause1Duration);
             pauseRange2.setTooltip(new Tooltip(pause2ToolTip));
 
             long endValidation2 = java.time.Duration.ofSeconds(endPause2).plusSeconds(validationDurationInSeconds).toSeconds();
-            String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause2), Utils.toLocal(endValidation2), validation1Duration);
+            String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endPause2), MyLocalTonUtils.toLocal(endValidation2), validation1Duration);
             validationRange2.setTooltip(new Tooltip(validation2ToolTip));
 
             long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v1.getHoldPeriod()).toSeconds();
-            String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
+            String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endValidation2), MyLocalTonUtils.toLocal(endHoldStake2), stakeHold1Duration);
             stakeHoldRange2.setTooltip(new Tooltip(holdStake2ToolTip));
             settings.setStakeHoldRange2End(endHoldStake2);
 
             //3
             long startElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionsDelta1).toSeconds();
             long endElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionDurationInSeconds1 + electionsDelta1).toSeconds();
-            String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(startElections3), Utils.toLocal(endElections3), elections1Duration);
+            String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(startElections3), MyLocalTonUtils.toLocal(endElections3), elections1Duration);
             electionsRange3.setTooltip(new Tooltip(elections3ToolTip));
 
             long endPause3 = java.time.Duration.ofSeconds(endElections3).plusSeconds(pauseDurationInSeconds).toSeconds();
-            String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections3), Utils.toLocal(endPause3), pause1Duration);
+            String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endElections3), MyLocalTonUtils.toLocal(endPause3), pause1Duration);
             pauseRange3.setTooltip(new Tooltip(pause3ToolTip));
 
             long endValidation3 = java.time.Duration.ofSeconds(endPause3).plusSeconds(validationDurationInSeconds).toSeconds();
-            String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause3), Utils.toLocal(endValidation3), validation1Duration);
+            String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endPause3), MyLocalTonUtils.toLocal(endValidation3), validation1Duration);
             validationRange3.setTooltip(new Tooltip(validation3ToolTip));
 
             long endHoldStake3 = java.time.Duration.ofSeconds(endValidation3).plusSeconds(v1.getHoldPeriod()).toSeconds();
-            String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation3), Utils.toLocal(endHoldStake3), stakeHold1Duration);
+            String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endValidation3), MyLocalTonUtils.toLocal(endHoldStake3), stakeHold1Duration);
             stakeHoldRange3.setTooltip(new Tooltip(holdStake3ToolTip));
             settings.setStakeHoldRange3End(endHoldStake3);
         } else {
             elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds2).toMillis(), "HH:mm:ss", true);
-            elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getStartElections()), Utils.toLocal(v2.getEndElections()), elections1Duration);
+            elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v2.getStartElections()), MyLocalTonUtils.toLocal(v2.getEndElections()), elections1Duration);
             electionsRange1.setTooltip(new Tooltip(elections1ToolTip));
 
             pauseDurationInSeconds = v2.getStartValidationCycle() - v2.getEndElections();
             pause1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getEndElections()), Utils.toLocal(v2.getStartValidationCycle()), pause1Duration);
+            String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v2.getEndElections()), MyLocalTonUtils.toLocal(v2.getStartValidationCycle()), pause1Duration);
             pauseRange1.setTooltip(new Tooltip(pause1ToolTip));
 
             validationDurationInSeconds = v2.getEndValidationCycle() - v2.getStartValidationCycle();
             validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getStartValidationCycle()), Utils.toLocal(v2.getEndValidationCycle()), validation1Duration);
+            String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v2.getStartValidationCycle()), MyLocalTonUtils.toLocal(v2.getEndValidationCycle()), validation1Duration);
             validationRange1.setTooltip(new Tooltip(validation1ToolTip));
 
             stakeHoldDurationInSeconds = v2.getHoldPeriod();
             stakeHold1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getEndValidationCycle()), Utils.toLocal(java.time.Duration.ofSeconds(v2.getEndValidationCycle()).plusSeconds(v2.getHoldPeriod()).toSeconds()), stakeHold1Duration);
+            String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v2.getEndValidationCycle()), MyLocalTonUtils.toLocal(java.time.Duration.ofSeconds(v2.getEndValidationCycle()).plusSeconds(v2.getHoldPeriod()).toSeconds()), stakeHold1Duration);
             stakeHoldRange1.setTooltip(new Tooltip(holdStake1ToolTip));
 
             //2
             long endElections2 = java.time.Duration.ofSeconds(v1.getStartElections()).plusSeconds(electionDurationInSeconds1).toSeconds();
-            String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getStartElections()), Utils.toLocal(endElections2), elections1Duration);
+            String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getStartElections()), MyLocalTonUtils.toLocal(endElections2), elections1Duration);
             electionsRange2.setTooltip(new Tooltip(elections2ToolTip));
 
             pauseDurationInSeconds = v1.getStartValidationCycle() - v1.getEndElections();
             long endPause2 = java.time.Duration.ofSeconds(endElections2).plusSeconds(pauseDurationInSeconds).toSeconds();
-            String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections2), Utils.toLocal(endPause2), pause1Duration);
+            String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endElections2), MyLocalTonUtils.toLocal(endPause2), pause1Duration);
             pauseRange2.setTooltip(new Tooltip(pause2ToolTip));
 
             long endValidation2 = java.time.Duration.ofSeconds(endPause2).plusSeconds(validationDurationInSeconds).toSeconds();
-            String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause2), Utils.toLocal(endValidation2), validation1Duration);
+            String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endPause2), MyLocalTonUtils.toLocal(endValidation2), validation1Duration);
             validationRange2.setTooltip(new Tooltip(validation2ToolTip));
 
             long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v1.getHoldPeriod()).toSeconds();
-            String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
+            String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endValidation2), MyLocalTonUtils.toLocal(endHoldStake2), stakeHold1Duration);
             stakeHoldRange2.setTooltip(new Tooltip(holdStake2ToolTip));
 
             settings.setStakeHoldRange2End(endHoldStake2);
@@ -2664,19 +2664,19 @@ public class MainController implements Initializable {
             //3
             long startElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).toSeconds();
             long endElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionDurationInSeconds2).toSeconds();
-            String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(startElections3), Utils.toLocal(endElections3), elections1Duration);
+            String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(startElections3), MyLocalTonUtils.toLocal(endElections3), elections1Duration);
             electionsRange3.setTooltip(new Tooltip(elections3ToolTip));
 
             long endPause3 = java.time.Duration.ofSeconds(endElections3).plusSeconds(pauseDurationInSeconds).toSeconds();
-            String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections3), Utils.toLocal(endPause3), pause1Duration);
+            String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endElections3), MyLocalTonUtils.toLocal(endPause3), pause1Duration);
             pauseRange3.setTooltip(new Tooltip(pause3ToolTip));
 
             long endValidation3 = java.time.Duration.ofSeconds(endPause3).plusSeconds(validationDurationInSeconds).toSeconds();
-            String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause3), Utils.toLocal(endValidation3), validation1Duration);
+            String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endPause3), MyLocalTonUtils.toLocal(endValidation3), validation1Duration);
             validationRange3.setTooltip(new Tooltip(validation3ToolTip));
 
             long endHoldStake3 = java.time.Duration.ofSeconds(endValidation3).plusSeconds(v1.getHoldPeriod()).toSeconds();
-            String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation3), Utils.toLocal(endHoldStake3), stakeHold1Duration);
+            String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endValidation3), MyLocalTonUtils.toLocal(endHoldStake3), stakeHold1Duration);
             stakeHoldRange3.setTooltip(new Tooltip(holdStake3ToolTip));
 
             settings.setStakeHoldRange3End(endHoldStake3);
@@ -2691,7 +2691,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2703,7 +2703,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2718,7 +2718,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2730,7 +2730,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2742,7 +2742,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2754,7 +2754,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2766,7 +2766,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2790,7 +2790,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2802,7 +2802,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2817,7 +2817,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2829,7 +2829,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2841,7 +2841,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2853,7 +2853,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2865,7 +2865,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2877,7 +2877,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2889,7 +2889,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2904,7 +2904,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2916,7 +2916,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2928,7 +2928,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2940,7 +2940,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2952,7 +2952,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2964,7 +2964,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2976,7 +2976,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2991,7 +2991,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3003,7 +3003,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3015,7 +3015,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3027,7 +3027,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3039,7 +3039,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3051,7 +3051,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3063,7 +3063,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3078,7 +3078,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3090,7 +3090,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3102,7 +3102,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3114,7 +3114,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3126,7 +3126,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3138,7 +3138,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3150,7 +3150,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3165,7 +3165,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3177,7 +3177,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3189,7 +3189,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3201,7 +3201,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3213,7 +3213,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3225,7 +3225,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3237,7 +3237,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3252,7 +3252,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3264,7 +3264,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3276,7 +3276,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3288,7 +3288,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3300,7 +3300,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3315,7 +3315,7 @@ public class MainController implements Initializable {
             try {
                 mainController.addValidatorBtn.setDisable(true);
 
-                org.ton.settings.Node node = Utils.getNewNode();
+                org.ton.settings.Node node = MyLocalTonUtils.getNewNode();
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
 
@@ -3324,7 +3324,7 @@ public class MainController implements Initializable {
 
                     MyLocalTon.getInstance().createFullnode(node, true, true);
 
-                    Tab newTab = Utils.getNewNodeTab();
+                    Tab newTab = MyLocalTonUtils.getNewNodeTab();
                     Platform.runLater(() -> {
                         validationTabs.getTabs().add(newTab);
                     });
@@ -3339,7 +3339,7 @@ public class MainController implements Initializable {
 
                     showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been cloned from genesis, now synchronizing and creating main wallet.");
 
-                    log.info("Creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
+                    log.info("Creating new validator controlling smart-contract (wallet) for node {}", node.getNodeName());
                     MyLocalTon.getInstance().createWalletEntity(node, null, WalletVersion.V3R2, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
                     //node.setWalletAddress(walletEntity.getWallet()); // double check
 

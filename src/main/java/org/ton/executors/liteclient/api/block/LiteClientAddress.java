@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Builder
 @ToString
 @Getter
-public class Address implements Serializable {
+public class LiteClientAddress implements Serializable {
     Long wc;
     String addr;
 }

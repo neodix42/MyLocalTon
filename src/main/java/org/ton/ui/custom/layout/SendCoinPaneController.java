@@ -9,6 +9,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
+import org.ton.java.utils.Utils;
 import org.ton.main.App;
 import org.ton.parameters.SendToncoinsParam;
 import org.ton.ui.custom.control.CustomTextField;
@@ -18,7 +19,6 @@ import org.ton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.wallet.MyWallet;
 import org.ton.wallet.WalletAddress;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -74,7 +74,7 @@ public class SendCoinPaneController implements Initializable {
                 WalletEntity fromWallet = App.dbPool.findWallet(walletPk);
                 WalletAddress fromWalletAddress = fromWallet.getWallet();
 
-                BigInteger amount = (new BigDecimal(strAmount)).multiply(BigDecimal.valueOf(1_000_000_000)).toBigInteger();
+                BigInteger amount = Utils.toNano(strAmount);
 //                BigDecimal amount = new BigDecimal(strAmount);
                 log.info("Sending {} Toncoins from {} ({}) to {}", amount, fromWalletAddress.getFullWalletAddress(), fromWallet.getWalletVersion(), destAddress);
 

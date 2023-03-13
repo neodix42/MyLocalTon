@@ -15,8 +15,8 @@ import java.math.BigInteger;
 @ToString
 @Getter
 public class Message implements Serializable {
-    Address srcAddr;
-    Address destAddr;
+    LiteClientAddress srcAddr;
+    LiteClientAddress destAddr;
     String type;
     Value value;
     BigInteger createdAt;

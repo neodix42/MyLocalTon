@@ -6,8 +6,8 @@ import lombok.Setter;
 import org.ton.db.DB2;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
-import org.ton.executors.liteclient.api.LiteClientAccountState;
 import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.RawAccountState;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class WalletCallbackParam {
     WalletPk walletPk;
     WalletEntity foundWallet;
     List<WalletEntity> foundWallets;
-    LiteClientAccountState accountState;
+    RawAccountState accountState;
     Long seqno;
     String status;
     String searchText;

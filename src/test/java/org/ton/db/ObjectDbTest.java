@@ -13,9 +13,8 @@ import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
-import org.ton.executors.liteclient.api.LiteClientAccountState;
-import org.ton.executors.liteclient.api.block.Value;
 import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.utils.Extractor;
 import org.ton.wallet.WalletAddress;
@@ -25,7 +24,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -81,12 +79,10 @@ public class ObjectDbTest {
                         .wallet(WalletAddress.builder().hexWalletAddress("KJNDFKJYTUYGJ871623981y23DAJDFNAKLKJ981238123").wc(1L).build())
                         .walletVersion(WalletVersion.V3R2)
                         .configWalletInstalled(false)
-                        .preinstalled(false)
                         .createdAt(234243L)
                         .wc(0L)
                         .hexAddress(randomAddress)
-                        .accountState(LiteClientAccountState.builder()
-                                .balance(Value.builder().toncoins(BigDecimal.ONE).build()).build())
+                        .accountState(RawAccountState.builder().balance("10").build())
                         .build();
 
                 em.getTransaction().begin();

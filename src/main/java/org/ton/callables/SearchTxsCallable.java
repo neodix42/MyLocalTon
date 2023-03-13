@@ -5,7 +5,7 @@ import org.ton.callables.parameters.TxCallbackParam;
 import org.ton.db.DB2;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.TxPk;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -26,7 +26,7 @@ public class SearchTxsCallable implements Callable<TxCallbackParam> {
         this.db = txCallbackParam.getDb();
         this.txPk = txCallbackParam.getTxPk();
         this.foundTx = txCallbackParam.getFoundTx();
-        this.searchText = txCallbackParam.getSearchText();
+        this.searchText = txCallbackParam.getSearchText().toUpperCase();
     }
 
     public TxCallbackParam call() {
@@ -43,9 +43,9 @@ public class SearchTxsCallable implements Callable<TxCallbackParam> {
 
             if ((wcShardSeqnoHash.charAt(0) == '(') && (wcShardSeqnoHash.charAt(wcShardSeqnoHash.length() - 1) == ')')) {
                 String[] s = wcShardSeqnoHash.substring(1, wcShardSeqnoHash.length() - 1).split(",");
-                wc = Utils.parseLong(s[0]);
+                wc = MyLocalTonUtils.parseLong(s[0]);
                 shard = s[1];
-                seqno = Utils.parseLong(s[2]);
+                seqno = MyLocalTonUtils.parseLong(s[2]);
                 query = em.createQuery("SELECT b FROM TxEntity b where (b.seqno = :seqno) AND (b.shard = :shard) AND (b.wc = :wc) ORDER BY b.createdAt DESC", TxEntity.class);
                 results = query
                         .setParameter(SEQNO, seqno)
@@ -66,7 +66,7 @@ public class SearchTxsCallable implements Callable<TxCallbackParam> {
                 String[] s = wcShardSeqnoHash.split(":");
 
                 if (s.length == 2) {
-                    wc = Utils.parseLong(s[0]);
+                    wc = MyLocalTonUtils.parseLong(s[0]);
                     hexAddr = s[1];
                     query = em.createQuery("SELECT b FROM TxEntity b where (b.txHash = :hash) OR (b.fromForSearch = :hash) OR (b.toForSearch = :hash) ORDER BY b.createdAt DESC", TxEntity.class);
                     results = query
@@ -76,9 +76,9 @@ public class SearchTxsCallable implements Callable<TxCallbackParam> {
 
                 }
             } else {
-                seqno = Utils.parseLong(wcShardSeqnoHash);
+                seqno = MyLocalTonUtils.parseLong(wcShardSeqnoHash);
                 shard = wcShardSeqnoHash;
-                wc = Utils.parseLong(wcShardSeqnoHash);
+                wc = MyLocalTonUtils.parseLong(wcShardSeqnoHash);
                 query = em.createQuery("SELECT b FROM TxEntity b where (b.seqno = :seqno) OR (b.shard = :shard) OR (b.wc = :wc) ORDER BY b.createdAt DESC", TxEntity.class);
                 results = query
                         .setParameter(SEQNO, seqno)

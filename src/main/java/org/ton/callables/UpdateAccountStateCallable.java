@@ -6,8 +6,8 @@ import org.ton.callables.parameters.WalletCallbackParam;
 import org.ton.db.DB2;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
-import org.ton.executors.liteclient.api.LiteClientAccountState;
 import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.RawAccountState;
 
 import javax.persistence.EntityManager;
 import java.util.concurrent.Callable;
@@ -19,7 +19,7 @@ import static java.util.Objects.nonNull;
 public class UpdateAccountStateCallable implements Callable<WalletCallbackParam> {
     DB2 db;
     WalletPk walletPk;
-    LiteClientAccountState accountState;
+    RawAccountState accountState;
     Long seqno;
     WalletVersion walletVersion;
 
@@ -35,7 +35,7 @@ public class UpdateAccountStateCallable implements Callable<WalletCallbackParam>
     public WalletCallbackParam call() {
         EntityManager em = db.getEmf().createEntityManager();
         try {
-            if (isNull(accountState) || isNull(accountState.getAddress())) {
+            if (isNull(accountState)) {
                 log.info("cannot update accountState, address is null");
             } else {
                 WalletEntity walletFound = em.find(WalletEntity.class, walletPk);

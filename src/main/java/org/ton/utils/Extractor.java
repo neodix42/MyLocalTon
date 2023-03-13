@@ -58,24 +58,24 @@ public class Extractor {
                 if (SystemUtils.IS_OS_WINDOWS) {
                     extractWindowsBinaries();
                 } else if (SystemUtils.IS_OS_LINUX) {
-                    if (Utils.getUbuntuVersion().equals("20.04")) {
+                    if (MyLocalTonUtils.getUbuntuVersion().equals("20.04")) {
                         extractUbuntuBinaries("ubuntu20");
-                    } else if (Utils.getUbuntuVersion().equals("20.04-arm64")) {
+                    } else if (MyLocalTonUtils.getUbuntuVersion().equals("20.04-arm64")) {
                         extractUbuntuBinaries("ubuntu20-arm64");
-                    } else if (Utils.getUbuntuVersion().equals("18.04")) {
+                    } else if (MyLocalTonUtils.getUbuntuVersion().equals("18.04")) {
                         extractUbuntuBinaries("ubuntu18");
-                    } else if (Utils.getUbuntuVersion().equals("18.04-arm64")) {
+                    } else if (MyLocalTonUtils.getUbuntuVersion().equals("18.04-arm64")) {
                         extractUbuntuBinaries("ubuntu18-arm64");
-                    } else if (Utils.getUbuntuVersion().equals("22.04")) {
+                    } else if (MyLocalTonUtils.getUbuntuVersion().equals("22.04")) {
                         extractUbuntuBinaries("ubuntu22");
-                    } else if (Utils.getUbuntuVersion().equals("22.04-arm64")) {
+                    } else if (MyLocalTonUtils.getUbuntuVersion().equals("22.04-arm64")) {
                         extractUbuntuBinaries("ubuntu22-arm64");
                     } else {
                         log.error("This Linux system officially is not supported, but let's try to run TON binaries compiled on Ubuntu 20.04");
                         extractUbuntuBinaries("ubuntu20");
                     }
                 } else if (SystemUtils.IS_OS_MAC) {
-                    if (Utils.isMacOsArm()) {
+                    if (MyLocalTonUtils.isMacOsArm()) {
                         extractMacBinaries("macos-arm64.zip");
                     } else {
                         extractMacBinaries("macos.zip");

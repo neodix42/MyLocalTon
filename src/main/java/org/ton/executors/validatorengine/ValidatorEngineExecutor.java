@@ -7,7 +7,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.main.Main;
 import org.ton.settings.Node;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +58,7 @@ public class ValidatorEngineExecutor {
                             log.info("failed {} creation, delete it", node.getNodeName());
                             ExecutorService service = Executors.newSingleThreadExecutor();
                             service.execute(() -> {
-                                Utils.doDelete(node.getNodeName());
+                                MyLocalTonUtils.doDelete(node.getNodeName());
                                 mainController.showDialogMessage("Error", "Validator " + node.getNodeName() + " could not be created. For more information refer to the log files.");
                             });
                             service.shutdown();

@@ -21,8 +21,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.util.Strings;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
@@ -32,17 +30,19 @@ import org.ton.enums.LiteClientEnum;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.LiteClientAccountState;
 import org.ton.executors.liteclient.api.ResultComputeReturnStake;
 import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.executors.liteclient.api.ResultListBlockTransactions;
-import org.ton.executors.liteclient.api.block.Address;
+import org.ton.executors.liteclient.api.block.LiteClientAddress;
 import org.ton.executors.liteclient.api.block.Message;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.executors.validatorengineconsole.ValidatorEngineConsole;
+import org.ton.java.address.Address;
 import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.java.tonlib.Tonlib;
+import org.ton.java.tonlib.types.FullAccountState;
+import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
@@ -53,7 +53,7 @@ import org.ton.ui.controllers.MainController;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.ui.custom.events.event.CustomSearchEvent;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 import org.ton.wallet.MyWallet;
 import org.ton.wallet.WalletAddress;
 
@@ -185,7 +185,7 @@ public class MyLocalTon {
                             log.info("{} is ready", nodeName);
                         }
 
-                        Platform.runLater(() -> Utils.showNodeStatus(settings.getNodeByName(nodeName), Utils.getNodeStatusLabelByName(nodeName), Utils.getNodeTabByName(nodeName)));
+                        Platform.runLater(() -> MyLocalTonUtils.showNodeStatus(settings.getNodeByName(nodeName), MyLocalTonUtils.getNodeStatusLabelByName(nodeName), MyLocalTonUtils.getNodeTabByName(nodeName)));
 
                     } catch (Exception e) {
                         log.error("Error in runNodesMonitor(), " + e.getMessage());
@@ -218,7 +218,7 @@ public class MyLocalTon {
     public void initGenesis(Node node) throws Exception {
 
         if (!Files.exists(Paths.get(node.getTonDbDir() + "state"), LinkOption.NOFOLLOW_LINKS)) {
-            log.info("Initializing genesis network");
+            log.debug("Initializing genesis network");
 
             ValidatorEngine validatorEngine = new ValidatorEngine();
 
@@ -268,7 +268,7 @@ public class MyLocalTon {
         String validatorPrvKeyHex = node.getValidatorPrvKeyHex();
         log.debug("{} validatorIdHex {}", node.getNodeName(), node.getValidatorPrvKeyHex());
 
-        log.info("Starting temporary full-node...");
+        log.debug("Starting temporary full-node...");
         Process validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig).getLeft();
 
         log.debug("sleep 5sec");
@@ -314,12 +314,11 @@ public class MyLocalTon {
                 .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
                 .walletVersion(walletVersion)
                 .wallet(walletAddress)
-//                .preinstalled(true)
-                .accountState(LiteClientAccountState.builder().build())
+                .accountState(RawAccountState.builder().build())
                 .createdAt(Instant.now().getEpochSecond())
                 .build();
 
-//        App.dbPool.insertWallet(walletEntity); // todo
+//        App.dbPool.insertWallet(walletEntity); // moved down
 
         // TOP UP NEW WALLET
 
@@ -347,6 +346,7 @@ public class MyLocalTon {
 
             // install smart-contract into a new wallet
             myWallet.installWalletSmartContract(fromNode, walletAddress);
+            App.dbPool.insertWallet(walletEntity);
         } else {
             App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 3);
         }
@@ -354,14 +354,14 @@ public class MyLocalTon {
         return walletEntity;
     }
 
-    public void createPreInstalledWallets(Node genesisNode) throws Exception {
+    public void createInitialWallets(Node genesisNode) throws Exception {
 
 //        LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
-        long toInstall = settings.getWalletSettings().getNumberOfPreinstalledWallets();
+        long toInstall = settings.getWalletSettings().getNumberOfInitialWallets();
 
-        long installed = App.dbPool.getNumberOfPreinstalledWallets();
-        log.info("Creating {} pre-installed wallets, created {}", toInstall, installed);
+        long installed = App.dbPool.getNumberOfWalletsFromAllDBsAsync();
+        log.info("Creating {} initial wallets, created {}", toInstall, installed);
 
         if (installed < toInstall) {
             Thread.sleep(1000);
@@ -372,25 +372,25 @@ public class MyLocalTon {
             createWalletSynchronously(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "main-wallet", WalletVersion.master, -1L, -1L, settings.getWalletSettings().getInitialAmount(), false); //WC -1
         }
 
-//        while (!MyWallet.walletHasContractInstalled(liteClient, genesisNode, org.ton.java.address.Address.of("-1:0000000000000000000000000000000000000000000000000000000000000000"), ""))            ;
+//        while (!MyWallet.walletHasContractInstalled(liteClient, genesisNode, Address.of("-1:0000000000000000000000000000000000000000000000000000000000000000"), ""))            ;
 
 
         if (App.dbPool.existsConfigWallet() == 0) {
             createWalletSynchronously(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "config-master", WalletVersion.config, -1L, -1L, settings.getWalletSettings().getInitialAmount(), false); //WC -1
         }
 
-//        while (!MyWallet.walletHasContractInstalled(liteClient, genesisNode, org.ton.java.address.Address.of("-1:5555555555555555555555555555555555555555555555555555555555555555"), ""))            ;
+//        while (!MyWallet.walletHasContractInstalled(liteClient, genesisNode, Address.of("-1:5555555555555555555555555555555555555555555555555555555555555555"), ""))            ;
 
         if (isNull(genesisNode.getWalletAddress())) {
-            log.info("Creating validator controlling smart-contract (wallet) for node {}", genesisNode.getNodeName());
+            log.info("Creating validator controlling smart-contract for node {}", genesisNode.getNodeName());
             createWalletSynchronously(genesisNode, null, WalletVersion.V3R2, -1L, settings.getWalletSettings().getDefaultSubWalletId(), genesisNode.getInitialValidatorWalletAmount(), true);
             //genesisNode.setWalletAddress(walletEntity.getWallet()); // double check
         }
 
         while (installed < 3) {
-            installed = App.dbPool.getNumberOfPreinstalledWallets();
+            installed = App.dbPool.getNumberOfWalletsFromAllDBsAsync();
             Thread.sleep(200);
-            log.info("creating main validator wallet");
+            log.info("creating main validator wallet, total wallets {}", installed);
         }
 
         //creating regular wallet
@@ -401,10 +401,10 @@ public class MyLocalTon {
 //
 //        for (WalletEntity wallet : wallets) {
 //            log.info("preinstalled wallet {}", wallet.getFullAddress());
-////            Triple<LiteClientAccountState, Long, WalletVersion> stateAndSeqno = Triple.of(null, -1L, null);
+////            Triple<RawAccountState, Long, WalletVersion> stateAndSeqno = Triple.of(null, -1L, null);
 //            try {
 //                // always update account state on start
-//                Triple<LiteClientAccountState, Long, WalletVersion> stateAndSeqno = getAccountStateSeqnoVersion(wallet.getWc() + ":" + wallet.getHexAddress().toUpperCase());
+//                Triple<RawAccountState, Long, WalletVersion> stateAndSeqno = getAccountStateSeqnoVersion(wallet.getWc() + ":" + wallet.getHexAddress().toUpperCase());
 //                App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getMiddle(), stateAndSeqno.getRight());
 //
 //                wallet.setAccountState(stateAndSeqno.getLeft());
@@ -437,11 +437,11 @@ public class MyLocalTon {
     public void createWalletEntity(Node node, String fileBaseName, WalletVersion walletVersion, long workchain, long subWalletid, BigInteger amount, boolean validatorWallet) {
         try {
             WalletEntity wallet;
-            if (isNull(fileBaseName)) { //generate and read address of just generated wallet
+            if (isNull(fileBaseName)) {
                 wallet = createWalletWithFundsAndSmartContract(settings.getGenesisNode(), walletVersion, workchain, subWalletid, amount);
-                log.info("created wallet address {}", wallet.getHexAddress());
+                log.debug("created wallet address {}", wallet.getHexAddress());
             } else { //read address of initially created wallet (main-wallet and config-master)
-                wallet = new Fift().getWalletByBasename(node, fileBaseName); // sets preinstalled true
+                wallet = new Fift().getWalletByBasename(node, fileBaseName);
                 log.debug("read wallet address: {}", wallet.getHexAddress());
             }
 
@@ -450,17 +450,21 @@ public class MyLocalTon {
             }
 
             // remove below
-            Triple<LiteClientAccountState, Long, WalletVersion> stateAndSeqno = getAccountStateSeqnoVersion(wallet.getWc() + ":" + wallet.getHexAddress());
-            // todo call only seq-no above
+//            Triple<RawAccountState, Long, WalletVersion> stateAndSeqno = getAccountStateSeqnoVersion(wallet.getWc() + ":" + wallet.getHexAddress());
 
-            log.info("new account state on {} = {}", node.getNodeName(), stateAndSeqno);
-            log.info("on node {}, created wallet {}", node.getNodeName(), wallet.getWc() + ":" + wallet.getHexAddress());
 
-            App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getMiddle(), stateAndSeqno.getRight());
+//            long seqno = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress());
+//            // todo call only seq-no above
+//
+//            log.info("new account state on {} = {}", node.getNodeName(), stateAndSeqno);
+//            log.info("on node {}, created wallet {}", node.getNodeName(), wallet.getWc() + ":" + wallet.getHexAddress());
+//
+//            App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getMiddle(), stateAndSeqno.getRight());
+//
+//            wallet.setAccountState(stateAndSeqno.getLeft());
+//            wallet.setSeqno(seqno);
+//            wallet.setWalletVersion(stateAndSeqno.getRight());
 
-            wallet.setAccountState(stateAndSeqno.getLeft());
-            wallet.setSeqno(stateAndSeqno.getMiddle());
-            wallet.setWalletVersion(stateAndSeqno.getRight());
 //            updateAccountsTabGui(wallet);
 //            emitResultMessage(wallet);
 
@@ -479,7 +483,7 @@ public class MyLocalTon {
             Thread.currentThread().setName("MyLocalTon - Blockchain Size Monitor");
 
             MainController c = fxmlLoader.getController();
-            String size = Utils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + MY_LOCAL_TON);
+            String size = MyLocalTonUtils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + MY_LOCAL_TON);
             log.debug("size {}", size);
             Platform.runLater(() -> c.dbSizeId.setSecondaryText(size));
         }, 0L, 60L, TimeUnit.SECONDS);
@@ -493,9 +497,9 @@ public class MyLocalTon {
 
             if (Main.appActive.get()) {
                 try {
-                    long currentTime = Utils.getCurrentTimeSeconds();
+                    long currentTime = MyLocalTonUtils.getCurrentTimeSeconds();
 
-                    ValidationParam v = Utils.getConfig(settings.getGenesisNode());
+                    ValidationParam v = MyLocalTonUtils.getConfig(settings.getGenesisNode());
                     log.debug("validation parameters {}", v);
                     //save election ID
                     if (v.getStartValidationCycle() > YEAR_1971) {
@@ -507,7 +511,7 @@ public class MyLocalTon {
 
                     mainController.drawElections();
 
-                    log.debug("[start-end] elections [{} - {}], currentTime {}", Utils.toLocal(v.getStartElections()), Utils.toLocal(v.getEndElections()), Utils.toLocal(currentTime));
+                    log.debug("[start-end] elections [{} - {}], currentTime {}", MyLocalTonUtils.toLocal(v.getStartElections()), MyLocalTonUtils.toLocal(v.getEndElections()), MyLocalTonUtils.toLocal(currentTime));
                     log.debug("currTime > delta2, {} {}", (currentTime - v.getStartElections()), electionsDelta * 2);
 
                     if (((v.getStartValidationCycle() > YEAR_1971) && ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections() - 10)))  // 10 sec to process
@@ -556,7 +560,7 @@ public class MyLocalTon {
                 ExecutorService nodeParticipationExecutorService = Executors.newSingleThreadExecutor();
                 nodeParticipationExecutorService.execute(() -> {
                     Thread.currentThread().setName("MyLocalTon - Participation in elections by " + nodeName);
-                    Utils.participate(node, v);
+                    MyLocalTonUtils.participate(node, v);
                 });
                 nodeParticipationExecutorService.shutdown();
             }
@@ -607,6 +611,7 @@ public class MyLocalTon {
                         log.debug("Get last block");
                         //Main.parsingBlocks.set(true);
                         ResultLastBlock lastBlock = LiteClientParser.parseLast(liteClient.executeLast(node));
+//                        MasterChainInfo lastBlockM = tonlib.getLast(); // todo next release
 
                         if (nonNull(lastBlock)) {
 
@@ -686,12 +691,12 @@ public class MyLocalTon {
                     updateTxTabGui(lastBlock, tx, txDetails, txEntities);
                 }
 
-                detectNewAccount(lastBlock, updateGuiNow, tx, txDetails);
+                detectNewAccount(lastBlock, tx, txDetails);
             }
         }
     }
 
-    private void detectNewAccount(ResultLastBlock lastBlock, boolean updateGuiNow, ResultListBlockTransactions tx, Transaction txDetails) {
+    private void detectNewAccount(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails) {
         if (
                 (txDetails.getOrigStatus().equals(NONEXISTENT) && txDetails.getEndStatus().equals(UNINITIALIZED)) ||
                         (txDetails.getOrigStatus().equals(UNINITIALIZED) && txDetails.getEndStatus().equals(UNINITIALIZED)) ||
@@ -699,11 +704,42 @@ public class MyLocalTon {
         ) {
             log.info("New account detected! origStatus {}, endStatus {}, wallet created {}, txseqno {}, txLt {}, block {}",
                     txDetails.getOrigStatus(), txDetails.getEndStatus(), txDetails.getAccountAddr(), tx.getTxSeqno(), tx.getLt(), lastBlock.getShortBlockSeqno());
-            WalletEntity walletEntity = insertNewAccountEntity(lastBlock, txDetails);
 
-//            if (updateGuiNow && nonNull(walletEntity)) { // todo
-//                updateAccountsTabGui(walletEntity);
-//            }
+            try {
+
+                WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
+                        .wc(lastBlock.getWc())
+                        .hexAddress(txDetails.getAccountAddr().toUpperCase())
+                        .build());
+
+                if (isNull(foundWallet)) {
+                    log.info("insertNewAccountEntity new insert {}", txDetails.getAccountAddr().toUpperCase());
+                    Address address = Address.of(txDetails.getAccountAddr().toUpperCase());
+
+                    WalletAddress walletAddress = WalletAddress.builder()
+                            .wc(lastBlock.getWc())
+                            .hexWalletAddress(txDetails.getAccountAddr().toUpperCase())
+//                        .subWalletId(subWalletId)
+                            .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr().toUpperCase())
+                            .bounceableAddressBase64url(address.toString(true, true, true))
+                            .nonBounceableAddressBase64Url(address.toString(true, true, false))
+                            .bounceableAddressBase64(address.toString(true, false, true))
+                            .nonBounceableAddressBase64(address.toString(true, false, true))
+                            .build();
+
+                    WalletEntity walletEntity = WalletEntity.builder()
+                            .wc(walletAddress.getWc())
+                            .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
+                            .wallet(walletAddress)
+                            .createdAt(txDetails.getNow())
+                            .build();
+
+                    App.dbPool.insertWallet(walletEntity);
+                }
+            } catch (Exception e) {
+                log.error("Error executing insertNewAccountEntity: {}", e.getMessage());
+                log.error(ExceptionUtils.getStackTrace(e));
+            }
         }
     }
 
@@ -758,8 +794,7 @@ public class MyLocalTon {
     }
 
     private void showInGuiOnlyUniqueAccounts(WalletEntity walletEntity, MainController c, javafx.scene.Node accountRow) {
-        if (!insertingNewAccount.get() && isNull(concurrentAccountsHashMap.get(walletEntity.getWallet().getFullWalletAddress().toUpperCase()))) {
-            insertingNewAccount.set(true);
+        if (isNull(concurrentAccountsHashMap.get(walletEntity.getWallet().getFullWalletAddress().toUpperCase()))) {
             log.debug("add to gui list 1 new account {}", walletEntity.getWallet().getFullWalletAddress());
 
             //show in gui only unique accounts. some might come from: scroll event, blockchain monitor or manual creation
@@ -768,6 +803,8 @@ public class MyLocalTon {
             }
 
             concurrentAccountsHashMap.put(walletEntity.getWallet().getFullWalletAddress().toUpperCase(), 1L);
+
+            ((Label) accountRow.lookup("#hexAddrLabel")).setText(MyLocalTonUtils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress().toUpperCase()) + "Hex:");
 
             populateAccountRowWithData(walletEntity, accountRow, "--------------------");
 
@@ -782,14 +819,13 @@ public class MyLocalTon {
             c.accountsvboxid.getItems().add(0, accountRow);
 
             log.debug("accounts gui size {}", c.accountsvboxid.getItems().size());
-            insertingNewAccount.set(false);
+
         } else {
             log.debug("update gui list with account {}", walletEntity.getWallet().getFullWalletAddress());
             if (nonNull(walletEntity.getAccountState())) {
                 log.debug("update account details in gui {}, {}", walletEntity.getFullAddress(), walletEntity.getAccountState());
                 for (javafx.scene.Node node : c.accountsvboxid.getItems()) {
                     if (((Label) node.lookup("#hexAddr")).getText().equals(walletEntity.getFullAddress().toUpperCase())) {
-                        log.debug("updating account row in gui {} ", walletEntity.getFullAddress().toUpperCase());
                         populateAccountRowWithData(walletEntity, node, "--------------------");
                     }
                 }
@@ -797,71 +833,78 @@ public class MyLocalTon {
         }
     }
 
-    public void populateAccountRowWithData(WalletEntity walletEntity, javafx.scene.Node accountRow, String searchFor) {
+    public void populateAccountRowWithData(WalletEntity walletEntity, javafx.scene.Node accountRow, String
+            searchFor) {
+        try {
+            if (nonNull(walletEntity.getWallet())) {
+                ((Label) accountRow.lookup("#hexAddrLabel")).setText(MyLocalTonUtils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress().toUpperCase()) + "Hex:");
+            } else {
+                ((Label) accountRow.lookup("#hexAddrLabel")).setText("Hex:");
+            }
 
-        if (nonNull(walletEntity.getWallet())) {
-            ((Label) accountRow.lookup("#hexAddrLabel")).setText(Utils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress().toUpperCase()) + "Hex:");
-        } else {
-            ((Label) accountRow.lookup("#hexAddrLabel")).setText("Hex:");
-        }
+            ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress().toUpperCase());
+            if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
+                accountRow.lookup("#hexAddr").setStyle(accountRow.lookup("#hexAddr").getStyle() + FOUND_COLOR_HIHGLIGHT);
+            }
 
-        ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress().toUpperCase());
-        if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
-            accountRow.lookup("#hexAddr").setStyle(accountRow.lookup("#hexAddr").getStyle() + FOUND_COLOR_HIHGLIGHT);
-        }
+            ((Label) accountRow.lookup("#b64Addr")).setText(walletEntity.getWallet().getBounceableAddressBase64());
+            ((Label) accountRow.lookup("#b64urlAddr")).setText(walletEntity.getWallet().getBounceableAddressBase64url());
+            ((Label) accountRow.lookup("#nb64Addr")).setText(walletEntity.getWallet().getNonBounceableAddressBase64());
+            ((Label) accountRow.lookup("#nb64urlAddr")).setText(walletEntity.getWallet().getNonBounceableAddressBase64Url());
 
-        ((Label) accountRow.lookup("#b64Addr")).setText(walletEntity.getWallet().getBounceableAddressBase64());
-        ((Label) accountRow.lookup("#b64urlAddr")).setText(walletEntity.getWallet().getBounceableAddressBase64url());
-        ((Label) accountRow.lookup("#nb64Addr")).setText(walletEntity.getWallet().getNonBounceableAddressBase64());
-        ((Label) accountRow.lookup("#nb64urlAddr")).setText(walletEntity.getWallet().getNonBounceableAddressBase64Url());
+            ((Label) accountRow.lookup("#createdat")).setText(MyLocalTonUtils.toLocal((walletEntity.getCreatedAt())));
 
-        ((Label) accountRow.lookup("#createdat")).setText(Utils.toLocal((walletEntity.getCreatedAt())));
+            if (isNull(walletEntity.getWalletVersion())) {
+                ((Label) accountRow.lookup("#type")).setText("Unknown");
+            } else {
+                ((Label) accountRow.lookup("#type")).setText(walletEntity.getWalletVersion().getValue());
+            }
 
-        if (isNull(walletEntity.getWalletVersion())) {
-            ((Label) accountRow.lookup("#type")).setText("Unknown");
-        } else {
-            ((Label) accountRow.lookup("#type")).setText(walletEntity.getWalletVersion().getValue());
-        }
+            if (nonNull(walletEntity.getWalletVersion()) && (walletEntity.getWalletVersion().getValue().contains("V3") || walletEntity.getWalletVersion().getValue().contains("V4"))) {
+                accountRow.lookup("#walledId").setVisible(true);
+                ((Label) accountRow.lookup("#walledId")).setText("Wallet ID " + walletEntity.getWallet().getSubWalletId());
+            } else { //wallets V1 and V2
+                accountRow.lookup("#walledId").setVisible(false);
+                ((Label) accountRow.lookup("#walledId")).setText("-1");
+            }
 
-        if (walletEntity.getWalletVersion().getValue().contains("V3") || walletEntity.getWalletVersion().getValue().contains("V4")) {
-            accountRow.lookup("#walledId").setVisible(true);
-            ((Label) accountRow.lookup("#walledId")).setText("Wallet ID " + walletEntity.getWallet().getSubWalletId());
-        } else { //wallets V1 and V2
-            accountRow.lookup("#walledId").setVisible(false);
-            ((Label) accountRow.lookup("#walledId")).setText("-1");
-        }
+            if (walletEntity.getSeqno() >= 0) {
+                accountRow.lookup("#seqno").setVisible(true);
+                ((Label) accountRow.lookup("#seqno")).setText("Seqno " + walletEntity.getSeqno());
+            } else {
+                accountRow.lookup("#seqno").setVisible(false);
+                ((Label) accountRow.lookup("#seqno")).setText("Seqno -1");
+            }
 
-        if (walletEntity.getSeqno() >= 0) {
-            accountRow.lookup("#seqno").setVisible(true);
-            ((Label) accountRow.lookup("#seqno")).setText("Seqno " + walletEntity.getSeqno());
-        } else {
-            accountRow.lookup("#seqno").setVisible(false);
-            ((Label) accountRow.lookup("#seqno")).setText("Seqno -1");
-        }
+//            String value = walletEntity.getAccountState().getBalance();
+//            String formattedBalance2 = String.format("%,.9f", value);
+            BigDecimal balance = new BigDecimal(walletEntity.getAccountState().getBalance());
+            String formattedBalance = String.format("%,.9f", balance.divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
 
-//        String value = walletEntity.getAccountState().getBalance().getToncoins();
-        BigDecimal balance = walletEntity.getAccountState().getBalance().getToncoins();
-        String formattedBalance = String.format("%,.9f", balance.divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
-        ((Label) accountRow.lookup("#balance")).setText(formattedBalance);
+            ((Label) accountRow.lookup("#balance")).setText(formattedBalance);
 
-        String status = isNull(walletEntity.getAccountState().getStatus()) ? "" : walletEntity.getAccountState().getStatus();
-        ((Label) accountRow.lookup("#status")).setText(status);
+            String status = StringUtils.isEmpty(walletEntity.getAccountStatus()) ? "" : walletEntity.getAccountStatus();
+            ((Label) accountRow.lookup("#status")).setText(status);
 
-        if (settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())) {
-            accountRow.lookup("#walletDeleteBtn").setDisable(true);
-            (accountRow.lookup("#hBoxDeletetn")).getStyleClass().clear();
-        }
-        if (status.equals(UNINITIALIZED) ||
-                status.equals(FROZEN) ||
-                settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress().toUpperCase())
-            //|| isNull(walletEntity.getWallet().getPrivateKeyLocation())
-        ) {
-            accountRow.lookup("#accSendBtn").setDisable(true);
-            (accountRow.lookup("#hBoxSendBtn")).getStyleClass().clear();
+            if (settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())) {
+                accountRow.lookup("#walletDeleteBtn").setDisable(true);
+                (accountRow.lookup("#hBoxDeletetn")).getStyleClass().clear();
+            }
+            if (status.equals(UNINITIALIZED) ||
+                    status.equals(FROZEN) ||
+                    settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress().toUpperCase())
+                //|| isNull(walletEntity.getWallet().getPrivateKeyLocation())
+            ) {
+                accountRow.lookup("#accSendBtn").setDisable(true);
+                (accountRow.lookup("#hBoxSendBtn")).getStyleClass().clear();
+            }
+        } catch (Exception e) {
+            log.error("error updating accounts GUI: " + e.getMessage());
         }
     }
 
-    private void updateTxTabGui(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails, List<TxEntity> txEntities) {
+    private void updateTxTabGui(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction
+            txDetails, List<TxEntity> txEntities) {
 
         if (Boolean.TRUE.equals(autoScroll)) {
 
@@ -892,8 +935,9 @@ public class MyLocalTon {
         }
     }
 
-    private void showInGuiOnlyUniqueTxs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails, MainController c, TxEntity txE, javafx.scene.Node
-            txRow) {
+    private void showInGuiOnlyUniqueTxs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction
+            txDetails, MainController c, TxEntity txE, javafx.scene.Node
+                                                txRow) {
         String uniqueKey = lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg() + txE.getTxHash();
         log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
         if (isNull(concurrentTxsHashMap.get(uniqueKey))) {
@@ -978,7 +1022,8 @@ public class MyLocalTon {
         showButtonWithMessage(txRow, txEntity);
     }
 
-    public void populateTxRowWithData(String shortBlockSeqno, ResultListBlockTransactions tx, Transaction txDetails, javafx.scene.Node txRow, TxEntity txEntity) {
+    public void populateTxRowWithData(String shortBlockSeqno, ResultListBlockTransactions tx, Transaction
+            txDetails, javafx.scene.Node txRow, TxEntity txEntity) {
 
         ((Label) txRow.lookup("#block")).setText(shortBlockSeqno);
         ((Label) txRow.lookup("#typeTx")).setText(txEntity.getTypeTx());
@@ -1045,10 +1090,11 @@ public class MyLocalTon {
         }
     }
 
-    public List<TxEntity> extractTxsAndMsgs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails) {
+    public List<TxEntity> extractTxsAndMsgs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction
+            txDetails) {
         List<TxEntity> txEntity = new ArrayList<>();
-        Address to;
-        Address from;
+        LiteClientAddress to;
+        LiteClientAddress from;
         BigDecimal amount = BigDecimal.ZERO;
         String txType;
         String msgType;
@@ -1062,9 +1108,9 @@ public class MyLocalTon {
             // ordinary tx
             if (type.equals("Tick") || type.equals("Tock")) { // add tick tock tx into db
                 log.debug("tick/tock tx, block {}", lastBlock.getShortBlockSeqno());
-                from = Address.builder().wc(lastBlock.getWc()).addr(txDetails.getAccountAddr()).build();
+                from = LiteClientAddress.builder().wc(lastBlock.getWc()).addr(txDetails.getAccountAddr()).build();
 
-                to = Address.builder().addr("").build();
+                to = LiteClientAddress.builder().addr("").build();
                 txType = "Tx";
                 msgType = type;
                 status = txDetails.getEndStatus();
@@ -1090,9 +1136,9 @@ public class MyLocalTon {
                 }
 
                 if (Strings.isEmpty(from.getAddr()) && !Strings.isEmpty(to.getAddr())) {
-                    from = Address.builder().wc(from.getWc()).addr(EXTERNAL).build();
+                    from = LiteClientAddress.builder().wc(from.getWc()).addr(EXTERNAL).build();
                 } else if (Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-                    to = Address.builder().wc(to.getWc()).addr(EXTERNAL).build();
+                    to = LiteClientAddress.builder().wc(to.getWc()).addr(EXTERNAL).build();
                 } else if (!Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
 
                 } else {
@@ -1138,10 +1184,10 @@ public class MyLocalTon {
                     status = "";
                     boolean ok = false;
                     if (Strings.isEmpty(from.getAddr()) && !Strings.isEmpty(to.getAddr())) {
-                        from = Address.builder().wc(from.getWc()).addr(EXTERNAL).build();
+                        from = LiteClientAddress.builder().wc(from.getWc()).addr(EXTERNAL).build();
                         ok = true;
                     } else if (Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-                        to = Address.builder().wc(to.getWc()).addr(EXTERNAL).build();
+                        to = LiteClientAddress.builder().wc(to.getWc()).addr(EXTERNAL).build();
                         ok = true;
                     } else if (!Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
                         ok = true;
@@ -1187,10 +1233,10 @@ public class MyLocalTon {
                 status = "";
                 boolean ok = false;
                 if (Strings.isEmpty(from.getAddr()) && !Strings.isEmpty(to.getAddr())) {
-                    from = Address.builder().wc(from.getWc()).addr(EXTERNAL).build();
+                    from = LiteClientAddress.builder().wc(from.getWc()).addr(EXTERNAL).build();
                     ok = true;
                 } else if (Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-                    to = Address.builder().wc(to.getWc()).addr(EXTERNAL).build();
+                    to = LiteClientAddress.builder().wc(to.getWc()).addr(EXTERNAL).build();
                     ok = true;
                 } else if (!Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
                     ok = true;
@@ -1225,66 +1271,6 @@ public class MyLocalTon {
             return txEntity;
         } catch (Exception e) {
             log.error("Error inserting tx entity", e);
-            return null;
-        }
-    }
-
-    public WalletEntity insertNewAccountEntity(ResultLastBlock lastBlock, Transaction txDetails) {
-
-        try {
-            Triple<LiteClientAccountState, Long, WalletVersion> acc = getAccountStateSeqnoVersion(lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-//            log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
-
-            Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalletVersionAndId(acc.getLeft().getStateCode(), acc.getLeft().getStateData(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-
-            WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
-                    .wc(lastBlock.getWc())
-                    .hexAddress(txDetails.getAccountAddr().toUpperCase())
-                    .build());
-
-            if (isNull(foundWallet)) {
-                log.info("insertNewAccountEntity new insert {}", txDetails.getAccountAddr().toUpperCase());
-                WalletAddress wa = new Fift().convertAddress(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-
-                WalletAddress walletAddress = WalletAddress.builder()
-                        .wc(lastBlock.getWc())
-                        .hexWalletAddress(txDetails.getAccountAddr().toUpperCase())
-                        .subWalletId(walletVersionAndId.getRight())
-                        .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr().toUpperCase())
-                        .bounceableAddressBase64url(wa.getBounceableAddressBase64url())
-                        .nonBounceableAddressBase64Url(wa.getNonBounceableAddressBase64Url())
-                        .bounceableAddressBase64(wa.getBounceableAddressBase64())
-                        .nonBounceableAddressBase64(wa.getNonBounceableAddressBase64())
-                        .build();
-
-                WalletEntity walletEntity = WalletEntity.builder()
-                        .wc(walletAddress.getWc())
-                        .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
-                        .walletVersion(acc.getRight())
-                        .seqno(acc.getMiddle())
-                        .preinstalled(lastBlock.getWc() == -1)
-                        .wallet(walletAddress)
-                        .accountState(acc.getLeft())
-                        .createdAt(txDetails.getNow())
-                        .build();
-
-                App.dbPool.insertWallet(walletEntity);
-
-                return walletEntity;
-            } else { // todo remove?
-                foundWallet.setAccountState(acc.getLeft());
-                foundWallet.setSeqno(acc.getMiddle());
-                foundWallet.setWalletVersion(acc.getRight());
-
-                log.info("Wallet found! BUT WE DONT UPDATE HERE, Update state {}", foundWallet.getFullAddress());
-
-//                App.dbPool.updateWalletStateAndSeqno(foundWallet, acc.getLeft(), acc.getMiddle(), acc.getRight());
-//
-                return foundWallet;
-            }
-        } catch (Exception e) {
-            log.error("Error executing insertNewAccountEntity: {}", e.getMessage());
-            log.error(ExceptionUtils.getStackTrace(e));
             return null;
         }
     }
@@ -1407,7 +1393,8 @@ public class MyLocalTon {
 
     }
 
-    public void showFoundTxsInGui(JFXListView<javafx.scene.Node> listView, List<TxEntity> foundTxs, String searchFor, String accountAddr) {
+    public void showFoundTxsInGui(JFXListView<javafx.scene.Node> listView, List<TxEntity> foundTxs, String
+            searchFor, String accountAddr) {
 
         MainController c = fxmlLoader.getController();
 
@@ -1497,7 +1484,8 @@ public class MyLocalTon {
         emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, accountRows.size()));
     }
 
-    public void populateBlockRowWithData(ResultLastBlock finalLastBlock, javafx.scene.Node blockRow, String searchFor) {
+    public void populateBlockRowWithData(ResultLastBlock finalLastBlock, javafx.scene.Node blockRow, String
+            searchFor) {
 
         ((Label) blockRow.lookup("#wc")).setText(finalLastBlock.getWc().toString());
         ((Label) blockRow.lookup("#shard")).setText(finalLastBlock.getShard());
@@ -1532,7 +1520,6 @@ public class MyLocalTon {
                 .roothash(lastBlock.getRootHash())
                 .build();
 
-        //DB.insertBlock(block);
         App.dbPool.insertBlock(block);
     }
 
@@ -1543,68 +1530,35 @@ public class MyLocalTon {
                 for (WalletEntity wallet : App.dbPool.getAllWallets()) {
                     if (Main.appActive.get()) {
 
-//                        LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress()));
-                        Triple<LiteClientAccountState, Long, WalletVersion> stateAndSeqno = getAccountStateSeqnoVersion(wallet.getWc() + ":" + wallet.getHexAddress());
+                        RawAccountState accountState = tonlib.getRawAccountState(Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
+                        FullAccountState accountStateFull = tonlib.getAccountState(Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
+                        long subWalletId = -1;
+                        if (nonNull(accountStateFull) && nonNull(accountStateFull.getAccount_state())) {
+                            subWalletId = accountStateFull.getAccount_state().getWallet_id();
+                        }
+                        WalletVersion walletVersion = MyLocalTonUtils.detectWalletVersion(accountState.getCode(), Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
+//                        long seqno = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress());
+                        long seqno = tonlib.getSeqno(Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
 
-                        if (nonNull(stateAndSeqno.getLeft()) && nonNull(stateAndSeqno.getLeft().getBalance())) {
-                            App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getMiddle(), stateAndSeqno.getRight());
+                        log.info("runAccountsMonitor: {}, {}, {}, {}", walletVersion, seqno, subWalletId, accountState.getBalance());
 
-                            wallet.setAccountState(stateAndSeqno.getLeft());
-                            wallet.setSeqno(stateAndSeqno.getMiddle());
-                            wallet.setWalletVersion(stateAndSeqno.getRight());
+                        if (seqno >= 0 || WalletVersion.V1R1.equals(walletVersion)) {
+                            App.dbPool.updateWalletStateAndSeqno(wallet, accountState, seqno, walletVersion);
+
+                            wallet.setAccountState(accountState);
+                            wallet.setSeqno(seqno);
+                            wallet.getWallet().setSubWalletId(subWalletId);
+                            wallet.setWalletVersion(walletVersion);
+
                             updateAccountsTabGui(wallet);
                         }
                     }
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log.error("Error in runAccountsMonitor(), " + e.getMessage());
             }
         }, 0L, 5L, TimeUnit.SECONDS);
     }
-
-    Triple<LiteClientAccountState, Long, WalletVersion> getAccountStateSeqnoVersion(String address) throws Exception {
-//        RawAccountState accountState1 = tonlib.getRawAccountState(org.ton.java.address.Address.of(address));
-//        log.info("accountState raw {}", accountState1);
-//        FullAccountState accountState = tonlib.getAccountState(org.ton.java.address.Address.of(address));
-//        log.info("accountState  full {}", accountState);
-
-        LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(getInstance().getSettings().getGenesisNode(), address));
-//        log.info("accountState lite {}", accountState);
-
-        if (isNull(accountState)) {
-            return Triple.of(null, -1L, null);
-        }
-        Pair<WalletVersion, Long> v = Utils.detectWalletVersionAndId(accountState.getStateCode(), accountState.getStateData(), address);
-
-        if (nonNull(v.getLeft()) && (v.getLeft().equals(WalletVersion.V1R1) || v.getLeft().equals(WalletVersion.config))) { // V1R1 and Config have no seqno method
-            return Triple.of(accountState, -1L, v.getLeft());
-        }
-        if (nonNull(accountState.getBalance())) {
-            long seqno;
-            do {
-                seqno = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
-//                seqno = getSeqno(address);
-                Thread.sleep(1000);
-                log.debug("getting seqno from {}", org.ton.java.address.Address.of(address).toString(false));
-
-            } while (seqno == -1);
-            log.debug("got seqno {} from {}", seqno, org.ton.java.address.Address.of(address).toString(false));
-            return Triple.of(accountState, seqno, v.getLeft());
-        }
-        return Triple.of(null, -1L, null);
-    }
-
-//    public long getSeqno(String address) {
-//
-//        RunResult result = tonlib.runMethod(org.ton.java.address.Address.of(address), "seqno");
-//        log.info("seqno getExit_code {}", result.getExit_code());
-//        if (result.getExit_code() != 0) {
-//            return -1;
-//        }
-//        TvmStackEntryNumber seqno = (TvmStackEntryNumber) result.getStack().get(0);
-//
-//        return seqno.getNumber().longValue();
-//    }
 
     public void reap(Node node) {
         try {
@@ -1788,10 +1742,10 @@ public class MyLocalTon {
 
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
 //              copy ignoring locked files
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir()); // if only this dir, then fails with "Check `ptr && "deferencing null Ref"` failed"
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
+                MyLocalTonUtils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir()); // if only this dir, then fails with "Check `ptr && "deferencing null Ref"` failed"
+                MyLocalTonUtils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
+                MyLocalTonUtils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
+                MyLocalTonUtils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
             } else {
                 // speed up synchronization - copy archive, catchains, files, state and celldb directories
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));

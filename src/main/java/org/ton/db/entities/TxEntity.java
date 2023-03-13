@@ -3,7 +3,7 @@ package org.ton.db.entities;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.ton.executors.liteclient.api.block.Address;
+import org.ton.executors.liteclient.api.block.LiteClientAddress;
 import org.ton.executors.liteclient.api.block.Message;
 import org.ton.executors.liteclient.api.block.Transaction;
 
@@ -39,8 +39,8 @@ public class TxEntity {
     BigInteger txLt;
 
     String status;
-    Address from;
-    Address to;
+    LiteClientAddress from;
+    LiteClientAddress to;
     String blockRootHash;
     String blockFileHash;
     String fromForSearch;
