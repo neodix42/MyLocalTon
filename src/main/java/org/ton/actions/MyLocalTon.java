@@ -356,35 +356,24 @@ public class MyLocalTon {
 
     public void createInitialWallets(Node genesisNode) throws Exception {
 
-//        LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
-
-        long toInstall = settings.getWalletSettings().getNumberOfInitialWallets();
-
         long installed = App.dbPool.getNumberOfWalletsFromAllDBsAsync();
-        log.info("Creating {} initial wallets, created {}", toInstall, installed);
 
-        if (installed < toInstall) {
+        if (installed < 3) {
             Thread.sleep(1000);
-            mainController.showWarningMsg("Creating initial wallets...", 5);
+            mainController.showInfoMsg("Creating initial wallets...", 6);
         }
 
         if (App.dbPool.existsMainWallet() == 0) {
             createWalletSynchronously(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "main-wallet", WalletVersion.master, -1L, -1L, settings.getWalletSettings().getInitialAmount(), false); //WC -1
         }
 
-//        while (!MyWallet.walletHasContractInstalled(liteClient, genesisNode, Address.of("-1:0000000000000000000000000000000000000000000000000000000000000000"), ""))            ;
-
-
         if (App.dbPool.existsConfigWallet() == 0) {
             createWalletSynchronously(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "config-master", WalletVersion.config, -1L, -1L, settings.getWalletSettings().getInitialAmount(), false); //WC -1
         }
 
-//        while (!MyWallet.walletHasContractInstalled(liteClient, genesisNode, Address.of("-1:5555555555555555555555555555555555555555555555555555555555555555"), ""))            ;
-
         if (isNull(genesisNode.getWalletAddress())) {
             log.info("Creating validator controlling smart-contract for node {}", genesisNode.getNodeName());
             createWalletSynchronously(genesisNode, null, WalletVersion.V3R2, -1L, settings.getWalletSettings().getDefaultSubWalletId(), genesisNode.getInitialValidatorWalletAmount(), true);
-            //genesisNode.setWalletAddress(walletEntity.getWallet()); // double check
         }
 
         while (installed < 3) {
@@ -448,36 +437,13 @@ public class MyLocalTon {
             if (validatorWallet) {
                 node.setWalletAddress(wallet.getWallet());
             }
-
-            // remove below
-//            Triple<RawAccountState, Long, WalletVersion> stateAndSeqno = getAccountStateSeqnoVersion(wallet.getWc() + ":" + wallet.getHexAddress());
-
-
-//            long seqno = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress());
-//            // todo call only seq-no above
-//
-//            log.info("new account state on {} = {}", node.getNodeName(), stateAndSeqno);
-//            log.info("on node {}, created wallet {}", node.getNodeName(), wallet.getWc() + ":" + wallet.getHexAddress());
-//
-//            App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getMiddle(), stateAndSeqno.getRight());
-//
-//            wallet.setAccountState(stateAndSeqno.getLeft());
-//            wallet.setSeqno(seqno);
-//            wallet.setWalletVersion(stateAndSeqno.getRight());
-
-//            updateAccountsTabGui(wallet);
-//            emitResultMessage(wallet);
-
         } catch (Exception e) {
             log.error("Error creating wallet! Error {} ", e.getMessage());
             log.error(ExceptionUtils.getStackTrace(e));
-//                    return null;
         }
-
     }
 
     public void runBlockchainSizeMonitor() {
-
         monitorExecutorService = Executors.newSingleThreadScheduledExecutor();
         monitorExecutorService.scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Blockchain Size Monitor");
@@ -868,7 +834,7 @@ public class MyLocalTon {
                 ((Label) accountRow.lookup("#walledId")).setText("-1");
             }
 
-            if (walletEntity.getSeqno() >= 0) {
+            if (walletEntity.getSeqno() >= 0 && (!walletEntity.getWalletVersion().equals(WalletVersion.config))) {
                 accountRow.lookup("#seqno").setVisible(true);
                 ((Label) accountRow.lookup("#seqno")).setText("Seqno " + walletEntity.getSeqno());
             } else {
@@ -883,7 +849,7 @@ public class MyLocalTon {
 
             ((Label) accountRow.lookup("#balance")).setText(formattedBalance);
 
-            String status = StringUtils.isEmpty(walletEntity.getAccountStatus()) ? "" : walletEntity.getAccountStatus();
+            String status = StringUtils.isEmpty(walletEntity.getAccountStatus()) ? "" : StringUtils.capitalize(walletEntity.getAccountStatus());
             ((Label) accountRow.lookup("#status")).setText(status);
 
             if (settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())) {
@@ -1537,21 +1503,23 @@ public class MyLocalTon {
                             subWalletId = accountStateFull.getAccount_state().getWallet_id();
                         }
                         WalletVersion walletVersion = MyLocalTonUtils.detectWalletVersion(accountState.getCode(), Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
-//                        long seqno = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress());
-                        long seqno = tonlib.getSeqno(Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
-
-                        log.info("runAccountsMonitor: {}, {}, {}, {}", walletVersion, seqno, subWalletId, accountState.getBalance());
-
-                        if (seqno >= 0 || WalletVersion.V1R1.equals(walletVersion)) {
-                            App.dbPool.updateWalletStateAndSeqno(wallet, accountState, seqno, walletVersion);
-
-                            wallet.setAccountState(accountState);
-                            wallet.setSeqno(seqno);
-                            wallet.getWallet().setSubWalletId(subWalletId);
-                            wallet.setWalletVersion(walletVersion);
-
-                            updateAccountsTabGui(wallet);
+                        long seqno = -1;
+                        try {
+                            seqno = tonlib.getSeqno(Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
+                        } catch (Throwable ignored) {
+                            //
                         }
+
+                        log.debug("runAccountsMonitor: {}, {}, {}, {}", walletVersion, seqno, subWalletId, accountState.getBalance());
+
+                        App.dbPool.updateWalletStateAndSeqno(wallet, accountState, seqno, walletVersion);
+
+                        wallet.setAccountState(accountState);
+                        wallet.setSeqno(seqno);
+                        wallet.getWallet().setSubWalletId(subWalletId);
+                        wallet.setWalletVersion(walletVersion);
+
+                        updateAccountsTabGui(wallet);
                     }
                 }
             } catch (Throwable e) {
@@ -1580,7 +1548,7 @@ public class MyLocalTon {
                 SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                         .executionNode(node)
                         .fromWallet(node.getWalletAddress())
-                        .fromWalletVersion(settings.getWalletSettings().getWalletVersion())
+                        .fromWalletVersion(WalletVersion.V3R2) // default validator wallet type
                         .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                         .destAddr(settings.getElectorSmcAddrHex())
                         .amount(BigInteger.ONE) //(BigDecimal.valueOf(1L))

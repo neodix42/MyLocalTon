@@ -40,6 +40,7 @@ public class Extractor {
             if (Files.notExists(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN), LinkOption.NOFOLLOW_LINKS)) {
 
                 log.info("Detected OS: {}", System.getProperty("os.name"));
+
                 Files.createDirectories(Paths.get(MyLocalTonSettings.DB_DIR));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + TEMPLATES));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + UTILS));
@@ -58,30 +59,19 @@ public class Extractor {
                 if (SystemUtils.IS_OS_WINDOWS) {
                     extractWindowsBinaries();
                 } else if (SystemUtils.IS_OS_LINUX) {
-                    if (MyLocalTonUtils.getUbuntuVersion().equals("20.04")) {
-                        extractUbuntuBinaries("ubuntu20");
-                    } else if (MyLocalTonUtils.getUbuntuVersion().equals("20.04-arm64")) {
-                        extractUbuntuBinaries("ubuntu20-arm64");
-                    } else if (MyLocalTonUtils.getUbuntuVersion().equals("18.04")) {
-                        extractUbuntuBinaries("ubuntu18");
-                    } else if (MyLocalTonUtils.getUbuntuVersion().equals("18.04-arm64")) {
-                        extractUbuntuBinaries("ubuntu18-arm64");
-                    } else if (MyLocalTonUtils.getUbuntuVersion().equals("22.04")) {
-                        extractUbuntuBinaries("ubuntu22");
-                    } else if (MyLocalTonUtils.getUbuntuVersion().equals("22.04-arm64")) {
-                        extractUbuntuBinaries("ubuntu22-arm64");
+                    if (MyLocalTonUtils.isArm64()) {
+                        extractUbuntuBinaries("ton-linux-arm64");
                     } else {
-                        log.error("This Linux system officially is not supported, but let's try to run TON binaries compiled on Ubuntu 20.04");
-                        extractUbuntuBinaries("ubuntu20");
+                        extractUbuntuBinaries("ton-linux-x86_64");
                     }
                 } else if (SystemUtils.IS_OS_MAC) {
                     if (MyLocalTonUtils.isMacOsArm()) {
-                        extractMacBinaries("macos-arm64.zip");
+                        extractMacBinaries("ton-mac-arm64.zip");
                     } else {
-                        extractMacBinaries("macos.zip");
+                        extractMacBinaries("ton-mac-x86_64.zip");
                     }
                 } else {
-                    log.error("You are running neither on Windows nor Unix nor MacOS. We don't have compiled client for it.");
+                    log.error("You are running neither on Windows nor Linux nor MacOS. We don't have TON binaries compiled for it.");
                     System.exit(0); // initiating shutdown hook
                 }
 
@@ -106,23 +96,6 @@ public class Extractor {
                 Files.copy(dbConfig, Paths.get(MyLocalTonSettings.DB_DIR + File.separator + "objectsdb.conf"), StandardCopyOption.REPLACE_EXISTING);
                 dbConfig.close();
 
-                //extract patched cross-platform files
-                InputStream newWallet = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/new-wallet.fif");
-                Files.copy(newWallet, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + SMARTCONT + File.separator + "new-wallet.fif"), StandardCopyOption.REPLACE_EXISTING);
-                newWallet.close();
-
-                InputStream newWalletV2 = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/new-wallet-v2.fif");
-                Files.copy(newWalletV2, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + SMARTCONT + File.separator + "new-wallet-v2.fif"), StandardCopyOption.REPLACE_EXISTING);
-                newWalletV2.close();
-
-                InputStream newWalletV3 = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/new-wallet-v3.fif");
-                Files.copy(newWalletV3, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + SMARTCONT + File.separator + "new-wallet-v3.fif"), StandardCopyOption.REPLACE_EXISTING);
-                newWalletV3.close();
-
-                InputStream convertAddr = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/convert-addr.fif");
-                Files.copy(convertAddr, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + SMARTCONT + File.separator + "convert-addr.fif"), StandardCopyOption.REPLACE_EXISTING);
-                convertAddr.close();
-
                 InputStream showAddr = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/show-addr.fif");
                 Files.copy(showAddr, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + SMARTCONT + File.separator + "show-addr.fif"), StandardCopyOption.REPLACE_EXISTING);
                 showAddr.close();
@@ -130,10 +103,6 @@ public class Extractor {
                 InputStream genZeroStateFif = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/gen-zerostate.fif");
                 Files.copy(genZeroStateFif, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + SMARTCONT + File.separator + "gen-zerostate.fif"), StandardCopyOption.REPLACE_EXISTING);
                 genZeroStateFif.close();
-
-                InputStream createSendTonCoinsQuery = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/create-send-grams-query.fif");
-                Files.copy(createSendTonCoinsQuery, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + SMARTCONT + File.separator + "create-send-grams-query.fif"), StandardCopyOption.REPLACE_EXISTING);
-                createSendTonCoinsQuery.close();
 
             } else {
                 log.info("Binaries already extracted.");

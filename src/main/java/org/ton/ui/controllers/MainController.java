@@ -924,7 +924,7 @@ public class MainController implements Initializable {
 
     @FXML
     private CustomTextField validatorLogDir1, dhtLogDir1, myLocalTonLog, validatorLogDir2, validatorLogDir3,
-            validatorLogDir4, validatorLogDir5, validatorLogDir6, validatorLogDir7, coinsPerWallet, walletsNumber,
+            validatorLogDir4, validatorLogDir5, validatorLogDir6, validatorLogDir7, coinsPerWallet,
             globalId, initialBalance, maxValidators, maxMainValidators, minValidators, electedFor, minStake,
             electionStartBefore, minTotalStake, stakesFrozenFor, maxFactor, gasPrice, gasPriceMc, cellPrice,
             cellPriceMc, electionEndBefore, maxStake;
@@ -939,7 +939,7 @@ public class MainController implements Initializable {
     public JFXCheckBox inOutMsgsCheckBox;
 
     @FXML
-    public CustomComboBox myLogLevel, tonLogLevel, tonLogLevel2, tonLogLevel3, tonLogLevel4, tonLogLevel5, tonLogLevel6, tonLogLevel7, walletVersion;
+    public CustomComboBox myLogLevel, tonLogLevel, tonLogLevel2, tonLogLevel3, tonLogLevel4, tonLogLevel5, tonLogLevel6, tonLogLevel7;
 
     private MyLocalTonSettings settings;
 
@@ -977,32 +977,24 @@ public class MainController implements Initializable {
 
 
     public void showInfoMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.INFO, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.INFO, msg, durationSeconds)));
     }
 
     public void showSuccessMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, msg, durationSeconds)));
     }
 
     public void showErrorMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, msg, durationSeconds)));
     }
 
     public void showWarningMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds)));
     }
 
     public void showShutdownMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds));
+            emit(new CustomNotificationEvent(CustomEvent.Type.INFO, msg, durationSeconds));
 
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
             service.schedule(() -> {
@@ -1427,17 +1419,7 @@ public class MainController implements Initializable {
         showMsgBodyCheckBox.setSelected(settings.getUiSettings().isShowBodyInMessage());
         shardStateCheckbox.setSelected(settings.getUiSettings().isShowShardStateInBlockDump());
 
-        walletsNumber.setFieldText(settings.getWalletSettings().getNumberOfInitialWallets().toString());
         coinsPerWallet.setFieldText(settings.getWalletSettings().getInitialAmount().toString());
-        walletVersion.addItem(WalletVersion.V1R1.getValue());
-        walletVersion.addItem(WalletVersion.V1R2.getValue());
-        walletVersion.addItem(WalletVersion.V1R3.getValue());
-        walletVersion.addItem(WalletVersion.V2R1.getValue());
-        walletVersion.addItem(WalletVersion.V2R2.getValue());
-        walletVersion.addItem(WalletVersion.V3R1.getValue());
-        walletVersion.addItem(WalletVersion.V3R2.getValue());
-        walletVersion.addItem(WalletVersion.V4R2.getValue());
-        walletVersion.selectItem(settings.getWalletSettings().getWalletVersion().getValue());
 
         validatorLogDir1.setFieldText(settings.getGenesisNode().getTonLogDir());
         myLocalTonLog.setFieldText(MyLocalTonSettings.LOG_FILE);
@@ -1674,9 +1656,7 @@ public class MainController implements Initializable {
         settings.getUiSettings().setEnableBlockchainExplorer(enableBlockchainExplorer.isSelected());
         settings.getUiSettings().setShowShardStateInBlockDump(shardStateCheckbox.isSelected());
 
-        settings.getWalletSettings().setNumberOfInitialWallets(Long.parseLong(walletsNumber.getFieldText()));
         settings.getWalletSettings().setInitialAmount(new BigInteger(coinsPerWallet.getFieldText()));
-        settings.getWalletSettings().setWalletVersion(WalletVersion.getKeyByValue(walletVersion.getValue()));
 
         settings.getBlockchainSettings().setMinValidators(Long.valueOf(minValidators.getFieldText()));
         settings.getBlockchainSettings().setMaxValidators(Long.valueOf(maxValidators.getFieldText()));
@@ -1989,15 +1969,15 @@ public class MainController implements Initializable {
 
 //        controller.setWalletVersionText(settings.getWalletSettings().getWalletVersion().getValue());
 
-        if (
-                (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3R1))
-                        || (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3R2))
-                        || (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V4R2))
-        ) {
-            controller.showSubWalletID();
-        } else {
-            controller.hideSubWalletID();
-        }
+//        if (
+//                (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3R1))
+//                        || (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3R2))
+//                        || (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V4R2))
+//        ) {
+//            controller.showSubWalletID();
+//        } else {
+//            controller.hideSubWalletID();
+//        }
 
         JFXDialogLayout content = new JFXDialogLayout();
         content.setBody(parent);
@@ -2167,11 +2147,8 @@ public class MainController implements Initializable {
             nodePublicPort2.setText(node2.getPublicPort().toString());
             nodeConsolePort2.setText(node2.getConsolePort().toString());
             liteServerPort2.setText(node2.getLiteServerPort().toString());
-            if (isNull(node2.getWalletAddress())) {
-                deleteValidatorBtn2.setDisable(true);
-            } else {
-                deleteValidatorBtn2.setDisable(false);
-            }
+
+            deleteValidatorBtn2.setDisable(isNull(node2.getWalletAddress()));
         }
     }
 
@@ -2200,11 +2177,7 @@ public class MainController implements Initializable {
             nodeConsolePort3.setText(node3.getConsolePort().toString());
             liteServerPort3.setText(node3.getLiteServerPort().toString());
 
-            if (isNull(node3.getWalletAddress())) {
-                deleteValidatorBtn3.setDisable(true);
-            } else {
-                deleteValidatorBtn3.setDisable(false);
-            }
+            deleteValidatorBtn3.setDisable(isNull(node3.getWalletAddress()));
         }
     }
 
@@ -2233,11 +2206,7 @@ public class MainController implements Initializable {
             nodeConsolePort4.setText(node4.getConsolePort().toString());
             liteServerPort4.setText(node4.getLiteServerPort().toString());
 
-            if (isNull(node4.getWalletAddress())) {
-                deleteValidatorBtn4.setDisable(true);
-            } else {
-                deleteValidatorBtn4.setDisable(false);
-            }
+            deleteValidatorBtn4.setDisable(isNull(node4.getWalletAddress()));
         }
     }
 
@@ -2268,11 +2237,7 @@ public class MainController implements Initializable {
             nodeConsolePort5.setText(node5.getConsolePort().toString());
             liteServerPort5.setText(node5.getLiteServerPort().toString());
 
-            if (isNull(node5.getWalletAddress())) {
-                deleteValidatorBtn5.setDisable(true);
-            } else {
-                deleteValidatorBtn5.setDisable(false);
-            }
+            deleteValidatorBtn5.setDisable(isNull(node5.getWalletAddress()));
         }
     }
 
@@ -2334,11 +2299,7 @@ public class MainController implements Initializable {
             nodeConsolePort7.setText(node7.getConsolePort().toString());
             liteServerPort7.setText(node7.getLiteServerPort().toString());
 
-            if (isNull(node7.getWalletAddress())) {
-                deleteValidatorBtn7.setDisable(true);
-            } else {
-                deleteValidatorBtn7.setDisable(false);
-            }
+            deleteValidatorBtn7.setDisable(isNull(node7.getWalletAddress()));
         }
     }
 
@@ -3325,14 +3286,7 @@ public class MainController implements Initializable {
                     MyLocalTon.getInstance().createFullnode(node, true, true);
 
                     Tab newTab = MyLocalTonUtils.getNewNodeTab();
-                    Platform.runLater(() -> {
-                        validationTabs.getTabs().add(newTab);
-                    });
-
-//                    if (SystemUtils.IS_OS_WINDOWS) {
-//                        Utils.waitForBlockchainReady(node);
-//                        Utils.waitForNodeSynchronized(node);
-//                    }
+                    Platform.runLater(() -> validationTabs.getTabs().add(newTab));
 
                     settings.getActiveNodes().add(node.getNodeName());
                     MyLocalTon.getInstance().saveSettingsToGson();

@@ -27,9 +27,6 @@ import static org.ton.ui.custom.events.CustomEventBus.emit;
 
 public class AccountsCreatePaneController implements Initializable {
 
-//    @FXML
-//    private CustomTextField workchain, subWalletID, walletVersion;
-
     @FXML
     private JFXTextField workchain, subWalletID;
 
@@ -51,7 +48,7 @@ public class AccountsCreatePaneController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         ObservableList<String> versions = FXCollections.observableArrayList(
-                WalletVersion.V1R1.getValue(), // todo
+                WalletVersion.V1R1.getValue(),
                 WalletVersion.V1R2.getValue(),
                 WalletVersion.V1R3.getValue(),
                 WalletVersion.V2R1.getValue(),
@@ -74,7 +71,7 @@ public class AccountsCreatePaneController implements Initializable {
 
         workchain.setOnKeyTyped(onlyDigits);
         subWalletID.setOnKeyTyped(onlyDigits);
-        newWalletVersion.setValue(MyLocalTon.getInstance().getSettings().getWalletSettings().getWalletVersion().getValue());
+        newWalletVersion.setValue(WalletVersion.V3R2.getValue()); // default
     }
 
     @FXML

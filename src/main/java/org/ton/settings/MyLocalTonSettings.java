@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
-import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.parameters.ValidationParam;
 
 import java.io.File;
@@ -125,9 +124,8 @@ public class MyLocalTonSettings implements Serializable {
     @Getter
     @Setter
     public static class WalletSettings implements Serializable {
-        Long numberOfInitialWallets = 3L;
         BigInteger initialAmount = new BigInteger("778000000000");
-        WalletVersion walletVersion = WalletVersion.V3R2;
+        //        WalletVersion walletVersion = WalletVersion.V3R2;
         Long defaultWorkChain = 0L;
         long defaultSubWalletId = 42L;
     }

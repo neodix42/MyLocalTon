@@ -1324,38 +1324,16 @@
                         style="-fx-padding:0 0 0 50">
                 <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
-                    <VBox spacing="20.0">
-                        <VBox spacing="10.0">
-                            <Label text="Number of preinstalled wallets" styleClass="label-second-font-14"/>
-                            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                <CustomTextField fx:id="walletsNumber" prefWidth="600.0"/>
-                            </HBox>
-                        </VBox>
-                    </VBox>
-
                     <VBox spacing="10.0">
-                        <Label text="Toncoins per wallet" styleClass="label-second-font-14">
+                        <Label text="Initial amount of nano Toncoins per wallet" styleClass="label-second-font-14">
                             <tooltip>
-                                <Tooltip text="Used when wallet is created"/>
+                                <Tooltip text="Used during a wallet creation"/>
                             </tooltip>
                         </Label>
                         <HBox alignment="CENTER_LEFT">
-                            <CustomTextField fx:id="coinsPerWallet" prefWidth="600.0" fieldText="30000"/>
+                            <CustomTextField fx:id="coinsPerWallet" prefWidth="300.0" fieldText="30000"/>
                         </HBox>
                     </VBox>
-
-                    <VBox spacing="10.0">
-                        <Label text="Wallet type" styleClass="label-second-font-14"/>
-                        <HBox alignment="CENTER_LEFT">
-                            <CustomComboBox fx:id="walletVersion" fieldPromptText="Wallet V1" prefWidth="600.0"/>
-                        </HBox>
-                    </VBox>
-
-                    <VBox spacing="10.0">
-                        <Label styleClass="label-second-font-14" style="-fx-text-fill: #0088CC;"
-                               text="Change of these settings requires TON blockchain reset"/>
-                    </VBox>
-
                 </VBox>
             </AnchorPane>
         </accountsKeysPane>

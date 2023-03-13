@@ -1,9 +1,0 @@
-#!/usr/bin/fift -s
-"TonUtil.fif" include
-// $1 = wc:hex_addr
-$1 true parse-load-address =: bounce 2=: dest-addr
-
-."Non-bounceable address, Base64Url (for init): " dest-addr 2dup 7 .Addr cr
-."Bounceable address, Base64Url (for later access): "2dup 6 .Addr cr
-."Non-bounceable address, Base64 (for init): "2dup 3 .Addr cr
-."Bounceable address, Base64 (for later access): "2 .Addr cr

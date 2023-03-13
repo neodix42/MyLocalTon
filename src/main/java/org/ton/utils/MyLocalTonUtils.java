@@ -489,31 +489,33 @@ public class MyLocalTonUtils {
         }
     }
 
-    public static String getUbuntuVersion() {
+    public static boolean isArm64() {
 
         String lsb = executeLsbRelease();
         String uname = executeUname();
-        if (lsb.contains("22.04")) {
-            if (uname.contains("aarch64")) {
-                return "22.04-arm64";
-            } else {
-                return "22.04";
-            }
-        } else if (lsb.contains("20.04")) {
-            if (uname.contains("aarch64")) {
-                return "20.04-arm64";
-            } else {
-                return "20.04";
-            }
-        } else if (lsb.contains("18.04")) {
-            if (uname.contains("aarch64")) {
-                return "18.04-arm64";
-            } else {
-                return "18.04";
-            }
-        } else {
-            return "";
-        }
+
+        return uname.contains("aarch64");
+//        if (lsb.contains("22.04")) {
+//            if (uname.contains("aarch64")) {
+//                return "22.04-arm64";
+//            } else {
+//                return "22.04";
+//            }
+//        } else if (lsb.contains("20.04")) {
+//            if (uname.contains("aarch64")) {
+//                return "20.04-arm64";
+//            } else {
+//                return "20.04";
+//            }
+//        } else if (lsb.contains("18.04")) {
+//            if (uname.contains("aarch64")) {
+//                return "18.04-arm64";
+//            } else {
+//                return "18.04";
+//            }
+//        } else {
+//            return "";
+//        }
     }
 
     public static String constructFullBlockSeq(Long wc, String shard, BigInteger seqno, String rootHash, String fileHash) {
@@ -713,7 +715,7 @@ public class MyLocalTonUtils {
             SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                     .executionNode(node)
                     .fromWallet(node.getWalletAddress())
-                    .fromWalletVersion(settings.getWalletSettings().getWalletVersion())
+                    .fromWalletVersion(WalletVersion.V3R2) // default validator wallet version
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
                     .amount(node.getDefaultValidatorStake())
@@ -729,7 +731,7 @@ public class MyLocalTonUtils {
             } else {
                 log.error("Participation error. {} failed to send {} Toncoins to {}", node.getNodeName(), node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex());
                 node.getElectionsCounter().remove(v.getStartValidationCycle());
-                App.mainController.showErrorMsg(String.format("Participation error. {} failed to send %s Toncoins to %s", node.getDefaultValidatorStake(), node.getNodeName(), settings.getElectorSmcAddrHex()), 5);
+                App.mainController.showErrorMsg(String.format("Participation error. %s failed to send %s Toncoins to %s", node.getNodeName(), node.getDefaultValidatorStake(), settings.getElectorSmcAddrHex()), 5);
             }
         } catch (Exception e) {
             log.error("Error by {} participating in elections! Error {}", node.getNodeName(), e.getMessage());

@@ -28,9 +28,8 @@
 
         <CheckBox fx:id="bounceFlag" layoutX="30.0" layoutY="260.0" text="Bounce Flag"/>
 
-        <JFXButton onAction="#sendAction" text="Send" prefHeight="40" prefWidth="120" layoutX="285" layoutY="300"
+        <JFXButton onAction="#sendAction" text="Send" prefHeight="40" prefWidth="120" layoutX="310" layoutY="300"
                    styleClass="custom-button-form"/>
-
     </children>
 
     <stylesheets>

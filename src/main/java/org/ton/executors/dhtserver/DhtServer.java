@@ -78,7 +78,7 @@ public class DhtServer {
 
             return generateDhtKeys(node, publicIpNum);
         } else {
-            log.info("DHT server initialized. Skipping.");
+            log.debug("DHT server initialized. Skipping.");
             return new ArrayList<>();
         }
     }
