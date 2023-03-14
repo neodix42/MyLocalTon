@@ -13,6 +13,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 
+import static java.util.Objects.isNull;
+
 @Entity
 @Builder
 @ToString
@@ -57,6 +59,9 @@ public class WalletEntity {
     }
 
     private String getStatusFromCode(RawAccountState state) {
+        if (isNull(state)) {
+            return "uninitialized";
+        }
         if (StringUtils.isEmpty(state.getCode())) {
             if (StringUtils.isEmpty(state.getFrozen_hash())) {
                 return "uninitialized";

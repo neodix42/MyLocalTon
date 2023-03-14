@@ -41,8 +41,9 @@ import org.ton.executors.validatorengineconsole.ValidatorEngineConsole;
 import org.ton.java.address.Address;
 import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.java.tonlib.Tonlib;
-import org.ton.java.tonlib.types.FullAccountState;
 import org.ton.java.tonlib.types.RawAccountState;
+import org.ton.java.tonlib.types.RunResult;
+import org.ton.java.tonlib.types.TvmStackEntryNumber;
 import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
@@ -101,6 +102,7 @@ public class MyLocalTon {
     private static MyLocalTon singleInstance = null;
     public static ScheduledExecutorService validatorsMonitor = null;
     public static Tonlib tonlib;
+    public static Tonlib tonlibBlockMonitor;
 
     private static final String CURRENT_DIR = System.getProperty("user.dir");
 
@@ -236,7 +238,7 @@ public class MyLocalTon {
 
             settings.getActiveNodes().add(node.getNodeName());
         } else {
-            log.info("Found non-empty state; Skip genesis initialization.");
+            log.debug("Found non-empty state; Skip genesis initialization.");
         }
     }
 
@@ -318,7 +320,7 @@ public class MyLocalTon {
                 .createdAt(Instant.now().getEpochSecond())
                 .build();
 
-//        App.dbPool.insertWallet(walletEntity); // moved down
+        App.dbPool.insertWallet(walletEntity);
 
         // TOP UP NEW WALLET
 
@@ -343,12 +345,9 @@ public class MyLocalTon {
 
         if (sentOK) {
             Thread.sleep(2000);
-
-            // install smart-contract into a new wallet
             myWallet.installWalletSmartContract(fromNode, walletAddress);
-            App.dbPool.insertWallet(walletEntity);
         } else {
-            App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 3);
+            App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
         }
 
         return walletEntity;
@@ -557,6 +556,12 @@ public class MyLocalTon {
                 .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
 //                .verbosityLevel(VerbosityLevel.DEBUG)
                 .build();
+
+        tonlibBlockMonitor = Tonlib.builder()
+                .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
+                .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+//                .verbosityLevel(VerbosityLevel.DEBUG)
+                .build();
     }
 
     public void runBlockchainMonitor(Node node) {
@@ -575,7 +580,6 @@ public class MyLocalTon {
                     executorService.execute(() -> {
                         Thread.currentThread().setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
                         log.debug("Get last block");
-                        //Main.parsingBlocks.set(true);
                         ResultLastBlock lastBlock = LiteClientParser.parseLast(liteClient.executeLast(node));
 //                        MasterChainInfo lastBlockM = tonlib.getLast(); // todo next release
 
@@ -593,7 +597,6 @@ public class MyLocalTon {
                         } else {
                             log.debug("last block is null");
                         }
-                        //Main.parsingBlocks.set(false);
                         log.debug("Thread is done {}", Thread.currentThread().getName());
                     });
 
@@ -602,7 +605,6 @@ public class MyLocalTon {
                     Thread.sleep(1000);
 
                 } catch (Exception e) {
-                    //Main.parsingBlocks.set(false);
                     e.printStackTrace();
                     log.error(e.getMessage());
                 }
@@ -653,11 +655,11 @@ public class MyLocalTon {
 
                 txEntities.forEach(App.dbPool::insertTx);
 
+                detectNewAccount(lastBlock, tx, txDetails);
+
                 if (updateGuiNow) {
                     updateTxTabGui(lastBlock, tx, txDetails, txEntities);
                 }
-
-                detectNewAccount(lastBlock, tx, txDetails);
             }
         }
     }
@@ -668,7 +670,7 @@ public class MyLocalTon {
                         (txDetails.getOrigStatus().equals(UNINITIALIZED) && txDetails.getEndStatus().equals(UNINITIALIZED)) ||
                         (txDetails.getOrigStatus().equals(UNINITIALIZED) && txDetails.getEndStatus().equals(ACTIVE))
         ) {
-            log.info("New account detected! origStatus {}, endStatus {}, wallet created {}, txseqno {}, txLt {}, block {}",
+            log.info("New account detected! origStatus {}, endStatus {}, address {}, txSeqno {}, txLt {}, block {}",
                     txDetails.getOrigStatus(), txDetails.getEndStatus(), txDetails.getAccountAddr(), tx.getTxSeqno(), tx.getLt(), lastBlock.getShortBlockSeqno());
 
             try {
@@ -679,13 +681,12 @@ public class MyLocalTon {
                         .build());
 
                 if (isNull(foundWallet)) {
-                    log.info("insertNewAccountEntity new insert {}", txDetails.getAccountAddr().toUpperCase());
-                    Address address = Address.of(txDetails.getAccountAddr().toUpperCase());
-
+                    log.info("insertNewAccountEntity new inserting {}", txDetails.getAccountAddr().toUpperCase());
+                    Address address = Address.of(lastBlock.getWc() + ":" + txDetails.getAccountAddr().toUpperCase());
+//
                     WalletAddress walletAddress = WalletAddress.builder()
                             .wc(lastBlock.getWc())
                             .hexWalletAddress(txDetails.getAccountAddr().toUpperCase())
-//                        .subWalletId(subWalletId)
                             .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr().toUpperCase())
                             .bounceableAddressBase64url(address.toString(true, true, true))
                             .nonBounceableAddressBase64Url(address.toString(true, true, false))
@@ -701,8 +702,10 @@ public class MyLocalTon {
                             .build();
 
                     App.dbPool.insertWallet(walletEntity);
+
+                    log.info("insertNewAccountEntity new inserted {}", txDetails.getAccountAddr().toUpperCase());
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log.error("Error executing insertNewAccountEntity: {}", e.getMessage());
                 log.error(ExceptionUtils.getStackTrace(e));
             }
@@ -834,7 +837,7 @@ public class MyLocalTon {
                 ((Label) accountRow.lookup("#walledId")).setText("-1");
             }
 
-            if (walletEntity.getSeqno() >= 0 && (!walletEntity.getWalletVersion().equals(WalletVersion.config))) {
+            if (walletEntity.getSeqno() >= 0 && (nonNull(walletEntity.getWalletVersion()) && !walletEntity.getWalletVersion().equals(WalletVersion.config))) {
                 accountRow.lookup("#seqno").setVisible(true);
                 ((Label) accountRow.lookup("#seqno")).setText("Seqno " + walletEntity.getSeqno());
             } else {
@@ -852,16 +855,23 @@ public class MyLocalTon {
             String status = StringUtils.isEmpty(walletEntity.getAccountStatus()) ? "" : StringUtils.capitalize(walletEntity.getAccountStatus());
             ((Label) accountRow.lookup("#status")).setText(status);
 
-            if (settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())) {
+            if (settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress())
+                    || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())
+                    || isNull(walletEntity.getWallet().getPrivateKeyHex())
+            ) {
                 accountRow.lookup("#walletDeleteBtn").setDisable(true);
                 (accountRow.lookup("#hBoxDeletetn")).getStyleClass().clear();
             }
-            if (status.equals(UNINITIALIZED) ||
-                    status.equals(FROZEN) ||
-                    settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress().toUpperCase())
+            if (status.equals(UNINITIALIZED)
+                    || status.equals(FROZEN)
+                    || settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress().toUpperCase())
+                    || isNull(walletEntity.getWallet().getPrivateKeyHex())
                 //|| isNull(walletEntity.getWallet().getPrivateKeyLocation())
             ) {
                 accountRow.lookup("#accSendBtn").setDisable(true);
+                (accountRow.lookup("#hBoxSendBtn")).getStyleClass().clear();
+            } else {
+                accountRow.lookup("#accSendBtn").setDisable(false);
                 (accountRow.lookup("#hBoxSendBtn")).getStyleClass().clear();
             }
         } catch (Exception e) {
@@ -1490,27 +1500,39 @@ public class MyLocalTon {
     }
 
     public void runAccountsMonitor() {
+//        Tonlib tonlib = Tonlib.builder()
+//                .pathToGlobalConfig(MyLocalTon.getInstance().getSettings().getGenesisNode().getNodeGlobalConfigLocation())
+//                .keystorePath(MyLocalTon.getInstance().getSettings().getGenesisNode().getTonlibKeystore().replace("\\", "/"))
+//                .build();
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Accounts Monitor");
             try {
                 for (WalletEntity wallet : App.dbPool.getAllWallets()) {
                     if (Main.appActive.get()) {
+                        Address address = Address.of(wallet.getWc() + ":" + wallet.getHexAddress());
+                        RawAccountState accountState = tonlib.getRawAccountState(address);
+                        WalletVersion walletVersion = MyLocalTonUtils.detectWalletVersion(accountState.getCode(), address);
 
-                        RawAccountState accountState = tonlib.getRawAccountState(Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
-                        FullAccountState accountStateFull = tonlib.getAccountState(Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
                         long subWalletId = -1;
-                        if (nonNull(accountStateFull) && nonNull(accountStateFull.getAccount_state())) {
-                            subWalletId = accountStateFull.getAccount_state().getWallet_id();
-                        }
-                        WalletVersion walletVersion = MyLocalTonUtils.detectWalletVersion(accountState.getCode(), Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
                         long seqno = -1;
+
                         try {
-                            seqno = tonlib.getSeqno(Address.of(wallet.getWc() + ":" + wallet.getHexAddress()));
+                            seqno = tonlib.getSeqno(address);
+                            subWalletId = tonlib.getAccountState(address).getAccount_state().getWallet_id();
+                            if (subWalletId == 0) {
+                                RunResult resultSubWalletId = tonlib.runMethod(address, "get_subwallet_id");
+                                if (resultSubWalletId.getExit_code() == 0) {
+                                    TvmStackEntryNumber resultSubWalletIdNum = (TvmStackEntryNumber) resultSubWalletId.getStack().get(0);
+                                    subWalletId = resultSubWalletIdNum.getNumber().longValue();
+                                } else {
+                                    subWalletId = -1;
+                                }
+                            }
                         } catch (Throwable ignored) {
-                            //
+                            subWalletId = -1;
                         }
 
-                        log.debug("runAccountsMonitor: {}, {}, {}, {}", walletVersion, seqno, subWalletId, accountState.getBalance());
+                        log.info("runAccountsMonitor: {}, {}, {}, {}", walletVersion, seqno, subWalletId, accountState.getBalance());
 
                         App.dbPool.updateWalletStateAndSeqno(wallet, accountState, seqno, walletVersion);
 
@@ -1551,7 +1573,7 @@ public class MyLocalTon {
                         .fromWalletVersion(WalletVersion.V3R2) // default validator wallet type
                         .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                         .destAddr(settings.getElectorSmcAddrHex())
-                        .amount(BigInteger.ONE) //(BigDecimal.valueOf(1L))
+                        .amount(BigInteger.valueOf(ONE_BLN)) //(BigDecimal.valueOf(1L))
                         .bocLocation(node.getTonBinDir() + "recover-query.boc")
                         .build();
 
@@ -1581,67 +1603,71 @@ public class MyLocalTon {
     }
 
     private void updateReapedValuesTab(Node node) {
-        log.debug("{} updating reaped values {}", node.getNodeName(), String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+        try {
+            log.debug("{} updating reaped values {}", node.getNodeName(), String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
 
-        switch (node.getNodeName()) {
-            case "genesis":
-                mainController.validator1totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections1.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node2":
-                mainController.validator2totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator2LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator2TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator2LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator2AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections2.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node3":
-                mainController.validator3totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator3LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator3TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator3LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator3AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections3.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node4":
-                mainController.validator4totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator4LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator4TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator4LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator4AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections4.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node5":
-                mainController.validator5totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator5LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator5TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator5LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator5AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections5.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node6":
-                mainController.validator6totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator6LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator6TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator6LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator6AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections6.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node7":
-                mainController.validator7totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator7LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator7TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator7LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator7AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections7.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            default:
-                throw new Error("Unknown node name");
+            switch (node.getNodeName()) {
+                case "genesis":
+                    mainController.validator1totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator1LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator1TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator1LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator1AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections1.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node2":
+                    mainController.validator2totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator2LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator2TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator2LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator2AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections2.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node3":
+                    mainController.validator3totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator3LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator3TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator3LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator3AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections3.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node4":
+                    mainController.validator4totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator4LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator4TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator4LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator4AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections4.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node5":
+                    mainController.validator5totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator5LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator5TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator5LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator5AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections5.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node6":
+                    mainController.validator6totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator6LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator6TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator6LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator6AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections6.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node7":
+                    mainController.validator7totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator7LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator7TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator7LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator7AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections7.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                default:
+                    throw new Error("Unknown node name");
+            }
+        } catch (Throwable te) {
+            log.error("Error updating validation rewards: " + te.getMessage());
         }
     }
 

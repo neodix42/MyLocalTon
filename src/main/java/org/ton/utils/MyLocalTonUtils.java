@@ -172,7 +172,7 @@ public class MyLocalTonUtils {
     public static WalletVersion detectWalletVersion(String accountCode, Address address) {
 
         accountCode = Hex.encodeHexString(Base64.decodeBase64(accountCode)).toUpperCase();
-        log.debug("accountCode  full {}", accountCode);
+        log.debug("{} detected accountCode {}", address.toString(false), accountCode);
 
         WalletVersion walletVersion = null;
 
@@ -606,6 +606,9 @@ public class MyLocalTonUtils {
                 node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
             }
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0 && lastBlock.getSyncedSecondsAgo() > 10));
+
+        log.info("{} synchronized", node.getNodeName());
+        Thread.sleep(500);
     }
 
     public static long getCurrentTimeSeconds() {
@@ -705,6 +708,11 @@ public class MyLocalTonUtils {
 
             log.info("{} with wallet {} wants to participate in elections {} ({})", node.getNodeName(), node.getWalletAddress().getBounceableAddressBase64url(), electionId, MyLocalTonUtils.toLocal(electionId));
 
+//            WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
+//                    .wc(node.getWalletAddress().getWc())
+//                    .hexAddress(node.getWalletAddress().getHexWalletAddress())
+//                    .build());
+//
             Fift fift = new Fift();
             String signature = fift.createValidatorElectionRequest(node, electionId, settings.getBlockchainSettings().getMaxFactor());
             fift.signValidatorElectionRequest(node, electionId, settings.getBlockchainSettings().getMaxFactor(), signature);

@@ -75,7 +75,7 @@ public class App extends Application {
             } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
                 mainController.showLoadingPane("Starting TON blockchain...", "Should take no longer than 45 seconds.");
             } else {
-                mainController.showLoadingPane("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size(), " validators, may take up to 3 minutes.");
+                mainController.showLoadingPane("Starting TON blockchain...", "Launching " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, wait up to 3 minutes.");
             }
         });
 

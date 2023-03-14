@@ -100,20 +100,24 @@ public class MyWallet {
      * Used to send toncoins from one-time-wallet, where do we have prvkey, which is used in fift script
      */
 
-    public synchronized boolean sendTonCoins(SendToncoinsParam sendToncoinsParam) throws Exception {
+    public boolean sendTonCoins(SendToncoinsParam sendToncoinsParam) {
         try {
+            Address fromAddress = Address.of(sendToncoinsParam.getFromWallet().getFullWalletAddress());
+            Address toAddress = Address.of(sendToncoinsParam.getDestAddr());
+            if (nonNull(sendToncoinsParam.getForceBounce()) && (sendToncoinsParam.getForceBounce())) {
+                toAddress = Address.of(toAddress.toString(true, false, true));
+            }
+
             long seqno = -1;
             if (!sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1)) {
-                seqno = tonlib.getSeqno(Address.of(sendToncoinsParam.getFromWallet().getFullWalletAddress()));
+                seqno = tonlib.getSeqno(fromAddress);
             }
             log.debug("seqno {}", seqno);
 
             if (seqno == -1L) {
-                log.error("Error retrieving seqno from contract {}", sendToncoinsParam.getFromWallet().getFullWalletAddress());
+                log.error("Error retrieving seqno from contract {}", fromAddress.toString(false));
                 return false;
             }
-
-            WalletContract contract;
 
             Options options = Options.builder()
                     .publicKey(nonNull(sendToncoinsParam.getFromWallet().getPublicKeyHex()) ? Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPublicKeyHex()) : null)
@@ -123,69 +127,72 @@ public class MyWallet {
 
             log.debug("sending using wallet version {}", sendToncoinsParam.getFromWalletVersion());
 
+            WalletContract contract;
+
             if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1)) {
                 contract = new Wallet(WalletVersion.V1R1, options).create();
                 if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV1ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
+                    ((WalletV1ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
                 } else {
-                    ((WalletV1ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno);
+                    ((WalletV1ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
                 }
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R2)) {
                 contract = new Wallet(WalletVersion.V1R2, options).create();
                 if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV1ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
+                    ((WalletV1ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
                 } else {
-                    ((WalletV1ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno);
+                    ((WalletV1ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
                 }
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R3)) {
                 contract = new Wallet(WalletVersion.V1R3, options).create();
                 if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV1ContractR3) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
+                    ((WalletV1ContractR3) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
                 } else {
-                    ((WalletV1ContractR3) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno);
+                    ((WalletV1ContractR3) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
                 }
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V2R1)) {
                 contract = new Wallet(WalletVersion.V2R1, options).create();
                 if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV2ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
+                    ((WalletV2ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
                 } else {
-                    ((WalletV2ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno);
+                    ((WalletV2ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
                 }
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V2R2)) {
                 contract = new Wallet(WalletVersion.V2R2, options).create();
                 if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV2ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
+                    ((WalletV2ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
                 } else {
-                    ((WalletV2ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno);
+                    ((WalletV2ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
                 }
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V3R1)) {
                 contract = new Wallet(WalletVersion.V3R1, options).create();
                 if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV3ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
+                    ((WalletV3ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
                 } else {
-                    ((WalletV3ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno);
+                    ((WalletV3ContractR1) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
                 }
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V3R2)) {
                 contract = new Wallet(WalletVersion.V3R2, options).create();
                 if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV3ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
+                    ((WalletV3ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
                 } else {
                     if (nonNull(sendToncoinsParam.getBocLocation())) {
                         byte[] boc = FileUtils.readFileToByteArray(new File(sendToncoinsParam.getBocLocation()));
                         Cell bodyCell = Cell.fromBoc(boc);
-                        ((WalletV3ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno, bodyCell);
+                        ((WalletV3ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, bodyCell);
                     } else {
-                        ((WalletV3ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno);
+                        ((WalletV3ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
                     }
                 }
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V4R2)) {
                 contract = new Wallet(WalletVersion.V4R2, options).create();
                 if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV4ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
+                    ((WalletV4ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
                 } else {
-                    ((WalletV4ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), Address.of(sendToncoinsParam.getDestAddr()), sendToncoinsParam.getAmount(), seqno);
+                    ((WalletV4ContractR2) contract).sendTonCoins(tonlib, Utils.hexToBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
                 }
-            } else if ((sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.master)) || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.config))) { // send using fift from master and config wallets using base-file
+            } else if ((sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.master)) || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.config))) {
+                // send using fift from master and config wallets using base-file
                 String externalMsgLocation = new Fift().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
                 if (isNull(externalMsgLocation)) {
                     return false;
@@ -198,26 +205,26 @@ public class MyWallet {
             log.info("Sent {} nano Toncoins by {} from {} to {}",
                     sendToncoinsParam.getAmount(),
                     sendToncoinsParam.getExecutionNode().getNodeName(),
-                    sendToncoinsParam.getFromWallet().getFullWalletAddress(),
-                    Address.of(sendToncoinsParam.getDestAddr()).toString(false));
+                    fromAddress.toString(false),
+                    toAddress.toString(false));
 
             int counter = 0;
 
             if (!sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1)) { // better check if seqno method exist
                 while (true) {
                     Thread.sleep(3 * 1000);
-                    long newSeqno = liteClient.executeGetSeqno(sendToncoinsParam.getExecutionNode(), sendToncoinsParam.getFromWallet().getFullWalletAddress());
+                    long newSeqno = liteClient.executeGetSeqno(sendToncoinsParam.getExecutionNode(), fromAddress.toString(false));
                     if (newSeqno > seqno) {
                         return true;
                     }
-                    log.info("{} waiting for wallet {} to update seqno. oldSeqno {}, newSeqno {}", sendToncoinsParam.getFromWallet().getFullWalletAddress(), sendToncoinsParam.getExecutionNode().getNodeName(), seqno, newSeqno);
+                    log.info("{} waiting for wallet {} to update seqno. oldSeqno {}, newSeqno {}", fromAddress.toString(false), sendToncoinsParam.getExecutionNode().getNodeName(), seqno, newSeqno);
                     counter++;
                     if (counter > 15) {
                         log.error("Error sending {} Toncoins by {} from {} to {}.",
                                 sendToncoinsParam.getToncoinsAmount(),
                                 sendToncoinsParam.getExecutionNode().getNodeName(),
-                                sendToncoinsParam.getFromWallet().getFullWalletAddress(),
-                                sendToncoinsParam.getDestAddr());
+                                fromAddress.toString(false),
+                                toAddress.toString(false));
                         return false;
                     }
                 }

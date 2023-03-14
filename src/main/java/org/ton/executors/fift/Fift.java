@@ -227,7 +227,7 @@ public class Fift {
     }
 
     public void createRecoverStake(Node node) throws ExecutionException, InterruptedException {
-        log.info("createRecoverStake {}", node.getNodeName());
+        log.debug("createRecoverStake {}", node.getNodeName());
 
         Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "recover-stake.fif");
 
