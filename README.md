@@ -21,21 +21,13 @@ alpha version and cannot be treated as production ready.
 
 ## Matrix of supported OS & Java
 
-| OS \ Java            | 11  | 13  | 15  | 17  |
-|----------------------|---|---|---|---|
-| Ubuntu 18.04         | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |
-| Ubuntu 20.04         | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:    |  |
-| Ubuntu 22.04         | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
-| Ubuntu 18.04 aarch64 | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
-| Ubuntu 20.04 aarch64 | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
-| Ubuntu 22.04 aarch64 | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
-| Debian 11.2          | not tested   | not tested   | not tested   | :heavy_check_mark:    |  |
-| MacOS 11.6.1 M1      | :heavy_check_mark:   | not tested   |  not tested | :heavy_check_mark:    |  |
-| MacOS 12.2.1 M1      | not tested   | not tested   |  not tested | :heavy_check_mark:    |  |
-| MacOS 12.01          | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
-| MacOS 11.6           | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:    |  |
-| Windows 10           | :heavy_check_mark:   | :heavy_check_mark:   |  not tested | :heavy_check_mark:   |  |
-| Windows Server 2019  | :heavy_check_mark:   | :heavy_check_mark:   | not tested  | :heavy_check_mark:    |  |
+| OS \ Java           | 11  | 13  | 15  | 17  | 19 |
+|---------------------|---|---|---|---|---|
+| Linux x86_64        | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  | :heavy_check_mark:  |
+| Linux arm64/aarch64 | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |:heavy_check_mark:  |
+| MacOS x86_64        | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |:heavy_check_mark:  |
+| MacOS arm64/aarch64 | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |:heavy_check_mark:  |
+| Windows x86_64      | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |:heavy_check_mark:  |
 
 Please make sure you are not using headless (no GUI) Java and OS/Java combination matches as per table above.
 
