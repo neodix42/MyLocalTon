@@ -1532,7 +1532,7 @@ public class MyLocalTon {
                             subWalletId = -1;
                         }
 
-                        log.info("runAccountsMonitor: {}, {}, {}, {}", walletVersion, seqno, subWalletId, accountState.getBalance());
+                        log.debug("runAccountsMonitor: {}, {}, {}, {}", walletVersion, seqno, subWalletId, accountState.getBalance());
 
                         App.dbPool.updateWalletStateAndSeqno(wallet, accountState, seqno, walletVersion);
 
@@ -1547,7 +1547,7 @@ public class MyLocalTon {
             } catch (Throwable e) {
                 log.error("Error in runAccountsMonitor(), " + e.getMessage());
             }
-        }, 0L, 5L, TimeUnit.SECONDS);
+        }, 0L, 6L, TimeUnit.SECONDS);
     }
 
     public void reap(Node node) {
