@@ -7,7 +7,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.executors.generaterandomid.RandomIdExecutor;
 import org.ton.settings.Node;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,10 +32,10 @@ public class DhtServer {
     public void startDhtServer(Node node, String globalConfigFile) {
 
         Pair<Process, Future<String>> dhtServer = new DhtServerExecutor().execute(node,
-                "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
                 "-t", "2",
                 "-C", globalConfigFile,
-                "-l", node.getDhtServerDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
+                "-l", node.getDhtServerDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
                 "-D", node.getDhtServerDir(),
                 "-I", node.getPublicIp() + ":" + node.getDhtPort());
         node.setDhtServerProcess(dhtServer.getLeft());
@@ -51,17 +51,17 @@ public class DhtServer {
 
             node.extractBinaries();
 
-            int publicIpNum = Utils.getIntegerIp(node.getPublicIp());
+            int publicIpNum = MyLocalTonUtils.getIntegerIp(node.getPublicIp());
             log.debug("publicIpNum {}", publicIpNum);
 
             Files.createDirectories(Paths.get(node.getDhtServerDir()));
 
             log.info("Initializing DHT server"); // creating key in dht-server/keyring/hex and config.json
             Pair<Process, Future<String>> dhtServerInit = new DhtServerExecutor().execute(node,
-                    "-v", Utils.getTonLogLevel(node.getTonLogLevel()),
+                    "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
                     "-t", "1",
                     "-C", EXAMPLE_GLOBAL_CONFIG,
-                    "-l", node.getDhtServerDir() + Utils.toUtcNoSpace(System.currentTimeMillis()),
+                    "-l", node.getDhtServerDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
                     "-D", node.getDhtServerDir(),
                     "-I", node.getPublicIp() + ":" + node.getDhtPort());
 
@@ -74,11 +74,11 @@ public class DhtServer {
                 System.exit(11);
             }
 
-            Utils.replaceOutPortInConfigJson(node.getDhtServerDir(), node.getDhtOutPort()); // no need - FYI - config.json update?
+            MyLocalTonUtils.replaceOutPortInConfigJson(node.getDhtServerDir(), node.getDhtOutPort()); // no need - FYI - config.json update?
 
             return generateDhtKeys(node, publicIpNum);
         } else {
-            log.info("DHT server initialized. Skipping.");
+            log.debug("DHT server initialized. Skipping.");
             return new ArrayList<>();
         }
     }
@@ -104,7 +104,7 @@ public class DhtServer {
             log.debug("dht-nodes added: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
         } else { // modify existing
             log.debug("Replace current list of dht nodes with a new one");
-            String existingNodes = Utils.sbb(globalConfigContent, "\"nodes\": [");
+            String existingNodes = MyLocalTonUtils.sbb(globalConfigContent, "\"nodes\": [");
             String replacedLocalConfig = StringUtils.replace(globalConfigContent, existingNodes, StringUtils.substring(existingNodes, 0, -1) + "," + String.join(",", dhtNodes) + "]");
             FileUtils.writeStringToFile(new File(myGlobalConfig), replacedLocalConfig, StandardCharsets.UTF_8);
             log.debug("dht-nodes updated: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));

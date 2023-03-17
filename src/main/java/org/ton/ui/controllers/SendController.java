@@ -13,18 +13,15 @@ import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.main.App;
 import org.ton.parameters.SendToncoinsParam;
-import org.ton.ui.custom.events.CustomEvent;
-import org.ton.ui.custom.events.event.CustomActionEvent;
-import org.ton.ui.custom.events.event.CustomNotificationEvent;
-import org.ton.wallet.Wallet;
+import org.ton.wallet.MyWallet;
 import org.ton.wallet.WalletAddress;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import static org.ton.main.App.fxmlLoader;
-import static org.ton.ui.custom.events.CustomEventBus.emit;
 
 @Slf4j
 public class SendController implements Initializable {
@@ -81,14 +78,14 @@ public class SendController implements Initializable {
                 WalletEntity fromWallet = App.dbPool.findWallet(walletPk);
                 WalletAddress fromWalletAddress = fromWallet.getWallet();
 
-                BigDecimal amount = new BigDecimal(sendAmount.getText());
+                BigInteger amount = (new BigDecimal(sendAmount.getText())).multiply(BigDecimal.valueOf(1_000_000_000)).toBigInteger();
                 log.info("Sending {} Toncoins from {} ({}) to {}", amount, fromWalletAddress.getFullWalletAddress(), fromWallet.getWalletVersion(), destAddress);
 
                 SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                         .executionNode(MyLocalTon.getInstance().getSettings().getGenesisNode())
                         .fromWallet(fromWalletAddress)
                         .fromWalletVersion(fromWallet.getWalletVersion())
-                        .fromSubWalletId(fromWallet.getSubWalletId())
+                        .fromSubWalletId(fromWallet.getWallet().getSubWalletId())
                         .destAddr(destAddress)
                         .amount(amount)
 //                        .clearBounce(clearBounceFlag.isSelected())
@@ -96,7 +93,7 @@ public class SendController implements Initializable {
                         .comment(comment.getText())
                         .build();
 
-                boolean sentOK = new Wallet().sendTonCoins(sendToncoinsParam);
+                boolean sentOK = new MyWallet().sendTonCoins(sendToncoinsParam);
 
                 MainController c = fxmlLoader.getController();
                 c.sendDialog.close();

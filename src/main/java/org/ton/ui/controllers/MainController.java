@@ -45,6 +45,7 @@ import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.*;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.executors.liteclient.api.config.Validator;
+import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.main.App;
 import org.ton.parameters.ValidationParam;
 import org.ton.settings.*;
@@ -56,8 +57,7 @@ import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.ui.custom.events.event.CustomSearchEvent;
 import org.ton.ui.custom.layout.*;
-import org.ton.utils.Utils;
-import org.ton.wallet.WalletVersion;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -924,7 +924,7 @@ public class MainController implements Initializable {
 
     @FXML
     private CustomTextField validatorLogDir1, dhtLogDir1, myLocalTonLog, validatorLogDir2, validatorLogDir3,
-            validatorLogDir4, validatorLogDir5, validatorLogDir6, validatorLogDir7, coinsPerWallet, walletsNumber,
+            validatorLogDir4, validatorLogDir5, validatorLogDir6, validatorLogDir7, coinsPerWallet,
             globalId, initialBalance, maxValidators, maxMainValidators, minValidators, electedFor, minStake,
             electionStartBefore, minTotalStake, stakesFrozenFor, maxFactor, gasPrice, gasPriceMc, cellPrice,
             cellPriceMc, electionEndBefore, maxStake;
@@ -939,7 +939,7 @@ public class MainController implements Initializable {
     public JFXCheckBox inOutMsgsCheckBox;
 
     @FXML
-    public CustomComboBox myLogLevel, tonLogLevel, tonLogLevel2, tonLogLevel3, tonLogLevel4, tonLogLevel5, tonLogLevel6, tonLogLevel7, walletVersion;
+    public CustomComboBox myLogLevel, tonLogLevel, tonLogLevel2, tonLogLevel3, tonLogLevel4, tonLogLevel5, tonLogLevel6, tonLogLevel7;
 
     private MyLocalTonSettings settings;
 
@@ -977,39 +977,32 @@ public class MainController implements Initializable {
 
 
     public void showInfoMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.INFO, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.INFO, msg, durationSeconds)));
     }
 
     public void showSuccessMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, msg, durationSeconds)));
     }
 
     public void showErrorMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, msg, durationSeconds)));
     }
 
     public void showWarningMsg(String msg, double durationSeconds) {
-        Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds));
-        });
+        Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds)));
     }
 
     public void showShutdownMsg(String msg, double durationSeconds) {
         Platform.runLater(() -> {
-            emit(new CustomNotificationEvent(CustomEvent.Type.WARNING, msg, durationSeconds));
+            emit(new CustomNotificationEvent(CustomEvent.Type.INFO, msg, durationSeconds));
 
             ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
             service.schedule(() -> {
+                Thread.currentThread().setName("MyLocalTon - Shutdown");
                 saveSettings();
                 Platform.exit(); // closes main form
 
-                if (Utils.doShutdown()) {
+                if (MyLocalTonUtils.doShutdown()) {
                     log.info("system exit 0");
                     System.exit(0);
                 }
@@ -1068,13 +1061,9 @@ public class MainController implements Initializable {
                         String createdatDate = ((Label) ((Node) bp).lookup("#createdatDate")).getText();
                         String createdatTime = ((Label) ((Node) bp).lookup("#createdatTime")).getText();
 
-                        long createdAt = Utils.datetimeToTimestamp(createdatDate + " " + createdatTime);
+                        long createdAt = MyLocalTonUtils.datetimeToTimestamp(createdatDate + " " + createdatTime);
 
-                        log.debug("bottom reached, seqno {}, time {}, hwm {} ", lastSeqno, Utils.toUtcNoSpace(createdAt), MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get());
-
-                        if (lastSeqno == 1L && wc == -1L) {
-                            return;
-                        }
+                        log.debug("bottom reached, seqno {}, time {}, hwm {} ", lastSeqno, MyLocalTonUtils.toUtcNoSpace(createdAt), MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get());
 
                         if (blockslistviewid.getItems().size() > MAX_ROWS_IN_GUI) {
                             showWarningMsg("Maximum amount (" + MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().get() + ") of visible blocks in GUI reached.", 5);
@@ -1121,12 +1110,13 @@ public class MainController implements Initializable {
                         if ((blockRows.isEmpty()) && (lastSeqno < 10)) {
                             log.debug("On start some blocks were skipped, load them now from 1 to {}", lastSeqno - 1);
 
-                            LongStream.range(1, lastSeqno).forEach(i -> { // TODO for loop big integer
+                            LongStream.range(1, 10).forEach(i -> {
                                 try {
                                     ResultLastBlock block = LiteClientParser.parseBySeqno(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
                                     log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
                                     MyLocalTon.getInstance().insertBlocksAndTransactions(MyLocalTon.getInstance().getSettings().getGenesisNode(), block, false);
                                 } catch (Exception e) {
+                                    log.error("cannot load missing blocks {}", e.getMessage());
                                     e.printStackTrace();
                                 }
                             });
@@ -1160,7 +1150,7 @@ public class MainController implements Initializable {
                     BorderPane bp = (BorderPane) transactionsvboxid.getItems().get(transactionsvboxid.getItems().size() - 1);
                     String shortseqno = ((Label) ((Node) bp).lookup("#block")).getText();
 
-                    long createdAt = Utils.datetimeToTimestamp(((Label) ((Node) bp).lookup("#time")).getText());
+                    long createdAt = MyLocalTonUtils.datetimeToTimestamp(((Label) ((Node) bp).lookup("#time")).getText());
 
                     BlockShortSeqno blockShortSeqno = BlockShortSeqno.builder()
                             .wc(Long.valueOf(StringUtils.substringBetween(shortseqno, "(", ",")))
@@ -1168,7 +1158,7 @@ public class MainController implements Initializable {
                             .seqno(new BigInteger(StringUtils.substring(StringUtils.substringAfterLast(shortseqno, ","), 0, -1)))
                             .build();
 
-                    log.debug("bottom reached, seqno {}, hwm {}, createdAt {}, utc {}", blockShortSeqno.getSeqno(), MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get(), createdAt, Utils.toUtcNoSpace(createdAt));
+                    log.debug("bottom reached, seqno {}, hwm {}, createdAt {}, utc {}", blockShortSeqno.getSeqno(), MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get(), createdAt, MyLocalTonUtils.toUtcNoSpace(createdAt));
 
                     if (blockShortSeqno.getSeqno().compareTo(BigInteger.ONE) == 0) {
                         return;
@@ -1231,7 +1221,7 @@ public class MainController implements Initializable {
                     if ((txRows.isEmpty()) && (blockShortSeqno.getSeqno().compareTo(BigInteger.TEN) < 0)) {
                         log.debug("on start some blocks were skipped and thus some transactions get lost, load them from blocks 1");
 
-                        LongStream.range(1, blockShortSeqno.getSeqno().longValue()).forEach(i -> {
+                        LongStream.range(1, 10).forEach(i -> {
                             try {
                                 ResultLastBlock block = LiteClientParser.parseBySeqno(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeBySeqno(MyLocalTon.getInstance().getSettings().getGenesisNode(), -1L, "8000000000000000", new BigInteger(String.valueOf(i))));
                                 log.debug("load missing block {}: {}", i, block.getFullBlockSeqno());
@@ -1429,15 +1419,10 @@ public class MainController implements Initializable {
         showMsgBodyCheckBox.setSelected(settings.getUiSettings().isShowBodyInMessage());
         shardStateCheckbox.setSelected(settings.getUiSettings().isShowShardStateInBlockDump());
 
-        walletsNumber.setFieldText(settings.getWalletSettings().getNumberOfPreinstalledWallets().toString());
         coinsPerWallet.setFieldText(settings.getWalletSettings().getInitialAmount().toString());
-        walletVersion.addItem(WalletVersion.V1.getValue());
-        walletVersion.addItem(WalletVersion.V2.getValue());
-        walletVersion.addItem(WalletVersion.V3.getValue());
-        walletVersion.selectItem(settings.getWalletSettings().getWalletVersion().getValue());
 
         validatorLogDir1.setFieldText(settings.getGenesisNode().getTonLogDir());
-        myLocalTonLog.setFieldText(settings.LOG_FILE);
+        myLocalTonLog.setFieldText(MyLocalTonSettings.LOG_FILE);
         dhtLogDir1.setFieldText(settings.getGenesisNode().getDhtServerDir());
 
         validatorLogDir2.setFieldText(settings.getNode2().getTonLogDir());
@@ -1671,9 +1656,7 @@ public class MainController implements Initializable {
         settings.getUiSettings().setEnableBlockchainExplorer(enableBlockchainExplorer.isSelected());
         settings.getUiSettings().setShowShardStateInBlockDump(shardStateCheckbox.isSelected());
 
-        settings.getWalletSettings().setNumberOfPreinstalledWallets(Long.parseLong(walletsNumber.getFieldText()));
-        settings.getWalletSettings().setInitialAmount(new BigDecimal(coinsPerWallet.getFieldText()));
-        settings.getWalletSettings().setWalletVersion(WalletVersion.getKeyByValue(walletVersion.getValue()));
+        settings.getWalletSettings().setInitialAmount(new BigInteger(coinsPerWallet.getFieldText()));
 
         settings.getBlockchainSettings().setMinValidators(Long.valueOf(minValidators.getFieldText()));
         settings.getBlockchainSettings().setMaxValidators(Long.valueOf(maxValidators.getFieldText()));
@@ -1706,8 +1689,8 @@ public class MainController implements Initializable {
         settings.getGenesisNode().setConsolePort(Integer.valueOf(configNodeConsolePort1.getText()));
         settings.getGenesisNode().setLiteServerPort(Integer.valueOf(configLiteServerPort1.getText()));
         settings.getGenesisNode().setDhtPort(Integer.valueOf(configDhtServerPort1.getText()));
-        settings.getGenesisNode().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit1.getText()));
-        settings.getGenesisNode().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake1.getText()));
+        settings.getGenesisNode().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit1.getText()));
+        settings.getGenesisNode().setDefaultValidatorStake(new BigInteger(validatorDefaultStake1.getText()));
 
         settings.getNode2().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl2.getText()));
         settings.getNode2().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl2.getText()));
@@ -1717,8 +1700,8 @@ public class MainController implements Initializable {
         settings.getNode2().setPublicPort(Integer.valueOf(configNodePublicPort2.getText()));
         settings.getNode2().setConsolePort(Integer.valueOf(configNodeConsolePort2.getText()));
         settings.getNode2().setLiteServerPort(Integer.valueOf(configLiteServerPort2.getText()));
-        settings.getNode2().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit2.getText()));
-        settings.getNode2().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake2.getText()));
+        settings.getNode2().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit2.getText()));
+        settings.getNode2().setDefaultValidatorStake(new BigInteger(validatorDefaultStake2.getText()));
         settings.getNode2().setTonLogLevel(tonLogLevel2.getValue());
 
         settings.getNode3().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl3.getText()));
@@ -1729,8 +1712,8 @@ public class MainController implements Initializable {
         settings.getNode3().setPublicPort(Integer.valueOf(configNodePublicPort3.getText()));
         settings.getNode3().setConsolePort(Integer.valueOf(configNodeConsolePort3.getText()));
         settings.getNode3().setLiteServerPort(Integer.valueOf(configLiteServerPort3.getText()));
-        settings.getNode3().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit3.getText()));
-        settings.getNode3().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake3.getText()));
+        settings.getNode3().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit3.getText()));
+        settings.getNode3().setDefaultValidatorStake(new BigInteger(validatorDefaultStake3.getText()));
         settings.getNode3().setTonLogLevel(tonLogLevel3.getValue());
 
         settings.getNode4().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl4.getText()));
@@ -1741,8 +1724,8 @@ public class MainController implements Initializable {
         settings.getNode4().setPublicPort(Integer.valueOf(configNodePublicPort4.getText()));
         settings.getNode4().setConsolePort(Integer.valueOf(configNodeConsolePort4.getText()));
         settings.getNode4().setLiteServerPort(Integer.valueOf(configLiteServerPort4.getText()));
-        settings.getNode4().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit4.getText()));
-        settings.getNode4().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake4.getText()));
+        settings.getNode4().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit4.getText()));
+        settings.getNode4().setDefaultValidatorStake(new BigInteger(validatorDefaultStake4.getText()));
         settings.getNode4().setTonLogLevel(tonLogLevel4.getValue());
 
         settings.getNode5().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl5.getText()));
@@ -1753,8 +1736,8 @@ public class MainController implements Initializable {
         settings.getNode5().setPublicPort(Integer.valueOf(configNodePublicPort5.getText()));
         settings.getNode5().setConsolePort(Integer.valueOf(configNodeConsolePort5.getText()));
         settings.getNode5().setLiteServerPort(Integer.valueOf(configLiteServerPort5.getText()));
-        settings.getNode5().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit5.getText()));
-        settings.getNode5().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake5.getText()));
+        settings.getNode5().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit5.getText()));
+        settings.getNode5().setDefaultValidatorStake(new BigInteger(validatorDefaultStake5.getText()));
         settings.getNode5().setTonLogLevel(tonLogLevel5.getValue());
 
         settings.getNode6().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl6.getText()));
@@ -1765,8 +1748,8 @@ public class MainController implements Initializable {
         settings.getNode6().setPublicPort(Integer.valueOf(configNodePublicPort6.getText()));
         settings.getNode6().setConsolePort(Integer.valueOf(configNodeConsolePort6.getText()));
         settings.getNode6().setLiteServerPort(Integer.valueOf(configLiteServerPort6.getText()));
-        settings.getNode6().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit6.getText()));
-        settings.getNode6().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake6.getText()));
+        settings.getNode6().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit6.getText()));
+        settings.getNode6().setDefaultValidatorStake(new BigInteger(validatorDefaultStake6.getText()));
         settings.getNode6().setTonLogLevel(tonLogLevel6.getValue());
 
         settings.getNode7().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl7.getText()));
@@ -1777,11 +1760,11 @@ public class MainController implements Initializable {
         settings.getNode7().setPublicPort(Integer.valueOf(configNodePublicPort7.getText()));
         settings.getNode7().setConsolePort(Integer.valueOf(configNodeConsolePort7.getText()));
         settings.getNode7().setLiteServerPort(Integer.valueOf(configLiteServerPort7.getText()));
-        settings.getNode7().setInitialValidatorWalletAmount(new BigDecimal(validatorWalletDeposit7.getText()));
-        settings.getNode7().setDefaultValidatorStake(new BigDecimal(validatorDefaultStake7.getText()));
+        settings.getNode7().setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit7.getText()));
+        settings.getNode7().setDefaultValidatorStake(new BigInteger(validatorDefaultStake7.getText()));
         settings.getNode7().setTonLogLevel(tonLogLevel7.getValue());
 
-        Utils.saveSettingsToGson(settings);
+        MyLocalTonUtils.saveSettingsToGson(settings);
     }
 
     public void accountsOnScroll(ScrollEvent scrollEvent) {
@@ -1984,11 +1967,17 @@ public class MainController implements Initializable {
         Parent parent = loader.load();
         AccountsCreatePaneController controller = loader.getController();
 
-        controller.setWalletVersionText(settings.getWalletSettings().getWalletVersion().getValue());
+//        controller.setWalletVersionText(settings.getWalletSettings().getWalletVersion().getValue());
 
-        if (!settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3)) {
-            controller.hideSubWalletID();
-        }
+//        if (
+//                (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3R1))
+//                        || (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3R2))
+//                        || (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V4R2))
+//        ) {
+//            controller.showSubWalletID();
+//        } else {
+//            controller.hideSubWalletID();
+//        }
 
         JFXDialogLayout content = new JFXDialogLayout();
         content.setBody(parent);
@@ -2024,41 +2013,41 @@ public class MainController implements Initializable {
             String next = "Next validators (available only within a Break time): " + System.lineSeparator() + config36.getValidators().getValidators().stream().map(i -> i.getPublicKey() + "  " + i.getAdnlAddress() + "  " + i.getWeight()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
             totalValidators.setTooltip(new Tooltip(previous + current + next));
 
-            blockchainLaunched.setText(Utils.toLocal(v.getBlockchainLaunchTime()));
+            blockchainLaunched.setText(MyLocalTonUtils.toLocal(v.getBlockchainLaunchTime()));
 
             colorValidationTiming(v);
 
-            long validationStartInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartValidationCycle());
+            long validationStartInAgoSeconds = Math.abs(MyLocalTonUtils.getCurrentTimeSeconds() - v.getStartValidationCycle());
             String startsValidationDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationStartInAgoSeconds).toMillis(), "HH:mm:ss", true);
-            if ((Utils.getCurrentTimeSeconds() - v.getStartValidationCycle()) > 0) {
-                startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Started ago (" + startsValidationDuration + ")");
+            if ((MyLocalTonUtils.getCurrentTimeSeconds() - v.getStartValidationCycle()) > 0) {
+                startCycle.setText(MyLocalTonUtils.toLocal(v.getStartValidationCycle()) + "  Started ago (" + startsValidationDuration + ")");
             } else {
-                startCycle.setText(Utils.toLocal(v.getStartValidationCycle()) + "  Starts in (" + startsValidationDuration + ")");
+                startCycle.setText(MyLocalTonUtils.toLocal(v.getStartValidationCycle()) + "  Starts in (" + startsValidationDuration + ")");
             }
             long validationDurationInSeconds = v.getEndValidationCycle() - v.getStartValidationCycle();
             String validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            endCycle.setText(Utils.toLocal(v.getEndValidationCycle()) + "  Duration (" + validation1Duration + ")");
+            endCycle.setText(MyLocalTonUtils.toLocal(v.getEndValidationCycle()) + "  Duration (" + validation1Duration + ")");
 
-            long electionsStartsInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getStartElections());
+            long electionsStartsInAgoSeconds = Math.abs(MyLocalTonUtils.getCurrentTimeSeconds() - v.getStartElections());
             String startsElectionDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionsStartsInAgoSeconds).toMillis(), "HH:mm:ss", true);
-            if ((Utils.getCurrentTimeSeconds() - v.getStartElections()) > 0) {
-                startElections.setText(Utils.toLocal(v.getStartElections()) + "  Started ago (" + startsElectionDuration + ") Election Id " + v.getStartValidationCycle());
-                startElections.setTooltip(new Tooltip("Election Id (" + Utils.toLocal(v.getStartValidationCycle()) + ")"));
+            if ((MyLocalTonUtils.getCurrentTimeSeconds() - v.getStartElections()) > 0) {
+                startElections.setText(MyLocalTonUtils.toLocal(v.getStartElections()) + "  Started ago (" + startsElectionDuration + ") Election Id " + v.getStartValidationCycle());
+                startElections.setTooltip(new Tooltip("Election Id (" + MyLocalTonUtils.toLocal(v.getStartValidationCycle()) + ")"));
             } else {
-                startElections.setText(Utils.toLocal(v.getStartElections()) + "  Starts in (" + startsElectionDuration + ")");
+                startElections.setText(MyLocalTonUtils.toLocal(v.getStartElections()) + "  Starts in (" + startsElectionDuration + ")");
                 startElections.setTooltip(null);
             }
             long electionDurationInSeconds = v.getEndElections() - v.getStartElections();
             String elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds).toMillis(), "HH:mm:ss", true);
 
-            endElections.setText(Utils.toLocal(v.getEndElections()) + "  Duration (" + elections1Duration + ")");
+            endElections.setText(MyLocalTonUtils.toLocal(v.getEndElections()) + "  Duration (" + elections1Duration + ")");
 
-            long nextElectionsStartsInAgoSeconds = Math.abs(Utils.getCurrentTimeSeconds() - v.getNextElections());
+            long nextElectionsStartsInAgoSeconds = Math.abs(MyLocalTonUtils.getCurrentTimeSeconds() - v.getNextElections());
             String nextElectionDuration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(nextElectionsStartsInAgoSeconds).toMillis(), "HH:mm:ss", true);
-            if ((Utils.getCurrentTimeSeconds() - v.getNextElections()) > 0) {
-                nextElections.setText(Utils.toLocal(v.getNextElections()) + "  Started ago (" + nextElectionDuration + ")");
+            if ((MyLocalTonUtils.getCurrentTimeSeconds() - v.getNextElections()) > 0) {
+                nextElections.setText(MyLocalTonUtils.toLocal(v.getNextElections()) + "  Started ago (" + nextElectionDuration + ")");
             } else {
-                nextElections.setText(Utils.toLocal(v.getNextElections()) + "  Starts in (" + nextElectionDuration + ")");
+                nextElections.setText(MyLocalTonUtils.toLocal(v.getNextElections()) + "  Starts in (" + nextElectionDuration + ")");
             }
 
             minterAddr.setText(v.getMinterAddr());
@@ -2074,7 +2063,7 @@ public class MainController implements Initializable {
             //every 30 sec
             //MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
-            AccountState accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getMainWalletAddrFull()));
             minterBalance.setText(String.format("%,.9f", accountState.getBalance().getToncoins().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
 
             accountState = LiteClientParser.parseGetAccount(liteClient.executeGetAccount(settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
@@ -2122,7 +2111,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node1.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node1.getWalletAddress().getFullWalletAddress()));
             validator1AdnlAddressNext.setText(node1.getValidationAndlKey());
             validator1PubKeyHexNext.setText(node1.getValidationPubKeyHex());
             validator1PubKeyIntegerNext.setText(node1.getValidationPubKeyInteger());
@@ -2149,7 +2138,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node2.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node2.getWalletAddress().getFullWalletAddress()));
             validator2AdnlAddressNext.setText(node2.getValidationAndlKey());
             validator2PubKeyHexNext.setText(node2.getValidationPubKeyHex());
             validator2PubKeyIntegerNext.setText(node2.getValidationPubKeyInteger());
@@ -2158,11 +2147,8 @@ public class MainController implements Initializable {
             nodePublicPort2.setText(node2.getPublicPort().toString());
             nodeConsolePort2.setText(node2.getConsolePort().toString());
             liteServerPort2.setText(node2.getLiteServerPort().toString());
-            if (isNull(node2.getWalletAddress())) {
-                deleteValidatorBtn2.setDisable(true);
-            } else {
-                deleteValidatorBtn2.setDisable(false);
-            }
+
+            deleteValidatorBtn2.setDisable(isNull(node2.getWalletAddress()));
         }
     }
 
@@ -2181,7 +2167,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node3.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node3.getWalletAddress().getFullWalletAddress()));
             validator3AdnlAddressNext.setText(node3.getValidationAndlKey());
             validator3PubKeyHexNext.setText(node3.getValidationPubKeyHex());
             validator3PubKeyIntegerNext.setText(node3.getValidationPubKeyInteger());
@@ -2191,11 +2177,7 @@ public class MainController implements Initializable {
             nodeConsolePort3.setText(node3.getConsolePort().toString());
             liteServerPort3.setText(node3.getLiteServerPort().toString());
 
-            if (isNull(node3.getWalletAddress())) {
-                deleteValidatorBtn3.setDisable(true);
-            } else {
-                deleteValidatorBtn3.setDisable(false);
-            }
+            deleteValidatorBtn3.setDisable(isNull(node3.getWalletAddress()));
         }
     }
 
@@ -2214,7 +2196,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node4.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node4.getWalletAddress().getFullWalletAddress()));
             validator4AdnlAddressNext.setText(node4.getValidationAndlKey());
             validator4PubKeyHexNext.setText(node4.getValidationPubKeyHex());
             validator4PubKeyIntegerNext.setText(node4.getValidationPubKeyInteger());
@@ -2224,11 +2206,7 @@ public class MainController implements Initializable {
             nodeConsolePort4.setText(node4.getConsolePort().toString());
             liteServerPort4.setText(node4.getLiteServerPort().toString());
 
-            if (isNull(node4.getWalletAddress())) {
-                deleteValidatorBtn4.setDisable(true);
-            } else {
-                deleteValidatorBtn4.setDisable(false);
-            }
+            deleteValidatorBtn4.setDisable(isNull(node4.getWalletAddress()));
         }
     }
 
@@ -2249,7 +2227,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node5.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node5.getWalletAddress().getFullWalletAddress()));
             validator5AdnlAddressNext.setText(node5.getValidationAndlKey());
             validator5PubKeyHexNext.setText(node5.getValidationPubKeyHex());
             validator5PubKeyIntegerNext.setText(node5.getValidationPubKeyInteger());
@@ -2259,11 +2237,7 @@ public class MainController implements Initializable {
             nodeConsolePort5.setText(node5.getConsolePort().toString());
             liteServerPort5.setText(node5.getLiteServerPort().toString());
 
-            if (isNull(node5.getWalletAddress())) {
-                deleteValidatorBtn5.setDisable(true);
-            } else {
-                deleteValidatorBtn5.setDisable(false);
-            }
+            deleteValidatorBtn5.setDisable(isNull(node5.getWalletAddress()));
         }
     }
 
@@ -2282,7 +2256,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node6.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node6.getWalletAddress().getFullWalletAddress()));
             validator6AdnlAddressNext.setText(node6.getValidationAndlKey());
             validator6PubKeyHexNext.setText(node6.getValidationPubKeyHex());
             validator6PubKeyIntegerNext.setText(node6.getValidationPubKeyInteger());
@@ -2315,7 +2289,7 @@ public class MainController implements Initializable {
                 }
             }
 
-            AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node7.getWalletAddress().getFullWalletAddress()));
+            LiteClientAccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(settings.getGenesisNode(), node7.getWalletAddress().getFullWalletAddress()));
             validator7AdnlAddressNext.setText(node7.getValidationAndlKey());
             validator7PubKeyHexNext.setText(node7.getValidationPubKeyHex());
             validator7PubKeyIntegerNext.setText(node7.getValidationPubKeyInteger() + " (used in participants list)");
@@ -2325,11 +2299,7 @@ public class MainController implements Initializable {
             nodeConsolePort7.setText(node7.getConsolePort().toString());
             liteServerPort7.setText(node7.getLiteServerPort().toString());
 
-            if (isNull(node7.getWalletAddress())) {
-                deleteValidatorBtn7.setDisable(true);
-            } else {
-                deleteValidatorBtn7.setDisable(false);
-            }
+            deleteValidatorBtn7.setDisable(isNull(node7.getWalletAddress()));
         }
     }
 
@@ -2437,7 +2407,7 @@ public class MainController implements Initializable {
 
     public void drawTimeLine() {
         log.debug("draw time-line");
-        long currentTime = Utils.getCurrentTimeSeconds();
+        long currentTime = MyLocalTonUtils.getCurrentTimeSeconds();
 
         if (nonNull(settings.getTimeLineScale())) {
 
@@ -2446,7 +2416,6 @@ public class MainController implements Initializable {
             long electionsDelta = v.getNextElections() - v.getStartElections();
 
             if ((currentTime - v.getStartElections()) > (electionsDelta * 2)) {
-                log.info("redraw to the closest");
                 Object lastKey = settings.elections.keySet().toArray()[settings.elections.size() - 1];
                 v = settings.elections.get(lastKey);
             }
@@ -2463,9 +2432,9 @@ public class MainController implements Initializable {
                 xcoord = 0 + (x * settings.getTimeLineScale());
             }
 
-            log.debug("electionsDelta {}, electionsDeltaWidth {}, timeScale {}, xcoord {}, x {}, v.getStartElections() {}, sizeElections {}", electionsDelta, electionsDeltaWidth, settings.getTimeLineScale(), xcoord, x, Utils.toLocal(v.getStartElections()), settings.elections.size());
+            log.debug("electionsDelta {}, electionsDeltaWidth {}, timeScale {}, xcoord {}, x {}, v.getStartElections() {}, sizeElections {}", electionsDelta, electionsDeltaWidth, settings.getTimeLineScale(), xcoord, x, MyLocalTonUtils.toLocal(v.getStartElections()), settings.elections.size());
             timeLine.setLayoutX(xcoord);
-            timeLine.setTooltip(new Tooltip(Utils.toLocal(currentTime)));
+            timeLine.setTooltip(new Tooltip(MyLocalTonUtils.toLocal(currentTime)));
             saveSettings();
         }
     }
@@ -2559,96 +2528,96 @@ public class MainController implements Initializable {
 
         if (settings.elections.size() == 1) {
             elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds1).toMillis(), "HH:mm:ss", true);
-            elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getStartElections()), Utils.toLocal(v1.getEndElections()), elections1Duration);
+            elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getStartElections()), MyLocalTonUtils.toLocal(v1.getEndElections()), elections1Duration);
             electionsRange1.setTooltip(new Tooltip(elections1ToolTip));
 
             pauseDurationInSeconds = v1.getStartValidationCycle() - v1.getEndElections();
             pause1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getEndElections()), Utils.toLocal(v1.getStartValidationCycle()), pause1Duration);
+            String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getEndElections()), MyLocalTonUtils.toLocal(v1.getStartValidationCycle()), pause1Duration);
             pauseRange1.setTooltip(new Tooltip(pause1ToolTip));
 
             validationDurationInSeconds = v1.getEndValidationCycle() - v1.getStartValidationCycle();
             validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getStartValidationCycle()), Utils.toLocal(v1.getEndValidationCycle()), validation1Duration);
+            String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getStartValidationCycle()), MyLocalTonUtils.toLocal(v1.getEndValidationCycle()), validation1Duration);
             validationRange1.setTooltip(new Tooltip(validation1ToolTip));
 
             stakeHoldDurationInSeconds = v1.getHoldPeriod();
             stakeHold1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getEndValidationCycle()), Utils.toLocal(java.time.Duration.ofSeconds(v1.getEndValidationCycle()).plusSeconds(v1.getHoldPeriod()).toSeconds()), stakeHold1Duration);
+            String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getEndValidationCycle()), MyLocalTonUtils.toLocal(java.time.Duration.ofSeconds(v1.getEndValidationCycle()).plusSeconds(v1.getHoldPeriod()).toSeconds()), stakeHold1Duration);
             stakeHoldRange1.setTooltip(new Tooltip(holdStake1ToolTip));
 
             //2
             long endElections2 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionDurationInSeconds1).toSeconds();
-            String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getNextElections()), Utils.toLocal(endElections2), elections1Duration);
+            String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getNextElections()), MyLocalTonUtils.toLocal(endElections2), elections1Duration);
             electionsRange2.setTooltip(new Tooltip(elections2ToolTip));
 
             long endPause2 = java.time.Duration.ofSeconds(endElections2).plusSeconds(pauseDurationInSeconds).toSeconds();
-            String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections2), Utils.toLocal(endPause2), pause1Duration);
+            String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endElections2), MyLocalTonUtils.toLocal(endPause2), pause1Duration);
             pauseRange2.setTooltip(new Tooltip(pause2ToolTip));
 
             long endValidation2 = java.time.Duration.ofSeconds(endPause2).plusSeconds(validationDurationInSeconds).toSeconds();
-            String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause2), Utils.toLocal(endValidation2), validation1Duration);
+            String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endPause2), MyLocalTonUtils.toLocal(endValidation2), validation1Duration);
             validationRange2.setTooltip(new Tooltip(validation2ToolTip));
 
             long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v1.getHoldPeriod()).toSeconds();
-            String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
+            String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endValidation2), MyLocalTonUtils.toLocal(endHoldStake2), stakeHold1Duration);
             stakeHoldRange2.setTooltip(new Tooltip(holdStake2ToolTip));
             settings.setStakeHoldRange2End(endHoldStake2);
 
             //3
             long startElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionsDelta1).toSeconds();
             long endElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionDurationInSeconds1 + electionsDelta1).toSeconds();
-            String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(startElections3), Utils.toLocal(endElections3), elections1Duration);
+            String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(startElections3), MyLocalTonUtils.toLocal(endElections3), elections1Duration);
             electionsRange3.setTooltip(new Tooltip(elections3ToolTip));
 
             long endPause3 = java.time.Duration.ofSeconds(endElections3).plusSeconds(pauseDurationInSeconds).toSeconds();
-            String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections3), Utils.toLocal(endPause3), pause1Duration);
+            String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endElections3), MyLocalTonUtils.toLocal(endPause3), pause1Duration);
             pauseRange3.setTooltip(new Tooltip(pause3ToolTip));
 
             long endValidation3 = java.time.Duration.ofSeconds(endPause3).plusSeconds(validationDurationInSeconds).toSeconds();
-            String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause3), Utils.toLocal(endValidation3), validation1Duration);
+            String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endPause3), MyLocalTonUtils.toLocal(endValidation3), validation1Duration);
             validationRange3.setTooltip(new Tooltip(validation3ToolTip));
 
             long endHoldStake3 = java.time.Duration.ofSeconds(endValidation3).plusSeconds(v1.getHoldPeriod()).toSeconds();
-            String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation3), Utils.toLocal(endHoldStake3), stakeHold1Duration);
+            String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endValidation3), MyLocalTonUtils.toLocal(endHoldStake3), stakeHold1Duration);
             stakeHoldRange3.setTooltip(new Tooltip(holdStake3ToolTip));
             settings.setStakeHoldRange3End(endHoldStake3);
         } else {
             elections1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(electionDurationInSeconds2).toMillis(), "HH:mm:ss", true);
-            elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getStartElections()), Utils.toLocal(v2.getEndElections()), elections1Duration);
+            elections1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v2.getStartElections()), MyLocalTonUtils.toLocal(v2.getEndElections()), elections1Duration);
             electionsRange1.setTooltip(new Tooltip(elections1ToolTip));
 
             pauseDurationInSeconds = v2.getStartValidationCycle() - v2.getEndElections();
             pause1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(pauseDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getEndElections()), Utils.toLocal(v2.getStartValidationCycle()), pause1Duration);
+            String pause1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v2.getEndElections()), MyLocalTonUtils.toLocal(v2.getStartValidationCycle()), pause1Duration);
             pauseRange1.setTooltip(new Tooltip(pause1ToolTip));
 
             validationDurationInSeconds = v2.getEndValidationCycle() - v2.getStartValidationCycle();
             validation1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(validationDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getStartValidationCycle()), Utils.toLocal(v2.getEndValidationCycle()), validation1Duration);
+            String validation1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v2.getStartValidationCycle()), MyLocalTonUtils.toLocal(v2.getEndValidationCycle()), validation1Duration);
             validationRange1.setTooltip(new Tooltip(validation1ToolTip));
 
             stakeHoldDurationInSeconds = v2.getHoldPeriod();
             stakeHold1Duration = DurationFormatUtils.formatDuration(java.time.Duration.ofSeconds(stakeHoldDurationInSeconds).toMillis(), "HH:mm:ss", true);
-            String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v2.getEndValidationCycle()), Utils.toLocal(java.time.Duration.ofSeconds(v2.getEndValidationCycle()).plusSeconds(v2.getHoldPeriod()).toSeconds()), stakeHold1Duration);
+            String holdStake1ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v2.getEndValidationCycle()), MyLocalTonUtils.toLocal(java.time.Duration.ofSeconds(v2.getEndValidationCycle()).plusSeconds(v2.getHoldPeriod()).toSeconds()), stakeHold1Duration);
             stakeHoldRange1.setTooltip(new Tooltip(holdStake1ToolTip));
 
             //2
             long endElections2 = java.time.Duration.ofSeconds(v1.getStartElections()).plusSeconds(electionDurationInSeconds1).toSeconds();
-            String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(v1.getStartElections()), Utils.toLocal(endElections2), elections1Duration);
+            String elections2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(v1.getStartElections()), MyLocalTonUtils.toLocal(endElections2), elections1Duration);
             electionsRange2.setTooltip(new Tooltip(elections2ToolTip));
 
             pauseDurationInSeconds = v1.getStartValidationCycle() - v1.getEndElections();
             long endPause2 = java.time.Duration.ofSeconds(endElections2).plusSeconds(pauseDurationInSeconds).toSeconds();
-            String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections2), Utils.toLocal(endPause2), pause1Duration);
+            String pause2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endElections2), MyLocalTonUtils.toLocal(endPause2), pause1Duration);
             pauseRange2.setTooltip(new Tooltip(pause2ToolTip));
 
             long endValidation2 = java.time.Duration.ofSeconds(endPause2).plusSeconds(validationDurationInSeconds).toSeconds();
-            String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause2), Utils.toLocal(endValidation2), validation1Duration);
+            String validation2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endPause2), MyLocalTonUtils.toLocal(endValidation2), validation1Duration);
             validationRange2.setTooltip(new Tooltip(validation2ToolTip));
 
             long endHoldStake2 = java.time.Duration.ofSeconds(endValidation2).plusSeconds(v1.getHoldPeriod()).toSeconds();
-            String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation2), Utils.toLocal(endHoldStake2), stakeHold1Duration);
+            String holdStake2ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endValidation2), MyLocalTonUtils.toLocal(endHoldStake2), stakeHold1Duration);
             stakeHoldRange2.setTooltip(new Tooltip(holdStake2ToolTip));
 
             settings.setStakeHoldRange2End(endHoldStake2);
@@ -2656,19 +2625,19 @@ public class MainController implements Initializable {
             //3
             long startElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).toSeconds();
             long endElections3 = java.time.Duration.ofSeconds(v1.getNextElections()).plusSeconds(electionDurationInSeconds2).toSeconds();
-            String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(startElections3), Utils.toLocal(endElections3), elections1Duration);
+            String elections3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(startElections3), MyLocalTonUtils.toLocal(endElections3), elections1Duration);
             electionsRange3.setTooltip(new Tooltip(elections3ToolTip));
 
             long endPause3 = java.time.Duration.ofSeconds(endElections3).plusSeconds(pauseDurationInSeconds).toSeconds();
-            String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endElections3), Utils.toLocal(endPause3), pause1Duration);
+            String pause3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endElections3), MyLocalTonUtils.toLocal(endPause3), pause1Duration);
             pauseRange3.setTooltip(new Tooltip(pause3ToolTip));
 
             long endValidation3 = java.time.Duration.ofSeconds(endPause3).plusSeconds(validationDurationInSeconds).toSeconds();
-            String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endPause3), Utils.toLocal(endValidation3), validation1Duration);
+            String validation3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endPause3), MyLocalTonUtils.toLocal(endValidation3), validation1Duration);
             validationRange3.setTooltip(new Tooltip(validation3ToolTip));
 
             long endHoldStake3 = java.time.Duration.ofSeconds(endValidation3).plusSeconds(v1.getHoldPeriod()).toSeconds();
-            String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", Utils.toLocal(endValidation3), Utils.toLocal(endHoldStake3), stakeHold1Duration);
+            String holdStake3ToolTip = String.format("Start: %s%nEnd: %s%nDuration: %s", MyLocalTonUtils.toLocal(endValidation3), MyLocalTonUtils.toLocal(endHoldStake3), stakeHold1Duration);
             stakeHoldRange3.setTooltip(new Tooltip(holdStake3ToolTip));
 
             settings.setStakeHoldRange3End(endHoldStake3);
@@ -2683,7 +2652,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2695,7 +2664,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2710,7 +2679,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2722,7 +2691,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2734,7 +2703,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2746,7 +2715,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2758,7 +2727,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2782,7 +2751,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2794,7 +2763,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2809,7 +2778,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2821,7 +2790,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2833,7 +2802,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2845,7 +2814,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2857,7 +2826,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2869,7 +2838,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2881,7 +2850,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2896,7 +2865,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2908,7 +2877,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2920,7 +2889,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2932,7 +2901,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2944,7 +2913,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2956,7 +2925,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2968,7 +2937,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2983,7 +2952,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2995,7 +2964,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3007,7 +2976,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3019,7 +2988,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3031,7 +3000,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3043,7 +3012,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3055,7 +3024,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3070,7 +3039,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3082,7 +3051,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3094,7 +3063,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3106,7 +3075,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3118,7 +3087,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3130,7 +3099,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3142,7 +3111,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3157,7 +3126,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3169,7 +3138,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3181,7 +3150,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3193,7 +3162,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3205,7 +3174,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3217,7 +3186,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3229,7 +3198,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3244,7 +3213,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.info(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3256,7 +3225,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3268,7 +3237,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3280,7 +3249,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3292,7 +3261,7 @@ public class MainController implements Initializable {
         content.putString(addr);
         clipboard.setContent(content);
         log.debug(addr + " copied");
-        String lightAddr = Utils.getLightAddress(addr);
+        String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -3307,7 +3276,7 @@ public class MainController implements Initializable {
             try {
                 mainController.addValidatorBtn.setDisable(true);
 
-                org.ton.settings.Node node = Utils.getNewNode();
+                org.ton.settings.Node node = MyLocalTonUtils.getNewNode();
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
 
@@ -3316,24 +3285,17 @@ public class MainController implements Initializable {
 
                     MyLocalTon.getInstance().createFullnode(node, true, true);
 
-                    Tab newTab = Utils.getNewNodeTab();
-                    Platform.runLater(() -> {
-                        validationTabs.getTabs().add(newTab);
-                    });
-
-//                    if (SystemUtils.IS_OS_WINDOWS) {
-//                        Utils.waitForBlockchainReady(node);
-//                        Utils.waitForNodeSynchronized(node);
-//                    }
+                    Tab newTab = MyLocalTonUtils.getNewNodeTab();
+                    Platform.runLater(() -> validationTabs.getTabs().add(newTab));
 
                     settings.getActiveNodes().add(node.getNodeName());
                     MyLocalTon.getInstance().saveSettingsToGson();
 
                     showDialogMessage("Completed", "Validator " + node.getNodeName() + " has been cloned from genesis, now synchronizing and creating main wallet.");
 
-                    log.info("Creating validator controlling smart-contract (wallet) for node {}", node.getNodeName());
-                    WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(node, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
-                    node.setWalletAddress(walletEntity.getWallet());
+                    log.info("Creating new validator controlling smart-contract (wallet) for node {}", node.getNodeName());
+                    MyLocalTon.getInstance().createWalletEntity(node, null, WalletVersion.V3R2, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
+                    //node.setWalletAddress(walletEntity.getWallet()); // double check
 
                     mainController.addValidatorBtn.setDisable(false);
                     App.mainController.showInfoMsg("Main wallet for validator " + node.getNodeName() + " has been successfully created.", 5);

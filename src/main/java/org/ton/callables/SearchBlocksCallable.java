@@ -5,7 +5,7 @@ import org.ton.callables.parameters.BlockCallbackParam;
 import org.ton.db.DB2;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.BlockPk;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -27,7 +27,7 @@ public class SearchBlocksCallable implements Callable<BlockCallbackParam> {
         this.blockPk = blockCallbackParam.getBlockPk();
         this.foundBlock = blockCallbackParam.getFoundBlock();
         this.datetimeFrom = blockCallbackParam.getDatetimeFrom();
-        this.searchText = blockCallbackParam.getSearchText();
+        this.searchText = blockCallbackParam.getSearchText().toUpperCase();
     }
 
     public BlockCallbackParam call() {
@@ -45,9 +45,9 @@ public class SearchBlocksCallable implements Callable<BlockCallbackParam> {
 
             if ((wcShardSeqnoHash.charAt(0) == '(') && (wcShardSeqnoHash.charAt(wcShardSeqnoHash.length() - 1) == ')')) {
                 String[] s = wcShardSeqnoHash.substring(1, wcShardSeqnoHash.length() - 1).split(",");
-                wc = Utils.parseLong(s[0]);
+                wc = MyLocalTonUtils.parseLong(s[0]);
                 shard = s[1];
-                seqno = Utils.parseLong(s[2]);
+                seqno = MyLocalTonUtils.parseLong(s[2]);
                 query = em.createQuery("SELECT b FROM BlockEntity b where (b.seqno = :seqno) AND (b.shard = :shard) AND (b.wc = :wc) ORDER BY b.createdAt DESC", BlockEntity.class);
                 results = query
                         .setParameter(SEQNO, seqno)
@@ -63,9 +63,9 @@ public class SearchBlocksCallable implements Callable<BlockCallbackParam> {
                         //.setMaxResults(SCROLL_BAR_DELTA) // to many results
                         .getResultList();
             } else {
-                seqno = Utils.parseLong(wcShardSeqnoHash);
+                seqno = MyLocalTonUtils.parseLong(wcShardSeqnoHash);
                 shard = wcShardSeqnoHash;
-                wc = Utils.parseLong(wcShardSeqnoHash);
+                wc = MyLocalTonUtils.parseLong(wcShardSeqnoHash);
                 query = em.createQuery("SELECT b FROM BlockEntity b where (b.seqno = :seqno) OR (b.shard = :shard) OR (b.wc = :wc) ORDER BY b.createdAt DESC", BlockEntity.class);
                 results = query
                         .setParameter(SEQNO, seqno)

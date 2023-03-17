@@ -11,20 +11,12 @@ import javafx.scene.layout.VBox;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.actions.MyLocalTon;
-import org.ton.db.entities.WalletEntity;
 import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.LiteClient;
-import org.ton.main.App;
-import org.ton.ui.custom.control.CustomTextField;
-import org.ton.utils.Utils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import static com.sun.javafx.PlatformUtil.isWindows;
-import static java.util.Objects.nonNull;
 import static org.ton.main.App.fxmlLoader;
 
 @Slf4j

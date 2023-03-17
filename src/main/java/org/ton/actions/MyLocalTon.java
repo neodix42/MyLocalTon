@@ -21,27 +21,29 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Strings;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.enums.LiteClientEnum;
-import org.ton.exceptions.WrongSeqnoException;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.liteclient.api.ResultComputeReturnStake;
 import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.executors.liteclient.api.ResultListBlockTransactions;
-import org.ton.executors.liteclient.api.block.Address;
+import org.ton.executors.liteclient.api.block.LiteClientAddress;
 import org.ton.executors.liteclient.api.block.Message;
 import org.ton.executors.liteclient.api.block.Transaction;
-import org.ton.executors.liteclient.api.block.Value;
 import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.executors.validatorengineconsole.ValidatorEngineConsole;
+import org.ton.java.address.Address;
+import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.Tonlib;
+import org.ton.java.tonlib.types.RawAccountState;
+import org.ton.java.tonlib.types.RunResult;
+import org.ton.java.tonlib.types.TvmStackEntryNumber;
 import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
@@ -50,11 +52,11 @@ import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
 import org.ton.ui.custom.events.CustomEvent;
+import org.ton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.ui.custom.events.event.CustomSearchEvent;
-import org.ton.utils.Utils;
-import org.ton.wallet.Wallet;
+import org.ton.utils.MyLocalTonUtils;
+import org.ton.wallet.MyWallet;
 import org.ton.wallet.WalletAddress;
-import org.ton.wallet.WalletVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,9 +72,9 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -99,6 +101,8 @@ public class MyLocalTon {
     public static final String FOUND_COLOR_HIHGLIGHT = "-fx-text-fill: #0088CC;";
     private static MyLocalTon singleInstance = null;
     public static ScheduledExecutorService validatorsMonitor = null;
+    public static Tonlib tonlib;
+    public static Tonlib tonlibBlockMonitor;
 
     private static final String CURRENT_DIR = System.getProperty("user.dir");
 
@@ -120,6 +124,7 @@ public class MyLocalTon {
     ConcurrentHashMap<String, Long> concurrentTxsHashMap = new ConcurrentHashMap<>();
     ConcurrentHashMap<String, Long> concurrentAccountsHashMap = new ConcurrentHashMap<>();
 
+    AtomicBoolean insertingNewAccount = new AtomicBoolean(false);
     Boolean autoScroll;
     AtomicLong blocksScrollBarHighWaterMark = new AtomicLong(30);
     AtomicLong txsScrollBarHighWaterMark = new AtomicLong(30);
@@ -182,9 +187,7 @@ public class MyLocalTon {
                             log.info("{} is ready", nodeName);
                         }
 
-                        Platform.runLater(() -> {
-                            Utils.showNodeStatus(settings.getNodeByName(nodeName), Utils.getNodeStatusLabelByName(nodeName), Utils.getNodeTabByName(nodeName));
-                        });
+                        Platform.runLater(() -> MyLocalTonUtils.showNodeStatus(settings.getNodeByName(nodeName), MyLocalTonUtils.getNodeStatusLabelByName(nodeName), MyLocalTonUtils.getNodeTabByName(nodeName)));
 
                     } catch (Exception e) {
                         log.error("Error in runNodesMonitor(), " + e.getMessage());
@@ -217,7 +220,7 @@ public class MyLocalTon {
     public void initGenesis(Node node) throws Exception {
 
         if (!Files.exists(Paths.get(node.getTonDbDir() + "state"), LinkOption.NOFOLLOW_LINKS)) {
-            log.info("Initializing genesis network");
+            log.debug("Initializing genesis network");
 
             ValidatorEngine validatorEngine = new ValidatorEngine();
 
@@ -235,7 +238,7 @@ public class MyLocalTon {
 
             settings.getActiveNodes().add(node.getNodeName());
         } else {
-            log.info("Found non-empty state; Skip genesis initialization.");
+            log.debug("Found non-empty state; Skip genesis initialization.");
         }
     }
 
@@ -259,16 +262,15 @@ public class MyLocalTon {
     /**
      * start validator for a short time in order to execute commands via validator-engine-console
      *
-     * @param node
-     * @param myGlobalConfig
-     * @throws Exception
+     * @param node           Node
+     * @param myGlobalConfig String
      */
     public void createGenesisValidator(Node node, String myGlobalConfig) throws Exception {
 
         String validatorPrvKeyHex = node.getValidatorPrvKeyHex();
-        log.info("{} validatorIdHex {}", node.getNodeName(), node.getValidatorPrvKeyHex());
+        log.debug("{} validatorIdHex {}", node.getNodeName(), node.getValidatorPrvKeyHex());
 
-        log.info("Starting temporary full-node...");
+        log.debug("Starting temporary full-node...");
         Process validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig).getLeft();
 
         log.debug("sleep 5sec");
@@ -279,7 +281,7 @@ public class MyLocalTon {
         String newNodePubKey = validatorEngineConsole.exportPubKey(node, newNodeKey);
         String newValAdnl = validatorEngineConsole.generateNewNodeKey(node);
 
-        log.info("newNodeKey {}, newNodePubKey {}, newValAdnl {}", newNodeKey, newNodePubKey, newValAdnl);
+        log.debug("newNodeKey {}, newNodePubKey {}, newValAdnl {}", newNodeKey, newNodePubKey, newValAdnl);
 
         node.setValidatorPubKeyBase64(newNodePubKey);
         node.setValidatorAdnlAddrHex(newValAdnl);
@@ -303,30 +305,18 @@ public class MyLocalTon {
         validatorProcess.destroy();
     }
 
-    private static int parseIp(String address) {
-        int result = 0;
-        for (String part : address.split(Pattern.quote("."))) {
-            result = result << 8;
-            result |= Integer.parseInt(part);
-        }
-        return result;
-    }
+    public WalletEntity createWalletWithFundsAndSmartContract(Node fromNode, WalletVersion walletVersion, long workchain, long subWalletId, BigInteger amount) throws Exception {
+        MyWallet myWallet = new MyWallet();
 
-    public WalletEntity createWalletWithFundsAndSmartContract(Node fromNode, Node toNode, long workchain, long subWalletId, BigDecimal amount) throws Exception {
-        Wallet wallet = new Wallet();
-        WalletVersion walletVersion = settings.getWalletSettings().getWalletVersion();
-        log.debug("createWalletWithFundsAndSmartContract, default wallet version {}", walletVersion.getValue());
 
-        WalletAddress walletAddress = wallet.createWallet(toNode, walletVersion, workchain, subWalletId);
+        WalletAddress walletAddress = myWallet.createWalletByVersion(walletVersion, workchain, subWalletId);
 
         WalletEntity walletEntity = WalletEntity.builder()
                 .wc(walletAddress.getWc())
-                .hexAddress(walletAddress.getHexWalletAddress())
-                .subWalletId(walletAddress.getSubWalletId())
+                .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
                 .walletVersion(walletVersion)
                 .wallet(walletAddress)
-                .preinstalled(true)
-                .accountState(AccountState.builder().build())
+                .accountState(RawAccountState.builder().build())
                 .createdAt(Instant.now().getEpochSecond())
                 .build();
 
@@ -345,87 +335,99 @@ public class MyLocalTon {
         SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                 .executionNode(settings.getGenesisNode())
                 .fromWallet(fromMasterWalletAddress)
-                .fromWalletVersion(WalletVersion.V1)
+                .fromWalletVersion(WalletVersion.master) // master
                 .fromSubWalletId(-1L)
                 .destAddr(walletAddress.getNonBounceableAddressBase64Url())
                 .amount(amount)
                 .build();
 
-        boolean sentOK = wallet.sendTonCoins(sendToncoinsParam);
+        boolean sentOK = myWallet.sendTonCoins(sendToncoinsParam);
 
         if (sentOK) {
             Thread.sleep(2000);
-
-            // install smart-contract into a new wallet
-            log.debug("installing wallet smc from node {}, boc {}", fromNode.getNodeName(), walletAddress.getWalletQueryFileBocLocation());
-            wallet.installWalletSmartContract(fromNode, walletAddress);
+            myWallet.installWalletSmartContract(fromNode, walletAddress);
         } else {
-            App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 3);
+            App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
         }
 
         return walletEntity;
     }
 
-    public void createPreInstalledWallets(Node genesisNode) throws Exception {
+    public void createInitialWallets(Node genesisNode) throws Exception {
 
-        long toInstall = settings.getWalletSettings().getNumberOfPreinstalledWallets();
+        long installed = App.dbPool.getNumberOfWalletsFromAllDBsAsync();
 
-        long installed = App.dbPool.getNumberOfPreinstalledWallets();
-        log.info("Creating {} pre-installed wallets, created {}", toInstall, installed);
-
-        if (installed < toInstall) {
+        if (installed < 3) {
             Thread.sleep(1000);
-            mainController.showWarningMsg("Creating initial wallets...", 5);
+            mainController.showInfoMsg("Creating initial wallets...", 6);
         }
 
-        while (installed < toInstall) {
-            if (App.dbPool.existsMainWallet() == 0) {
-                createWalletEntity(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "main-wallet", -1L, -1L, settings.getWalletSettings().getInitialAmount(), false); //WC -1
-                Thread.sleep(500);
-            }
-            if (App.dbPool.existsConfigWallet() == 0) {
-                createWalletEntity(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "config-master", -1L, -1L, settings.getWalletSettings().getInitialAmount(), false); //WC -1
-                Thread.sleep(500);
-            }
+        if (App.dbPool.existsMainWallet() == 0) {
+            createWalletSynchronously(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "main-wallet", WalletVersion.master, -1L, -1L, settings.getWalletSettings().getInitialAmount(), false); //WC -1
+        }
 
-            createWalletEntity(genesisNode, null, getSettings().getWalletSettings().getDefaultWorkChain(), getSettings().getWalletSettings().getDefaultSubWalletId(), settings.getWalletSettings().getInitialAmount(), false);
-
-            installed = App.dbPool.getNumberOfPreinstalledWallets();
-            log.info("created {}", installed);
+        if (App.dbPool.existsConfigWallet() == 0) {
+            createWalletSynchronously(genesisNode, getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + "config-master", WalletVersion.config, -1L, -1L, settings.getWalletSettings().getInitialAmount(), false); //WC -1
         }
 
         if (isNull(genesisNode.getWalletAddress())) {
-            log.info("Creating validator controlling smart-contract (wallet) for node {}", genesisNode.getNodeName());
-            WalletEntity walletEntity = MyLocalTon.getInstance().createWalletEntity(genesisNode, null, -1L, settings.getWalletSettings().getDefaultSubWalletId(), genesisNode.getInitialValidatorWalletAmount(), true);
-            genesisNode.setWalletAddress(walletEntity.getWallet());
+            log.info("Creating validator controlling smart-contract for node {}", genesisNode.getNodeName());
+            createWalletSynchronously(genesisNode, null, WalletVersion.V3R2, -1L, settings.getWalletSettings().getDefaultSubWalletId(), genesisNode.getInitialValidatorWalletAmount(), true);
         }
 
-        List<WalletEntity> wallets = App.dbPool.getAllWallets();
-
-        for (WalletEntity wallet : wallets) {
-            log.info("preinstalled wallet {}", wallet.getFullAddress());
-            Pair<AccountState, Long> stateAndSeqno = Pair.of(null, -1L);
-            try {
-                // always update account state on start
-                stateAndSeqno = getAccountStateAndSeqno(genesisNode, wallet.getWc() + ":" + wallet.getHexAddress());
-                App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
-
-                wallet.setAccountState(stateAndSeqno.getLeft());
-                wallet.setSeqno(stateAndSeqno.getRight());
-                updateAccountsTabGui(wallet);
-            } catch (Exception e) {
-                log.error("Error updating account state. Wallet {}, AccountState {}, seqno {}. {}", wallet.getWallet().getFullWalletAddress(), stateAndSeqno.getLeft(), stateAndSeqno.getRight(), e.getMessage());
-            }
+        while (installed < 3) {
+            installed = App.dbPool.getNumberOfWalletsFromAllDBsAsync();
+            Thread.sleep(200);
+            log.info("creating main validator wallet, total wallets {}", installed);
         }
+
+        //creating regular wallet
+//        createWalletEntity(genesisNode, null, getSettings().getWalletSettings().getWalletVersion(), getSettings().getWalletSettings().getDefaultWorkChain(), getSettings().getWalletSettings().getDefaultSubWalletId(), settings.getWalletSettings().getInitialAmount(), false);
+
+
+//        List<WalletEntity> wallets = App.dbPool.getAllWallets();
+//
+//        for (WalletEntity wallet : wallets) {
+//            log.info("preinstalled wallet {}", wallet.getFullAddress());
+////            Triple<RawAccountState, Long, WalletVersion> stateAndSeqno = Triple.of(null, -1L, null);
+//            try {
+//                // always update account state on start
+//                Triple<RawAccountState, Long, WalletVersion> stateAndSeqno = getAccountStateSeqnoVersion(wallet.getWc() + ":" + wallet.getHexAddress().toUpperCase());
+//                App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getMiddle(), stateAndSeqno.getRight());
+//
+//                wallet.setAccountState(stateAndSeqno.getLeft());
+//                wallet.setSeqno(stateAndSeqno.getMiddle());
+//                wallet.setWalletVersion(stateAndSeqno.getRight());
+//                updateAccountsTabGui(wallet);
+//            } catch (Exception e) {
+//                log.error("Error updating account state. Wallet {}, error: {}", wallet.getWallet().getFullWalletAddress(), e.getMessage());
+//            }
+//        }
     }
 
-    public WalletEntity createWalletEntity(Node node, String fileBaseName, long workchain, long subWalletid, BigDecimal amount, boolean validatorWallet) {
+    public void createWalletAsynchronously(Node node, String fileBaseName, WalletVersion walletVersion, long workchain, long subWalletid, BigInteger amount, boolean validatorWallet) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+        executorService.execute(() -> {
+            log.info("CreateWalletEntity thread started!");
+            Thread.currentThread().setName("MyLocalTon - Creating wallet - " + walletVersion.getValue() + ",wc=" + workchain + ",walledId=" + subWalletid);
+
+            createWalletEntity(node, fileBaseName, walletVersion, workchain, subWalletid, amount, validatorWallet);
+        });
+
+        executorService.shutdown();
+    }
+
+    public void createWalletSynchronously(Node node, String fileBaseName, WalletVersion walletVersion, long workchain, long subWalletid, BigInteger amount, boolean validatorWallet) {
+        createWalletEntity(node, fileBaseName, walletVersion, workchain, subWalletid, amount, validatorWallet);
+    }
+
+    public void createWalletEntity(Node node, String fileBaseName, WalletVersion walletVersion, long workchain, long subWalletid, BigInteger amount, boolean validatorWallet) {
         try {
             WalletEntity wallet;
-            if (isNull(fileBaseName)) { //generate and read address of just generated wallet
-                wallet = createWalletWithFundsAndSmartContract(settings.getGenesisNode(), node, workchain, subWalletid, amount);
-                log.debug("create wallet address {}", wallet.getHexAddress());
+            if (isNull(fileBaseName)) {
+                wallet = createWalletWithFundsAndSmartContract(settings.getGenesisNode(), walletVersion, workchain, subWalletid, amount);
+                log.debug("created wallet address {}", wallet.getHexAddress());
             } else { //read address of initially created wallet (main-wallet and config-master)
                 wallet = new Fift().getWalletByBasename(node, fileBaseName);
                 log.debug("read wallet address: {}", wallet.getHexAddress());
@@ -434,38 +436,21 @@ public class MyLocalTon {
             if (validatorWallet) {
                 node.setWalletAddress(wallet.getWallet());
             }
-
-            log.debug("updating account state {}", node.getNodeName());
-
-            Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(node, wallet.getWc() + ":" + wallet.getHexAddress());
-            log.debug("new account state on {} = {}", node.getNodeName(), stateAndSeqno);
-            log.info("on node {}, created wallet {}", node.getNodeName(), wallet.getWc() + ":" + wallet.getHexAddress());
-            App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
-
-            wallet.setAccountState(stateAndSeqno.getLeft());
-            wallet.setSeqno(stateAndSeqno.getRight());
-            updateAccountsTabGui(wallet);
-            return wallet;
         } catch (Exception e) {
             log.error("Error creating wallet! Error {} ", e.getMessage());
             log.error(ExceptionUtils.getStackTrace(e));
-            return null;
         }
     }
 
     public void runBlockchainSizeMonitor() {
-
         monitorExecutorService = Executors.newSingleThreadScheduledExecutor();
         monitorExecutorService.scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Blockchain Size Monitor");
 
             MainController c = fxmlLoader.getController();
-            String size = Utils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + MY_LOCAL_TON);
+            String size = MyLocalTonUtils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + MY_LOCAL_TON);
             log.debug("size {}", size);
-            Platform.runLater(() -> {
-                c.dbSizeId.setSecondaryText(size);
-
-            });
+            Platform.runLater(() -> c.dbSizeId.setSecondaryText(size));
         }, 0L, 60L, TimeUnit.SECONDS);
     }
 
@@ -477,9 +462,9 @@ public class MyLocalTon {
 
             if (Main.appActive.get()) {
                 try {
-                    long currentTime = Utils.getCurrentTimeSeconds();
+                    long currentTime = MyLocalTonUtils.getCurrentTimeSeconds();
 
-                    ValidationParam v = Utils.getConfig(settings.getGenesisNode());
+                    ValidationParam v = MyLocalTonUtils.getConfig(settings.getGenesisNode());
                     log.debug("validation parameters {}", v);
                     //save election ID
                     if (v.getStartValidationCycle() > YEAR_1971) {
@@ -491,7 +476,7 @@ public class MyLocalTon {
 
                     mainController.drawElections();
 
-                    log.debug("[start-end] elections [{} - {}], currentTime {}", Utils.toLocal(v.getStartElections()), Utils.toLocal(v.getEndElections()), Utils.toLocal(currentTime));
+                    log.debug("[start-end] elections [{} - {}], currentTime {}", MyLocalTonUtils.toLocal(v.getStartElections()), MyLocalTonUtils.toLocal(v.getEndElections()), MyLocalTonUtils.toLocal(currentTime));
                     log.debug("currTime > delta2, {} {}", (currentTime - v.getStartElections()), electionsDelta * 2);
 
                     if (((v.getStartValidationCycle() > YEAR_1971) && ((currentTime > v.getStartElections()) && (currentTime < v.getEndElections() - 10)))  // 10 sec to process
@@ -540,7 +525,7 @@ public class MyLocalTon {
                 ExecutorService nodeParticipationExecutorService = Executors.newSingleThreadExecutor();
                 nodeParticipationExecutorService.execute(() -> {
                     Thread.currentThread().setName("MyLocalTon - Participation in elections by " + nodeName);
-                    Utils.participate(node, v);
+                    MyLocalTonUtils.participate(node, v);
                 });
                 nodeParticipationExecutorService.shutdown();
             }
@@ -558,13 +543,25 @@ public class MyLocalTon {
                     Thread.currentThread().setName("MyLocalTon - Reaping rewards by " + nodeName);
                     reap(settings.getNodeByName(nodeName));
 
-                    Platform.runLater(() -> {
-                        updateReapedValuesTab(node);
-                    });
+                    Platform.runLater(() -> updateReapedValuesTab(node));
                 });
                 nodeReapRewardsExecutorService.shutdown();
             }
         }
+    }
+
+    public void initTonlib(Node node) {
+        tonlib = Tonlib.builder()
+                .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
+                .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+//                .verbosityLevel(VerbosityLevel.DEBUG)
+                .build();
+
+        tonlibBlockMonitor = Tonlib.builder()
+                .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
+                .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+//                .verbosityLevel(VerbosityLevel.DEBUG)
+                .build();
     }
 
     public void runBlockchainMonitor(Node node) {
@@ -583,8 +580,8 @@ public class MyLocalTon {
                     executorService.execute(() -> {
                         Thread.currentThread().setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
                         log.debug("Get last block");
-                        //Main.parsingBlocks.set(true);
                         ResultLastBlock lastBlock = LiteClientParser.parseLast(liteClient.executeLast(node));
+//                        MasterChainInfo lastBlockM = tonlib.getLast(); // todo next release
 
                         if (nonNull(lastBlock)) {
 
@@ -600,7 +597,6 @@ public class MyLocalTon {
                         } else {
                             log.debug("last block is null");
                         }
-                        //Main.parsingBlocks.set(false);
                         log.debug("Thread is done {}", Thread.currentThread().getName());
                     });
 
@@ -609,7 +605,6 @@ public class MyLocalTon {
                     Thread.sleep(1000);
 
                 } catch (Exception e) {
-                    //Main.parsingBlocks.set(false);
                     e.printStackTrace();
                     log.error(e.getMessage());
                 }
@@ -660,27 +655,59 @@ public class MyLocalTon {
 
                 txEntities.forEach(App.dbPool::insertTx);
 
+                detectNewAccount(lastBlock, tx, txDetails);
+
                 if (updateGuiNow) {
                     updateTxTabGui(lastBlock, tx, txDetails, txEntities);
                 }
-
-                detectNewAccount(lastBlock, updateGuiNow, tx, txDetails);
             }
         }
     }
 
-    private void detectNewAccount(ResultLastBlock lastBlock, boolean updateGuiNow, ResultListBlockTransactions tx, Transaction txDetails) {
+    private void detectNewAccount(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails) {
         if (
                 (txDetails.getOrigStatus().equals(NONEXISTENT) && txDetails.getEndStatus().equals(UNINITIALIZED)) ||
                         (txDetails.getOrigStatus().equals(UNINITIALIZED) && txDetails.getEndStatus().equals(UNINITIALIZED)) ||
                         (txDetails.getOrigStatus().equals(UNINITIALIZED) && txDetails.getEndStatus().equals(ACTIVE))
         ) {
-            log.info("New account detected! origStatus {}, endStatus {}, wallet created {}, txseqno {}, txLt {}, block {}", txDetails.getOrigStatus(), txDetails.getEndStatus(), txDetails.getAccountAddr(),
-                    tx.getTxSeqno(), tx.getLt(), lastBlock.getShortBlockSeqno());
-            WalletEntity walletEntity = insertNewAccountEntity(lastBlock, txDetails);
+            log.info("New account detected! origStatus {}, endStatus {}, address {}, txSeqno {}, txLt {}, block {}",
+                    txDetails.getOrigStatus(), txDetails.getEndStatus(), txDetails.getAccountAddr(), tx.getTxSeqno(), tx.getLt(), lastBlock.getShortBlockSeqno());
 
-            if (updateGuiNow && !isNull(walletEntity)) {
-                updateAccountsTabGui(walletEntity);
+            try {
+
+                WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
+                        .wc(lastBlock.getWc())
+                        .hexAddress(txDetails.getAccountAddr().toUpperCase())
+                        .build());
+
+                if (isNull(foundWallet)) {
+                    log.info("insertNewAccountEntity new inserting {}", txDetails.getAccountAddr().toUpperCase());
+                    Address address = Address.of(lastBlock.getWc() + ":" + txDetails.getAccountAddr().toUpperCase());
+//
+                    WalletAddress walletAddress = WalletAddress.builder()
+                            .wc(lastBlock.getWc())
+                            .hexWalletAddress(txDetails.getAccountAddr().toUpperCase())
+                            .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr().toUpperCase())
+                            .bounceableAddressBase64url(address.toString(true, true, true))
+                            .nonBounceableAddressBase64Url(address.toString(true, true, false))
+                            .bounceableAddressBase64(address.toString(true, false, true))
+                            .nonBounceableAddressBase64(address.toString(true, false, true))
+                            .build();
+
+                    WalletEntity walletEntity = WalletEntity.builder()
+                            .wc(walletAddress.getWc())
+                            .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
+                            .wallet(walletAddress)
+                            .createdAt(txDetails.getNow())
+                            .build();
+
+                    App.dbPool.insertWallet(walletEntity);
+
+                    log.info("insertNewAccountEntity new inserted {}", txDetails.getAccountAddr().toUpperCase());
+                }
+            } catch (Throwable e) {
+                log.error("Error executing insertNewAccountEntity: {}", e.getMessage());
+                log.error(ExceptionUtils.getStackTrace(e));
             }
         }
     }
@@ -689,7 +716,7 @@ public class MyLocalTon {
         if (isNull(walletEntity) || isNull(walletEntity.getAccountState())) {
             return;
         }
-        log.debug("updateAccountsTabGui, wallet account addr {}, state {}", walletEntity.getHexAddress(), walletEntity.getAccountState().getStatus());
+        log.debug("updateAccountsTabGui, wallet account addr {}, state {}", walletEntity.getHexAddress(), walletEntity.getAccountState());
 
         if (Boolean.TRUE.equals(autoScroll)) {
 
@@ -710,7 +737,6 @@ public class MyLocalTon {
                     (accountRow.lookup("#accRowBorderPane")).getStyleClass().add("row-pane-gray");
                     (accountRow.lookup("#hBoxDeletetn")).getStyleClass().add("background-acc-delete-button-gray");
                     (accountRow.lookup("#hBoxSendBtn")).getStyleClass().add("background-acc-send-button-gray");
-
                 }
 
                 showInGuiOnlyUniqueAccounts(walletEntity, c, accountRow);
@@ -718,16 +744,40 @@ public class MyLocalTon {
         }
     }
 
+    private void emitResultMessage(WalletEntity walletEntity) {
+        if (nonNull(walletEntity)) {
+            if (WalletVersion.V1R1.equals(walletEntity.getWalletVersion())) {
+                Platform.runLater(() -> {
+                    emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3));
+                });
+            } else if (walletEntity.getSeqno() != -1L) {
+                Platform.runLater(() -> {
+                    emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3));
+                });
+            }
+        } else {
+            Platform.runLater(() -> {
+                emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, "Error creating wallet. See logs for details.", 4));
+            });
+        }
+    }
+
     private void showInGuiOnlyUniqueAccounts(WalletEntity walletEntity, MainController c, javafx.scene.Node accountRow) {
-        if (isNull(concurrentAccountsHashMap.get(walletEntity.getWallet().getFullWalletAddress()))) {
+        if (isNull(concurrentAccountsHashMap.get(walletEntity.getWallet().getFullWalletAddress().toUpperCase()))) {
+            log.debug("add to gui list 1 new account {}", walletEntity.getWallet().getFullWalletAddress());
+
             //show in gui only unique accounts. some might come from: scroll event, blockchain monitor or manual creation
             if (concurrentAccountsHashMap.size() > 100) {
                 concurrentAccountsHashMap.keySet().removeAll(Arrays.asList(concurrentAccountsHashMap.keySet().toArray()).subList(concurrentAccountsHashMap.size() / 2, concurrentAccountsHashMap.size())); // truncate
             }
 
-            concurrentAccountsHashMap.put(walletEntity.getWallet().getFullWalletAddress(), 1L);
+            concurrentAccountsHashMap.put(walletEntity.getWallet().getFullWalletAddress().toUpperCase(), 1L);
+
+            ((Label) accountRow.lookup("#hexAddrLabel")).setText(MyLocalTonUtils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress().toUpperCase()) + "Hex:");
 
             populateAccountRowWithData(walletEntity, accountRow, "--------------------");
+
+            log.debug("add to gui list 2 new account {}", walletEntity.getWallet().getFullWalletAddress());
 
             int size = c.accountsvboxid.getItems().size();
 
@@ -736,12 +786,15 @@ public class MyLocalTon {
             }
 
             c.accountsvboxid.getItems().add(0, accountRow);
-        } else {
-            if (nonNull(walletEntity.getAccountState().getStatus())) {
-                log.debug("update account details {}, {}", walletEntity.getFullAddress(), walletEntity.getAccountState().getStatus());
-                for (javafx.scene.Node node : c.accountsvboxid.getItems()) {
 
-                    if (((Label) node.lookup("#hexAddr")).getText().equals(walletEntity.getFullAddress())) {
+            log.debug("accounts gui size {}", c.accountsvboxid.getItems().size());
+
+        } else {
+            log.debug("update gui list with account {}", walletEntity.getWallet().getFullWalletAddress());
+            if (nonNull(walletEntity.getAccountState())) {
+                log.debug("update account details in gui {}, {}", walletEntity.getFullAddress(), walletEntity.getAccountState());
+                for (javafx.scene.Node node : c.accountsvboxid.getItems()) {
+                    if (((Label) node.lookup("#hexAddr")).getText().equals(walletEntity.getFullAddress().toUpperCase())) {
                         populateAccountRowWithData(walletEntity, node, "--------------------");
                     }
                 }
@@ -749,70 +802,85 @@ public class MyLocalTon {
         }
     }
 
-    public void populateAccountRowWithData(WalletEntity walletEntity, javafx.scene.Node accountRow, String searchFor) {
+    public void populateAccountRowWithData(WalletEntity walletEntity, javafx.scene.Node accountRow, String
+            searchFor) {
+        try {
+            if (nonNull(walletEntity.getWallet())) {
+                ((Label) accountRow.lookup("#hexAddrLabel")).setText(MyLocalTonUtils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress().toUpperCase()) + "Hex:");
+            } else {
+                ((Label) accountRow.lookup("#hexAddrLabel")).setText("Hex:");
+            }
 
-        if (nonNull(walletEntity.getWallet())) {
-            ((Label) accountRow.lookup("#hexAddrLabel")).setText(Utils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress()) + "Hex:");
-        } else {
-            ((Label) accountRow.lookup("#hexAddrLabel")).setText("Hex:");
-        }
+            ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress().toUpperCase());
+            if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
+                accountRow.lookup("#hexAddr").setStyle(accountRow.lookup("#hexAddr").getStyle() + FOUND_COLOR_HIHGLIGHT);
+            }
 
-        ((Label) accountRow.lookup("#hexAddr")).setText(walletEntity.getWallet().getFullWalletAddress());
-        if (((Label) accountRow.lookup("#hexAddr")).getText().contains(searchFor)) {
-            ((Label) accountRow.lookup("#hexAddr")).setStyle(accountRow.lookup("#hexAddr").getStyle() + FOUND_COLOR_HIHGLIGHT);
-        }
+            ((Label) accountRow.lookup("#b64Addr")).setText(walletEntity.getWallet().getBounceableAddressBase64());
+            ((Label) accountRow.lookup("#b64urlAddr")).setText(walletEntity.getWallet().getBounceableAddressBase64url());
+            ((Label) accountRow.lookup("#nb64Addr")).setText(walletEntity.getWallet().getNonBounceableAddressBase64());
+            ((Label) accountRow.lookup("#nb64urlAddr")).setText(walletEntity.getWallet().getNonBounceableAddressBase64Url());
 
-        ((Label) accountRow.lookup("#b64Addr")).setText(walletEntity.getWallet().getBounceableAddressBase64());
-        ((Label) accountRow.lookup("#b64urlAddr")).setText(walletEntity.getWallet().getBounceableAddressBase64url());
-        ((Label) accountRow.lookup("#nb64Addr")).setText(walletEntity.getWallet().getNonBounceableAddressBase64());
-        ((Label) accountRow.lookup("#nb64urlAddr")).setText(walletEntity.getWallet().getNonBounceableAddressBase64Url());
+            ((Label) accountRow.lookup("#createdat")).setText(MyLocalTonUtils.toLocal((walletEntity.getCreatedAt())));
 
-        ((Label) accountRow.lookup("#createdat")).setText(Utils.toLocal((walletEntity.getCreatedAt())));
+            if (isNull(walletEntity.getWalletVersion())) {
+                ((Label) accountRow.lookup("#type")).setText("Unknown");
+            } else {
+                ((Label) accountRow.lookup("#type")).setText(walletEntity.getWalletVersion().getValue());
+            }
 
-        if (isNull(walletEntity.getWalletVersion())) {
-            ((Label) accountRow.lookup("#type")).setText("Unknown");
-        } else {
-            ((Label) accountRow.lookup("#type")).setText(walletEntity.getWalletVersion().getValue());
-        }
+            if (nonNull(walletEntity.getWalletVersion()) && (walletEntity.getWalletVersion().getValue().contains("V3") || walletEntity.getWalletVersion().getValue().contains("V4"))) {
+                accountRow.lookup("#walledId").setVisible(true);
+                ((Label) accountRow.lookup("#walledId")).setText("Wallet ID " + walletEntity.getWallet().getSubWalletId());
+            } else { //wallets V1 and V2
+                accountRow.lookup("#walledId").setVisible(false);
+                ((Label) accountRow.lookup("#walledId")).setText("-1");
+            }
 
-        if (walletEntity.getSubWalletId() >= 0) {
-            ((Label) accountRow.lookup("#walledId")).setVisible(true);
-            ((Label) accountRow.lookup("#walledId")).setText("Wallet ID " + walletEntity.getSubWalletId());
-        } else { //wallets V1 and V2
-            ((Label) accountRow.lookup("#walledId")).setVisible(false);
-            ((Label) accountRow.lookup("#walledId")).setText("-1");
-        }
+            if (walletEntity.getSeqno() >= 0 && (nonNull(walletEntity.getWalletVersion()) && !walletEntity.getWalletVersion().equals(WalletVersion.config))) {
+                accountRow.lookup("#seqno").setVisible(true);
+                ((Label) accountRow.lookup("#seqno")).setText("Seqno " + walletEntity.getSeqno());
+            } else {
+                accountRow.lookup("#seqno").setVisible(false);
+                ((Label) accountRow.lookup("#seqno")).setText("Seqno -1");
+            }
 
-        if (walletEntity.getSeqno() > 0) {
-            ((Label) accountRow.lookup("#seqno")).setVisible(true);
-            ((Label) accountRow.lookup("#seqno")).setText("Seqno " + walletEntity.getSeqno());
-        } else {
-            ((Label) accountRow.lookup("#seqno")).setVisible(false);
-            ((Label) accountRow.lookup("#seqno")).setText("Seqno -1");
-        }
+//            String value = walletEntity.getAccountState().getBalance();
+//            String formattedBalance2 = String.format("%,.9f", value);
+            BigDecimal balance = new BigDecimal(walletEntity.getAccountState().getBalance());
+            String formattedBalance = String.format("%,.9f", balance.divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
 
-        Value value = walletEntity.getAccountState().getBalance();
-        BigDecimal balance = isNull(value) ? BigDecimal.ZERO : value.getToncoins();
-        String formattedBalance = String.format("%,.9f", balance.divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
-        ((Label) accountRow.lookup("#balance")).setText(formattedBalance);
+            ((Label) accountRow.lookup("#balance")).setText(formattedBalance);
 
-        String status = isNull(walletEntity.getAccountState().getStatus()) ? "" : walletEntity.getAccountState().getStatus();
-        ((Label) accountRow.lookup("#status")).setText(status);
+            String status = StringUtils.isEmpty(walletEntity.getAccountStatus()) ? "" : StringUtils.capitalize(walletEntity.getAccountStatus());
+            ((Label) accountRow.lookup("#status")).setText(status);
 
-        if (settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())) {
-            accountRow.lookup("#walletDeleteBtn").setDisable(true);
-            (accountRow.lookup("#hBoxDeletetn")).getStyleClass().clear();
-        }
-        if (status.equals(UNINITIALIZED) ||
-                status.equals(FROZEN) ||
-                settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress()) ||
-                isNull(walletEntity.getWallet().getPrivateKeyLocation())) {
-            accountRow.lookup("#accSendBtn").setDisable(true);
-            (accountRow.lookup("#hBoxSendBtn")).getStyleClass().clear();
+            if (settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress())
+                    || settings.getMainWalletAddrFull().contains(walletEntity.getHexAddress())
+                    || isNull(walletEntity.getWallet().getPrivateKeyHex())
+            ) {
+                accountRow.lookup("#walletDeleteBtn").setDisable(true);
+                (accountRow.lookup("#hBoxDeletetn")).getStyleClass().clear();
+            }
+            if (status.equals(UNINITIALIZED)
+                    || status.equals(FROZEN)
+                    || settings.getConfigSmcAddrHex().contains(walletEntity.getHexAddress().toUpperCase())
+                    || isNull(walletEntity.getWallet().getPrivateKeyHex())
+                //|| isNull(walletEntity.getWallet().getPrivateKeyLocation())
+            ) {
+                accountRow.lookup("#accSendBtn").setDisable(true);
+                (accountRow.lookup("#hBoxSendBtn")).getStyleClass().clear();
+            } else {
+                accountRow.lookup("#accSendBtn").setDisable(false);
+                (accountRow.lookup("#hBoxSendBtn")).getStyleClass().clear();
+            }
+        } catch (Exception e) {
+            log.error("error updating accounts GUI: " + e.getMessage());
         }
     }
 
-    private void updateTxTabGui(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails, List<TxEntity> txEntities) {
+    private void updateTxTabGui(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction
+            txDetails, List<TxEntity> txEntities) {
 
         if (Boolean.TRUE.equals(autoScroll)) {
 
@@ -843,8 +911,9 @@ public class MyLocalTon {
         }
     }
 
-    private void showInGuiOnlyUniqueTxs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails, MainController c, TxEntity txE, javafx.scene.Node
-            txRow) {
+    private void showInGuiOnlyUniqueTxs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction
+            txDetails, MainController c, TxEntity txE, javafx.scene.Node
+                                                txRow) {
         String uniqueKey = lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg() + txE.getTxHash();
         log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
         if (isNull(concurrentTxsHashMap.get(uniqueKey))) {
@@ -929,7 +998,8 @@ public class MyLocalTon {
         showButtonWithMessage(txRow, txEntity);
     }
 
-    public void populateTxRowWithData(String shortBlockSeqno, ResultListBlockTransactions tx, Transaction txDetails, javafx.scene.Node txRow, TxEntity txEntity) {
+    public void populateTxRowWithData(String shortBlockSeqno, ResultListBlockTransactions tx, Transaction
+            txDetails, javafx.scene.Node txRow, TxEntity txEntity) {
 
         ((Label) txRow.lookup("#block")).setText(shortBlockSeqno);
         ((Label) txRow.lookup("#typeTx")).setText(txEntity.getTypeTx());
@@ -983,8 +1053,6 @@ public class MyLocalTon {
         }
         if (StringUtils.isNotEmpty(msg) && msg.length() > 4) {
             msg = msg.substring(4);
-            //byte[] utf8String = msg.getBytes(StandardCharsets.UTF_8);
-            //log.info("msg {}", new String(utf8String, StandardCharsets.UTF_8));
 
             if (StringUtils.isAlphanumericSpace(msg) || StringUtils.isAsciiPrintable(msg)) {
                 txRow.lookup("#txMsgBtn").setVisible(true);
@@ -998,10 +1066,11 @@ public class MyLocalTon {
         }
     }
 
-    public List<TxEntity> extractTxsAndMsgs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails) {
+    public List<TxEntity> extractTxsAndMsgs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction
+            txDetails) {
         List<TxEntity> txEntity = new ArrayList<>();
-        Address to;
-        Address from;
+        LiteClientAddress to;
+        LiteClientAddress from;
         BigDecimal amount = BigDecimal.ZERO;
         String txType;
         String msgType;
@@ -1015,9 +1084,9 @@ public class MyLocalTon {
             // ordinary tx
             if (type.equals("Tick") || type.equals("Tock")) { // add tick tock tx into db
                 log.debug("tick/tock tx, block {}", lastBlock.getShortBlockSeqno());
-                from = Address.builder().wc(lastBlock.getWc()).addr(txDetails.getAccountAddr()).build();
+                from = LiteClientAddress.builder().wc(lastBlock.getWc()).addr(txDetails.getAccountAddr()).build();
 
-                to = Address.builder().addr("").build();
+                to = LiteClientAddress.builder().addr("").build();
                 txType = "Tx";
                 msgType = type;
                 status = txDetails.getEndStatus();
@@ -1043,9 +1112,9 @@ public class MyLocalTon {
                 }
 
                 if (Strings.isEmpty(from.getAddr()) && !Strings.isEmpty(to.getAddr())) {
-                    from = Address.builder().wc(from.getWc()).addr(EXTERNAL).build();
+                    from = LiteClientAddress.builder().wc(from.getWc()).addr(EXTERNAL).build();
                 } else if (Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-                    to = Address.builder().wc(to.getWc()).addr(EXTERNAL).build();
+                    to = LiteClientAddress.builder().wc(to.getWc()).addr(EXTERNAL).build();
                 } else if (!Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
 
                 } else {
@@ -1091,10 +1160,10 @@ public class MyLocalTon {
                     status = "";
                     boolean ok = false;
                     if (Strings.isEmpty(from.getAddr()) && !Strings.isEmpty(to.getAddr())) {
-                        from = Address.builder().wc(from.getWc()).addr(EXTERNAL).build();
+                        from = LiteClientAddress.builder().wc(from.getWc()).addr(EXTERNAL).build();
                         ok = true;
                     } else if (Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-                        to = Address.builder().wc(to.getWc()).addr(EXTERNAL).build();
+                        to = LiteClientAddress.builder().wc(to.getWc()).addr(EXTERNAL).build();
                         ok = true;
                     } else if (!Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
                         ok = true;
@@ -1140,10 +1209,10 @@ public class MyLocalTon {
                 status = "";
                 boolean ok = false;
                 if (Strings.isEmpty(from.getAddr()) && !Strings.isEmpty(to.getAddr())) {
-                    from = Address.builder().wc(from.getWc()).addr(EXTERNAL).build();
+                    from = LiteClientAddress.builder().wc(from.getWc()).addr(EXTERNAL).build();
                     ok = true;
                 } else if (Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-                    to = Address.builder().wc(to.getWc()).addr(EXTERNAL).build();
+                    to = LiteClientAddress.builder().wc(to.getWc()).addr(EXTERNAL).build();
                     ok = true;
                 } else if (!Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
                     ok = true;
@@ -1182,61 +1251,6 @@ public class MyLocalTon {
         }
     }
 
-    public WalletEntity insertNewAccountEntity(ResultLastBlock lastBlock, Transaction txDetails) {
-
-        try {
-            Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-            log.debug("insertAccountEntity, wallet {}:{}, balance {}, state {}", stateAndSeqno.getLeft().getWc(), stateAndSeqno.getLeft().getAddress(), stateAndSeqno.getLeft().getBalance(), stateAndSeqno.getLeft().getStatus());
-
-            Pair<WalletVersion, Long> walletVersionAndId = Utils.detectWalledVersionAndId(stateAndSeqno.getLeft());
-
-            WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
-                    .wc(lastBlock.getWc())
-                    .hexAddress(txDetails.getAccountAddr())
-                    .build());
-
-            if (isNull(foundWallet)) {
-
-                WalletAddress wa = new Fift().convertAddr(settings.getGenesisNode(), lastBlock.getWc() + ":" + txDetails.getAccountAddr());
-
-                WalletAddress walletAddress = WalletAddress.builder()
-                        .wc(lastBlock.getWc())
-                        .hexWalletAddress(txDetails.getAccountAddr())
-                        .subWalletId(walletVersionAndId.getRight())
-                        .fullWalletAddress(lastBlock.getWc() + ":" + txDetails.getAccountAddr())
-                        .bounceableAddressBase64url(wa.getBounceableAddressBase64url())
-                        .nonBounceableAddressBase64Url(wa.getNonBounceableAddressBase64Url())
-                        .bounceableAddressBase64(wa.getBounceableAddressBase64())
-                        .nonBounceableAddressBase64(wa.getNonBounceableAddressBase64())
-                        .build();
-
-                WalletEntity walletEntity = WalletEntity.builder()
-                        .wc(walletAddress.getWc())
-                        .hexAddress(walletAddress.getHexWalletAddress())
-                        .subWalletId(walletAddress.getSubWalletId())
-                        .walletVersion(walletVersionAndId.getLeft())
-                        .wallet(walletAddress)
-                        .accountState(stateAndSeqno.getLeft())
-                        .createdAt(txDetails.getNow())
-                        .build();
-
-                App.dbPool.insertWallet(walletEntity);
-
-                return walletEntity;
-            } else {
-                foundWallet.setAccountState(stateAndSeqno.getLeft());
-                foundWallet.setSeqno(stateAndSeqno.getRight());
-                log.debug("Wallet found! Update state {}", foundWallet.getFullAddress()); // update state
-                App.dbPool.updateWalletStateAndSeqno(foundWallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
-
-                return foundWallet;
-            }
-        } catch (Exception e) {
-            log.error("Error executing insertNewAccountEntity: {}", e.getMessage());
-            return null;
-        }
-    }
-
     private void updateTopInfoBarGui(int shardsNum) {
 
         MainController c = fxmlLoader.getController();
@@ -1267,7 +1281,7 @@ public class MyLocalTon {
 
                     // update blocks row
                     FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("blockrow.fxml"));
-                    javafx.scene.Node blockRow = null;
+                    javafx.scene.Node blockRow;
                     try {
                         blockRow = fxmlLoader.load();
                     } catch (IOException e) {
@@ -1355,7 +1369,8 @@ public class MyLocalTon {
 
     }
 
-    public void showFoundTxsInGui(JFXListView<javafx.scene.Node> listView, List<TxEntity> foundTxs, String searchFor, String accountAddr) {
+    public void showFoundTxsInGui(JFXListView<javafx.scene.Node> listView, List<TxEntity> foundTxs, String
+            searchFor, String accountAddr) {
 
         MainController c = fxmlLoader.getController();
 
@@ -1445,7 +1460,8 @@ public class MyLocalTon {
         emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SIZE_ACCOUNTS, accountRows.size()));
     }
 
-    public void populateBlockRowWithData(ResultLastBlock finalLastBlock, javafx.scene.Node blockRow, String searchFor) {
+    public void populateBlockRowWithData(ResultLastBlock finalLastBlock, javafx.scene.Node blockRow, String
+            searchFor) {
 
         ((Label) blockRow.lookup("#wc")).setText(finalLastBlock.getWc().toString());
         ((Label) blockRow.lookup("#shard")).setText(finalLastBlock.getShard());
@@ -1480,44 +1496,58 @@ public class MyLocalTon {
                 .roothash(lastBlock.getRootHash())
                 .build();
 
-        //DB.insertBlock(block);
         App.dbPool.insertBlock(block);
     }
 
     public void runAccountsMonitor() {
+//        Tonlib tonlib = Tonlib.builder()
+//                .pathToGlobalConfig(MyLocalTon.getInstance().getSettings().getGenesisNode().getNodeGlobalConfigLocation())
+//                .keystorePath(MyLocalTon.getInstance().getSettings().getGenesisNode().getTonlibKeystore().replace("\\", "/"))
+//                .build();
         Executors.newSingleThreadScheduledExecutor().scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Accounts Monitor");
             try {
                 for (WalletEntity wallet : App.dbPool.getAllWallets()) {
                     if (Main.appActive.get()) {
-                        AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress()));
-                        if (nonNull(accountState.getBalance())) {
+                        Address address = Address.of(wallet.getWc() + ":" + wallet.getHexAddress());
+                        RawAccountState accountState = tonlib.getRawAccountState(address);
+                        WalletVersion walletVersion = MyLocalTonUtils.detectWalletVersion(accountState.getCode(), address);
 
-                            Pair<AccountState, Long> stateAndSeqno = getAccountStateAndSeqno(getInstance().getSettings().getGenesisNode(), wallet.getWc() + ":" + wallet.getHexAddress());
-                            App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getRight());
+                        long subWalletId = -1;
+                        long seqno = -1;
 
-                            wallet.setAccountState(stateAndSeqno.getLeft());
-                            wallet.setSeqno(stateAndSeqno.getRight());
-                            updateAccountsTabGui(wallet);
+                        try {
+                            seqno = tonlib.getSeqno(address);
+                            subWalletId = tonlib.getAccountState(address).getAccount_state().getWallet_id();
+                            if (subWalletId == 0) {
+                                RunResult resultSubWalletId = tonlib.runMethod(address, "get_subwallet_id");
+                                if (resultSubWalletId.getExit_code() == 0) {
+                                    TvmStackEntryNumber resultSubWalletIdNum = (TvmStackEntryNumber) resultSubWalletId.getStack().get(0);
+                                    subWalletId = resultSubWalletIdNum.getNumber().longValue();
+                                } else {
+                                    subWalletId = -1;
+                                }
+                            }
+                        } catch (Throwable ignored) {
+                            subWalletId = -1;
                         }
+
+                        log.debug("runAccountsMonitor: {}, {}, {}, {}", walletVersion, seqno, subWalletId, accountState.getBalance());
+
+                        App.dbPool.updateWalletStateAndSeqno(wallet, accountState, seqno, walletVersion);
+
+                        wallet.setAccountState(accountState);
+                        wallet.setSeqno(seqno);
+                        wallet.getWallet().setSubWalletId(subWalletId);
+                        wallet.setWalletVersion(walletVersion);
+
+                        updateAccountsTabGui(wallet);
                     }
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 log.error("Error in runAccountsMonitor(), " + e.getMessage());
             }
-        }, 0L, 5L, TimeUnit.SECONDS);
-    }
-
-    Pair<AccountState, Long> getAccountStateAndSeqno(Node node, String address) throws WrongSeqnoException {
-        AccountState accountState = LiteClientParser.parseGetAccount(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetAccount(node, address));
-        if (nonNull(accountState.getBalance())) {
-            long seqno = LiteClient.getInstance(LiteClientEnum.GLOBAL).executeGetSeqno(getInstance().getSettings().getGenesisNode(), address);
-            if (seqno == -1L) {
-                throw new WrongSeqnoException("Cannot retrieve seqno from contract " + address);
-            }
-            return Pair.of(accountState, seqno);
-        }
-        return Pair.of(null, -1L);
+        }, 0L, 6L, TimeUnit.SECONDS);
     }
 
     public void reap(Node node) {
@@ -1540,21 +1570,24 @@ public class MyLocalTon {
                 SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                         .executionNode(node)
                         .fromWallet(node.getWalletAddress())
-                        .fromWalletVersion(settings.getWalletSettings().getWalletVersion())
+                        .fromWalletVersion(WalletVersion.V3R2) // default validator wallet type
                         .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                         .destAddr(settings.getElectorSmcAddrHex())
-                        .amount(BigDecimal.valueOf(1L))
+                        .amount(BigInteger.valueOf(ONE_BLN)) //(BigDecimal.valueOf(1L))
                         .bocLocation(node.getTonBinDir() + "recover-query.boc")
                         .build();
 
-                new Wallet().sendTonCoins(sendToncoinsParam);
+                new MyWallet().sendTonCoins(sendToncoinsParam);
 
                 // Basic rewards statistics. Better to fetch from the DB actual values, since recover stake may fail e.g.
 
                 node.setLastRewardCollected(result.getStake());
                 node.setTotalRewardsCollected(node.getTotalRewardsCollected().add(result.getStake()));
+
                 //returned stake - 10001 + 1
-                node.setLastPureRewardCollected(result.getStake().subtract(node.getDefaultValidatorStake().subtract(BigDecimal.ONE).multiply(BigDecimal.valueOf(ONE_BLN))));
+                // big time todo review
+                node.setLastPureRewardCollected(result.getStake().multiply(BigDecimal.valueOf(ONE_BLN)).subtract(new BigDecimal(node.getDefaultValidatorStake()).subtract(BigDecimal.valueOf(ONE_BLN)).multiply(BigDecimal.valueOf(ONE_BLN))));
+
                 node.setTotalPureRewardsCollected(node.getTotalPureRewardsCollected().add(node.getLastPureRewardCollected()));
                 node.setElectionsRipped(node.getElectionsRipped().add(BigDecimal.ONE));
                 node.setAvgPureRewardCollected(node.getTotalPureRewardsCollected().divide(node.getElectionsRipped(), 9, RoundingMode.CEILING));
@@ -1570,72 +1603,71 @@ public class MyLocalTon {
     }
 
     private void updateReapedValuesTab(Node node) {
-        log.debug("{} updating reaped values {}", node.getNodeName(), String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+        try {
+            log.debug("{} updating reaped values {}", node.getNodeName(), String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
 
-        switch (node.getNodeName()) {
-            case "genesis":
-                mainController.validator1totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections1.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node2":
-                mainController.validator2totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator2LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator2TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator2LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator2AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections2.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node3":
-                mainController.validator3totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator3LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator3TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator3LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator3AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections3.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node4":
-                mainController.validator4totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator4LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator4TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator4LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator4AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections4.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node5":
-                mainController.validator5totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator5LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator5TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator5LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator5AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections5.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node6":
-                mainController.validator6totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator6LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator6TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator6LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator6AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections6.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            case "node7":
-                mainController.validator7totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator7LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator7TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator7LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator7AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections7.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
-                break;
-            default:
-                mainController.validator1totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.validator1AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-                mainController.participatedInElections1.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+            switch (node.getNodeName()) {
+                case "genesis":
+                    mainController.validator1totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator1LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator1TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator1LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator1AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections1.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node2":
+                    mainController.validator2totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator2LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator2TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator2LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator2AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections2.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node3":
+                    mainController.validator3totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator3LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator3TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator3LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator3AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections3.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node4":
+                    mainController.validator4totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator4LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator4TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator4LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator4AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections4.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node5":
+                    mainController.validator5totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator5LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator5TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator5LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator5AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections5.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node6":
+                    mainController.validator6totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator6LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator6TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator6LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator6AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections6.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                case "node7":
+                    mainController.validator7totalCollected.setText(String.format("%,.9f", node.getTotalRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator7LastCollected.setText(String.format("%,.9f", node.getLastRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator7TotalRewardsPure.setText(String.format("%,.9f", node.getTotalPureRewardsCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator7LastRewardPure.setText(String.format("%,.9f", node.getLastPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.validator7AvgPureReward.setText(String.format("%,.9f", node.getAvgPureRewardCollected().divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+                    mainController.participatedInElections7.setText(node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
+                    break;
+                default:
+                    throw new Error("Unknown node name");
+            }
+        } catch (Throwable te) {
+            log.error("Error updating validation rewards: " + te.getMessage());
         }
     }
 
@@ -1651,7 +1683,8 @@ public class MyLocalTon {
         saveSettingsToGson();
     }
 
-    void createSigningKeyForValidation(Node node, long electionId, long electionEnd) throws ExecutionException, InterruptedException {
+    void createSigningKeyForValidation(Node node, long electionId, long electionEnd) throws
+            ExecutionException, InterruptedException {
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
 
         String signingKey = validatorEngineConsole.generateNewNodeKey(node);
@@ -1665,13 +1698,14 @@ public class MyLocalTon {
         validatorEngineConsole.addTempKey(node, signingKey, electionEnd);
     }
 
-    void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) throws ExecutionException, InterruptedException {
+    void createAdnlKeyForValidation(Node node, String signingKey, long electionEnd) throws
+            ExecutionException, InterruptedException {
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
         String adnlKey = validatorEngineConsole.generateNewNodeKey(node);
         log.debug("{} new adnlKey {} for current elections", node.getNodeName(), adnlKey);
 
         node.setPrevValidationAndlKey(node.getValidationAndlKey());
-        node.setValidationAndlKey(adnlKey); // shown on validator tab as ADNL address        
+        node.setValidationAndlKey(adnlKey); // shown on validator tab as ADNL address
 
         validatorEngineConsole.addAdnl(node, adnlKey);
         validatorEngineConsole.addValidatorAddr(node, signingKey, adnlKey, electionEnd);
@@ -1702,10 +1736,10 @@ public class MyLocalTon {
 
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));
 //              copy ignoring locked files
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir()); // if only this dir, then fails with "Check `ptr && "deferencing null Ref"` failed"
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
-                Utils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
+                MyLocalTonUtils.copyDirectory(settings.getGenesisNode().getTonDbArchiveDir(), node.getTonDbArchiveDir()); // if only this dir, then fails with "Check `ptr && "deferencing null Ref"` failed"
+                MyLocalTonUtils.copyDirectory(settings.getGenesisNode().getTonDbCellDbDir(), node.getTonDbCellDbDir()); // with archive and celldb only - fails with - [!shardclient][&masterchain_block_handle_->inited_next_left()]
+                MyLocalTonUtils.copyDirectory(settings.getGenesisNode().getTonDbFilesDir(), node.getTonDbFilesDir());
+                MyLocalTonUtils.copyDirectory(settings.getGenesisNode().getTonDbCatchainsDir(), node.getTonDbCatchainsDir()); // [!shardclient][&masterchain_block_handle_->inited_next_left()]
             } else {
                 // speed up synchronization - copy archive, catchains, files, state and celldb directories
                 FileUtils.copyDirectory(new File(settings.getGenesisNode().getTonDbStaticDir()), new File(node.getTonDbStaticDir()));

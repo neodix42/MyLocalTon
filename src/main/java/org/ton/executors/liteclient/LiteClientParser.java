@@ -45,7 +45,7 @@ public class LiteClientParser {
     public static ResultLastBlock parseLast(String stdout) {
 
         if (StringUtils.isEmpty(stdout)) {
-            log.error("parseLast, stdout is empty: {}", stdout);
+            log.debug("parseLast, stdout is empty: {}", stdout);
             return null;
         }
 
@@ -699,7 +699,7 @@ public class LiteClientParser {
             if (Strings.isNotEmpty(srcAddr)) {
                 srcAddr = srcAddr.substring(1);
             }
-            Address sourceAddr = Address.builder().wc(srcWc).addr(srcAddr).build();
+            LiteClientAddress sourceAddr = LiteClientAddress.builder().wc(srcWc).addr(srcAddr).build();
 
             String dest = sbb(message, "dest:(");
             Long destWc = parseLongSpace(dest, WORKCHAIN_ID_COLON);
@@ -707,7 +707,7 @@ public class LiteClientParser {
             if (Strings.isNotEmpty(destAddr)) {
                 destAddr = destAddr.substring(1);
             }
-            Address destinationAddr = Address.builder().wc(destWc).addr(destAddr).build();
+            LiteClientAddress destinationAddr = LiteClientAddress.builder().wc(destWc).addr(destAddr).build();
 
             Value grams = readValue(sbb(inMsgDescr, "value:(currencies"));
 //add import_fee handling
@@ -826,7 +826,7 @@ public class LiteClientParser {
                 if (Strings.isNotEmpty(srcAddr)) {
                     srcAddr = srcAddr.substring(1);
                 }
-                Address sourceAddr = Address.builder().wc(srcWc).addr(srcAddr).build();
+                LiteClientAddress sourceAddr = LiteClientAddress.builder().wc(srcWc).addr(srcAddr).build();
 
                 String dest = sbb(message, "dest:(");
                 Long destWc = parseLongSpace(dest, WORKCHAIN_ID_COLON);
@@ -834,7 +834,7 @@ public class LiteClientParser {
                 if (Strings.isNotEmpty(destAddr)) {
                     destAddr = destAddr.substring(1);
                 }
-                Address destinationAddr = Address.builder().wc(destWc).addr(destAddr).build();
+                LiteClientAddress destinationAddr = LiteClientAddress.builder().wc(destWc).addr(destAddr).build();
 
                 Value toncoins = readValue(sbb(message, "value:(currencies"));
 
@@ -1483,14 +1483,15 @@ public class LiteClientParser {
         return result;
     }
 
-    public static AccountState parseGetAccount(String stdout) {
+
+    public static LiteClientAccountState parseGetAccount(String stdout) {
 
         if (isNull(stdout)) {
-            return AccountState.builder().build();
+            return LiteClientAccountState.builder().build();
         }
 
         if (stdout.contains("account state is empty")) {
-            return AccountState.builder().build();
+            return LiteClientAccountState.builder().build();
         }
 
         try {
@@ -1554,22 +1555,22 @@ public class LiteClientParser {
                     .lastPaid(lastPaid)
                     .build();
 
-            return AccountState.builder()
+            return LiteClientAccountState.builder()
                     .wc(wc)
                     .address(address)
                     .balance(storageBalanceValue)
                     .storageInfo(storageInfo)
                     .storageLastTxLt(storageLastTxLt)
                     .status(stateAccountStatus)
-                    .stateCode(stateAccountCode)
-                    .stateData(stateAccountData)
+                    .stateCode(String.join("", stateAccountCode))
+                    .stateData(String.join("", stateAccountData))
                     .stateLibrary(libraries)
                     .lastTxLt(lastTxLt)
                     .lastTxHash(lastTxHash)
                     .build();
 
         } catch (Exception e) {
-            return AccountState.builder().build();
+            return LiteClientAccountState.builder().build();
         }
     }
 

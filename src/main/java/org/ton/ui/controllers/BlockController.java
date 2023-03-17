@@ -38,7 +38,7 @@ import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.executors.liteclient.api.block.Block;
 import org.ton.main.App;
 import org.ton.settings.Node;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -46,7 +46,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.regex.Matcher;
 
-import static org.ton.utils.Utils.PATTERN;
+import static org.ton.utils.MyLocalTonUtils.PATTERN;
 
 @Slf4j
 public class BlockController {
@@ -78,8 +78,8 @@ public class BlockController {
     @FXML
     void blockInfoBtn() throws Exception {
 
-        long createdAt = Utils.datetimeToTimestamp(createdatDate.getText() + " " + createdatTime.getText());
-        log.debug("click seqno {}, createdAt {}, formatted {}", seqno.getText(), createdAt, Utils.toUtcNoSpace(createdAt));
+        long createdAt = MyLocalTonUtils.datetimeToTimestamp(createdatDate.getText() + " " + createdatTime.getText());
+        log.debug("click seqno {}, createdAt {}, formatted {}", seqno.getText(), createdAt, MyLocalTonUtils.toUtcNoSpace(createdAt));
 
         Node node = MyLocalTon.getInstance().getSettings().getGenesisNode();
 
@@ -146,7 +146,7 @@ public class BlockController {
             RTextScrollPane sp = new RTextScrollPane(textArea);
             SwingNode sn = (SwingNode) root.lookup("#swingid");
             JFXButton btn = (JFXButton) root.lookup("#showDumpBtn");
-            btn.setUserData("block#" + Utils.constructFullBlockSeq(blockEntity.getWc(), blockEntity.getShard(), blockEntity.getSeqno(), blockEntity.getRoothash(), blockEntity.getFilehash()));
+            btn.setUserData("block#" + MyLocalTonUtils.constructFullBlockSeq(blockEntity.getWc(), blockEntity.getShard(), blockEntity.getSeqno(), blockEntity.getRoothash(), blockEntity.getFilehash()));
             sn.setContent(sp);
         } else {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -155,7 +155,7 @@ public class BlockController {
             codeArea.setEditable(false);
             codeArea.getVisibleParagraphs().addModificationObserver
                     (
-                            new Utils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
+                            new MyLocalTonUtils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
                     );
 
             codeArea.replaceText(0, 0, gson.toJson(block));
@@ -228,7 +228,7 @@ public class BlockController {
         content.putString(fullBlock);
         clipboard.setContent(content);
         log.info("{} copied", fullBlock);
-        String lightfullBlock = Utils.getLightAddress(roothash.getText() + ":" + filehash.getText());
+        String lightfullBlock = MyLocalTonUtils.getLightAddress(roothash.getText() + ":" + filehash.getText());
         App.mainController.showInfoMsg(lightfullBlock + " copied to clipboard", 2);
         mouseEvent.consume();
     }

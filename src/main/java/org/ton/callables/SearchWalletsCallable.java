@@ -5,7 +5,7 @@ import org.ton.callables.parameters.WalletCallbackParam;
 import org.ton.db.DB2;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -27,7 +27,7 @@ public class SearchWalletsCallable implements Callable<WalletCallbackParam> {
         this.db = walletCallbackParam.getDb();
         this.walletPk = walletCallbackParam.getWalletPk();
         this.foundWallet = walletCallbackParam.getFoundWallet();
-        this.searchText = walletCallbackParam.getSearchText();
+        this.searchText = walletCallbackParam.getSearchText().toUpperCase();
     }
 
     public WalletCallbackParam call() {
@@ -49,7 +49,7 @@ public class SearchWalletsCallable implements Callable<WalletCallbackParam> {
             } else if (wcShardSeqnoHash.length() > 64) { // wc:addr
                 String[] s = wcShardSeqnoHash.split(":");
                 if (s.length == 2) {
-                    wc = Utils.parseLong(s[0]);
+                    wc = MyLocalTonUtils.parseLong(s[0]);
                     hexAddr = s[1];
                     query = em.createQuery("SELECT b FROM WalletEntity b where (b.wc = :wc) AND (b.hexAddress = :hexAddr)", WalletEntity.class);
                     results = query
@@ -59,10 +59,10 @@ public class SearchWalletsCallable implements Callable<WalletCallbackParam> {
                             .getResultList();
                 }
             } else if (wcShardSeqnoHash.length() == 48) { // base64 addr
-                wcShardSeqnoHash = Utils.friendlyAddrToHex(wcShardSeqnoHash);
+                wcShardSeqnoHash = MyLocalTonUtils.friendlyAddrToHex(wcShardSeqnoHash);
                 String[] s = wcShardSeqnoHash.split(":");
                 if (s.length == 2) {
-                    wc = Utils.parseLong(s[0]);
+                    wc = MyLocalTonUtils.parseLong(s[0]);
                     hexAddr = s[1];
                     query = em.createQuery("SELECT b FROM WalletEntity b where (b.wc = :wc) AND (b.hexAddress = :hexAddr)", WalletEntity.class);
                     results = query

@@ -9,16 +9,17 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
+import org.ton.java.utils.Utils;
 import org.ton.main.App;
 import org.ton.parameters.SendToncoinsParam;
 import org.ton.ui.custom.control.CustomTextField;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.ui.custom.events.event.CustomNotificationEvent;
-import org.ton.wallet.Wallet;
+import org.ton.wallet.MyWallet;
 import org.ton.wallet.WalletAddress;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -73,21 +74,22 @@ public class SendCoinPaneController implements Initializable {
                 WalletEntity fromWallet = App.dbPool.findWallet(walletPk);
                 WalletAddress fromWalletAddress = fromWallet.getWallet();
 
-                BigDecimal amount = new BigDecimal(strAmount);
+                BigInteger amount = Utils.toNano(strAmount);
+//                BigDecimal amount = new BigDecimal(strAmount);
                 log.info("Sending {} Toncoins from {} ({}) to {}", amount, fromWalletAddress.getFullWalletAddress(), fromWallet.getWalletVersion(), destAddress);
 
                 SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                         .executionNode(MyLocalTon.getInstance().getSettings().getGenesisNode())
                         .fromWallet(fromWalletAddress)
                         .fromWalletVersion(fromWallet.getWalletVersion())
-                        .fromSubWalletId(fromWallet.getSubWalletId())
+                        .fromSubWalletId(fromWallet.getWallet().getSubWalletId())
                         .destAddr(destAddress)
                         .amount(amount)
                         .forceBounce(bounceFlag.isSelected())
                         .comment(message.getFieldText())
                         .build();
 
-                boolean sentOK = new Wallet().sendTonCoins(sendToncoinsParam);
+                boolean sentOK = new MyWallet().sendTonCoins(sendToncoinsParam);
 
                 emit(new CustomActionEvent(CustomEvent.Type.DIALOG_SEND_CLOSE));
 

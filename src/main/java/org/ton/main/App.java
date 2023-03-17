@@ -19,7 +19,7 @@ import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.awt.*;
 import java.io.File;
@@ -41,13 +41,15 @@ public class App extends Application {
     public static FXMLLoader fxmlLoader;
     public static MainController mainController;
     public static DbPool dbPool;
+
+    //    public static Tonlib tonlib;
     public static boolean firstAppLaunch = true;
     public static Stage primaryStage;
 
     @Override
-    public void start(Stage primaryStage)  {
+    public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        log.info("Starting application");
+        log.debug("Starting application");
 
         fxmlLoader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/main.fxml"));
         try {
@@ -73,7 +75,7 @@ public class App extends Application {
             } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
                 mainController.showLoadingPane("Starting TON blockchain...", "Should take no longer than 45 seconds.");
             } else {
-                mainController.showLoadingPane("Starting TON blockchain... Starting " + MyLocalTon.getInstance().getSettings().getActiveNodes().size(), " validators, may take up to 3 minutes.");
+                mainController.showLoadingPane("Starting TON blockchain...", "Launching " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, wait up to 3 minutes.");
             }
         });
 
@@ -112,17 +114,17 @@ public class App extends Application {
         GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, Objects.requireNonNull(App.class.getClassLoader().getResourceAsStream("org/ton/fonts/RobotoMono-Medium.ttf"))));
 
         MyLocalTon myLocalTon = MyLocalTon.getInstance();
-        myLocalTon.setSettings(Utils.loadSettings());
+        myLocalTon.setSettings(MyLocalTonUtils.loadSettings());
         myLocalTon.saveSettingsToGson(); //create default config
         MyLocalTonSettings settings = myLocalTon.getSettings();
         log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
 
-        Utils.setMyLocalTonLogLevel(settings.getGenesisNode().getMyLocalTonLogLevel());
+        MyLocalTonUtils.setMyLocalTonLogLevel(settings.getGenesisNode().getMyLocalTonLogLevel());
 
         // override MyLocalTon log level
         if (!Arrays.asList(args).isEmpty()) {
             if (args[0].equalsIgnoreCase("debug")) {
-                Utils.setMyLocalTonLogLevel("DEBUG");
+                MyLocalTonUtils.setMyLocalTonLogLevel("DEBUG");
                 settings.getGenesisNode().setTonLogLevel("DEBUG");
             }
         }
@@ -170,10 +172,12 @@ public class App extends Application {
 
         myLocalTon.runNodesStatusMonitor();
 
-        Utils.waitForBlockchainReady(genesisNode);
-        Utils.waitForNodeSynchronized(genesisNode);
+        MyLocalTonUtils.waitForBlockchainReady(genesisNode);
+        MyLocalTonUtils.waitForNodeSynchronized(genesisNode);
 
         myLocalTon.runBlockchainMonitor(genesisNode);
+
+        myLocalTon.initTonlib(genesisNode);
 
         myLocalTon.runBlockchainSizeMonitor();
 
@@ -190,7 +194,7 @@ public class App extends Application {
 
             Thread.sleep(2100);
 
-            myLocalTon.createPreInstalledWallets(genesisNode);
+            myLocalTon.createInitialWallets(genesisNode);
         } catch (Exception e) {
             e.printStackTrace();
         }

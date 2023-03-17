@@ -1324,38 +1324,16 @@
                         style="-fx-padding:0 0 0 50">
                 <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
-                    <VBox spacing="20.0">
-                        <VBox spacing="10.0">
-                            <Label text="Number of preinstalled wallets" styleClass="label-second-font-14"/>
-                            <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                <CustomTextField fx:id="walletsNumber" prefWidth="600.0"/>
-                            </HBox>
-                        </VBox>
-                    </VBox>
-
                     <VBox spacing="10.0">
-                        <Label text="Toncoins per wallet" styleClass="label-second-font-14">
+                        <Label text="Initial amount of nano Toncoins per wallet" styleClass="label-second-font-14">
                             <tooltip>
-                                <Tooltip text="Used when wallet is created"/>
+                                <Tooltip text="Used during a wallet creation"/>
                             </tooltip>
                         </Label>
                         <HBox alignment="CENTER_LEFT">
-                            <CustomTextField fx:id="coinsPerWallet" prefWidth="600.0" fieldText="30000"/>
+                            <CustomTextField fx:id="coinsPerWallet" prefWidth="300.0" fieldText="30000"/>
                         </HBox>
                     </VBox>
-
-                    <VBox spacing="10.0">
-                        <Label text="Wallet type" styleClass="label-second-font-14"/>
-                        <HBox alignment="CENTER_LEFT">
-                            <CustomComboBox fx:id="walletVersion" fieldPromptText="Wallet V1" prefWidth="600.0"/>
-                        </HBox>
-                    </VBox>
-
-                    <VBox spacing="10.0">
-                        <Label styleClass="label-second-font-14" style="-fx-text-fill: #0088CC;"
-                               text="Change of these settings requires TON blockchain reset"/>
-                    </VBox>
-
                 </VBox>
             </AnchorPane>
         </accountsKeysPane>
@@ -1390,8 +1368,6 @@
                             </Label>
                             <VBox alignment="CENTER" spacing="5.0">
                                 <children>
-                                    <Label text="v1.0.3-alpha" styleClass="label-second-font-14"
-                                           style="-fx-text-fill: #6E6E6E;"/>
                                     <Label text="The Open Network" styleClass="label-second-font-14"
                                            style="-fx-text-fill: #6E6E6E;"/>
                                     <Label text="telegram.me/neodix" styleClass="label-second-font-14"
@@ -1628,11 +1604,12 @@
 
                         <Label GridPane.columnIndex="0" GridPane.rowIndex="5"/>
 
-                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorWalletDeposit1" maxWidth="50" GridPane.columnIndex="1"
+                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0"
+                               GridPane.rowIndex="6"/>
+                        <JFXTextField fx:id="validatorWalletDeposit1" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="6"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
-                        <JFXTextField fx:id="validatorDefaultStake1" maxWidth="50" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="validatorDefaultStake1" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="7"/>
 
                         <Label GridPane.columnIndex="0" GridPane.rowIndex="8"/>
@@ -1716,11 +1693,12 @@
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
-                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit2" maxWidth="50" GridPane.columnIndex="1"
+                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0"
+                               GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit2" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake2" maxWidth="50" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="validatorDefaultStake2" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="6"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
@@ -1803,11 +1781,12 @@
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
-                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit3" maxWidth="50" GridPane.columnIndex="1"
+                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0"
+                               GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit3" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake3" maxWidth="50" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="validatorDefaultStake3" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="6"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
@@ -1890,11 +1869,12 @@
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
-                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit4" maxWidth="50" GridPane.columnIndex="1"
+                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0"
+                               GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit4" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake4" maxWidth="50" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="validatorDefaultStake4" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="6"/>
 
                         <Label text="" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
@@ -1978,11 +1958,12 @@
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
-                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit5" maxWidth="50" GridPane.columnIndex="1"
+                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0"
+                               GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit5" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake5" maxWidth="50" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="validatorDefaultStake5" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="6"/>
 
                         <Label GridPane.columnIndex="0" GridPane.rowIndex="7"/>
@@ -2065,11 +2046,12 @@
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
-                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit6" maxWidth="50" GridPane.columnIndex="1"
+                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0"
+                               GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit6" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake6" maxWidth="50" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="validatorDefaultStake6" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="6"/>
 
                         <Label GridPane.columnIndex="0" GridPane.rowIndex="7"/>
@@ -2152,11 +2134,12 @@
                                GridPane.columnSpan="3" GridPane.rowIndex="3"/>
                         <Label GridPane.columnIndex="0" GridPane.rowIndex="4"/>
 
-                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-                        <JFXTextField fx:id="validatorWalletDeposit7" maxWidth="50" GridPane.columnIndex="1"
+                        <Label text="Initial validator wallet deposit" GridPane.columnIndex="0"
+                               GridPane.rowIndex="5"/>
+                        <JFXTextField fx:id="validatorWalletDeposit7" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="5"/>
                         <Label text="Default validator stake" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-                        <JFXTextField fx:id="validatorDefaultStake7" maxWidth="50" GridPane.columnIndex="1"
+                        <JFXTextField fx:id="validatorDefaultStake7" minWidth="130" GridPane.columnIndex="1"
                                       GridPane.rowIndex="6"/>
 
                         <Label GridPane.columnIndex="0" GridPane.rowIndex="7"/>

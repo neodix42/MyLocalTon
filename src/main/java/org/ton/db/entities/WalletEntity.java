@@ -4,13 +4,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.ton.executors.liteclient.api.AccountState;
+import org.apache.commons.lang3.StringUtils;
+import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.wallet.WalletAddress;
-import org.ton.wallet.WalletVersion;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+
+import static java.util.Objects.isNull;
 
 @Entity
 @Builder
@@ -24,13 +27,13 @@ public class WalletEntity {
     @Id
     String hexAddress;
 
-    Long subWalletId;
     long seqno;
 
-    WalletVersion walletVersion; //walletV1, walletV2, walletV3
+    WalletVersion walletVersion;
     WalletAddress wallet;
-    AccountState accountState; //status and balance
-    Boolean preinstalled;
+    RawAccountState accountState;
+    String accountStatus;
+
     Boolean mainWalletInstalled;
     Boolean configWalletInstalled;
     Long createdAt;
@@ -38,11 +41,35 @@ public class WalletEntity {
     public WalletPk getPrimaryKey() {
         return WalletPk.builder()
                 .wc(wc)
-                .hexAddress(hexAddress)
+                .hexAddress(StringUtils.upperCase(hexAddress))
                 .build();
     }
 
+    public void setAccountState(RawAccountState accountState) {
+        this.accountState = accountState;
+        this.accountStatus = getStatusFromCode(accountState);
+    }
+
     public String getFullAddress() {
-        return wc + ":" + hexAddress;
+        return (wc + ":" + hexAddress).toUpperCase();
+    }
+
+    public String getAccountStatus() {
+        return getStatusFromCode(accountState);
+    }
+
+    private String getStatusFromCode(RawAccountState state) {
+        if (isNull(state)) {
+            return "uninitialized";
+        }
+        if (StringUtils.isEmpty(state.getCode())) {
+            if (StringUtils.isEmpty(state.getFrozen_hash())) {
+                return "uninitialized";
+            } else {
+                return "frozen";
+            }
+        } else {
+            return "active";
+        }
     }
 }

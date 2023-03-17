@@ -88,6 +88,14 @@ public class LiteClient {
         }
     }
 
+    public long executeGetSubWalletId(Node node, String contractAddress) {
+        try {
+            return LiteClientParser.parseRunMethodSeqno(executeRunMethod(node, contractAddress, "get_subwallet_id", ""));
+        } catch (Exception e) {
+            return -1L;
+        }
+    }
+
     /**
      * @param seqno - is the pureBlockSeqno
      * @return string result of lite-client output

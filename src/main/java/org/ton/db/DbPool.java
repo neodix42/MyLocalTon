@@ -6,9 +6,10 @@ import org.ton.callables.parameters.BlockCallbackParam;
 import org.ton.callables.parameters.TxCallbackParam;
 import org.ton.callables.parameters.WalletCallbackParam;
 import org.ton.db.entities.*;
-import org.ton.executors.liteclient.api.AccountState;
+import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.settings.MyLocalTonSettings;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
@@ -69,7 +70,7 @@ public class DbPool {
         if (!spawned.getAndSet(true)) {
 
             String dbName = UUID.randomUUID().toString();
-            log.info("Spawning new DB {}", dbName);
+            log.debug("Spawning new DB {}", dbName);
 
             activeDB = new DB2(dbName);
             allDBs.add(activeDB);
@@ -78,7 +79,7 @@ public class DbPool {
             poolInSettings.put(dbName, "ACTIVE");
 
             settings.setDbPool(poolInSettings);
-            Utils.saveSettingsToGson(settings);
+            MyLocalTonUtils.saveSettingsToGson(settings);
 
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.schedule(() -> {
@@ -102,7 +103,11 @@ public class DbPool {
             ExecutorService threadPoolService = Executors.newFixedThreadPool(allDBs.size());
             List<FindWalletCallable> callablesList = new ArrayList<>();
             for (DB2 db : allDBs) {
-                FindWalletCallable callable = new FindWalletCallable(WalletCallbackParam.builder().db(db).walletPk(walletPk).build());
+                FindWalletCallable callable = new FindWalletCallable(
+                        WalletCallbackParam.builder()
+                                .db(db)
+                                .walletPk(walletPk)
+                                .build());
                 callablesList.add(callable);
             }
 
@@ -228,8 +233,10 @@ public class DbPool {
         if (activeDB.getEmf().isOpen()) {
             EntityManager em = activeDB.getEmf().createEntityManager();
             try {
-                if (isNull(findWallet(walletEntity.getPrimaryKey()))) {
-                    log.debug("Inserting into db wallet {}", walletEntity.getHexAddress());
+                WalletPk pk = walletEntity.getPrimaryKey();
+
+                if (isNull(findWallet(pk))) {
+                    log.debug("Inserting into db wallet {}", walletEntity.getWallet().getFullWalletAddress());
                     em.getTransaction().begin();
                     em.persist(walletEntity);
                     em.getTransaction().commit();
@@ -241,6 +248,8 @@ public class DbPool {
                 if (e.getMessage().contains(TOO_MANY_PERSISTENT_OBJECTS_1000000)) {
                     spawnNewDb();
                     insertWallet(walletEntity); //repeat failed insert into newly spawned db
+                } else {
+                    log.error("Error inserting wallet into DB. Error: {}", e.getMessage());
                 }
             } catch (Exception e) {
                 log.error("Error inserting wallet into DB. Error: {}", e.getMessage());
@@ -372,8 +381,8 @@ public class DbPool {
         }
     }
 
-    public void updateWalletStateAndSeqno(WalletEntity walletEntity, AccountState accountState, long seqno) {
-        log.debug("updating account state, {},  {}", walletEntity.getFullAddress(), accountState);
+    public void updateWalletStateAndSeqno(WalletEntity walletEntity, RawAccountState accountState, long seqno, WalletVersion walletVersion) {
+        log.debug("updating account state in db, {}, state {}", walletEntity.getFullAddress().toUpperCase(), accountState);
         try {
 
             ExecutorService threadPoolService = Executors.newFixedThreadPool(allDBs.size());
@@ -384,6 +393,7 @@ public class DbPool {
                         .walletPk(walletEntity.getPrimaryKey())
                         .accountState(accountState)
                         .seqno(seqno)
+                        .walletVersion(walletVersion)
                         .build());
                 callablesList.add(callable);
             }
@@ -393,30 +403,6 @@ public class DbPool {
             threadPoolService.shutdown();
         } catch (Exception e) {
             log.error("Error updating account's state, {}" + e.getMessage());
-        }
-    }
-
-    public long getNumberOfPreinstalledWallets() {
-        long result = 0;
-        try {
-            ExecutorService threadPoolService = Executors.newFixedThreadPool(poolInSettings.size());
-            List<PreinstalledCountCallable> callablesList = new ArrayList<>();
-            for (Map.Entry<String, String> entry : poolInSettings.entrySet()) {
-                PreinstalledCountCallable callable = new PreinstalledCountCallable(entry.getKey());
-                callablesList.add(callable);
-            }
-
-            List<Future<String>> futures = threadPoolService.invokeAll(callablesList);
-
-            for (Future<String> future : futures) {
-                result = result + Long.parseLong(future.get());
-            }
-
-            threadPoolService.shutdown();
-            return result;
-        } catch (Exception e) {
-            log.error("Error getNumberOfPreinstalledWallets(), {}" + e.getMessage());
-            return result;
         }
     }
 

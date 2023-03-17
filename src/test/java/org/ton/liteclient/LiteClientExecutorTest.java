@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.ton.enums.LiteClientEnum;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.liteclient.api.ResultLastBlock;
 import org.ton.executors.liteclient.api.ResultListBlockTransactions;
 import org.ton.executors.liteclient.api.block.Block;
@@ -78,14 +77,14 @@ public class LiteClientExecutorTest {
         assertThat(result).contains("sending query from file").contains("external message status is 1");
     }
 
-    @Test
-    public void testGetAccount() {
-        final String result = liteClient.executeGetAccount(testNode, "EQBdFkus6WRkJ1PP6z24Fw5C6E1YKet_nSJ6K1H7HHuOdwMC");
-        log.info(result);
-        AccountState accountState = LiteClientParser.parseGetAccount(result);
-        log.info(accountState.toString());
-        assertThat(accountState.getBalance().getToncoins()).isNotNull();
-    }
+//    @Test
+//    public void testGetAccount() {
+//        final String result = liteClient.executeGetAccount(testNode, "EQBdFkus6WRkJ1PP6z24Fw5C6E1YKet_nSJ6K1H7HHuOdwMC");
+//        log.info(result);
+//        AccountState accountState = LiteClientParser.parseGetAccount(result);
+//        log.info(accountState.toString());
+//        assertThat(accountState.getBalance().getToncoins()).isNotNull();
+//    }
 
     @Test
     public void testListblocktransExecuted() {

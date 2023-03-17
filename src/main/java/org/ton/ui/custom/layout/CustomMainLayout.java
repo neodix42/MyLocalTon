@@ -337,7 +337,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     }
 
     private void addCreateButton() throws IOException {
-        createButton = new CustomButton(CustomButton.CustomButtonType.CREATE, 150.0);
+        createButton = new CustomButton(CustomButton.CustomButtonType.CREATE, 180.0);
         createButton.setOnAction(action -> emit(new CustomActionEvent(CustomEvent.Type.CLICK)));
         createButton.getStyleClass().add("custom-button-btn");
         this.topButton.getChildren().add(createButton);

@@ -8,19 +8,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.db.entities.WalletEntity;
-import org.ton.executors.liteclient.api.AccountState;
 import org.ton.executors.validatorengineconsole.ValidatorEngineConsoleExecutor;
+import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.main.App;
 import org.ton.parameters.SendToncoinsParam;
 import org.ton.settings.Node;
 import org.ton.wallet.WalletAddress;
-import org.ton.wallet.WalletVersion;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
@@ -29,7 +28,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
@@ -37,6 +35,7 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 public class Fift {
 
     private static final String EOL = "\n";
+
 
     public String prepareSendTonCoinsFromNodeWallet(SendToncoinsParam sendToncoinsParam, long seqno) throws ExecutionException, InterruptedException {
 
@@ -46,19 +45,14 @@ public class Fift {
 
         String walletScript;
 
-        if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1) || sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.MASTER)) {
+        if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.config) || sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.master)) {
             walletScript = "wallet.fif";
-        } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V2)) {
-            walletScript = "wallet-v2.fif";
-        } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V3)) {
-            walletScript = "wallet-v3.fif";
         } else {
-            walletScript = "wallet.fif";
+            throw new Error("for this wallet version send toncoins using ton4j");
         }
 
         log.debug("{} sending using {}", sendToncoinsParam.getExecutionNode().getNodeName(), walletScript);
         String attachedBoc;
-        String timeout = null;
 
         if (SystemUtils.IS_OS_WINDOWS) {
             attachedBoc = (StringUtils.isEmpty(sendToncoinsParam.getBocLocation())) ? "" : "-B\"" + sendToncoinsParam.getBocLocation().trim() + "\"";
@@ -66,23 +60,15 @@ public class Fift {
             attachedBoc = (StringUtils.isEmpty(sendToncoinsParam.getBocLocation())) ? "" : "-B" + sendToncoinsParam.getBocLocation().trim();
         }
 
-        if (walletScript.equals("wallet-v3.fif")) {
-            if (isNull(sendToncoinsParam.getTimeout())) {
-                sendToncoinsParam.setTimeout(60L);
-            }
-
-            timeout = sendToncoinsParam.getTimeout().toString();
-        }
-
         result = new FiftExecutor().execute(sendToncoinsParam.getExecutionNode(),
                 "smartcont" + File.separator + walletScript,
-                sendToncoinsParam.getFromWallet().getFilenameBaseLocation(),
+                sendToncoinsParam.getFromWallet().getFilenameBaseLocation(), // todo - review - not all wallets have filebase
                 sendToncoinsParam.getDestAddr(),
-                (walletScript.equals("wallet-v3.fif")) ? String.valueOf(sendToncoinsParam.getFromSubWalletId()) : "",
+//                (walletScript.equals("wallet-v3.fif")) ? String.valueOf(sendToncoinsParam.getFromSubWalletId()) : "",
                 String.valueOf(seqno),
-                sendToncoinsParam.getAmount().toPlainString(),
+                new BigDecimal(sendToncoinsParam.getAmount()).divide(BigDecimal.valueOf(1_000_000_000)).toPlainString(),
                 (nonNull(sendToncoinsParam.getForceBounce()) && sendToncoinsParam.getForceBounce().equals(Boolean.TRUE)) ? "-b" : "",
-                StringUtils.isEmpty(timeout) ? "" : "-t" + sendToncoinsParam.getTimeout(),
+//                StringUtils.isEmpty(timeout) ? "" : "-t" + sendToncoinsParam.getTimeout(),
                 attachedBoc,
                 (StringUtils.isEmpty(sendToncoinsParam.getComment())) ? "" : "-C" + sendToncoinsParam.getComment().trim(),
                 resultBocFileLocation);
@@ -105,7 +91,7 @@ public class Fift {
         String resultStr = result.getRight().get();
         log.debug(resultStr);
 
-        String fullAddress = StringUtils.substringBetween(resultStr, "Source wallet address =", EOL).trim();
+        String fullAddress = StringUtils.substringBetween(resultStr, "Source wallet address =", EOL).trim().toUpperCase();
 
         String nonBounceableBase64url = StringUtils.substringBetween(resultStr, "Non-bounceable address, Base64Url (for init):", EOL).trim();
         String bounceableBase64url = StringUtils.substringBetween(resultStr, "Bounceable address, Base64Url (for later access):", EOL).trim();
@@ -138,22 +124,23 @@ public class Fift {
 
         WalletVersion walletVersion;
         if (fileBaseName.contains("main-wallet")) {
-            walletVersion = WalletVersion.V1;
+            walletVersion = WalletVersion.master;
+        } else if (fileBaseName.contains("config-master")) {
+            walletVersion = WalletVersion.config;
         } else {
-            walletVersion = null;
+            walletVersion = WalletVersion.V3R2;
         }
 
         WalletEntity walletEntity = WalletEntity.builder()
                 .wc(walletAddress.getWc())
-                .hexAddress(walletAddress.getHexWalletAddress())
-                .subWalletId(walletAddress.getSubWalletId())
+                .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
                 .walletVersion(walletVersion)
                 .wallet(walletAddress)
-                .accountState(AccountState.builder().build())
+                .accountState(RawAccountState.builder().build())
                 .createdAt(Instant.now().getEpochSecond())
                 .build();
 
-        walletEntity.setPreinstalled(true);
+//        walletEntity.setPreinstalled(true);
 
         if (fileBaseName.contains("main-wallet")) {
             walletEntity.setMainWalletInstalled(true);
@@ -162,178 +149,8 @@ public class Fift {
         }
 
         App.dbPool.insertWallet(walletEntity);
+
         return walletEntity;
-    }
-
-    public WalletAddress convertAddr(Node node, String wcHexAddress) {
-        Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "convert-addr.fif", wcHexAddress);
-
-        try {
-            String resultStr = result.getRight().get();
-            log.debug(resultStr);
-
-            String nonBounceableBase64url = StringUtils.substringBetween(resultStr, "Non-bounceable address, Base64Url (for init):", EOL).trim();
-            String bounceableBase64url = StringUtils.substringBetween(resultStr, "Bounceable address, Base64Url (for later access):", EOL).trim();
-            String nonBounceableBase64 = StringUtils.substringBetween(resultStr, "Non-bounceable address, Base64 (for init):", EOL).trim();
-            String bounceableBase64 = StringUtils.substringBetween(resultStr, "Bounceable address, Base64 (for later access):", EOL).trim();
-
-            return WalletAddress.builder()
-                    .nonBounceableAddressBase64Url(nonBounceableBase64url)
-                    .bounceableAddressBase64url(bounceableBase64url)
-                    .nonBounceableAddressBase64(nonBounceableBase64)
-                    .bounceableAddressBase64(bounceableBase64)
-                    .build();
-        } catch (Exception e) {
-            log.error("convertAddr error {}", e.getMessage());
-            return WalletAddress.builder().build();
-        }
-    }
-
-    /**
-     * Generates Ton wallet address
-     *
-     * @return TonWalletAddress with path to boc file.
-     */
-    public WalletAddress createWalletV1QueryBoc(Node node, long workchainId) throws Exception {
-
-        String fileNameBase = UUID.randomUUID().toString();
-        String fileNameBaseFullPath = node.getTonBinDir() + "wallets" + File.separator + fileNameBase;
-        Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "new-wallet.fif", String.valueOf(workchainId), fileNameBaseFullPath);
-
-        String resultStr = result.getRight().get();
-        log.debug(resultStr);
-
-        String fullAddress = StringUtils.substringBetween(resultStr, "new wallet address =", EOL).trim().toUpperCase();
-        String nonBounceableBase64url = StringUtils.substringBetween(resultStr, "Non-bounceable address, Base64Url (for init):", EOL).trim();
-        String bounceableBase64url = StringUtils.substringBetween(resultStr, "Bounceable address, Base64Url (for later access):", EOL).trim();
-        String nonBounceableBase64 = StringUtils.substringBetween(resultStr, "Non-bounceable address, Base64 (for init):", EOL).trim();
-        String bounceableBase64 = StringUtils.substringBetween(resultStr, "Bounceable address, Base64 (for later access):", EOL).trim();
-        String publicKey = StringUtils.substringBetween(resultStr, "Public key: ", EOL).trim();
-
-        String walletQueryFileBocLocation = fileNameBaseFullPath + "-query.boc";
-
-        if (resultStr.contains("Ed25519 signature is invalid.")) {
-            throw new Exception("Ed25519 signature is invalid.");
-        }
-
-        File bocFile = new File(walletQueryFileBocLocation);
-
-        ByteBuffer boc = ByteBuffer.wrap(FileUtils.readFileToByteArray(bocFile));
-        byte[] prvKey = FileUtils.readFileToByteArray(new File(fileNameBaseFullPath + ".pk"));
-        String privateKeyLocation = fileNameBaseFullPath + ".pk";
-        // FileUtils.deleteQuietly(bocFile)
-
-        return WalletAddress.builder()
-                .nonBounceableAddressBase64Url(nonBounceableBase64url)
-                .bounceableAddressBase64url(bounceableBase64url)
-                .nonBounceableAddressBase64(nonBounceableBase64)
-                .bounceableAddressBase64(bounceableBase64)
-                .fullWalletAddress(fullAddress)
-                .wc(Long.parseLong(fullAddress.substring(0, fullAddress.indexOf(":"))))
-                .subWalletId(-1L)
-                .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
-                .publicKeyHex(publicKey)
-                .privateKeyHex(Hex.encodeHexString(prvKey))
-                .privateKeyLocation(privateKeyLocation)
-                .filenameBase(fileNameBase)
-                .filenameBaseLocation(fileNameBaseFullPath)
-                .walletQueryFileBoc(boc)
-                .walletQueryFileBocLocation(walletQueryFileBocLocation)
-                .build();
-    }
-
-    public WalletAddress createWalletV2QueryBoc(Node node, long workchainId) throws Exception {
-
-        String fileNameBase = UUID.randomUUID().toString();
-        String fileNameBaseFullPath = node.getTonBinDir() + "wallets" + File.separator + fileNameBase;
-        Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "new-wallet-v2.fif", String.valueOf(workchainId), fileNameBaseFullPath);
-
-        String resultStr = result.getRight().get();
-        log.debug(resultStr);
-
-        String fullAddress = StringUtils.substringBetween(resultStr, "new wallet address =", EOL).trim().toUpperCase();
-        String nonBounceableBase64url = StringUtils.substringBetween(resultStr, "Non-bounceable address, Base64Url (for init):", EOL).trim();
-        String bounceableBase64url = StringUtils.substringBetween(resultStr, "Bounceable address, Base64Url (for later access):", EOL).trim();
-        String nonBounceableBase64 = StringUtils.substringBetween(resultStr, "Non-bounceable address, Base64 (for init):", EOL).trim();
-        String bounceableBase64 = StringUtils.substringBetween(resultStr, "Bounceable address, Base64 (for later access):", EOL).trim();
-        //String publicKey = StringUtils.substringBetween(resultStr, "Public key: ", EOL).trim();
-
-        String walletQueryFileBocLocation = fileNameBaseFullPath + "-query.boc";
-
-        if (resultStr.contains("Ed25519 signature is invalid.")) {
-            throw new Exception("Ed25519 signature is invalid.");
-        }
-
-        File bocFile = new File(walletQueryFileBocLocation);
-
-        ByteBuffer boc = ByteBuffer.wrap(FileUtils.readFileToByteArray(bocFile));
-        byte[] prvKey = FileUtils.readFileToByteArray(new File(fileNameBaseFullPath + ".pk"));
-        String privateKeyLocation = fileNameBaseFullPath + ".pk";
-        // FileUtils.deleteQuietly(bocFile)
-
-        return WalletAddress.builder()
-                .nonBounceableAddressBase64Url(nonBounceableBase64url)
-                .bounceableAddressBase64url(bounceableBase64url)
-                .nonBounceableAddressBase64(nonBounceableBase64)
-                .bounceableAddressBase64(bounceableBase64)
-                .fullWalletAddress(fullAddress)
-                .wc(Long.parseLong(fullAddress.substring(0, fullAddress.indexOf(":"))))
-                .subWalletId(-1L)
-                .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
-                // .publicKeyHex(publicKey)
-                .privateKeyHex(Hex.encodeHexString(prvKey))
-                .privateKeyLocation(privateKeyLocation)
-                .filenameBase(fileNameBase)
-                .filenameBaseLocation(fileNameBaseFullPath)
-                .walletQueryFileBoc(boc)
-                .walletQueryFileBocLocation(walletQueryFileBocLocation)
-                .build();
-    }
-
-    public WalletAddress createWalletV3QueryBoc(Node node, long workchainId, long walletId) throws Exception {
-
-        String fileNameBase = UUID.randomUUID().toString();
-        String fileNameBaseFullPath = node.getTonBinDir() + "wallets" + File.separator + fileNameBase;
-        Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "new-wallet-v3.fif", String.valueOf(workchainId), String.valueOf(walletId), fileNameBaseFullPath);
-
-        String resultStr = result.getRight().get();
-        log.debug(resultStr);
-
-        String fullAddress = StringUtils.substringBetween(resultStr, "new wallet address =", EOL).trim().toUpperCase();
-        String nonBounceableBase64url = StringUtils.substringBetween(resultStr, "Non-bounceable address, Base64Url (for init):", EOL).trim();
-        String bounceableBase64url = StringUtils.substringBetween(resultStr, "Bounceable address, Base64Url (for later access):", EOL).trim();
-        String nonBounceableBase64 = StringUtils.substringBetween(resultStr, "Non-bounceable address, Base64 (for init):", EOL).trim();
-        String bounceableBase64 = StringUtils.substringBetween(resultStr, "Bounceable address, Base64 (for later access):", EOL).trim();
-
-        String walletQueryFileBocLocation = fileNameBaseFullPath + "-query.boc";
-
-        if (resultStr.contains("Ed25519 signature is invalid.")) {
-            throw new Exception("Ed25519 signature is invalid.");
-        }
-
-        File bocFile = new File(walletQueryFileBocLocation);
-
-        ByteBuffer boc = ByteBuffer.wrap(FileUtils.readFileToByteArray(bocFile));
-        byte[] prvKey = FileUtils.readFileToByteArray(new File(fileNameBaseFullPath + ".pk"));
-        String privateKeyLocation = fileNameBaseFullPath + ".pk";
-        // FileUtils.deleteQuietly(bocFile)
-
-        return WalletAddress.builder()
-                .nonBounceableAddressBase64Url(nonBounceableBase64url)
-                .bounceableAddressBase64url(bounceableBase64url)
-                .nonBounceableAddressBase64(nonBounceableBase64)
-                .bounceableAddressBase64(bounceableBase64)
-                .fullWalletAddress(fullAddress)
-                .wc(Long.parseLong(fullAddress.substring(0, fullAddress.indexOf(":"))))
-                .subWalletId(walletId)
-                .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
-                .privateKeyHex(Hex.encodeHexString(prvKey))
-                .privateKeyLocation(privateKeyLocation)
-                .filenameBase(fileNameBase)
-                .filenameBaseLocation(fileNameBaseFullPath)
-                .walletQueryFileBoc(boc)
-                .walletQueryFileBocLocation(walletQueryFileBocLocation)
-                .build();
     }
 
     /**
@@ -357,7 +174,7 @@ public class Fift {
         log.debug(resultStr);
 
         String[] array = resultStr.split(System.lineSeparator());
-        String generatedMessageBase64 = array[array.length - 2].trim();
+//        String generatedMessageBase64 = array[array.length - 2].trim();
         String generatedMessageHex = array[array.length - 3].trim();
 
         log.debug("signing request by {}", node.getNodeName());
@@ -410,7 +227,7 @@ public class Fift {
     }
 
     public void createRecoverStake(Node node) throws ExecutionException, InterruptedException {
-        log.info("createRecoverStake {}", node.getNodeName());
+        log.debug("createRecoverStake {}", node.getNodeName());
 
         Pair<Process, Future<String>> result = new FiftExecutor().execute(node, "smartcont" + File.separator + "recover-stake.fif");
 

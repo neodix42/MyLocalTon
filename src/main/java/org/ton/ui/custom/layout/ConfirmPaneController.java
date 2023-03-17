@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ton.ui.custom.control.CustomButton;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
-import org.ton.utils.Utils;
+import org.ton.utils.MyLocalTonUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -57,7 +57,7 @@ public class ConfirmPaneController implements Initializable {
         Platform.runLater(() -> {
             emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
         });
-        Utils.doDelete(address);
+        MyLocalTonUtils.doDelete(address);
     }
 
     public void setBody(String body) {
@@ -81,7 +81,7 @@ public class ConfirmPaneController implements Initializable {
     }
 
     public void setHeight(double h) {
-        if(h > 270.0) {
+        if (h > 270.0) {
             anchorPane.setPrefHeight(h);
             double y = h - 70.0;
             double h2 = h - 150.0;

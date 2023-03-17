@@ -13,20 +13,17 @@ import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
-import org.ton.executors.liteclient.api.AccountState;
-import org.ton.executors.liteclient.api.StorageInfo;
-import org.ton.executors.liteclient.api.block.Value;
+import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.utils.Extractor;
 import org.ton.wallet.WalletAddress;
-import org.ton.wallet.WalletVersion;
 
 import javax.persistence.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -80,23 +77,12 @@ public class ObjectDbTest {
                 randomAddress = UUID.randomUUID().toString();
                 WalletEntity walletEntity = WalletEntity.builder()
                         .wallet(WalletAddress.builder().hexWalletAddress("KJNDFKJYTUYGJ871623981y23DAJDFNAKLKJ981238123").wc(1L).build())
-                        .walletVersion(WalletVersion.V3)
+                        .walletVersion(WalletVersion.V3R2)
                         .configWalletInstalled(false)
-                        .preinstalled(false)
                         .createdAt(234243L)
-                        .subWalletId(20L)
                         .wc(0L)
                         .hexAddress(randomAddress)
-                        .accountState(AccountState.builder()
-                                .status("active")
-                                .storageInfo(StorageInfo.builder()
-                                        .usedBits(10L)
-                                        .lastPaid(BigDecimal.ZERO)
-                                        .build())
-                                .wc(0L)
-                                .balance(Value.builder()
-                                        .toncoins(BigDecimal.TEN)
-                                        .build()).build())
+                        .accountState(RawAccountState.builder().balance("10").build())
                         .build();
 
                 em.getTransaction().begin();
@@ -151,7 +137,6 @@ public class ObjectDbTest {
                 EntityManager em = emf.createEntityManager();
 
                 WalletEntity walletEntity = WalletEntity.builder()
-                        .subWalletId(20L)
                         .wc(0L)
                         .hexAddress(UUID.randomUUID().toString())
                         .wallet(WalletAddress.builder().hexWalletAddress("KJNDFKJYTUYGJ871623981y23DAJDFNAKLKJ981238123").wc(1L).build())
@@ -191,7 +176,6 @@ public class ObjectDbTest {
                 EntityManager em = emf.createEntityManager();
 
                 WalletEntity walletEntity = WalletEntity.builder()
-                        .subWalletId(20L)
                         .wc(0L)
                         .hexAddress(UUID.randomUUID().toString())
                         .wallet(WalletAddress.builder().hexWalletAddress("KJNDFKJYTUYGJ871623981y23DAJDFNAKLKJ981238123").wc(1L).build())
@@ -236,7 +220,6 @@ public class ObjectDbTest {
                 for (int j = 0; j < 30000; j++) {
                     String hexAddr = UUID.randomUUID().toString();
                     WalletEntity walletEntity = WalletEntity.builder()
-                            .subWalletId(20L)
                             .wallet(WalletAddress.builder().hexWalletAddress("13413ACD13413ACD").wc(0L).fullWalletAddress("0:13413ACD13413ACD").build())
                             .wc(0L)
                             .hexAddress(hexAddr)
@@ -305,7 +288,6 @@ public class ObjectDbTest {
                 hexAddr = UUID.randomUUID().toString();
             }
             WalletEntity walletEntity = WalletEntity.builder()
-                    .subWalletId(20L)
                     .wallet(WalletAddress.builder().hexWalletAddress("13413ACD13413ACD").wc(0L).fullWalletAddress("0:13413ACD13413ACD").build())
                     .wc(0L)
                     .hexAddress(hexAddr)
@@ -385,7 +367,7 @@ public class ObjectDbTest {
             if (Files.exists(Paths.get(DB_DIR + SETTINGS_FILE), LinkOption.NOFOLLOW_LINKS)) {
                 return new Gson().fromJson(new FileReader(new File(DB_DIR + SETTINGS_FILE)), MyLocalTonSettings.class);
             } else {
-                log.info("No settings.json found. Very first launch with default settings.");
+                log.debug("No settings.json found. Very first launch with default settings.");
                 return new MyLocalTonSettings();
             }
         } catch (Exception e) {

@@ -28,12 +28,12 @@ public class GenerateRandomId {
         if (Files.exists(Paths.get(node.getTonBinDir() + "certs" + File.separator + "client"))) {
             log.info("Found existing client certificate, skipping");
         } else {
-            log.info("Generating client certificate for remote control");
+            log.debug("Generating client certificate for remote control");
             String clientIds = new RandomIdExecutor().execute(node, "-m", "keys", "-n", node.getTonBinDir() + "certs" + File.separator + "client");
             String[] clientIdsBoth = clientIds.split(" ");
             String clientIdHex = clientIdsBoth[0].trim();
             String clientIdBase64 = clientIdsBoth[1].trim();
-            log.info("Generated client private certificate for {}: {} {}", node.getNodeName(), clientIdHex, clientIdBase64);
+            log.debug("Generated client private certificate for {}: {} {}", node.getNodeName(), clientIdHex, clientIdBase64);
 
             //Adding client permissions
             String content = Files.readString(Paths.get(Extractor.MY_LOCAL_TON_ROOT_DIR + "templates" + File.separator + "control.template"), StandardCharsets.UTF_8);
@@ -56,12 +56,12 @@ public class GenerateRandomId {
             log.info("Found existing server certificate, skipping!");
             return null;
         } else {
-            log.info("Generating and installing server certificate for remote control");
+            log.debug("Generating and installing server certificate for remote control");
             String serverIds = new RandomIdExecutor().execute(node, "-m", "keys", "-n", node.getTonBinDir() + "certs" + File.separator + "server");
             String[] serverIdsBoth = serverIds.split(" ");
             String serverIdHex = serverIdsBoth[0].trim();
             String serverIdBase64 = serverIdsBoth[1].trim();
-            log.info("Server IDs for {}: {} {}", node.getNodeName(), serverIdHex, serverIdBase64);
+            log.debug("Server IDs for {}: {} {}", node.getNodeName(), serverIdHex, serverIdBase64);
             Files.copy(Paths.get(node.getTonBinDir() + "certs" + File.separator + "server"), Paths.get(node.getTonDbKeyringDir() + serverIdHex), StandardCopyOption.REPLACE_EXISTING);
 
             return serverIdBase64;

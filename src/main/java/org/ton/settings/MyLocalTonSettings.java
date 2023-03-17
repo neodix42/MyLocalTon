@@ -6,11 +6,11 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
 import org.ton.parameters.ValidationParam;
-import org.ton.wallet.WalletVersion;
 
 import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -124,11 +124,10 @@ public class MyLocalTonSettings implements Serializable {
     @Getter
     @Setter
     public static class WalletSettings implements Serializable {
-        Long numberOfPreinstalledWallets = 4L;
-        BigDecimal initialAmount = new BigDecimal("778");
-        WalletVersion walletVersion = WalletVersion.V3;
+        BigInteger initialAmount = new BigInteger("778000000000");
+        //        WalletVersion walletVersion = WalletVersion.V3R2;
         Long defaultWorkChain = 0L;
-        long defaultSubWalletId = 1L;
+        long defaultSubWalletId = 42L;
     }
 
     //options - UI
@@ -154,6 +153,11 @@ public class MyLocalTonSettings implements Serializable {
         Long electionStartBefore = 25 * 60L; // 2 min, 50 min
         Long electionEndBefore = 10 * 60L;// 1 min, 10 min
         Long electionStakesFrozenFor = 5 * 60L;// 30 sec, 20 min
+
+        //        Long electedFor = 3 * 60L; // 3 min
+//        Long electionStartBefore = 2 * 60L; // 2 min
+//        Long electionEndBefore = 60L;// 1 min
+//        Long electionStakesFrozenFor = 30L;// 30 sec
         Long originalValidatorSetValidFor = electionStartBefore;
 
         Long globalId = -239L;
