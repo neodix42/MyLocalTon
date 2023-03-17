@@ -1,5 +1,5 @@
 ### Changes in this release
 
-- Upgrade binaries to TON 2022.12;
-- include blockchain-explorer executable to macOS x86-64 artifacts;
-- fix Windows blockchain-explorer executable;
+- Upgrade binaries to TON 2023.03;
+- integrated support of various wallet versions;
+- integrated ton4j library
