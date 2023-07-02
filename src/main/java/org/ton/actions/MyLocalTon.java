@@ -44,6 +44,7 @@ import org.ton.java.tonlib.Tonlib;
 import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.java.tonlib.types.RunResult;
 import org.ton.java.tonlib.types.TvmStackEntryNumber;
+import org.ton.java.utils.Utils;
 import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
@@ -551,15 +552,42 @@ public class MyLocalTon {
     }
 
     public void initTonlib(Node node) {
+        String tonlibName;
+        switch (Utils.getOS()) {
+            case LINUX:
+                tonlibName = "tonlibjson.so";
+                break;
+            case LINUX_ARM:
+                tonlibName = "tonlibjson-arm.so";
+                break;
+            case WINDOWS:
+                tonlibName = "tonlibjson.dll";
+                break;
+            case WINDOWS_ARM:
+                tonlibName = "tonlibjson-arm.dll";
+                break;
+            case MAC:
+                tonlibName = "tonlibjson";
+                break;
+            case MAC_ARM64:
+                tonlibName = "tonlibjson-arm";
+                break;
+            case UNKNOWN:
+                throw new Error("Operating system is not supported!");
+            default:
+                throw new IllegalArgumentException();
+        }
         tonlib = Tonlib.builder()
                 .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
                 .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+                .pathToTonlibSharedLib(tonlibName)
 //                .verbosityLevel(VerbosityLevel.DEBUG)
                 .build();
 
         tonlibBlockMonitor = Tonlib.builder()
                 .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
                 .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+                .pathToTonlibSharedLib(tonlibName)
 //                .verbosityLevel(VerbosityLevel.DEBUG)
                 .build();
     }
