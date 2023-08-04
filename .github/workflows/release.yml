@@ -6,6 +6,8 @@ on:
     branches:
       - main
       - arm64-aarch64
+      - testnet
+      - testnet-arm64-aarch64
       - test-release
 
 jobs:
