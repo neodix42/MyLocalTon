@@ -13,6 +13,8 @@ import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import static java.util.Objects.isNull;
+
 @Slf4j
 public class Extractor {
     private static final String CURRENT_DIR = System.getProperty("user.dir");
@@ -25,6 +27,7 @@ public class Extractor {
     public static final String TONLIB_KEYSTORE = "tonlib-keystore";
     public static final String UTILS = "utils";
     public static final String DB = "db";
+    public static final String WINDOWS_ZIP = "ton-win-x86_64.zip";
 
     private final String nodeName;
 
@@ -37,7 +40,7 @@ public class Extractor {
     private void extractBinaries() throws IOException {
         synchronized (Extractor.class) {
 
-            if (Files.notExists(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN), LinkOption.NOFOLLOW_LINKS)) {
+            if (Files.notExists(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "smartcont" + File.separator + "auto" + File.separator + "config-code.fif"), LinkOption.NOFOLLOW_LINKS)) {
 
                 log.info("Detected OS: {}", System.getProperty("os.name"));
 
@@ -139,14 +142,19 @@ public class Extractor {
     }
 
     private void extractWindowsBinaries() throws IOException {
-        log.info("extracting windows.zip on windows");
+        log.info("extracting " + WINDOWS_ZIP + " on windows");
 
-        InputStream windowsBinaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/windows.zip");
-        Files.copy(windowsBinaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "windows.zip"), StandardCopyOption.REPLACE_EXISTING);
+        InputStream windowsBinaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/" + WINDOWS_ZIP);
+        if (isNull(windowsBinaries)) {
+            log.error("MyLocalTon.jar does not contain resource " + WINDOWS_ZIP);
+            System.exit(1);
+        }
+
+        Files.copy(windowsBinaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + WINDOWS_ZIP), StandardCopyOption.REPLACE_EXISTING);
         windowsBinaries.close();
-        ZipFile zipFile = new ZipFile(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "windows.zip");
+        ZipFile zipFile = new ZipFile(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + WINDOWS_ZIP);
         zipFile.extractAll(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
-        Files.delete(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "windows.zip"));
+        Files.delete(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + WINDOWS_ZIP));
 
 //        log.debug("copy patched validator-engine.exe");
 //        InputStream winValidatorEngine = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/validator-engine.exe");
@@ -156,6 +164,7 @@ public class Extractor {
         log.debug("windows binaries path: {}", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
 
         extractWindowsUtils();
+
     }
 
     private void extractUbuntuBinaries(String platform) throws IOException {
