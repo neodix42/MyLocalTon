@@ -1,6 +1,4 @@
 ### Changes in this release
 
-- Upgrade binaries to TON 2023.06
-- update tonlib
-- rename tonlib inside artifacts
-- add missing folder inside linux-x86-64 artifacts
+- Reduce final jar size by 100 MB by putting only x86_64 binaries to x86_64 version of MyLocalTon
+- Download latest ton binaries from GitHub release master branch at mvn compile stage
