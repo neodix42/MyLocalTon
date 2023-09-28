@@ -39,7 +39,7 @@ import static org.ton.ui.custom.events.CustomEventBus.listenFor;
 public class CustomMainLayout extends AnchorPane implements Initializable {
 
     @FXML
-    private CustomMenuButton blocksBtn, transactionsBtn, validationBtn, accountsBtn, explorerBtn;
+    private CustomMenuButton blocksBtn, transactionsBtn, validationBtn, accountsBtn, explorerBtn, tonHttpApiBtn;
 
     @FXML
     private CustomExpandButton settingBtn, resultsBtn;
@@ -50,7 +50,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     @FXML
     private AnchorPane logoPane, search, buttons, info, contentPane, blocksPane, transactionsPane, validationPane, accountsPane, blankPane,
             logsPane, accountsKeysPane, settingsValidatorsPane, blockchainPane, userInterfacePane,
-            aboutPane, explorerPane, foundBlocksPane, foundAccountsPane, foundTxsPane, foundAccountsTxsPane;
+            aboutPane, explorerPane, tonHttpApiPane, foundBlocksPane, foundAccountsPane, foundTxsPane, foundAccountsTxsPane;
 
     @FXML
     private HBox topButton, scrollButton, closeButton;
@@ -66,6 +66,8 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     private Node lastPane = null;
 
     private boolean explorer;
+
+    private boolean tonHttpApi;
 
     private boolean hasBlocks = false;
 
@@ -97,6 +99,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         contentPane.getChildren().remove(userInterfacePane);
         contentPane.getChildren().remove(aboutPane);
         contentPane.getChildren().remove(explorerPane);
+        contentPane.getChildren().remove(tonHttpApiPane);
         contentPane.getChildren().remove(foundBlocksPane);
         contentPane.getChildren().remove(foundAccountsPane);
         contentPane.getChildren().remove(foundTxsPane);
@@ -109,8 +112,9 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         listenFor(CustomSearchEvent.class, this::handle);
         listenFor(CustomRefreshEvent.class, this::handle);
 
-        //remove explorer and results buttons
+        //remove explorer, ton-http-api and results buttons
         buttons.getChildren().remove(explorerBtn);
+        buttons.getChildren().remove(tonHttpApiBtn);
         buttons.getChildren().remove(resultsBtn);
 
     }
@@ -132,6 +136,11 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
                     if (hasExplorer()) {
                         TranslateTransition tr2 = new TranslateTransition(Duration.seconds(0.001), explorerBtn);
                         tr2.setToY(arg2.doubleValue() - explorerBtn.getPrefHeight());
+                        tr2.play();
+                    }
+                    if (hasTonHttpApi()) {
+                        TranslateTransition tr2 = new TranslateTransition(Duration.seconds(0.001), tonHttpApiBtn);
+                        tr2.setToY(arg2.doubleValue() - tonHttpApiBtn.getPrefHeight());
                         tr2.play();
                     }
                 }
@@ -250,6 +259,10 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         return this.explorer;
     }
 
+    private boolean hasTonHttpApi() {
+        return this.tonHttpApi;
+    }
+
     private void loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType viewType) {
         if (noBlocksTransactions == null) {
             try {
@@ -350,6 +363,13 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         changeContent(explorerPane);
     }
 
+    @FXML
+    private void clickTonHttpApi(Event e) {
+        resetButtons();
+        tonHttpApiBtn.activate();
+        changeContent(tonHttpApiPane);
+    }
+
     private void resetButtons() {
         deactivateAllButton();
         if (settingBtn.isOpened()) {
@@ -369,6 +389,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         settingBtn.deactivate();
         resultsBtn.deactivate();
         explorerBtn.deactivate();
+        tonHttpApiBtn.deactivate();
     }
 
     private void changeContent(Node pane) {
@@ -389,6 +410,16 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
                 resultsBtn.setLayoutY(320.0);
             }
             buttons.getChildren().add(explorerBtn);
+        }
+    }
+
+    public void setTonHttpApi(boolean httpApi) {
+        this.tonHttpApi = httpApi;
+        if (httpApi) {
+            if (hasResult()) {
+                resultsBtn.setLayoutY(320.0); // todo
+            }
+            buttons.getChildren().add(tonHttpApiBtn);
         }
     }
 
@@ -686,6 +717,10 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
 
     public ObservableList<Node> getExplorerPane() {
         return explorerPane.getChildren();
+    }
+
+    public ObservableList<Node> getTonHttpApiPane() {
+        return tonHttpApiPane.getChildren();
     }
 
     public ObservableList<Node> getFoundBlocksPane() {

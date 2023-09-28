@@ -9,8 +9,7 @@
 <fx:root type="javafx.scene.layout.AnchorPane"
          xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
-         prefHeight="720.0" prefWidth="1335.0"
->
+         prefHeight="720.0" prefWidth="1335.0">
 
     <AnchorPane fx:id="logoPane" prefHeight="50" prefWidth="210" styleClass="background-pane"
                 AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -161,6 +160,10 @@
             <!--                    AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0" />-->
 
             <AnchorPane fx:id="explorerPane" styleClass="content-pane" prefHeight="631" prefWidth="1105"
+                        AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
+                        AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0"/>
+
+            <AnchorPane fx:id="tonHttpApiPane" styleClass="content-pane" prefHeight="631" prefWidth="1105"
                         AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0"
                         AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0"/>
 

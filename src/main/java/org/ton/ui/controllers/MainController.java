@@ -45,6 +45,7 @@ import org.ton.executors.liteclient.LiteClientParser;
 import org.ton.executors.liteclient.api.*;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.executors.liteclient.api.config.Validator;
+import org.ton.executors.tonhttpapi.TonHttpApi;
 import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.main.App;
 import org.ton.parameters.ValidationParam;
@@ -173,6 +174,12 @@ public class MainController implements Initializable {
     public JFXCheckBox enableBlockchainExplorer;
 
     @FXML
+    public JFXCheckBox enableTonHttpApi;
+
+    @FXML
+    public Label enableTonHttpApiLabel;
+
+    @FXML
     public Label enableBlockchainExplorerLabel;
 
     @FXML
@@ -180,6 +187,9 @@ public class MainController implements Initializable {
 
     @FXML
     public WebView webView;
+
+    @FXML
+    public WebView webViewTonHttpApi;
 
     @FXML
     public Label validator1WalletBalance;
@@ -1416,6 +1426,7 @@ public class MainController implements Initializable {
         mainConfigTxCheckBox.setSelected(settings.getUiSettings().isShowMainConfigTransactions());
         inOutMsgsCheckBox.setSelected(settings.getUiSettings().isShowInOutMessages());
         enableBlockchainExplorer.setSelected(settings.getUiSettings().isEnableBlockchainExplorer());
+        enableTonHttpApi.setSelected(settings.getUiSettings().isEnableTonHttpApi());
         showMsgBodyCheckBox.setSelected(settings.getUiSettings().isShowBodyInMessage());
         shardStateCheckbox.setSelected(settings.getUiSettings().isShowShardStateInBlockDump());
 
@@ -1591,6 +1602,9 @@ public class MainController implements Initializable {
         enableBlockchainExplorer.setVisible(true);
         enableBlockchainExplorerLabel.setVisible(true);
 
+        enableTonHttpApi.setVisible(true);
+        enableTonHttpApiLabel.setVisible(true);
+
         addValidatorBtn.setVisible(true);
 
         // validator-tabs
@@ -1607,6 +1621,7 @@ public class MainController implements Initializable {
             }
         }
         mainLayout.setExplorer(enableBlockchainExplorer.isSelected());
+        mainLayout.setTonHttpApi(enableTonHttpApi.isSelected());
     }
 
     public Tab getNodeTabByName(String nodeName) {
@@ -1631,13 +1646,20 @@ public class MainController implements Initializable {
     }
 
     public void startWeb() {
-
         if (enableBlockchainExplorer.isSelected()) {
             log.info("Starting native blockchain-explorer on port {}", settings.getUiSettings().getBlockchainExplorerPort());
             BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
             blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getBlockchainExplorerPort());
-            WebEngine webEngine = webView.getEngine();
-            webEngine.load("http://127.0.0.1:" + settings.getUiSettings().getBlockchainExplorerPort() + "/last");
+            webView.getEngine().load("http://127.0.0.1:" + settings.getUiSettings().getBlockchainExplorerPort() + "/last");
+        }
+    }
+
+    public void startTonHttpApi() {
+        if (enableTonHttpApi.isSelected()) {
+            log.info("Starting ton-http-api on port {}", settings.getUiSettings().getTonHttpApiPort());
+            TonHttpApi tonHttpApi = new TonHttpApi();
+            tonHttpApi.startTonHttpApi(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getTonHttpApiPort());
+            webViewTonHttpApi.getEngine().load("http://127.0.0.1:" + settings.getUiSettings().getTonHttpApiPort());
         }
     }
 
@@ -1654,6 +1676,7 @@ public class MainController implements Initializable {
         settings.getUiSettings().setShowInOutMessages(inOutMsgsCheckBox.isSelected());
         settings.getUiSettings().setShowBodyInMessage(showMsgBodyCheckBox.isSelected());
         settings.getUiSettings().setEnableBlockchainExplorer(enableBlockchainExplorer.isSelected());
+        settings.getUiSettings().setEnableTonHttpApi(enableTonHttpApi.isSelected());
         settings.getUiSettings().setShowShardStateInBlockDump(shardStateCheckbox.isSelected());
 
         settings.getWalletSettings().setInitialAmount(new BigInteger(coinsPerWallet.getFieldText()));
@@ -3416,6 +3439,12 @@ public class MainController implements Initializable {
     public void BlockChainExplorerCheckBoxClick(MouseEvent mouseEvent) {
         if (enableBlockchainExplorer.isSelected()) {
             App.mainController.showInfoMsg("Native blockchain-explorer will be available after restart", 5);
+        }
+    }
+
+    public void TonHttpApiCheckBoxClick(MouseEvent mouseEvent) {
+        if (enableTonHttpApi.isSelected()) {
+            App.mainController.showInfoMsg("ton-http-api will be available after restart", 5);
         }
     }
 

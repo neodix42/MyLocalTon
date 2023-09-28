@@ -199,6 +199,8 @@ public interface Node {
 
     void setBlockchainExplorerProcess(Process process);
 
+    void setTonHttpApiProcess(Process process);
+
     String getValidationPubKeyHex();
 
     void setValidationPubKeyHex(String validationPubKeyHex);

@@ -132,11 +132,11 @@ public class App extends Application {
         System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
         System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
 
-        Node genesisNode = settings.getGenesisNode();
-        genesisNode.extractBinaries();
-
         // start GUI
         Executors.newSingleThreadExecutor().execute(Application::launch);
+
+        Node genesisNode = settings.getGenesisNode();
+        genesisNode.extractBinaries();
 
         // initialize DB
         dbPool = new DbPool(settings);
@@ -200,6 +200,7 @@ public class App extends Application {
         }
 
         myLocalTon.runBlockchainExplorer();
+        myLocalTon.runTonHttpApi();
 
         Thread.sleep(1000);
         mainController.showSuccessMsg("Wallets are ready. You are all set!", 5);

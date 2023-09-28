@@ -140,7 +140,9 @@ public class MyLocalTonSettings implements Serializable {
         boolean showBodyInMessage = true;
         boolean showShardStateInBlockDump = false;
         boolean enableBlockchainExplorer = false;
+        boolean enableTonHttpApi = false;
         int blockchainExplorerPort = 8000;
+        int tonHttpApiPort = 8081;
     }
 
     @Getter

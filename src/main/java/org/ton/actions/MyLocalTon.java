@@ -162,6 +162,10 @@ public class MyLocalTon {
         Platform.runLater(() -> mainController.startWeb());
     }
 
+    public void runTonHttpApi() {
+        Platform.runLater(() -> mainController.startTonHttpApi());
+    }
+
     public void runNodesStatusMonitor() {
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
