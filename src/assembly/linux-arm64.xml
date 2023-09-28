@@ -1,0 +1,13 @@
+<assembly>
+    <id>ton-linux-arm64</id>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>target/binaries-linux-arm64/binaries</directory>
+            <outputDirectory>.</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>

@@ -340,7 +340,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <skipCache>true</skipCache>
+                            <!--                            <skipCache>true</skipCache>-->
                             <uri>${linux.arm64.ton.binaries.uri}</uri>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/binaries-linux-arm64</outputDirectory>
@@ -353,7 +353,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <skipCache>true</skipCache>
+                            <!--                            <skipCache>true</skipCache>-->
                             <uri>${mac.arm64.ton.binaries.uri}</uri>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/binaries-mac-arm64</outputDirectory>
