@@ -23,6 +23,7 @@
         <logback.version>1.2.9</logback.version>
         <zip4j.version>2.10.0</zip4j.version>
         <jetty.version>11.0.14</jetty.version>
+
         <linux.amd64.ton.binaries.uri>
             https://cicd.neodix.io/view/TON%20master%20binaries/job/TON_Linux_x86-64/lastSuccessfulBuild/artifact/artifacts/binaries/*zip*/binaries.zip
         </linux.amd64.ton.binaries.uri>
@@ -199,20 +200,6 @@
             <artifactId>jetty-servlet</artifactId>
             <version>${jetty.version}</version>
         </dependency>
-        <!--
-                <dependency>
-                    <groupId>de.jensd</groupId>
-                    <artifactId>fontawesomefx-commons</artifactId>
-                    <version>9.1.2</version>
-                    <scope>runtime</scope>
-                </dependency>
-
-                <dependency>
-                    <groupId>de.jensd</groupId>
-                    <artifactId>fontawesomefx-materialicons</artifactId>
-                    <version>2.2.0-9.1.2</version>
-                </dependency>
-        -->
 
         <!-- database -->
         <dependency>
@@ -247,6 +234,7 @@
             <version>1.6.5</version>
         </dependency>
     </dependencies>
+
     <build>
         <resources>
             <resource>
@@ -354,43 +342,6 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>MyLocalTon</finalName>
-
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.ton.main.Main</mainClass>
-                                </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
-                                </transformer>
-                            </transformers>
-
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>com.googlecode.maven-download-plugin</groupId>
                 <artifactId>download-maven-plugin</artifactId>
                 <version>1.7.1</version>
@@ -402,7 +353,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <skipCache>true</skipCache>
+                            <!--                            <skipCache>true</skipCache>-->
                             <uri>
                                 ${linux.amd64.ton.binaries.uri}
                             </uri>
@@ -417,7 +368,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <skipCache>true</skipCache>
+                            <!--                            <skipCache>true</skipCache>-->
                             <uri>${mac.amd64.ton.binaries.uri}</uri>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/binaries-mac-x86_64</outputDirectory>
@@ -430,7 +381,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <skipCache>true</skipCache>
+                            <!--                            <skipCache>true</skipCache>-->
                             <uri>${win.amd64.ton.binaries.uri}</uri>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/binaries-windows-x86_64</outputDirectory>
@@ -565,6 +516,24 @@
                             <descriptors>
                                 <descriptor>src/assembly/win-x86_64.xml</descriptor>
                             </descriptors>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>MyLocalTon</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <archive>
+                                <manifest>
+                                    <mainClass>org.ton.main.Main</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
                         </configuration>
                     </execution>
                 </executions>
