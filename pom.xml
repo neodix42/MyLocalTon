@@ -26,12 +26,6 @@
         <linux.amd64.ton.binaries.uri>
             https://cicd.neodix.io/view/TON%20master%20binaries/job/TON_Linux_x86-64/lastSuccessfulBuild/artifact/artifacts/binaries/*zip*/binaries.zip
         </linux.amd64.ton.binaries.uri>
-        <linux.arm64.ton.binaries.uri>
-            https://cicd.neodix.io/view/TON%20master%20binaries/job/TON_Linux_arm64/lastSuccessfulBuild/artifact/artifacts/binaries/*zip*/binaries.zip
-        </linux.arm64.ton.binaries.uri>
-        <mac.arm64.ton.binaries.uri>
-            https://cicd.neodix.io/view/TON%20master%20binaries/job/TON_macOS_aarch64_arm64_master/lastSuccessfulBuild/artifact/artifacts/binaries/*zip*/binaries.zip
-        </mac.arm64.ton.binaries.uri>
         <mac.amd64.ton.binaries.uri>
             https://cicd.neodix.io/view/TON%20master%20binaries/job/TON_macOS_x86-64_master/lastSuccessfulBuild/artifact/artifacts/binaries/*zip*/binaries.zip
         </mac.amd64.ton.binaries.uri>
@@ -417,32 +411,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>ton-linux-arm64</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <skipCache>true</skipCache>
-                            <uri>${linux.arm64.ton.binaries.uri}</uri>
-                            <unpack>true</unpack>
-                            <outputDirectory>${project.build.directory}/binaries-linux-arm64</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ton-mac-arm64</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <skipCache>true</skipCache>
-                            <uri>${mac.arm64.ton.binaries.uri}</uri>
-                            <unpack>true</unpack>
-                            <outputDirectory>${project.build.directory}/binaries-mac-arm64</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>ton-mac-x86_64</id>
                         <phase>generate-resources</phase>
                         <goals>
@@ -484,21 +452,9 @@
                         <configuration>
                             <target>
                                 <mkdir dir="${project.build.directory}/binaries-mac-x86_64/binaries/smartcont/auto"/>
-                                <mkdir dir="${project.build.directory}/binaries-mac-arm64/binaries/smartcont/auto"/>
-                                <mkdir dir="${project.build.directory}/binaries-linux-arm64/binaries/smartcont/auto"/>
                                 <mkdir dir="${project.build.directory}/binaries-linux-x86_64/binaries/smartcont/auto"/>
 
                                 <copy todir="${project.build.directory}/binaries-mac-x86_64/binaries/smartcont/auto">
-                                    <fileset
-                                            dir="${project.build.directory}/binaries-windows-x86_64/artifacts/smartcont/auto"
-                                            includes="**/*"/>
-                                </copy>
-                                <copy todir="${project.build.directory}/binaries-mac-arm64/binaries/smartcont/auto">
-                                    <fileset
-                                            dir="${project.build.directory}/binaries-windows-x86_64/artifacts/smartcont/auto"
-                                            includes="**/*"/>
-                                </copy>
-                                <copy todir="${project.build.directory}/binaries-linux-arm64/binaries/smartcont/auto">
                                     <fileset
                                             dir="${project.build.directory}/binaries-windows-x86_64/artifacts/smartcont/auto"
                                             includes="**/*"/>
@@ -524,25 +480,8 @@
                                     <fileset
                                             dir="${project.build.directory}" includes="ton-linux-x86_64.zip"/>
                                 </copy>
-                                <copy file="${project.build.directory}/binaries-linux-arm64/binaries/libtonlibjson.so.0.5"
+                                <copy file="${project.build.directory}/binaries-linux-x86_64/binaries/libtonlibjson.so.0.5"
                                       tofile="${basedir}/src/main/resources/tonlibjson.so"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-final-ton-linux-arm64_to_resources</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <copy todir="${basedir}/src/main/resources/org/ton/binaries">
-                                    <fileset
-                                            dir="${project.build.directory}" includes="ton-linux-arm64.zip"/>
-                                </copy>
-                                <copy file="${project.build.directory}/binaries-linux-arm64/binaries/libtonlibjson.so.0.5"
-                                      tofile="${basedir}/src/main/resources/tonlibjson-arm.so"/>
                             </target>
                         </configuration>
                     </execution>
@@ -558,25 +497,8 @@
                                     <fileset
                                             dir="${project.build.directory}" includes="ton-mac-x86_64.zip"/>
                                 </copy>
-                                <copy file="${project.build.directory}/binaries-mac-arm64/binaries/libtonlibjson.0.5.dylib"
+                                <copy file="${project.build.directory}/binaries-mac-x86_64/binaries/libtonlibjson.0.5.dylib"
                                       tofile="${basedir}/src/main/resources/libtonlibjson.dylib"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-final-ton-mac-arm64_to_resources</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <copy todir="${basedir}/src/main/resources/org/ton/binaries">
-                                    <fileset
-                                            dir="${project.build.directory}" includes="ton-mac-arm64.zip"/>
-                                </copy>
-                                <copy file="${project.build.directory}/binaries-mac-arm64/binaries/libtonlibjson.0.5.dylib"
-                                      tofile="${basedir}/src/main/resources/libtonlibjson-arm.dylib"/>
                             </target>
                         </configuration>
                     </execution>
@@ -604,20 +526,6 @@
                 <version>3.6.0</version>
                 <executions>
                     <execution>
-                        <id>create-final-linux-arm64-binary-package</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>ton-linux-arm64</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/assembly/linux-arm64.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>create-final-linux-x86_64-binary-package</id>
                         <phase>generate-resources</phase>
                         <goals>
@@ -642,20 +550,6 @@
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
                                 <descriptor>src/assembly/mac-x86_64.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-final-mac-arm64-binary-package</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>ton-mac-arm64</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/assembly/mac-arm64.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>
