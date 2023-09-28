@@ -132,11 +132,11 @@ public class App extends Application {
         System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
         System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
 
-        // start GUI
-        Executors.newSingleThreadExecutor().execute(Application::launch);
-
         Node genesisNode = settings.getGenesisNode();
         genesisNode.extractBinaries();
+
+        // start GUI
+        Executors.newSingleThreadExecutor().execute(Application::launch);
 
         // initialize DB
         dbPool = new DbPool(settings);
