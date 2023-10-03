@@ -406,9 +406,6 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     public void setExplorer(boolean explorer) {
         this.explorer = explorer;
         if (explorer) {
-            if (hasResult()) {
-                resultsBtn.setLayoutY(320.0);
-            }
             buttons.getChildren().add(explorerBtn);
         }
     }
@@ -416,8 +413,10 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     public void setTonHttpApi(boolean httpApi) {
         this.tonHttpApi = httpApi;
         if (httpApi) {
-            if (hasResult()) {
-                resultsBtn.setLayoutY(320.0); // todo
+            if (hasExplorer()) {
+                tonHttpApiBtn.setLayoutY(320);
+            } else {
+                tonHttpApiBtn.setLayoutY(270);
             }
             buttons.getChildren().add(tonHttpApiBtn);
         }
@@ -472,8 +471,13 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
 
 
     private void addResultsButton() {
-        if (hasExplorer())
+        if (hasExplorer() && hasTonHttpApi()) {
+            resultsBtn.setLayoutY(370.0);
+        } else if (hasExplorer() || hasTonHttpApi()) {
             resultsBtn.setLayoutY(320.0);
+        } else {
+            resultsBtn.setLayoutY(270.0);
+        }
         if (!buttons.getChildren().contains(resultsBtn))
             buttons.getChildren().add(resultsBtn);
         removeCreateButton();

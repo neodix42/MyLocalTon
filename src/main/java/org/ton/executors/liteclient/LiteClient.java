@@ -49,7 +49,7 @@ public class LiteClient {
         String[] withBinaryCommand;
         switch (config) {
             case GLOBAL:
-                withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeGlobalConfigLocation(), "-c"};  // todo global settings for LS timeout value
+                withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeGlobalConfigLocation(), "-c"};
                 break;
             case LOCAL:
                 withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeLocalConfigLocation(), "-c"};

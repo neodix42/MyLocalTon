@@ -47,6 +47,7 @@ import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.executors.liteclient.api.config.Validator;
 import org.ton.executors.tonhttpapi.TonHttpApi;
 import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.utils.Utils;
 import org.ton.main.App;
 import org.ton.parameters.ValidationParam;
 import org.ton.settings.*;
@@ -1602,6 +1603,9 @@ public class MainController implements Initializable {
         enableBlockchainExplorer.setVisible(true);
         enableBlockchainExplorerLabel.setVisible(true);
 
+        enableTonHttpApi.setVisible(false);
+        enableTonHttpApiLabel.setVisible(false);
+
         enableTonHttpApi.setVisible(true);
         enableTonHttpApiLabel.setVisible(true);
 
@@ -1650,6 +1654,7 @@ public class MainController implements Initializable {
             log.info("Starting native blockchain-explorer on port {}", settings.getUiSettings().getBlockchainExplorerPort());
             BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
             blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getBlockchainExplorerPort());
+            Utils.sleep(2);
             webView.getEngine().load("http://127.0.0.1:" + settings.getUiSettings().getBlockchainExplorerPort() + "/last");
         }
     }
@@ -1659,11 +1664,14 @@ public class MainController implements Initializable {
             log.info("Starting ton-http-api on port {}", settings.getUiSettings().getTonHttpApiPort());
             TonHttpApi tonHttpApi = new TonHttpApi();
             tonHttpApi.startTonHttpApi(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getTonHttpApiPort());
+            Utils.sleep(5);
             webViewTonHttpApi.getEngine().load("http://127.0.0.1:" + settings.getUiSettings().getTonHttpApiPort());
+            //Utils.sleep(2);
+            //webViewTonHttpApi.getEngine().load("http://127.0.0.1:" + settings.getUiSettings().getTonHttpApiPort());
         }
     }
 
-    public void showAccTxs(String hexAddr) throws IOException {
+    public void showAccTxs(String hexAddr) {
         foundAccountsTxsvboxid.getItems().clear();
         List<TxEntity> foundAccountTxsEntities = App.dbPool.searchTxs(hexAddr);
         MyLocalTon.getInstance().showFoundTxsInGui(foundAccountsTxsvboxid, foundAccountTxsEntities, hexAddr, hexAddr);
@@ -1928,33 +1936,102 @@ public class MainController implements Initializable {
         });
     }
 
-    /*
-    public void transformAction() throws IOException {
+    public void showDialogInstallPython() {
+        Platform.runLater(() -> {
+            try {
 
-        Parent parent = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/main/yesnodialog.fxml")).load();
-        parent.lookup("#inputFields").setVisible(false);
-        parent.lookup("#body").setVisible(true);
-        parent.lookup("#header").setVisible(true);
-        ((Label) parent.lookup("#action")).setText("transform");
-        ((Label) parent.lookup("#header")).setText("Transform");
-        ((Label) parent.lookup("#body")).setText("You can transform this single-node TON blockchain into three-nodes TON blockchain, where all three nodes will act as validators and participate in elections. " +
-                "Later you will be able to add more full nodes if you wish. Do you want to proceed?");
-        parent.lookup("#okBtn").setDisable(true);
+                FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/confirm-pane.fxml"));
+                Parent parent = loader.load();
+                ConfirmPaneController controller = loader.getController();
+                controller.setHeight(170.0);
+                controller.setAction(ConfirmPaneController.Action.INSTALL_PYTHON);
+                controller.setHeader("Python is not installed");
 
-        JFXDialogLayout content = new JFXDialogLayout();
-        content.setBody(parent);
+                controller.setBody("Do you want me to download and start the Python installation for you?");
+                controller.setOkButtonText("Install now");
 
-        yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
-        yesNoDialog.setOnKeyPressed(keyEvent -> {
-                    if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                        yesNoDialog.close();
-                    }
-                }
-        );
+                JFXDialogLayout content = new JFXDialogLayout();
+                content.setBody(parent);
 
-        yesNoDialog.show();
+                yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
+                yesNoDialog.setOnKeyPressed(keyEvent -> {
+                            if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                                yesNoDialog.close();
+                            }
+                        }
+                );
+                yesNoDialog.show();
+            } catch (IOException e) {
+                log.error("Cannot load resource org/ton/ui/custom/layout/confirm-pane.fxml");
+                e.printStackTrace();
+            }
+        });
     }
-    */
+
+    public void showDialogInstallPip() {
+        Platform.runLater(() -> {
+            try {
+
+                FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/confirm-pane.fxml"));
+                Parent parent = loader.load();
+                ConfirmPaneController controller = loader.getController();
+                controller.setHeight(170.0);
+                controller.setAction(ConfirmPaneController.Action.INSTALL_PIP);
+                controller.setHeader("pip is not installed");
+
+                controller.setBody("Python is installed, but pip (package installer for Python) is missing. Do you want me to install pip for you?");
+                controller.setOkButtonText("Install now");
+
+                JFXDialogLayout content = new JFXDialogLayout();
+                content.setBody(parent);
+
+                yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
+                yesNoDialog.setOnKeyPressed(keyEvent -> {
+                            if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                                yesNoDialog.close();
+                            }
+                        }
+                );
+                yesNoDialog.show();
+            } catch (IOException e) {
+                log.error("Cannot load resource org/ton/ui/custom/layout/confirm-pane.fxml");
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void showDialogInstallTonHttpApi() {
+        Platform.runLater(() -> {
+            try {
+
+                FXMLLoader loader = new FXMLLoader(App.class.getClassLoader().getResource("org/ton/ui/custom/layout/confirm-pane.fxml"));
+                Parent parent = loader.load();
+                ConfirmPaneController controller = loader.getController();
+                controller.setHeight(170.0);
+                controller.setAction(ConfirmPaneController.Action.INSTALL_TON_HTTP_API);
+                controller.setHeader("ton-http-api is not installed");
+
+                controller.setBody("Python and pip are installed, but ton-http-api is missing. Do you want me to install ton-http-api for you?");
+                controller.setOkButtonText("Install now");
+
+                JFXDialogLayout content = new JFXDialogLayout();
+                content.setBody(parent);
+
+                yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
+                yesNoDialog.setOnKeyPressed(keyEvent -> {
+                            if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+                                yesNoDialog.close();
+                            }
+                        }
+                );
+                yesNoDialog.show();
+            } catch (IOException e) {
+                log.error("Cannot load resource org/ton/ui/custom/layout/confirm-pane.fxml");
+                e.printStackTrace();
+            }
+        });
+    }
+
     public void showMessage(String msg) {
         try {
 
@@ -3438,13 +3515,63 @@ public class MainController implements Initializable {
 
     public void BlockChainExplorerCheckBoxClick(MouseEvent mouseEvent) {
         if (enableBlockchainExplorer.isSelected()) {
-            App.mainController.showInfoMsg("Native blockchain-explorer will be available after restart", 5);
+            App.mainController.showInfoMsg("Native blockchain-explorer will be available on start", 5);
         }
     }
 
     public void TonHttpApiCheckBoxClick(MouseEvent mouseEvent) {
+        if (!pythonInstalled()) {
+            log.info("python is not installed");
+            enableTonHttpApi.setSelected(false);
+            showDialogInstallPython();
+            return;
+        } else if (!pipInstalled()) {
+            log.info("pip is not installed");
+            enableTonHttpApi.setSelected(false);
+            showDialogInstallPip();
+            return;
+        } else if (!tonHttpApiInstalled()) {
+            log.info("ton-http-api is not installed");
+            enableTonHttpApi.setSelected(false);
+            showDialogInstallTonHttpApi();
+            return;
+        }
+
         if (enableTonHttpApi.isSelected()) {
-            App.mainController.showInfoMsg("ton-http-api will be available after restart", 5);
+            App.mainController.showInfoMsg("ton-http-api will be available on start", 6);
+        }
+    }
+
+    private boolean pythonInstalled() {
+        try {
+            Process p = Runtime.getRuntime().exec("python --version");
+            p.waitFor(5, TimeUnit.SECONDS);
+            return (p.exitValue() == 0);
+        } catch (Exception e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+            return false;
+        }
+    }
+
+    private boolean pipInstalled() {
+        try {
+            Process p = Runtime.getRuntime().exec("pip --version");
+            p.waitFor(5, TimeUnit.SECONDS);
+            return (p.exitValue() == 0);
+        } catch (Exception e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+            return false;
+        }
+    }
+
+    private boolean tonHttpApiInstalled() {
+        try {
+            Process p = Runtime.getRuntime().exec("ton-http-api --version");
+            p.waitFor(5, TimeUnit.SECONDS);
+            return (p.exitValue() == 0);
+        } catch (Exception e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+            return false;
         }
     }
 
