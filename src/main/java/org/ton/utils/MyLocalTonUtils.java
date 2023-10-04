@@ -454,7 +454,7 @@ public class MyLocalTonUtils {
             if (proc.waitFor() == 0) {
                 String resultInput = IOUtils.toString(procOutput, Charset.defaultCharset());
                 log.info("isMacOsArm: {}", resultInput);
-                return resultInput.contains("M1");
+                return resultInput.contains("M1") || resultInput.contains("M2") || resultInput.contains("M3");
             }
         } catch (Exception e) {
             log.error("isMacOsArm error: {}", e.getMessage());
