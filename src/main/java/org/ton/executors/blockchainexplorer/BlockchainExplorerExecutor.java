@@ -42,7 +42,7 @@ public class BlockchainExplorerExecutor {
                     Thread.currentThread().setName("blockchain-explorer-" + node.getNodeName());
 
                     String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-                    log.debug("{} stopped.", "blockchain-explorer-" + node.getNodeName());
+                    log.debug("{} stopped", "blockchain-explorer-" + node.getNodeName());
                     p.getInputStream().close();
                     p.getErrorStream().close();
                     p.getOutputStream().close();

@@ -53,7 +53,7 @@ public class TonHttpApiExecutor {
 
                     String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
 
-                    log.info("{} stopped.", "ton-http-api-" + node.getNodeName());
+                    log.info("{} stopped", "ton-http-api-" + node.getNodeName());
                     p.getInputStream().close();
                     p.getErrorStream().close();
                     p.getOutputStream().close();
