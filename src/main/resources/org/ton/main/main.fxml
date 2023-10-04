@@ -1518,6 +1518,7 @@
                     <RowConstraints/>
                     <RowConstraints/>
                     <RowConstraints/>
+                    <RowConstraints/>
                 </rowConstraints>
 
                 <Label text="Show Tick/Tock transactions" GridPane.columnIndex="1" GridPane.rowIndex="0"
@@ -1552,6 +1553,12 @@
                              onMouseClicked="#BlockChainExplorerCheckBoxClick" GridPane.columnIndex="0"
                              GridPane.rowIndex="5"/>
 
+                <Label fx:id="enableTonHttpApiLabel" text="Enable ton-http-api service"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="6" styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="enableTonHttpApi" checkedColor="#0088CC" selected="true"
+                             onMouseClicked="#TonHttpApiCheckBoxClick" GridPane.columnIndex="0"
+                             GridPane.rowIndex="6"/>
             </GridPane>
         </userInterfacePane>
 
@@ -2193,6 +2200,14 @@
                          AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
             </VBox>
         </explorerPane>
+
+        <tonHttpApiPane>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <WebView fx:id="webViewTonHttpApi" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+            </VBox>
+        </tonHttpApiPane>
 
         <foundBlocksPane>
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"

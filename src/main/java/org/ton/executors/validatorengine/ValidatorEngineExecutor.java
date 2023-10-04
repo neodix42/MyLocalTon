@@ -72,7 +72,7 @@ public class ValidatorEngineExecutor {
                     Thread.currentThread().setName("validator-engine-" + node.getNodeName());
 
                     String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-                    log.info("validator-engine-{} stopped.", node.getNodeName());
+                    log.info("validator-engine-{} stopped", node.getNodeName());
                     log.debug("validator exit output: {} ", resultInput);
                     p.getInputStream().close();
                     p.getErrorStream().close();

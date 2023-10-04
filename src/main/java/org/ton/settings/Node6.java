@@ -73,6 +73,7 @@ public class Node6 implements Serializable, Node {
     transient Process nodeProcess;
     transient Process dhtServerProcess;
     transient Process blockchainExplorerProcess;
+    transient Process tonHttpApiProcess;
     String nodeGlobalConfigLocation = getTonDbDir() + "my-ton-global.config.json";
     String nodeLocalConfigLocation = getTonDbDir() + "my-ton-local.config.json";
     String nodeForkedGlobalConfigLocation = getTonDbDir() + "my-ton-forked.config.json";

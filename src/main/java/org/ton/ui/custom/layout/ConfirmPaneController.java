@@ -14,6 +14,7 @@ import org.ton.utils.MyLocalTonUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
 
 import static org.ton.ui.custom.events.CustomEventBus.emit;
 
@@ -46,6 +47,15 @@ public class ConfirmPaneController implements Initializable {
             case DELETE_NODE:
                 doDeleteNode();
                 break;
+            case INSTALL_PYTHON:
+                doInstallPython();
+                break;
+            case INSTALL_PIP:
+                doInstallPip();
+                break;
+            case INSTALL_TON_HTTP_API:
+                doInstallTonHttpApi();
+                break;
             case CONFIRM:
                 emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
                 break;
@@ -58,6 +68,39 @@ public class ConfirmPaneController implements Initializable {
             emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
         });
         MyLocalTonUtils.doDelete(address);
+    }
+
+    private void doInstallPython() {
+        log.debug("do install python3");
+        Platform.runLater(() -> {
+            emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
+        });
+        Executors.newSingleThreadExecutor().execute(() -> {
+            Thread.currentThread().setName("MyLocalTon - installing python3");
+            MyLocalTonUtils.doInstallPython();
+        });
+    }
+
+    private void doInstallPip() {
+        log.debug("do install pip");
+        Platform.runLater(() -> {
+            emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
+        });
+        Executors.newSingleThreadExecutor().execute(() -> {
+            Thread.currentThread().setName("MyLocalTon - installing pip");
+            MyLocalTonUtils.doInstallPip();
+        });
+    }
+
+    private void doInstallTonHttpApi() {
+        log.debug("do install ton-http-api");
+        Platform.runLater(() -> {
+            emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
+        });
+        Executors.newSingleThreadExecutor().execute(() -> {
+            Thread.currentThread().setName("MyLocalTon - installing ton-http-api");
+            MyLocalTonUtils.doInstallTonHttpApi();
+        });
     }
 
     public void setBody(String body) {
@@ -94,6 +137,9 @@ public class ConfirmPaneController implements Initializable {
 
     public enum Action {
         DELETE_NODE,
+        INSTALL_PYTHON,
+        INSTALL_PIP,
+        INSTALL_TON_HTTP_API,
         CONFIRM;
 
     }

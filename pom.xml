@@ -366,7 +366,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
-                            <!--                            <skipCache>true</skipCache>-->
+                            <skipCache>true</skipCache>
                             <uri>${win.amd64.ton.binaries.uri}</uri>
                             <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/binaries-windows-x86_64</outputDirectory>

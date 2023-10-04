@@ -42,7 +42,7 @@ public class HardforkExecutor {
                     Thread.currentThread().setName("create-hardfork-" + node.getNodeName());
 
                     String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-                    log.debug("{} stopped.", "create-hardfork-" + node.getNodeName());
+                    log.debug("{} stopped", "create-hardfork-" + node.getNodeName());
                     p.getInputStream().close();
                     p.getErrorStream().close();
                     p.getOutputStream().close();

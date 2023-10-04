@@ -73,6 +73,7 @@ public class Node2 implements Serializable, Node {
     transient Process nodeProcess;
     transient Process dhtServerProcess;
     transient Process blockchainExplorerProcess;
+    transient Process tonHttpApiProcess;
     String nodeGlobalConfigLocation = getTonDbDir() + "my-ton-global.config.json";
     String nodeLocalConfigLocation = getTonDbDir() + "my-ton-local.config.json"; // used when one wants to connect directly to the local lite-server
     String nodeForkedGlobalConfigLocation = getTonDbDir() + "my-ton-forked.config.json";

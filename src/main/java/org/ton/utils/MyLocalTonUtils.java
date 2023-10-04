@@ -50,6 +50,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -359,6 +360,7 @@ public class MyLocalTonUtils {
                     rt.exec("taskkill /F /IM " + "validator-engine-console.exe");
                     rt.exec("taskkill /F /IM " + "lite-client.exe");
                     rt.exec("taskkill /F /IM " + "dht-server.exe");
+                    rt.exec("taskkill /F /IM " + "python.exe");
 
                     MyLocalTonSettings settings = getInstance().getSettings();
                     for (String nodeName : settings.getActiveNodes()) {
@@ -400,12 +402,14 @@ public class MyLocalTonUtils {
                     rt.exec("taskkill /F /IM " + "validator-engine-console.exe");
                     rt.exec("taskkill /F /IM " + "lite-client.exe");
                     rt.exec("taskkill /F /IM " + "dht-server.exe");
+                    rt.exec("taskkill /F /IM " + "python.exe");
                 } else {
+                    rt.exec("killall -9 " + "ton-http-api");
                     rt.exec("killall -9 " + "blockchain-explorer");
                     rt.exec("killall -9 " + "validator-engine-console");
                     rt.exec("killall -9 " + "lite-client");
                     rt.exec("killall -9 " + "dht-server");
-                    rt.exec("killall -2 " + "validator-engine"); // TODO look up for the shutdown order when multiple nodes are active
+                    rt.exec("killall -2 " + "validator-engine");
                 }
 
                 log.debug("Waiting for processes to be killed...");
@@ -1051,6 +1055,108 @@ public class MyLocalTonUtils {
                 log.error("cannot get folder size on linux {}", path);
                 return resultInput;
             }
+        }
+    }
+
+    public static void doInstallPython() {
+        log.info("installing python3...");
+        String pythonDownloadLink;
+        try {
+            if (SystemUtils.IS_OS_WINDOWS) {
+                String tmpFile = System.getProperty("java.io.tmpdir") + "python.exe";
+                pythonDownloadLink = "https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe";
+                log.info("downloading {}", pythonDownloadLink);
+                try {
+                    FileUtils.copyURLToFile(new URL(pythonDownloadLink), new File(tmpFile));
+                    Runtime.getRuntime().exec(tmpFile);
+                } catch (Exception e) {
+                    log.error(ExceptionUtils.getStackTrace(e));
+                    mainController.showErrorMsg("python3 installation failed. Try to install it manually.", 8);
+                }
+            } else if (SystemUtils.IS_OS_LINUX) {
+                try {
+                    Process p = Runtime.getRuntime().exec("sudo apt install -y python3");
+                    mainController.showSuccessMsg("Installing python3...", 5);
+                    p.waitFor(30, TimeUnit.SECONDS);
+                    if (p.exitValue() != 0) {
+                        log.error("cannot install python3. Try to install it manually: sudo apt install -y python3");
+                        mainController.showErrorMsg("python3 installation failed. Try to install it manually: sudo apt install -y python3", 8);
+                    } else {
+                        log.info("python3 has been installed");
+                        mainController.showSuccessMsg("python3 has been successfully installed", 5);
+                    }
+                } catch (Exception e) {
+                    log.error(ExceptionUtils.getStackTrace(e));
+                    mainController.showErrorMsg("python3 installation failed. Try to install it manually: sudo apt install -y python3", 8);
+                }
+            } else {
+                try {
+                    Process p = Runtime.getRuntime().exec("brew install -q python3");
+                    mainController.showSuccessMsg("Installing python3...", 5);
+                    p.waitFor(30, TimeUnit.SECONDS);
+                    if (p.exitValue() != 0) {
+                        log.error("cannot install python3. Try to install it manually: brew install -q python3");
+                        mainController.showErrorMsg("python3 installation failed. Try to install it manually: brew install -q python3", 8);
+                    } else {
+                        log.info("python3 has been installed");
+                        mainController.showSuccessMsg("python3 has been successfully installed", 5);
+                    }
+                } catch (Exception e) {
+                    log.error(ExceptionUtils.getStackTrace(e));
+                    mainController.showErrorMsg("python3 installation failed. Try to install it manually: brew install -q python3", 8);
+                }
+            }
+        } catch (Exception e) {
+            log.error(ExceptionUtils.getStackTrace(e));
+            mainController.showErrorMsg("python3 installation failed. Try to install it manually.", 8);
+        }
+    }
+
+    public static void doInstallPip() {
+        log.info("installing pip...");
+        String cmd = "";
+        try {
+            if (SystemUtils.IS_OS_WINDOWS) {
+                cmd = "python -m ensurepip --upgrade";
+            } else if (SystemUtils.IS_OS_LINUX) {
+                cmd = "sudo apt install -y python3-pip";
+            } else if (SystemUtils.IS_OS_MAC) {
+                cmd = "python3 -m ensurepip --upgrade";
+            } else {
+                log.error("unsupported OS");
+            }
+
+            Process p = Runtime.getRuntime().exec(cmd);
+            mainController.showSuccessMsg("Installing pip...", 5);
+            p.waitFor(30, TimeUnit.SECONDS);
+            if (p.exitValue() != 0) {
+                log.error("Pip installation failed. Try to install it manually: {}", cmd);
+                mainController.showErrorMsg("pip installation failed. Try to install it manually: " + cmd, 8);
+            } else {
+                log.info("pip has been installed");
+                mainController.showSuccessMsg("pip has been successfully installed", 5);
+            }
+        } catch (Exception e) {
+            mainController.showErrorMsg("pip installation failed. Try to install it manually.", 8);
+        }
+    }
+
+    public static void doInstallTonHttpApi() {
+        log.info("installing ton-http-api...");
+        try {
+            String cmd = SystemUtils.IS_OS_WINDOWS ? "cmd /c start pip3 install -U ton-http-api" : "pip3 install --user ton-http-api";
+            Process p = Runtime.getRuntime().exec(cmd);
+            mainController.showSuccessMsg("Installing ton-http-api...", 5);
+            p.waitFor(30, TimeUnit.SECONDS);
+            if (p.exitValue() != 0) {
+                log.error("ton-http-api installation failed. Try to install it manually: pip3 install --user ton-http-api");
+                mainController.showErrorMsg("ton-http-api installation failed. Try to install it manually: pip3 install --user ton-http-api", 8);
+            } else {
+                log.info("ton-http-api has been installed");
+                mainController.showSuccessMsg("ton-http-api has been successfully installed", 5);
+            }
+        } catch (Exception e) {
+            mainController.showErrorMsg("ton-http-api installation failed. Try to install it manually: pip3 install --user ton-http-api", 8);
         }
     }
 
