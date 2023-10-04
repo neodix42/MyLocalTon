@@ -1666,8 +1666,6 @@ public class MainController implements Initializable {
             tonHttpApi.startTonHttpApi(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getTonHttpApiPort());
             Utils.sleep(5);
             webViewTonHttpApi.getEngine().load("http://127.0.0.1:" + settings.getUiSettings().getTonHttpApiPort());
-            //Utils.sleep(2);
-            //webViewTonHttpApi.getEngine().load("http://127.0.0.1:" + settings.getUiSettings().getTonHttpApiPort());
         }
     }
 
@@ -1945,7 +1943,7 @@ public class MainController implements Initializable {
                 ConfirmPaneController controller = loader.getController();
                 controller.setHeight(170.0);
                 controller.setAction(ConfirmPaneController.Action.INSTALL_PYTHON);
-                controller.setHeader("Python is not installed");
+                controller.setHeader("python3 is not installed");
 
                 controller.setBody("Do you want me to download and start the Python installation for you?");
                 controller.setOkButtonText("Install now");
@@ -3520,35 +3518,34 @@ public class MainController implements Initializable {
     }
 
     public void TonHttpApiCheckBoxClick(MouseEvent mouseEvent) {
-        if (!pythonInstalled()) {
-            log.info("python is not installed");
-            enableTonHttpApi.setSelected(false);
-            showDialogInstallPython();
-            return;
-        } else if (!pipInstalled()) {
-            log.info("pip is not installed");
-            enableTonHttpApi.setSelected(false);
-            showDialogInstallPip();
-            return;
-        } else if (!tonHttpApiInstalled()) {
-            log.info("ton-http-api is not installed");
-            enableTonHttpApi.setSelected(false);
-            showDialogInstallTonHttpApi();
-            return;
-        }
-
+        log.debug("TonHttpApiCheckBoxClick {}", enableTonHttpApi.isSelected());
         if (enableTonHttpApi.isSelected()) {
+            if (!python3Installed()) {
+                log.info("python3 is not installed");
+                enableTonHttpApi.setSelected(false);
+                showDialogInstallPython();
+                return;
+            } else if (!pipInstalled()) {
+                log.info("pip is not installed");
+                enableTonHttpApi.setSelected(false);
+                showDialogInstallPip();
+                return;
+            } else if (!tonHttpApiInstalled()) {
+                log.info("ton-http-api is not installed");
+                enableTonHttpApi.setSelected(false);
+                showDialogInstallTonHttpApi();
+                return;
+            }
             App.mainController.showInfoMsg("ton-http-api will be available on start", 6);
         }
     }
 
-    private boolean pythonInstalled() {
+    private boolean python3Installed() {
         try {
-            Process p = Runtime.getRuntime().exec("python --version");
+            Process p = Runtime.getRuntime().exec((SystemUtils.IS_OS_WINDOWS ? "python" : "python3") + " --version");
             p.waitFor(5, TimeUnit.SECONDS);
             return (p.exitValue() == 0);
         } catch (Exception e) {
-            log.error(ExceptionUtils.getStackTrace(e));
             return false;
         }
     }
@@ -3556,21 +3553,21 @@ public class MainController implements Initializable {
     private boolean pipInstalled() {
         try {
             Process p = Runtime.getRuntime().exec("pip --version");
-            p.waitFor(5, TimeUnit.SECONDS);
+            p.waitFor(6, TimeUnit.SECONDS);
             return (p.exitValue() == 0);
         } catch (Exception e) {
-            log.error(ExceptionUtils.getStackTrace(e));
             return false;
         }
     }
 
     private boolean tonHttpApiInstalled() {
         try {
-            Process p = Runtime.getRuntime().exec("ton-http-api --version");
-            p.waitFor(5, TimeUnit.SECONDS);
+            String cmd = SystemUtils.IS_OS_WINDOWS ? "ton-http-api --version" : System.getenv("HOME") + "/.local/bin/ton-http-api --version";
+            log.debug(cmd);
+            Process p = Runtime.getRuntime().exec(cmd);
+            p.waitFor(6, TimeUnit.SECONDS);
             return (p.exitValue() == 0);
         } catch (Exception e) {
-            log.error(ExceptionUtils.getStackTrace(e));
             return false;
         }
     }

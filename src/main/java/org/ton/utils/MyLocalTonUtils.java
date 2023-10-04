@@ -1059,75 +1059,92 @@ public class MyLocalTonUtils {
     }
 
     public static void doInstallPython() {
-        log.info("installing python...");
+        log.info("installing python3...");
         String pythonDownloadLink;
         try {
             if (SystemUtils.IS_OS_WINDOWS) {
                 String tmpFile = System.getProperty("java.io.tmpdir") + "python.exe";
                 pythonDownloadLink = "https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe";
                 log.info("downloading {}", pythonDownloadLink);
-                FileUtils.copyURLToFile(new URL(pythonDownloadLink), new File(tmpFile));
                 try {
+                    FileUtils.copyURLToFile(new URL(pythonDownloadLink), new File(tmpFile));
                     Runtime.getRuntime().exec(tmpFile);
                 } catch (Exception e) {
                     log.error(ExceptionUtils.getStackTrace(e));
-                    mainController.showErrorMsg("python installation failed", 5);
+                    mainController.showErrorMsg("python3 installation failed. Try to install it manually.", 8);
                 }
             } else if (SystemUtils.IS_OS_LINUX) {
-                Process p = Runtime.getRuntime().exec("sudo apt install -y python3");
-                p.waitFor();
-                if (p.exitValue() != 0) {
-                    log.error("Cannot install python");
-                    mainController.showErrorMsg("python installation failed", 5);
+                try {
+                    Process p = Runtime.getRuntime().exec("sudo apt install -y python3");
+                    mainController.showSuccessMsg("Installing python3...", 5);
+                    p.waitFor(30, TimeUnit.SECONDS);
+                    if (p.exitValue() != 0) {
+                        log.error("cannot install python3. Try to install it manually: sudo apt install -y python3");
+                        mainController.showErrorMsg("python3 installation failed. Try to install it manually: sudo apt install -y python3", 8);
+                    } else {
+                        log.info("python3 has been installed");
+                        mainController.showSuccessMsg("python3 has been successfully installed", 5);
+                    }
+                } catch (Exception e) {
+                    log.error(ExceptionUtils.getStackTrace(e));
+                    mainController.showErrorMsg("python3 installation failed. Try to install it manually: sudo apt install -y python3", 8);
                 }
             } else {
-                Process p = Runtime.getRuntime().exec("brew install -y python3");
-                p.waitFor();
-                if (p.exitValue() != 0) {
-                    log.error("Cannot install python");
-                    mainController.showErrorMsg("python installation failed", 5);
+                try {
+                    Process p = Runtime.getRuntime().exec("brew install -y python3");
+                    mainController.showSuccessMsg("Installing python3...", 5);
+                    p.waitFor(30, TimeUnit.SECONDS);
+                    if (p.exitValue() != 0) {
+                        log.error("cannot install python3. Try to install it manually: brew install -y python3");
+                        mainController.showErrorMsg("python3 installation failed. Try to install it manually: brew install -y python3", 8);
+                    } else {
+                        log.info("python3 has been installed");
+                        mainController.showSuccessMsg("python3 has been successfully installed", 5);
+                    }
+                } catch (Exception e) {
+                    log.error(ExceptionUtils.getStackTrace(e));
+                    mainController.showErrorMsg("python3 installation failed. Try to install it manually: brew install -y python3", 8);
                 }
             }
-
         } catch (Exception e) {
             log.error(ExceptionUtils.getStackTrace(e));
-            mainController.showErrorMsg("python installation failed", 5);
+            mainController.showErrorMsg("python3 installation failed. Try to install it manually.", 8);
         }
     }
 
     public static void doInstallPip() {
         log.info("installing pip...");
         try {
-            Process p = Runtime.getRuntime().exec("python -m ensurepip --upgrade");
-            p.waitFor();
+            Process p = Runtime.getRuntime().exec("sudo apt install -y python3-pip");
+            mainController.showSuccessMsg("Installing pip...", 5);
+            p.waitFor(30, TimeUnit.SECONDS);
             if (p.exitValue() != 0) {
-                log.error("Cannot install pip");
-                mainController.showErrorMsg("pip installation failed", 5);
+                log.error("Pip installation failed. Try to install it manually: sudo apt install -y python3-pip");
+                mainController.showErrorMsg("Pip installation failed. Try to install it manually: sudo apt install -y python3-pip", 8);
             } else {
                 log.info("pip has been installed");
                 mainController.showSuccessMsg("pip has been successfully installed", 5);
             }
         } catch (Exception e) {
-            log.error(ExceptionUtils.getStackTrace(e));
-            mainController.showErrorMsg("pip installation failed", 5);
+            mainController.showErrorMsg("Pip installation failed. Try to install it manually: sudo apt install -y python3-pip", 8);
         }
     }
 
     public static void doInstallTonHttpApi() {
         log.info("installing ton-http-api...");
         try {
-            Process p = Runtime.getRuntime().exec(SystemUtils.IS_OS_WINDOWS ? "cmd /c start pip3 install -U ton-http-api" : "pip3 install -U ton-http-api");
-            p.waitFor(15, TimeUnit.SECONDS);
+            Process p = Runtime.getRuntime().exec(SystemUtils.IS_OS_WINDOWS ? "cmd /c start pip3 install -U ton-http-api" : "pip3 install --user ton-http-api");
+            mainController.showSuccessMsg("Installing ton-http-api...", 5);
+            p.waitFor(30, TimeUnit.SECONDS);
             if (p.exitValue() != 0) {
-                log.error("Cannot install ton-http-api");
-                mainController.showErrorMsg("ton-http-api installation failed", 5);
+                log.error("ton-http-api installation failed. Try to install it manually: pip3 install --user ton-http-api");
+                mainController.showErrorMsg("ton-http-api installation failed. Try to install it manually: pip3 install --user ton-http-api", 8);
             } else {
                 log.info("ton-http-api has been installed");
                 mainController.showSuccessMsg("ton-http-api has been successfully installed", 5);
             }
         } catch (Exception e) {
-            log.error(ExceptionUtils.getStackTrace(e));
-            mainController.showErrorMsg("ton-http-api installation failed", 5);
+            mainController.showErrorMsg("ton-http-api installation failed. Try to install it manually: pip3 install --user ton-http-api", 8);
         }
     }
 

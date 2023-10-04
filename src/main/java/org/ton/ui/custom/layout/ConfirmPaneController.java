@@ -71,12 +71,12 @@ public class ConfirmPaneController implements Initializable {
     }
 
     private void doInstallPython() {
-        log.debug("do install Python");
+        log.debug("do install python3");
         Platform.runLater(() -> {
             emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
         });
         Executors.newSingleThreadExecutor().execute(() -> {
-            Thread.currentThread().setName("MyLocalTon - installing python");
+            Thread.currentThread().setName("MyLocalTon - installing python3");
             MyLocalTonUtils.doInstallPython();
         });
     }

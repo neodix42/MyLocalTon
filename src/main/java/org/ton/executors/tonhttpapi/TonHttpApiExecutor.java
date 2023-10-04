@@ -3,6 +3,7 @@ package org.ton.executors.tonhttpapi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.settings.Node;
 
@@ -15,11 +16,11 @@ import java.util.concurrent.Future;
 @Slf4j
 public class TonHttpApiExecutor {
 
-    private static final String TON_HTTP_API = "ton-http-api";
+    private static final String TON_HTTP_API = SystemUtils.IS_OS_WINDOWS ? "ton-http-api" : System.getenv("HOME") + "/.local/bin/ton-http-api";
 
     public Pair<Process, Future<String>> execute(Node node, String... command) {
 
-        String binaryPath = TON_HTTP_API; // in environment
+        String binaryPath = TON_HTTP_API;
 
         String[] withBinaryCommand = {binaryPath};
         withBinaryCommand = ArrayUtils.addAll(withBinaryCommand, command);
@@ -31,7 +32,6 @@ public class TonHttpApiExecutor {
 
             final ProcessBuilder pb = new ProcessBuilder(withBinaryCommand);
 
-//            pb.directory(new File(new File(binaryPath).getParent()));
             Process p = pb.start();
 
             Future<String> future = executorService.submit(() -> {
