@@ -31,7 +31,7 @@ public class TonHttpApiExecutor {
                 String locationCmd = "python3 -m site --user-base";
                 Process p = Runtime.getRuntime().exec(locationCmd);
                 String location = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
-                binaryPath = location + "/bin/ton-http-api --version";
+                binaryPath = location + "/bin/ton-http-api";
             } else {
                 log.error("unsupported OS");
             }
