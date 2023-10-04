@@ -30,6 +30,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -67,6 +68,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -3562,7 +3564,22 @@ public class MainController implements Initializable {
 
     private boolean tonHttpApiInstalled() {
         try {
-            String cmd = SystemUtils.IS_OS_WINDOWS ? "ton-http-api --version" : System.getenv("HOME") + "/.local/bin/ton-http-api --version";
+            String cmd;
+            if (SystemUtils.IS_OS_WINDOWS) {
+                cmd = "ton-http-api --version";
+            } else if (SystemUtils.IS_OS_LINUX) {
+                cmd = System.getenv("HOME") + "/.local/bin/ton-http-api --version";
+            } else if (SystemUtils.IS_OS_MAC) {
+                String locationCmd = "python3 -m site --user-base";
+                Process p = Runtime.getRuntime().exec(locationCmd);
+                String location = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
+                log.info("tonHttpApiInstalled, resultInput {}", location);
+                cmd = location + "/bin/ton-http-api --version";
+                log.info("tonHttpApiInstalled, cmd {}", cmd);
+            } else {
+                log.error("unsupported OS");
+                return false;
+            }
             log.debug(cmd);
             Process p = Runtime.getRuntime().exec(cmd);
             p.waitFor(6, TimeUnit.SECONDS);

@@ -20,12 +20,25 @@ public class TonHttpApiExecutor {
 
     public Pair<Process, Future<String>> execute(Node node, String... command) {
 
-        String binaryPath = TON_HTTP_API;
-
-        String[] withBinaryCommand = {binaryPath};
-        withBinaryCommand = ArrayUtils.addAll(withBinaryCommand, command);
-
         try {
+            String binaryPath = "";
+
+            if (SystemUtils.IS_OS_WINDOWS) {
+                binaryPath = "ton-http-api";
+            } else if (SystemUtils.IS_OS_LINUX) {
+                binaryPath = System.getenv("HOME") + "/.local/bin/ton-http-api";
+            } else if (SystemUtils.IS_OS_MAC) {
+                String locationCmd = "python3 -m site --user-base";
+                Process p = Runtime.getRuntime().exec(locationCmd);
+                String location = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
+                binaryPath = location + "/bin/ton-http-api --version";
+            } else {
+                log.error("unsupported OS");
+            }
+
+            String[] withBinaryCommand = {binaryPath};
+            withBinaryCommand = ArrayUtils.addAll(withBinaryCommand, command);
+
             log.info("execute: {}", String.join(" ", withBinaryCommand));
 
             ExecutorService executorService = Executors.newSingleThreadExecutor();

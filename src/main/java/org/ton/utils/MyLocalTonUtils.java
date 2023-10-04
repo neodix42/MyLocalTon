@@ -1091,19 +1091,19 @@ public class MyLocalTonUtils {
                 }
             } else {
                 try {
-                    Process p = Runtime.getRuntime().exec("brew install -y python3");
+                    Process p = Runtime.getRuntime().exec("brew install -q python3");
                     mainController.showSuccessMsg("Installing python3...", 5);
                     p.waitFor(30, TimeUnit.SECONDS);
                     if (p.exitValue() != 0) {
-                        log.error("cannot install python3. Try to install it manually: brew install -y python3");
-                        mainController.showErrorMsg("python3 installation failed. Try to install it manually: brew install -y python3", 8);
+                        log.error("cannot install python3. Try to install it manually: brew install -q python3");
+                        mainController.showErrorMsg("python3 installation failed. Try to install it manually: brew install -q python3", 8);
                     } else {
                         log.info("python3 has been installed");
                         mainController.showSuccessMsg("python3 has been successfully installed", 5);
                     }
                 } catch (Exception e) {
                     log.error(ExceptionUtils.getStackTrace(e));
-                    mainController.showErrorMsg("python3 installation failed. Try to install it manually: brew install -y python3", 8);
+                    mainController.showErrorMsg("python3 installation failed. Try to install it manually: brew install -q python3", 8);
                 }
             }
         } catch (Exception e) {
@@ -1114,26 +1114,38 @@ public class MyLocalTonUtils {
 
     public static void doInstallPip() {
         log.info("installing pip...");
+        String cmd = "";
         try {
-            Process p = Runtime.getRuntime().exec("sudo apt install -y python3-pip");
+            if (SystemUtils.IS_OS_WINDOWS) {
+                cmd = "python -m ensurepip --upgrade";
+            } else if (SystemUtils.IS_OS_LINUX) {
+                cmd = "sudo apt install -y python3-pip";
+            } else if (SystemUtils.IS_OS_MAC) {
+                cmd = "python3 -m ensurepip --upgrade";
+            } else {
+                log.error("unsupported OS");
+            }
+
+            Process p = Runtime.getRuntime().exec(cmd);
             mainController.showSuccessMsg("Installing pip...", 5);
             p.waitFor(30, TimeUnit.SECONDS);
             if (p.exitValue() != 0) {
-                log.error("Pip installation failed. Try to install it manually: sudo apt install -y python3-pip");
-                mainController.showErrorMsg("Pip installation failed. Try to install it manually: sudo apt install -y python3-pip", 8);
+                log.error("Pip installation failed. Try to install it manually: {}", cmd);
+                mainController.showErrorMsg("pip installation failed. Try to install it manually: " + cmd, 8);
             } else {
                 log.info("pip has been installed");
                 mainController.showSuccessMsg("pip has been successfully installed", 5);
             }
         } catch (Exception e) {
-            mainController.showErrorMsg("Pip installation failed. Try to install it manually: sudo apt install -y python3-pip", 8);
+            mainController.showErrorMsg("pip installation failed. Try to install it manually.", 8);
         }
     }
 
     public static void doInstallTonHttpApi() {
         log.info("installing ton-http-api...");
         try {
-            Process p = Runtime.getRuntime().exec(SystemUtils.IS_OS_WINDOWS ? "cmd /c start pip3 install -U ton-http-api" : "pip3 install --user ton-http-api");
+            String cmd = SystemUtils.IS_OS_WINDOWS ? "cmd /c start pip3 install -U ton-http-api" : "pip3 install --user ton-http-api";
+            Process p = Runtime.getRuntime().exec(cmd);
             mainController.showSuccessMsg("Installing ton-http-api...", 5);
             p.waitFor(30, TimeUnit.SECONDS);
             if (p.exitValue() != 0) {
