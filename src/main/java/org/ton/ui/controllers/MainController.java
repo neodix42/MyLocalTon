@@ -3554,7 +3554,7 @@ public class MainController implements Initializable {
 
     private boolean pipInstalled() {
         try {
-            Process p = Runtime.getRuntime().exec("pip --version");
+            Process p = Runtime.getRuntime().exec("pip3 --version");
             p.waitFor(6, TimeUnit.SECONDS);
             return (p.exitValue() == 0);
         } catch (Exception e) {
@@ -3573,9 +3573,7 @@ public class MainController implements Initializable {
                 String locationCmd = "python3 -m site --user-base";
                 Process p = Runtime.getRuntime().exec(locationCmd);
                 String location = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
-                log.info("tonHttpApiInstalled, resultInput {}", location);
                 cmd = location + "/bin/ton-http-api --version";
-                log.info("tonHttpApiInstalled, cmd {}", cmd);
             } else {
                 log.error("unsupported OS");
                 return false;
