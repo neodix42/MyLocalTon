@@ -17,10 +17,12 @@
 
     <Line endX="450.0" layoutY="60.0" stroke="#888888"/>
     <VBox layoutX="30.0" layoutY="95.0" prefHeight="40.0" prefWidth="430.0"
-          AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="100.0">
+          AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="100.0" alignment="CENTER">
 
-        <Label fx:id="line1" prefHeight="20.0" prefWidth="430.0" styleClass="modal-pane-content-label"/>
-        <Label fx:id="line2" prefHeight="20.0" prefWidth="430.0" styleClass="modal-pane-content-label"/>
+        <Label fx:id="line1" prefHeight="20.0" prefWidth="430.0" styleClass="modal-pane-content-label"
+               alignment="CENTER"/>
+        <Label fx:id="line2" prefHeight="20.0" prefWidth="430.0" styleClass="modal-pane-content-label"
+               alignment="CENTER"/>
 
     </VBox>
     <Label alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="166.0"
