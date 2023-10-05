@@ -71,11 +71,11 @@ public class App extends Application {
             log.debug("onShown, stage loaded");
 
             if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 0) {
-                mainController.showLoadingPane("Initializing TON blockchain very first time.", "It can take up to 2 minutes, please wait.");
+                mainController.showLoadingPane("Initializing TON blockchain very first time", "It can take up to 2 minutes");
             } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
-                mainController.showLoadingPane("Starting TON blockchain...", "Should take no longer than 45 seconds.");
+                mainController.showLoadingPane("Starting TON blockchain", "Should take no longer than 45 seconds");
             } else {
-                mainController.showLoadingPane("Starting TON blockchain...", "Launching " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, wait up to 3 minutes.");
+                mainController.showLoadingPane("Starting TON blockchain", "Launching " + MyLocalTon.getInstance().getSettings().getActiveNodes().size() + " validators, wait up to 3 minutes");
             }
         });
 
