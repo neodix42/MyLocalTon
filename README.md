@@ -21,13 +21,13 @@ alpha version and cannot be treated as production ready.
 
 ## Matrix of supported OS & Java
 
-| OS \ Java           | 11  | 13  | 15  | 17  | 19 |
-|---------------------|---|---|---|---|---|
-| Linux x86_64        | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  | :heavy_check_mark:  |
-| Linux arm64/aarch64 | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |:heavy_check_mark:  |
-| MacOS x86_64        | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |:heavy_check_mark:  |
-| MacOS arm64/aarch64 | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |:heavy_check_mark:  |
-| Windows x86_64      | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:   | :heavy_check_mark:  |:heavy_check_mark:  |
+| OS \ Java           | 11                 | 13                 | 15                 | 17                 | 19                 |
+|---------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
+| Linux x86_64        | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Linux arm64/aarch64 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| MacOS x86_64 (11+)  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| MacOS arm64/aarch64 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| Windows x86_64      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 Please make sure you are not using headless (no GUI) Java and OS/Java combination matches as per table above.
 
@@ -93,5 +93,5 @@ functionality is in the backlog, so it will be implemented in future releases.
 * In Settings - JavaFX specify path to SceneBuilder.
 * Now you can compile and run the application from IntelliJ.
 
-| :point_up:    | On Windows don't forget to install Microsoft Visual C++ Redistributable installation (see above) |
-|---------------|:------------------------|
+| :point_up: | On Windows don't forget to install Microsoft Visual C++ Redistributable installation (see above) |
+|------------|:-------------------------------------------------------------------------------------------------|
