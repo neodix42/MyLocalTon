@@ -28,10 +28,9 @@ public class TonHttpApiExecutor {
             } else if (SystemUtils.IS_OS_LINUX) {
                 binaryPath = System.getenv("HOME") + "/.local/bin/ton-http-api";
             } else if (SystemUtils.IS_OS_MAC) {
-                String locationCmd = "python3 -m site --user-base";
+                String locationCmd = "find $(python3 -m site --user-base)/.. -name ton-http-api";
                 Process p = Runtime.getRuntime().exec(locationCmd);
-                String location = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
-                binaryPath = location + "/bin/ton-http-api";
+                binaryPath = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
             } else {
                 log.error("unsupported OS");
             }
