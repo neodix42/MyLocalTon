@@ -21,8 +21,6 @@ import static org.ton.main.App.mainController;
 @Slf4j
 public class TonHttpApiExecutor {
 
-    private static final String TON_HTTP_API = SystemUtils.IS_OS_WINDOWS ? "ton-http-api" : System.getenv("HOME") + "/.local/bin/ton-http-api";
-
     public Pair<Process, Future<String>> execute(Node node, String... command) {
 
         try {
@@ -33,7 +31,7 @@ public class TonHttpApiExecutor {
             } else if (SystemUtils.IS_OS_LINUX) {
                 binaryPath = System.getenv("HOME") + "/.local/bin/ton-http-api";
             } else if (SystemUtils.IS_OS_MAC) {
-                String locationCmd = "python3 -m site --user-base)";
+                String locationCmd = "python3 -m site --user-base";
                 Process p = Runtime.getRuntime().exec(locationCmd);
                 String pythonLocation = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
                 Optional<Path> hit = Files.walk(Path.of(pythonLocation).getParent())
