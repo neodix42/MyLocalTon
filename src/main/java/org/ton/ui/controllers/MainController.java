@@ -70,9 +70,11 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -3572,8 +3574,11 @@ public class MainController implements Initializable {
             } else if (SystemUtils.IS_OS_MAC) {
                 String locationCmd = "python3 -m site --user-base";
                 Process p = Runtime.getRuntime().exec(locationCmd);
-                String location = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
-                cmd = location + "/bin/ton-http-api --version";
+                String pythonLocation = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
+                Optional<Path> hit = Files.walk(Path.of(pythonLocation).getParent())
+                        .filter(file -> file.getFileName().equals("ton-http-api"))
+                        .findAny();
+                cmd = hit + " --version";
             } else {
                 log.error("unsupported OS");
                 return false;
