@@ -1154,6 +1154,7 @@ public class MyLocalTonUtils {
             } else {
                 log.info("ton-http-api has been installed");
                 mainController.showSuccessMsg("ton-http-api has been successfully installed", 5);
+                mainController.enableTonHttpApi.setSelected(true);
             }
         } catch (Exception e) {
             mainController.showErrorMsg("ton-http-api installation failed. Try to install it manually: pip3 install --user ton-http-api", 8);
