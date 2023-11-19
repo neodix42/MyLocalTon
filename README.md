@@ -37,10 +37,6 @@ In case you are using MacPorts instead of Homebrew on Mac please execute the fol
 
 `mkdir -p /usr/local/opt/readline/lib; ln -s /opt/local/lib/libreadline.8.dylib /usr/local/opt/readline/lib/`
 
-Also please make sure you have OpenSSL installed. You can do it as follows:
-
-`brew install openssl`
-
 ## Java installation
 
 If you are new to Java, please follow this guide on how to install OpenJDK 17:
@@ -95,3 +91,29 @@ functionality is in the backlog, so it will be implemented in future releases.
 
 | :point_up: | On Windows don't forget to install Microsoft Visual C++ Redistributable installation (see above) |
 |------------|:-------------------------------------------------------------------------------------------------|
+
+## Manual TON-HTTP-API installation
+
+### Linux
+
+```commandline
+sudo apt install -y python3
+sudo apt install -y python3-pip
+pip3 install --user ton-http-api
+```
+
+### MacOS
+
+```commandline
+brew install -q python3
+python3 -m ensurepip --upgrade
+pip3 install --user ton-http-api
+```
+
+### Windows
+
+```commandline
+wget https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
+python -m ensurepip --upgrade
+start pip3 install -U ton-http-api
+```
