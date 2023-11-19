@@ -1667,6 +1667,7 @@ public class MainController implements Initializable {
     public void startTonHttpApi() {
         if (enableTonHttpApi.isSelected()) {
             log.info("Starting ton-http-api on port {}", settings.getUiSettings().getTonHttpApiPort());
+            Utils.sleep(3);
             TonHttpApi tonHttpApi = new TonHttpApi();
             tonHttpApi.startTonHttpApi(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getTonHttpApiPort());
             Utils.sleep(5);
