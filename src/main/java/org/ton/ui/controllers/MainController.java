@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
@@ -1947,9 +1948,15 @@ public class MainController implements Initializable {
                 ConfirmPaneController controller = loader.getController();
                 controller.setHeight(170.0);
                 controller.setAction(ConfirmPaneController.Action.INSTALL_PYTHON);
-                controller.setHeader("python3 is not installed");
+                if (SystemUtils.IS_OS_MAC) {
+                    controller.setHeader("python 3.11+ is not installed");
+                    controller.setBody("Do you want to download and start the Python installation now?");
 
-                controller.setBody("Do you want me to download and start the Python installation for you?");
+                } else {
+                    controller.setHeader("python3 is not installed");
+                    controller.setBody("Do you want to download and start the Python installation now?");
+                }
+
                 controller.setOkButtonText("Install now");
 
                 JFXDialogLayout content = new JFXDialogLayout();
@@ -1981,7 +1988,7 @@ public class MainController implements Initializable {
                 controller.setAction(ConfirmPaneController.Action.INSTALL_PIP);
                 controller.setHeader("pip is not installed");
 
-                controller.setBody("Python is installed, but pip (package installer for Python) is missing. Do you want me to install pip for you?");
+                controller.setBody("Python is installed, but pip (package installer for Python) is missing. Do you want to install pip now?");
                 controller.setOkButtonText("Install now");
 
                 JFXDialogLayout content = new JFXDialogLayout();
@@ -2013,7 +2020,7 @@ public class MainController implements Initializable {
                 controller.setAction(ConfirmPaneController.Action.INSTALL_TON_HTTP_API);
                 controller.setHeader("ton-http-api is not installed");
 
-                controller.setBody("Python and pip are installed, but ton-http-api is missing. Do you want me to install ton-http-api for you?");
+                controller.setBody("Python and pip are installed, but ton-http-api is missing. Do you want to install ton-http-api now?");
                 controller.setOkButtonText("Install now");
 
                 JFXDialogLayout content = new JFXDialogLayout();
@@ -3548,6 +3555,14 @@ public class MainController implements Initializable {
         try {
             Process p = Runtime.getRuntime().exec((SystemUtils.IS_OS_WINDOWS ? "python" : "python3") + " --version");
             p.waitFor(5, TimeUnit.SECONDS);
+            if (SystemUtils.IS_OS_MAC) {
+                String pythonVersion = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
+                ComparableVersion v = new ComparableVersion(StringUtils.split(pythonVersion, " ")[1]);
+                if (v.compareTo(new ComparableVersion("3.11")) < 0) {
+                    return false;
+                }
+            }
+
             return (p.exitValue() == 0);
         } catch (Exception e) {
             return false;
@@ -3576,9 +3591,9 @@ public class MainController implements Initializable {
                 Process p = Runtime.getRuntime().exec(locationCmd);
                 String pythonLocation = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
                 Optional<Path> hit = Files.walk(Path.of(pythonLocation).getParent())
-                        .filter(file -> file.getFileName().equals("ton-http-api"))
+                        .filter(file -> file.getFileName().endsWith("ton-http-api"))
                         .findAny();
-                cmd = hit + " --version";
+                cmd = hit.get() + " --version";
             } else {
                 log.error("unsupported OS");
                 return false;

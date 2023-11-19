@@ -35,9 +35,9 @@ public class TonHttpApiExecutor {
                 Process p = Runtime.getRuntime().exec(locationCmd);
                 String pythonLocation = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
                 Optional<Path> hit = Files.walk(Path.of(pythonLocation).getParent())
-                        .filter(file -> file.getFileName().equals("ton-http-api"))
+                        .filter(file -> file.getFileName().endsWith("ton-http-api"))
                         .findAny();
-                binaryPath = hit.toString();
+                binaryPath = hit.get().toString();
             } else {
                 log.error("unsupported OS");
             }

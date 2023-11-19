@@ -14,7 +14,7 @@
         <jfoenix.version>9.0.4</jfoenix.version>
         <commons-io.version>2.7</commons-io.version>
         <commons-codec.version>1.14</commons-codec.version>
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <jupiter.version>5.7.1</jupiter.version>
         <junit.version>4.13.2</junit.version>
         <assertj.version>3.19.0</assertj.version>
