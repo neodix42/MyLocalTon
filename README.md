@@ -92,7 +92,7 @@ functionality is in the backlog, so it will be implemented in future releases.
 | :point_up: | On Windows don't forget to install Microsoft Visual C++ Redistributable installation (see above) |
 |------------|:-------------------------------------------------------------------------------------------------|
 
-## Manual TON-HTTP-API installation
+## Manual TON-HTTP-API installation (optional)
 
 ### Linux
 
@@ -103,6 +103,8 @@ pip3 install --user ton-http-api
 ```
 
 ### MacOS
+
+Note: Python version must be 3.11 or greater
 
 ```commandline
 brew install -q python3
