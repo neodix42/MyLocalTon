@@ -20,7 +20,8 @@ jobs:
 
       - name: Build main branch
         run: |
-          mkdir artifacts          
+          mkdir artifacts
+          git fetch -a
           git branch
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
@@ -35,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: MyLocalTon
-          path: MyLocalTon
+          path: artifacts
 
 #      - name: Read CHANGELOG.md and use it as a body of new release
 #        id: read_release
