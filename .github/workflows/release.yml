@@ -18,30 +18,22 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: Build x86-64 on main branch
+      - name: Build x86-64
         run: |
           mkdir artifacts
           git fetch -a
           git branch
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
+          mvn clean compile package -DskipTests -Dton.branch=testnet
+          cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64-testnet.jar
 
-      - name: Build arm64-aarch64 on main branch
+      - name: Build arm64-aarch64
         run: |
           git checkout arm64-aarch64
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
-
-      - name: Build x86-64 on testnet branch
-        run: |
-          git checkout testnet
-          mvn clean compile package -DskipTests
-          cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64-testnet.jar
-
-      - name: Build arm64-aarch64 on testnet branch
-        run: |
-          git checkout testnet-arm64-aarch64
-          mvn clean compile package -DskipTests
+          mvn clean compile package -DskipTests -Dton.branch=testnet
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
           ls artifacts
 
