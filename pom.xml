@@ -6,9 +6,14 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <java.version>11</java.version>
         <maven.compiler.release>11</maven.compiler.release>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.version>3.8.1</maven.compiler.version>
+        <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
+        <maven.assembly.plugin.version>3.6.0</maven.assembly.plugin.version>
+        <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <apache.commons.lang3.version>3.9</apache.commons.lang3.version>
         <openjfx.version>21</openjfx.version>
         <jfoenix.version>9.0.4</jfoenix.version>
@@ -20,18 +25,23 @@
         <assertj.version>3.19.0</assertj.version>
         <concurrent-junit.version>1.0.2</concurrent-junit.version>
         <gson.version>2.8.6</gson.version>
-        <logback.version>1.2.9</logback.version>
-        <zip4j.version>2.10.0</zip4j.version>
+        <logback.version>1.4.12</logback.version>
+        <zip4j.version>2.11.3</zip4j.version>
         <jetty.version>11.0.14</jetty.version>
+        <jprocesses.version>1.6.5</jprocesses.version>
+        <richtextfx.version>0.10.7</richtextfx.version>
+        <ton4j.version>0.1.4</ton4j.version>
+        <objectdb.version>2.8.6</objectdb.version>
+        <javax.persistence.version>2.1.0</javax.persistence.version>
+        <jta.version>1.1</jta.version>
+        <log4j.version>2.17.1</log4j.version>
+
         <linux.arm64.ton.binaries.uri>
-            https://cicd.neodix.io/view/TON%20master%20binaries/job/TON_Linux_arm64/lastSuccessfulBuild/artifact/artifacts/binaries/*zip*/binaries.zip
+            https://cicd.neodix.io/view/pipelines/job/master-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-arm64-linux-portable.zip
         </linux.arm64.ton.binaries.uri>
         <mac.arm64.ton.binaries.uri>
-            https://cicd.neodix.io/view/TON%20master%20binaries/job/TON_macOS_aarch64_arm64_master/lastSuccessfulBuild/artifact/artifacts/binaries/*zip*/binaries.zip
+            https://cicd.neodix.io/view/pipelines/job/master-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-arm64-macos-portable.zip
         </mac.arm64.ton.binaries.uri>
-        <win.amd64.ton.binaries.uri>
-            https://cicd.neodix.io/view/TON%20master%20binaries/job/TON_Windows_x86-64_master/lastSuccessfulBuild/artifact/artifacts/*zip*/artifacts.zip
-        </win.amd64.ton.binaries.uri>
     </properties>
 
     <repositories>
@@ -46,7 +56,7 @@
         <dependency>
             <groupId>io.github.neodix42</groupId>
             <artifactId>smartcontract</artifactId>
-            <version>0.1.4</version>
+            <version>${ton4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -66,7 +76,7 @@
         <dependency>
             <groupId>org.fxmisc.richtext</groupId>
             <artifactId>richtextfx</artifactId>
-            <version>0.10.7</version>
+            <version>${richtextfx.version}</version>
         </dependency>
 
         <dependency>
@@ -171,7 +181,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.17.1</version>
+            <version>${log4j.version}</version>
         </dependency>
         <dependency>
             <groupId>net.lingala.zip4j</groupId>
@@ -193,35 +203,36 @@
         <dependency>
             <groupId>com.objectdb</groupId>
             <artifactId>objectdb</artifactId>
-            <version>2.8.6</version>
+            <version>${objectdb.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
-            <version>2.1.0</version>
+            <version>${javax.persistence.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
             <artifactId>jta</artifactId>
-            <version>1.1</version>
+            <version>${jta.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.1</version>
+            <version>${maven.compiler.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-clean-plugin</artifactId>
-            <version>3.1.0</version>
+            <version>${maven.clean.plugin.version}</version>
             <type>maven-plugin</type>
         </dependency>
         <dependency>
             <groupId>org.jprocesses</groupId>
             <artifactId>jProcesses</artifactId>
-            <version>1.6.5</version>
+            <version>${jprocesses.version}</version>
         </dependency>
     </dependencies>
+
     <build>
         <resources>
             <resource>
@@ -232,7 +243,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven.compiler.version}</version>
                 <configuration>
                     <release>${maven.compiler.release}</release>
                     <source>11</source>
@@ -242,7 +253,7 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
+                <version>${javafx.maven.plugin.version}</version>
                 <configuration>
                     <options>
                         <option>--add-opens</option>
@@ -321,10 +332,7 @@
                                 <include>*ton-win*</include>
                             </includes>
                         </fileset>
-
-
                     </filesets>
-
                 </configuration>
             </plugin>
 
@@ -342,7 +350,7 @@
                         <configuration>
                             <skipCache>true</skipCache>
                             <uri>${linux.arm64.ton.binaries.uri}</uri>
-                            <unpack>true</unpack>
+                            <skipCache>true</skipCache>
                             <outputDirectory>${project.build.directory}/binaries-linux-arm64</outputDirectory>
                         </configuration>
                     </execution>
@@ -359,50 +367,14 @@
                             <outputDirectory>${project.build.directory}/binaries-mac-arm64</outputDirectory>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>ton-win-x86_64</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <skipCache>true</skipCache>
-                            <uri>${win.amd64.ton.binaries.uri}</uri>
-                            <unpack>true</unpack>
-                            <outputDirectory>${project.build.directory}/binaries-windows-x86_64</outputDirectory>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${maven.clean.plugin.version}</version>
                 <executions>
-                    <execution>
-                        <id>copy-smartcont-auto_to_binaries</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${project.build.directory}/binaries-mac-arm64/binaries/smartcont/auto"/>
-                                <mkdir dir="${project.build.directory}/binaries-linux-arm64/binaries/smartcont/auto"/>
-
-                                <copy todir="${project.build.directory}/binaries-mac-arm64/binaries/smartcont/auto">
-                                    <fileset
-                                            dir="${project.build.directory}/binaries-windows-x86_64/artifacts/smartcont/auto"
-                                            includes="**/*"/>
-                                </copy>
-                                <copy todir="${project.build.directory}/binaries-linux-arm64/binaries/smartcont/auto">
-                                    <fileset
-                                            dir="${project.build.directory}/binaries-windows-x86_64/artifacts/smartcont/auto"
-                                            includes="**/*"/>
-                                </copy>
-                            </target>
-                        </configuration>
-                    </execution>
                     <execution>
                         <id>copy-final-ton-linux-arm64_to_resources</id>
                         <phase>process-resources</phase>
@@ -415,7 +387,7 @@
                                     <fileset
                                             dir="${project.build.directory}" includes="ton-linux-arm64.zip"/>
                                 </copy>
-                                <copy file="${project.build.directory}/binaries-linux-arm64/binaries/libtonlibjson.so.0.5"
+                                <copy file="${project.build.directory}/binaries-linux-arm64/libtonlibjson.so"
                                       tofile="${basedir}/src/main/resources/tonlibjson-arm.so"/>
                             </target>
                         </configuration>
@@ -432,7 +404,7 @@
                                     <fileset
                                             dir="${project.build.directory}" includes="ton-mac-arm64.zip"/>
                                 </copy>
-                                <copy file="${project.build.directory}/binaries-mac-arm64/binaries/libtonlibjson.0.5.dylib"
+                                <copy file="${project.build.directory}/binaries-mac-arm64/libtonlibjson.dylib"
                                       tofile="${basedir}/src/main/resources/libtonlibjson-arm.dylib"/>
                             </target>
                         </configuration>
@@ -442,7 +414,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${maven.assembly.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>create-final-linux-arm64-binary-package</id>
