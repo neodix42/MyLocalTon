@@ -350,7 +350,7 @@
                         <configuration>
                             <skipCache>true</skipCache>
                             <uri>${linux.arm64.ton.binaries.uri}</uri>
-                            <skipCache>true</skipCache>
+                            <unpack>true</unpack>
                             <outputDirectory>${project.build.directory}/binaries-linux-arm64</outputDirectory>
                         </configuration>
                     </execution>

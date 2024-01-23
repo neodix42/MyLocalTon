@@ -6,7 +6,7 @@
     </formats>
     <fileSets>
         <fileSet>
-            <directory>target/binaries-linux-arm64/binaries</directory>
+            <directory>target/binaries-linux-arm64</directory>
             <outputDirectory>.</outputDirectory>
         </fileSet>
     </fileSets>
