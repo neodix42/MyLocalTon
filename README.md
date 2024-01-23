@@ -73,8 +73,8 @@ Go to https://github.com/neodiX42/MyLocalTon/releases and select version with `a
 
 ## Upgrade
 
-Today upgrade is not supported, that means once you have a new version of MyLocalTon.jar just overwrite the existing
-MyLocalTon.jar and delete myLocalTon directory next to it. The upgrade
+Today upgrade is not supported, that means once you have a new version of MyLocalTon just overwrite the existing
+MyLocalTon and delete myLocalTon directory next to it. The upgrade
 functionality is in the backlog, so it will be implemented in future releases.
 
 ## Build from sources

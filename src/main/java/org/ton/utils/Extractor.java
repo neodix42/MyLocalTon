@@ -146,7 +146,7 @@ public class Extractor {
 
         InputStream windowsBinaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/" + WINDOWS_ZIP);
         if (isNull(windowsBinaries)) {
-            log.error("MyLocalTon.jar does not contain resource " + WINDOWS_ZIP);
+            log.error("MyLocalTon executable does not contain resource " + WINDOWS_ZIP);
             System.exit(1);
         }
 

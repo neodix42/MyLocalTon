@@ -315,7 +315,7 @@ public class MyLocalTonUtils {
         try {
             CodeSource codeSource = Main.class.getProtectionDomain().getCodeSource();
             File jarFile = new File(codeSource.getLocation().toURI().getPath());
-            result = jarFile.getParentFile().getPath() + File.separator + "MyLocalTon.jar";
+            result = jarFile.getAbsolutePath();
         } catch (Exception e) {
             return "";
         }
