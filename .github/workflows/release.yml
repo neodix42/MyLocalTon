@@ -25,7 +25,7 @@ jobs:
           git branch
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
-          mvn clean compile package -DskipTests -Dton.branch=testnet
+          mvn clean compile package -DskipTests -Dton_branch=testnet
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64-testnet.jar
 
       - name: Build arm64-aarch64
@@ -33,7 +33,7 @@ jobs:
           git checkout arm64-aarch64
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
-          mvn clean compile package -DskipTests -Dton.branch=testnet
+          mvn clean compile package -DskipTests -Dton_branch=testnet
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
           ls artifacts
 
