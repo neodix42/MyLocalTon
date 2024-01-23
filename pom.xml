@@ -8,7 +8,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <ton.branch>master</ton.branch>
+        <ton_branch>master</ton_branch>
         <java.version>11</java.version>
         <maven.compiler.release>11</maven.compiler.release>
         <maven.compiler.version>3.8.1</maven.compiler.version>
@@ -38,10 +38,10 @@
         <log4j.version>2.17.1</log4j.version>
 
         <linux.arm64.ton.binaries.uri>
-            https://cicd.neodix.io/view/pipelines/job/${ton.branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-arm64-linux-portable.zip
+            https://cicd.neodix.io/view/pipelines/job/${ton_branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-arm64-linux-portable.zip
         </linux.arm64.ton.binaries.uri>
         <mac.arm64.ton.binaries.uri>
-            https://cicd.neodix.io/view/pipelines/job/${ton.branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-arm64-macos-portable.zip
+            https://cicd.neodix.io/view/pipelines/job/${ton_branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-arm64-macos-portable.zip
         </mac.arm64.ton.binaries.uri>
     </properties>
 
