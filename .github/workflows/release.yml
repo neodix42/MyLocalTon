@@ -5,10 +5,6 @@ on:
   push:
     branches:
       - main
-      - arm64-aarch64
-      - testnet
-      - testnet-arm64-aarch64
-      - test-release
 
 jobs:
   build:
@@ -22,49 +18,53 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: Build with Maven
-        run: mvn compile package -DskipTests
+      - name: Build main branch
+        run: |
+          mkdir artifacts
+          git fetch -a
+          git branch
+          mvn clean compile package -DskipTests
+          cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
 
-      - name: Upload artifact
-        run: mkdir MyLocalTon && cp target/MyLocalTon.jar MyLocalTon
-      - uses: actions/upload-artifact@v2
+      - name: Build arm64-aarch64 branch
+        run: |
+          git checkout arm64-aarch64
+          mvn clean compile package -DskipTests
+          cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
         with:
           name: MyLocalTon
-          path: MyLocalTon
+          path: artifacts
 
-      - name: Read CHANGELOG.md and use it as a body of new release
-        id: read_release
-        shell: bash
-        run: |
-          r=$(cat CHANGELOG.md)
-          r="${r//'%'/'%25'}"
-          r="${r//$'\n'/'%0A'}"
-          r="${r//$'\r'/'%0D'}"
-          echo "::set-output name=CHANGELOG_BODY::$r"
-
-      - name: Get the current branch name
-        shell: bash
-        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
-        id: myref
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          release_name: MyLocalTon v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          body: |
-            ${{ steps.read_release.outputs.CHANGELOG_BODY }}
-          draft: false
-          prerelease: true
-
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/MyLocalTon.jar
-          asset_name: MyLocalTon.jar
-          tag: v${{ github.run_number }}-${{ steps.myref.outputs.branch }}
-          overwrite: true
+#      - name: Read CHANGELOG.md and use it as a body of new release
+#        id: read_release
+#        shell: bash
+#        run: |
+#          r=$(cat CHANGELOG.md)
+#          r="${r//'%'/'%25'}"
+#          r="${r//$'\n'/'%0A'}"
+#          r="${r//$'\r'/'%0D'}"
+#          echo "::set-output name=CHANGELOG_BODY::$r"
+#
+#      - name: Create Release
+#        id: create_release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: v${{ github.run_number }}
+#          release_name: MyLocalTon v${{ github.run_number }}
+#          body: |
+#            ${{ steps.read_release.outputs.CHANGELOG_BODY }}
+#          draft: false
+#          prerelease: true
+#
+#      - name: Upload binaries to release
+#        uses: svenstaro/upload-release-action@v2
+#        with:
+#          repo_token: ${{ secrets.GITHUB_TOKEN }}
+#          file: target/MyLocalTon*
+#          tag: v${{ github.run_number }}
+#          overwrite: true
