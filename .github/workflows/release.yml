@@ -40,6 +40,10 @@ jobs:
         run: |
           mvn clean compile package -DskipTests -Dton_branch=testnet
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
+
+      - name: Checkout main branch
+        run: |
+          git checkout main
           ls artifacts
 
       #      - name: Upload artifacts
@@ -78,3 +82,4 @@ jobs:
           file: artifacts\MyLocalTon*
           tag: v${{ github.run_number }}
           overwrite: true
+          file_glob: true
