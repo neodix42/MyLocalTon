@@ -75,6 +75,6 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: artifacts/MyLocalTon*
+          file: artifacts\MyLocalTon*
           tag: v${{ github.run_number }}
           overwrite: true
