@@ -43,6 +43,9 @@
         <mac.arm64.ton.binaries.uri>
             https://cicd.neodix.io/view/pipelines/job/${ton_branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-arm64-macos-portable.zip
         </mac.arm64.ton.binaries.uri>
+        <win.amd64.ton.binaries.uri>
+            https://cicd.neodix.io/view/pipelines/job/${ton_branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-x86-64-windows.zip
+        </win.amd64.ton.binaries.uri>
     </properties>
 
     <repositories>
@@ -368,6 +371,19 @@
                             <outputDirectory>${project.build.directory}/binaries-mac-arm64</outputDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>ton-win-x86_64</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <skipCache>false</skipCache>
+                            <uri>${win.amd64.ton.binaries.uri}</uri>
+                            <unpack>true</unpack>
+                            <outputDirectory>${project.build.directory}/binaries-windows-x86_64</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -376,6 +392,30 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>${maven.clean.plugin.version}</version>
                 <executions>
+                    <execution>
+                        <id>copy-smartcont-auto_to_binaries</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${project.build.directory}/binaries-mac-arm64/smartcont/auto"/>
+                                <mkdir dir="${project.build.directory}/binaries-linux-arm64/smartcont/auto"/>
+
+                                <copy todir="${project.build.directory}/binaries-mac-arm64/smartcont/auto">
+                                    <fileset
+                                            dir="${project.build.directory}/binaries-windows-x86_64/smartcont/auto"
+                                            includes="**/*"/>
+                                </copy>
+                                <copy todir="${project.build.directory}/binaries-linux-arm64/smartcont/auto">
+                                    <fileset
+                                            dir="${project.build.directory}/binaries-windows-x86_64/smartcont/auto"
+                                            includes="**/*"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>copy-final-ton-linux-arm64_to_resources</id>
                         <phase>process-resources</phase>
