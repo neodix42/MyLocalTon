@@ -27,6 +27,7 @@ import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.enums.LiteClientEnum;
+import org.ton.executors.blockchainexplorer.BlockchainExplorer;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
@@ -36,6 +37,7 @@ import org.ton.executors.liteclient.api.ResultListBlockTransactions;
 import org.ton.executors.liteclient.api.block.LiteClientAddress;
 import org.ton.executors.liteclient.api.block.Message;
 import org.ton.executors.liteclient.api.block.Transaction;
+import org.ton.executors.tonhttpapi.TonHttpApi;
 import org.ton.executors.validatorengine.ValidatorEngine;
 import org.ton.executors.validatorengineconsole.ValidatorEngineConsole;
 import org.ton.java.address.Address;
@@ -59,6 +61,7 @@ import org.ton.utils.MyLocalTonUtils;
 import org.ton.wallet.MyWallet;
 import org.ton.wallet.WalletAddress;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -71,6 +74,7 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.List;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -159,11 +163,29 @@ public class MyLocalTon {
     }
 
     public void runBlockchainExplorer() {
-        Platform.runLater(() -> mainController.startWeb());
+        if (!GraphicsEnvironment.isHeadless()) {
+            Platform.runLater(() -> mainController.startNativeBlockchainExplorer());
+        } else {
+            if (settings.getUiSettings().isEnableBlockchainExplorer()) {
+                log.info("Starting native blockchain-explorer on port {}", settings.getUiSettings().getBlockchainExplorerPort());
+                BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
+                blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getBlockchainExplorerPort());
+                Utils.sleep(2);
+            }
+        }
     }
 
     public void runTonHttpApi() {
-        Platform.runLater(() -> mainController.startTonHttpApi());
+        if (!GraphicsEnvironment.isHeadless()) {
+            Platform.runLater(() -> mainController.startTonHttpApi());
+        } else {
+            if (settings.getUiSettings().isEnableTonHttpApi()) {
+                log.info("Starting ton-http-api on port {}", settings.getUiSettings().getTonHttpApiPort());
+                Utils.sleep(3);
+                TonHttpApi tonHttpApi = new TonHttpApi();
+                tonHttpApi.startTonHttpApi(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getTonHttpApiPort());
+            }
+        }
     }
 
     public void runNodesStatusMonitor() {
@@ -192,7 +214,9 @@ public class MyLocalTon {
                             log.info("{} is ready", nodeName);
                         }
 
-                        Platform.runLater(() -> MyLocalTonUtils.showNodeStatus(settings.getNodeByName(nodeName), MyLocalTonUtils.getNodeStatusLabelByName(nodeName), MyLocalTonUtils.getNodeTabByName(nodeName)));
+                        if (!GraphicsEnvironment.isHeadless()) {
+                            Platform.runLater(() -> MyLocalTonUtils.showNodeStatus(settings.getNodeByName(nodeName), MyLocalTonUtils.getNodeStatusLabelByName(nodeName), MyLocalTonUtils.getNodeTabByName(nodeName)));
+                        }
 
                     } catch (Exception e) {
                         log.error("Error in runNodesMonitor(), " + e.getMessage());
@@ -364,7 +388,11 @@ public class MyLocalTon {
 
         if (installed < 3) {
             Thread.sleep(1000);
-            mainController.showInfoMsg("Creating initial wallets...", 6);
+            if (!GraphicsEnvironment.isHeadless()) {
+                mainController.showInfoMsg("Creating initial wallets...", 6);
+            } else {
+                log.info("Creating initial wallets...");
+            }
         }
 
         if (App.dbPool.existsMainWallet() == 0) {
@@ -385,29 +413,6 @@ public class MyLocalTon {
             Thread.sleep(200);
             log.info("creating main validator wallet, total wallets {}", installed);
         }
-
-        //creating regular wallet
-//        createWalletEntity(genesisNode, null, getSettings().getWalletSettings().getWalletVersion(), getSettings().getWalletSettings().getDefaultWorkChain(), getSettings().getWalletSettings().getDefaultSubWalletId(), settings.getWalletSettings().getInitialAmount(), false);
-
-
-//        List<WalletEntity> wallets = App.dbPool.getAllWallets();
-//
-//        for (WalletEntity wallet : wallets) {
-//            log.info("preinstalled wallet {}", wallet.getFullAddress());
-////            Triple<RawAccountState, Long, WalletVersion> stateAndSeqno = Triple.of(null, -1L, null);
-//            try {
-//                // always update account state on start
-//                Triple<RawAccountState, Long, WalletVersion> stateAndSeqno = getAccountStateSeqnoVersion(wallet.getWc() + ":" + wallet.getHexAddress().toUpperCase());
-//                App.dbPool.updateWalletStateAndSeqno(wallet, stateAndSeqno.getLeft(), stateAndSeqno.getMiddle(), stateAndSeqno.getRight());
-//
-//                wallet.setAccountState(stateAndSeqno.getLeft());
-//                wallet.setSeqno(stateAndSeqno.getMiddle());
-//                wallet.setWalletVersion(stateAndSeqno.getRight());
-//                updateAccountsTabGui(wallet);
-//            } catch (Exception e) {
-//                log.error("Error updating account state. Wallet {}, error: {}", wallet.getWallet().getFullWalletAddress(), e.getMessage());
-//            }
-//        }
     }
 
     public void createWalletAsynchronously(Node node, String fileBaseName, WalletVersion walletVersion, long workchain, long subWalletid, BigInteger amount, boolean validatorWallet) {
@@ -452,10 +457,12 @@ public class MyLocalTon {
         monitorExecutorService.scheduleWithFixedDelay(() -> {
             Thread.currentThread().setName("MyLocalTon - Blockchain Size Monitor");
 
-            MainController c = fxmlLoader.getController();
             String size = MyLocalTonUtils.getDirectorySizeUsingDu(CURRENT_DIR + File.separator + MY_LOCAL_TON);
             log.debug("size {}", size);
-            Platform.runLater(() -> c.dbSizeId.setSecondaryText(size));
+            if (!GraphicsEnvironment.isHeadless()) {
+                MainController c = fxmlLoader.getController();
+                Platform.runLater(() -> c.dbSizeId.setSecondaryText(size));
+            }
         }, 0L, 60L, TimeUnit.SECONDS);
     }
 
@@ -479,7 +486,9 @@ public class MyLocalTon {
 
                     long electionsDelta = v.getNextElections() - v.getStartElections();
 
-                    mainController.drawElections();
+                    if (!GraphicsEnvironment.isHeadless()) {
+                        mainController.drawElections();
+                    }
 
                     log.debug("[start-end] elections [{} - {}], currentTime {}", MyLocalTonUtils.toLocal(v.getStartElections()), MyLocalTonUtils.toLocal(v.getEndElections()), MyLocalTonUtils.toLocal(currentTime));
                     log.debug("currTime > delta2, {} {}", (currentTime - v.getStartElections()), electionsDelta * 2);
@@ -506,16 +515,17 @@ public class MyLocalTon {
                 } finally {
                     Main.inElections.set(false);
                 }
-
-                Platform.runLater(() -> {
-                    ProgressBar progress = mainController.progressValidationUpdate;
-                    Timeline timeline = new Timeline(
-                            new KeyFrame(Duration.ZERO, new KeyValue(progress.progressProperty(), 0)),
-                            new KeyFrame(Duration.seconds(VALIDATION_GUI_REFRESH_SECONDS), new KeyValue(progress.progressProperty(), 1))
-                    );
-                    timeline.setCycleCount(1);
-                    timeline.play();
-                });
+                if (!GraphicsEnvironment.isHeadless()) {
+                    Platform.runLater(() -> {
+                        ProgressBar progress = mainController.progressValidationUpdate;
+                        Timeline timeline = new Timeline(
+                                new KeyFrame(Duration.ZERO, new KeyValue(progress.progressProperty(), 0)),
+                                new KeyFrame(Duration.seconds(VALIDATION_GUI_REFRESH_SECONDS), new KeyValue(progress.progressProperty(), 1))
+                        );
+                        timeline.setCycleCount(1);
+                        timeline.play();
+                    });
+                }
 
             }
         }, 0L, VALIDATION_GUI_REFRESH_SECONDS, TimeUnit.SECONDS);
@@ -622,9 +632,10 @@ public class MyLocalTon {
                                 prevBlockSeqno.set(lastBlock.getSeqno());
                                 log.info(lastBlock.getShortBlockSeqno());
 
-                                List<ResultLastBlock> shardsInBlock = insertBlocksAndTransactions(node, lastBlock, true);
-
-                                updateTopInfoBarGui(shardsInBlock.size());
+                                if (!GraphicsEnvironment.isHeadless()) {
+                                    List<ResultLastBlock> shardsInBlock = insertBlocksAndTransactions(node, lastBlock, true);
+                                    updateTopInfoBarGui(shardsInBlock.size());
+                                }
                             }
                         } else {
                             log.debug("last block is null");
@@ -1573,7 +1584,9 @@ public class MyLocalTon {
                         wallet.getWallet().setSubWalletId(subWalletId);
                         wallet.setWalletVersion(walletVersion);
 
-                        updateAccountsTabGui(wallet);
+                        if (!GraphicsEnvironment.isHeadless()) {
+                            updateAccountsTabGui(wallet);
+                        }
                     }
                 }
             } catch (Throwable e) {

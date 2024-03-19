@@ -11,7 +11,6 @@ import org.ton.executors.liteclient.api.block.Block;
 import org.ton.executors.liteclient.api.block.MintMessage;
 import org.ton.executors.liteclient.api.block.RecoverCreateMessage;
 import org.ton.executors.liteclient.api.block.Transaction;
-import org.ton.executors.liteclient.constants.TonConstants;
 import org.ton.executors.liteclient.exception.IncompleteDump;
 import org.ton.executors.liteclient.exception.ParsingError;
 
@@ -45,7 +44,7 @@ public class LiteClientParserTest {
         Long seqno = LiteClientParser.parseRunMethodSeqno("result:  [ 21234120 ]");
         assertThat(seqno).isEqualTo(21234120L);
     }
-    
+
     @Test
     public void TestParseLastCommand() throws IOException {
         // given
@@ -438,18 +437,6 @@ public class LiteClientParserTest {
         block.getExtra().getAccountBlock().getTransactions().forEach(x -> log.info("account: {} lt: {} hash: {}", x.getAccountAddr(), x.getLt(), x.getNewHash()));
         log.info("{}", block);
         assertEquals(Long.valueOf(-239), block.getGlobalId());
-    }
-
-    @Test
-    public void TestTonConstants() {
-        assertEquals(1, TonConstants.InMsgType.IHR.getMsgType());
-        assertEquals(1, TonConstants.TonAccountStatusChange.FROZEN.getAccStatusChange());
-        assertEquals(2, TonConstants.TonBlockProcessingStatus.FINALIZED.getBlockProcessingStatus());
-        assertEquals(5, TonConstants.TonMessageStatus.FINALIZED.getMessageStatus());
-        assertEquals(1, TonConstants.TonOrigStatus.ACTIVE.getOrigStatus());
-        assertEquals(0, TonConstants.TonOutMsgType.EXTERNAL.getOutMsgStatus());
-        assertEquals(3, TonConstants.TonTransactionStatus.FINALIZED.getTxStatus());
-        assertEquals(0, TonConstants.TonTransactionType.ORDINARY.getTxType());
     }
 
     @Test

@@ -303,7 +303,7 @@ public class DbPool {
             threadPoolService.shutdown();
             return result;
         } catch (Exception e) {
-            log.error("Error getNumberOfWalletsFromAllDBsAsync(), {}" + e.getMessage());
+            log.error("Error getNumberOfWalletsFromAllDBsAsync(), {}", e.getMessage());
             return result;
         }
     }
@@ -348,7 +348,7 @@ public class DbPool {
             threadPoolService.shutdown();
             return result;
         } catch (Exception e) {
-            log.error("Error loadBlocksBefore(), {}" + e.getMessage());
+            log.error("Error loadBlocksBefore(), {}", e.getMessage());
             return result;
         }
     }
@@ -376,7 +376,7 @@ public class DbPool {
             threadPoolService.shutdown();
             return result;
         } catch (Exception e) {
-            log.error("Error loadTxsBefore(), {}" + e.getMessage());
+            log.error("Error loadTxsBefore(), {}", e.getMessage());
             return result;
         }
     }
@@ -402,7 +402,7 @@ public class DbPool {
 
             threadPoolService.shutdown();
         } catch (Exception e) {
-            log.error("Error updating account's state, {}" + e.getMessage());
+            log.error("Error updating account's state, {}", e.getMessage());
         }
     }
 
@@ -446,7 +446,7 @@ public class DbPool {
 
             threadPoolService.shutdown();
         } catch (Exception e) {
-            log.error("Error deleteWallet(), {}" + e.getMessage());
+            log.error("Error deleteWallet(), {}", e.getMessage());
         }
     }
 
@@ -468,7 +468,7 @@ public class DbPool {
             threadPoolService.shutdown();
             return result;
         } catch (Exception e) {
-            log.error("Error existsMainWallet(), {}" + e.getMessage());
+            log.error("Error existsMainWallet(), {}", e.getMessage());
             return result;
         }
     }
@@ -491,7 +491,7 @@ public class DbPool {
             threadPoolService.shutdown();
             return result;
         } catch (Exception e) {
-            log.error("Error existsConfigWallet(), {}" + e.getMessage());
+            log.error("Error existsConfigWallet(), {}", e.getMessage());
             return result;
         }
     }
@@ -524,7 +524,7 @@ public class DbPool {
             threadPoolService.shutdown();
             return result;
         } catch (Exception e) {
-            log.error("Error searchBlocks(), {}" + e.getMessage());
+            log.error("Error searchBlocks(), {}", e.getMessage());
             return result;
         }
     }
@@ -557,7 +557,7 @@ public class DbPool {
             threadPoolService.shutdown();
             return result;
         } catch (Exception e) {
-            log.error("Error searchAccounts(), {}" + e.getMessage());
+            log.error("Error searchAccounts(), {}", e.getMessage());
             return result;
         }
     }
@@ -590,7 +590,7 @@ public class DbPool {
             threadPoolService.shutdown();
             return result;
         } catch (Exception e) {
-            log.error("Error searchTxs(), {}" + e.getMessage());
+            log.error("Error searchTxs(), {}", e.getMessage());
             return result;
         }
     }

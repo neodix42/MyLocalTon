@@ -59,6 +59,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.googlecode.lanterna</groupId>
+            <artifactId>lanterna</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+        <dependency>
             <groupId>io.github.neodix42</groupId>
             <artifactId>smartcontract</artifactId>
             <version>${ton4j.version}</version>
@@ -367,6 +372,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
+                            <overwrite>true</overwrite>
                             <skipCache>false</skipCache>
                             <uri>
                                 ${linux.amd64.ton.binaries.uri}
@@ -382,6 +388,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
+                            <overwrite>true</overwrite>
                             <skipCache>false</skipCache>
                             <uri>${mac.amd64.ton.binaries.uri}</uri>
                             <unpack>true</unpack>
@@ -395,6 +402,7 @@
                             <goal>wget</goal>
                         </goals>
                         <configuration>
+                            <overwrite>true</overwrite>
                             <skipCache>false</skipCache>
                             <uri>${win.amd64.ton.binaries.uri}</uri>
                             <unpack>true</unpack>

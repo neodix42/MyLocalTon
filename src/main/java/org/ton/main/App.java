@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.DbPool;
 import org.ton.executors.dhtserver.DhtServer;
@@ -22,9 +21,7 @@ import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.utils.MyLocalTonUtils;
 
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -98,42 +95,13 @@ public class App extends Application {
         scene.setRoot(fxmlLoader.load());
     }
 
-    public static void main(String[] args) throws Throwable {
-
-        if (!Arrays.asList(args).isEmpty()) {
-            if (args[0].equalsIgnoreCase("restart")) {
-                log.info("R E S E T T I N G: {}", Arrays.asList(args));
-                Thread.sleep(1000);
-                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "MyLocalTonDB"));
-                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "genesis"));
-                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "templates"));
-                FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + "myLocalTon.log"));
-            }
-        }
-
-        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, Objects.requireNonNull(App.class.getClassLoader().getResourceAsStream("org/ton/fonts/RobotoMono-Medium.ttf"))));
-
-        MyLocalTon myLocalTon = MyLocalTon.getInstance();
-        myLocalTon.setSettings(MyLocalTonUtils.loadSettings());
-        myLocalTon.saveSettingsToGson(); //create default config
-        MyLocalTonSettings settings = myLocalTon.getSettings();
-        log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
-
-        MyLocalTonUtils.setMyLocalTonLogLevel(settings.getGenesisNode().getMyLocalTonLogLevel());
-
-        // override MyLocalTon log level
-        if (!Arrays.asList(args).isEmpty()) {
-            if (args[0].equalsIgnoreCase("debug")) {
-                MyLocalTonUtils.setMyLocalTonLogLevel("DEBUG");
-                settings.getGenesisNode().setTonLogLevel("DEBUG");
-            }
-        }
-
-        System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
-        System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
+    public static void main(MyLocalTonSettings settings, MyLocalTon myLocalTon) throws Throwable {
 
         // start GUI
-        Executors.newSingleThreadExecutor().execute(Application::launch);
+        if (!GraphicsEnvironment.isHeadless()) {
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, Objects.requireNonNull(App.class.getClassLoader().getResourceAsStream("org/ton/fonts/RobotoMono-Medium.ttf"))));
+            Executors.newSingleThreadExecutor().execute(Application::launch);
+        }
 
         Node genesisNode = settings.getGenesisNode();
         genesisNode.extractBinaries();
@@ -180,31 +148,43 @@ public class App extends Application {
         myLocalTon.initTonlib(genesisNode);
 
         myLocalTon.runBlockchainSizeMonitor();
-
-        while (isNull(mainController)) {
-            log.info("Waiting for UI to start...");
-            Thread.sleep(1000);
+        if (!GraphicsEnvironment.isHeadless()) {
+            while (isNull(mainController) && !GraphicsEnvironment.isHeadless()) {
+                log.info("Waiting for UI to start...");
+                Thread.sleep(1000);
+            }
         }
 
-        mainController.showSuccessMsg("TON blockchain is ready!", 2);
-        Platform.runLater(() -> emit(new CustomActionEvent(CustomEvent.Type.BLOCKCHAIN_READY)));
-        //mainController.removeLoadingPane();
-        try {
-            Platform.runLater(() -> mainController.removeLoadingPane());
+        if (!GraphicsEnvironment.isHeadless()) {
+            mainController.showSuccessMsg("TON blockchain is ready!", 2);
+            Platform.runLater(() -> emit(new CustomActionEvent(CustomEvent.Type.BLOCKCHAIN_READY)));
 
-            Thread.sleep(2100);
+            Platform.runLater(() -> emit(new CustomActionEvent(CustomEvent.Type.BLOCKCHAIN_READY)));
+            //mainController.removeLoadingPane();
+            try {
+                Platform.runLater(() -> mainController.removeLoadingPane());
 
-            myLocalTon.createInitialWallets(genesisNode);
-        } catch (Exception e) {
-            e.printStackTrace();
+                Thread.sleep(2100);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            log.info("TON blockchain is ready!");
         }
+
+        myLocalTon.createInitialWallets(genesisNode);
 
         myLocalTon.runBlockchainExplorer();
         myLocalTon.runTonHttpApi();
 
         Thread.sleep(1000);
-        mainController.showSuccessMsg("Wallets are ready. You are all set!", 5);
-        Platform.runLater(() -> emit(new CustomActionEvent(CustomEvent.Type.WALLETS_READY)));
+        if (!GraphicsEnvironment.isHeadless()) {
+            mainController.showSuccessMsg("Wallets are ready. You are all set!", 5);
+            Platform.runLater(() -> emit(new CustomActionEvent(CustomEvent.Type.WALLETS_READY)));
+        } else {
+            log.info("Wallets are ready. You are all set!");
+        }
 
         myLocalTon.runAccountsMonitor();
 
