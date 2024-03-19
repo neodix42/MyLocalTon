@@ -200,7 +200,7 @@ public class MyLocalTon {
                     try {
 
                         Node node = settings.getNodeByName(nodeName);
-                        ResultLastBlock lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
+                        ResultLastBlock lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
                         if (isNull(lastBlock)) {
                             node.setStatus("not ready");
                             log.info("{} is not ready", nodeName);

@@ -596,7 +596,7 @@ public class MyLocalTonUtils {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
+            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
 //            log.error("{} is not ready", node.getNodeName());
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
         node.setFlag("cloned");
@@ -614,7 +614,7 @@ public class MyLocalTonUtils {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
+            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
             if (nonNull(lastBlock)) {
                 log.info("{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
                 node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
