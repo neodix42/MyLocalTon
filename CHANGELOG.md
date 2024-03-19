@@ -1,3 +1,5 @@
 ### Changes in this release
 
-- Update TON binaries as of 17.01.2024
+- added support of headless java
+- added nogui argument
+- added <ip> argument in order to listen on specified ip address

@@ -17,7 +17,7 @@ This is your personal local TON blockchain (www.ton.org) in a shape of cross-pla
 form of uber-jar with all dependencies and binaries. Please notice this an
 alpha version and cannot be treated as production ready.
 
-<img src='./screens/MyLocalTon-demo.gif'>
+<img alt="MyLocalton gif demo" src='./screens/MyLocalTon-demo.gif'>
 
 ## Matrix of supported OS & Java
 
@@ -25,7 +25,7 @@ alpha version and cannot be treated as production ready.
 |---------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
 | Linux x86_64        | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | Linux arm64/aarch64 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| MacOS x86_64 (11+)  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| MacOS x86_64 (12+)  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | MacOS arm64/aarch64 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | Windows x86_64      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
@@ -59,17 +59,12 @@ https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msv
 
 ## Installation and usage
 
-### For x86_64 architecture
-
-Go to https://github.com/neodiX42/MyLocalTon/releases. Open Assets section and download MyLocalTon.jar.
+Go to https://github.com/neodiX42/MyLocalTon/releases. Open Assets section and download MyLocalTon for your architecture
 
 Open console and execute the following command:
 
-`java -jar MyLocalTon.jar`
-
-### For aarch64/arm64 architecture (MacOS M1 and Linux)
-
-Go to https://github.com/neodiX42/MyLocalTon/releases and select version with `arm64-aarch64` prefix.
+`java -jar MyLocalTon-x86-64.jar` or
+`java -jar MyLocalTon-arm64.jar`
 
 ## Upgrade
 

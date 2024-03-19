@@ -1654,8 +1654,8 @@ public class MainController implements Initializable {
         }
     }
 
-    public void startWeb() {
-        if (enableBlockchainExplorer.isSelected()) {
+    public void startNativeBlockchainExplorer() {
+        if (settings.getUiSettings().isEnableBlockchainExplorer()) {
             log.info("Starting native blockchain-explorer on port {}", settings.getUiSettings().getBlockchainExplorerPort());
             BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
             blockchainExplorer.startBlockchainExplorer(settings.getGenesisNode(), settings.getGenesisNode().getNodeGlobalConfigLocation(), settings.getUiSettings().getBlockchainExplorerPort());
@@ -1665,7 +1665,7 @@ public class MainController implements Initializable {
     }
 
     public void startTonHttpApi() {
-        if (enableTonHttpApi.isSelected()) {
+        if (settings.getUiSettings().isEnableTonHttpApi()) {
             log.info("Starting ton-http-api on port {}", settings.getUiSettings().getTonHttpApiPort());
             Utils.sleep(3);
             TonHttpApi tonHttpApi = new TonHttpApi();

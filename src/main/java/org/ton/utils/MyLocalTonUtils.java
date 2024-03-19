@@ -135,6 +135,13 @@ public class MyLocalTonUtils {
         return DateTimeFormatter.ofPattern("yyyy.MM.dd_HH-mm-ss").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()));
     }
 
+    public static void disableOutputToConsole() {
+        Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+//        root.detachAppender("ConsoleAppender");
+        root.detachAppender("STDOUT");
+//        root.detachAppender("console");
+    }
+
     public static void setMyLocalTonLogLevel(String myLocalTonLogLevel) {
         Logger root = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         switch (myLocalTonLogLevel) {
@@ -146,6 +153,9 @@ public class MyLocalTonUtils {
                 break;
             case "ERROR":
                 root.setLevel(Level.ERROR);
+                break;
+            case "OFF":
+                root.setLevel(Level.OFF);
                 break;
             default:
                 root.setLevel(Level.INFO);
@@ -586,7 +596,7 @@ public class MyLocalTonUtils {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
+            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
 //            log.error("{} is not ready", node.getNodeName());
         } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
         node.setFlag("cloned");
@@ -604,7 +614,7 @@ public class MyLocalTonUtils {
         ResultLastBlock lastBlock;
         do {
             Thread.sleep(5000);
-            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
+            lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
             if (nonNull(lastBlock)) {
                 log.info("{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
                 node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
