@@ -1,5 +1,6 @@
 package org.ton.main;
 
+import com.google.common.net.InetAddresses;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -49,15 +50,23 @@ public class Main {
 
         MyLocalTonUtils.setMyLocalTonLogLevel(settings.getGenesisNode().getMyLocalTonLogLevel());
 
-        // override MyLocalTon log level
         if (!Arrays.asList(args).isEmpty()) {
-            if (args[0].equalsIgnoreCase("debug")) {
-                MyLocalTonUtils.setMyLocalTonLogLevel("DEBUG");
-                settings.getGenesisNode().setTonLogLevel("DEBUG");
-            }
+            for (String arg : args) {
 
-            if (args[0].equalsIgnoreCase("nogui")) {
-                System.setProperty("java.awt.headless", "true");
+                if (arg.equalsIgnoreCase("debug")) {
+                    MyLocalTonUtils.setMyLocalTonLogLevel("DEBUG");
+                    settings.getGenesisNode().setTonLogLevel("DEBUG");
+                    log.info("running in debug mode");
+                }
+
+                if (arg.equalsIgnoreCase("nogui")) {
+                    System.setProperty("java.awt.headless", "true");
+                }
+
+                if (InetAddresses.isInetAddress(arg)) {
+                    log.info("listening on public IP " + arg);
+                    settings.getGenesisNode().setPublicIp(arg);
+                }
             }
         }
 

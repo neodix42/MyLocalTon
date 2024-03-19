@@ -18,6 +18,7 @@ public class BlockchainExplorer {
                 "-H", String.valueOf(port));
         // "-a", node.getPublicIp() + ":" + node.getLiteServerPort());
         node.setBlockchainExplorerProcess(blockchainExplorerExecutor.getLeft());
+        log.info("{} native blockchain-explorer started at {}", node.getNodeName(), node.getPublicIp() + ":" + port);
         return blockchainExplorerExecutor.getLeft();
     }
 }

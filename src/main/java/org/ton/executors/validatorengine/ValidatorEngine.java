@@ -53,6 +53,7 @@ public class ValidatorEngine {
                 "-K", node.getValidatorKeyProofTtl().toString() // 10 years key blocks will be deleted after this time (in seconds), default 365*86400*10
         );
         node.setNodeProcess(validator.getLeft());
+        log.info("{} validator-engine started at {}", node.getNodeName(), node.getPublicIp() + ":" + node.getPublicPort());
         return validator.getLeft();
     }
 
@@ -68,6 +69,7 @@ public class ValidatorEngine {
                 "--ip", node.getPublicIp() + ":" + node.getPublicPort());
 
         node.setNodeProcess(validator.getLeft());
+        log.info("{} validator-engine started at {}", node.getNodeName(), node.getPublicIp() + ":" + node.getPublicPort());
         return validator;
     }
 
