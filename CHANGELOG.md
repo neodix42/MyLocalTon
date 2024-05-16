@@ -1,5 +1,4 @@
 ### Changes in this release
 
-- added support of headless java
-- added nogui argument
-- added <ip> argument in order to listen on specified ip address
+- Update TON binaries as of v2024.04 mainnet
+- Update TON binaries as of v2024.04 testnet
