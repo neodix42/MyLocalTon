@@ -11,6 +11,7 @@
 
 [ton]: https://ton.org
 
+
 ## What is it
 
 This is your personal local TON blockchain (www.ton.org) in a shape of cross-platform desktop application. It comes in a
