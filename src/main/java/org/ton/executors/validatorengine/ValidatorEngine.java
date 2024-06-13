@@ -292,7 +292,8 @@ public class ValidatorEngine {
         String genZeroStateFif = FileUtils.readFileToString(new File(genZeroStateFifPath), StandardCharsets.UTF_8);
         String genZeroStateFifNew = "";
 
-        genZeroStateFifNew = StringUtils.replace(genZeroStateFif, "1 capCreateStats", "6 capCreateStats");
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFif, "GLOBAL_ID", settings.getBlockchainSettings().getGlobalId().toString());
+        genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "1 capCreateStats", "6 capCreateStats");
         genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "INITIAL_BALANCE", settings.getBlockchainSettings().getInitialBalance().toString());
         genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "INITIAL_BALANCE", settings.getBlockchainSettings().getInitialBalance().toString());
         genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "GAS_PRICE_MC", settings.getBlockchainSettings().getGasPriceMc().toString());
