@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.ton.java.utils.Utils;
 import org.ton.settings.Node;
 
 import java.io.File;
@@ -28,7 +29,11 @@ public class CreateStateExecutor {
 
             ProcessBuilder pb = new ProcessBuilder(withBinaryCommand).redirectErrorStream(true);
             Map<String, String> env = pb.environment();
-            env.put("FIFTPATH", node.getTonBinDir() + "lib" + ":" + node.getTonBinDir() + "smartcont");
+            if ((Utils.getOS() == Utils.OS.WINDOWS) || (Utils.getOS() == Utils.OS.WINDOWS_ARM)) {
+                env.put("FIFTPATH", node.getTonBinDir() + "lib" + "@" + node.getTonBinDir() + "smartcont");
+            } else {
+                env.put("FIFTPATH", node.getTonBinDir() + "lib" + ":" + node.getTonBinDir() + "smartcont");
+            }
             pb.directory(new File(node.getTonBinDir() + "zerostate" + File.separator));
             Process p = pb.start();
 
