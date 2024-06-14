@@ -1,13 +1,10 @@
-name: Test changes
+name: Test on Ubuntu 22.04 x86-64
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
+on: [ push,workflow_dispatch,workflow_call ]
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v3
@@ -17,28 +14,21 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: Build x86-64 mainnet
+      - name: Build & Test x86-64 mainnet
+        timeout-minutes: 10
         run: |
           mkdir artifacts
           git fetch -a          
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
+          java -jar artifacts/MyLocalTon-x86-64.jar nogui debug
 
-      - name: Build x86-64 testnet
+      - name: Build & Test x86-64 testnet
+        timeout-minutes: 10
         run: |
           mvn clean compile package -DskipTests -Dton_branch=testnet
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64-testnet.jar
-
-      - name: Build arm64-aarch64 mainnet
-        run: |
-          git checkout arm64-aarch64
-          mvn clean compile package -DskipTests
-          cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
-
-      - name: Build arm64-aarch64 testnet
-        run: |
-          mvn clean compile package -DskipTests -Dton_branch=testnet
-          cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
+          java -jar artifacts/MyLocalTon-x86-64-testnet.jar nogui debug
 
       - name: Upload artifacts
         uses: actions/upload-artifact@master
