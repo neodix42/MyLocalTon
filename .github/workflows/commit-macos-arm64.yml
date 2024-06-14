@@ -17,7 +17,9 @@ jobs:
       - name: Build & Test arm64-aarch64 mainnet
         timeout-minutes: 10
         run: |
+          git fetch -a
           git checkout arm64-aarch64
+          mkdir artifacts
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
           java -jar artifacts/MyLocalTon-arm64.jar nogui debug
