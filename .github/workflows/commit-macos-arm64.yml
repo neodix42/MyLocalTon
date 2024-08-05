@@ -22,14 +22,14 @@ jobs:
           mkdir artifacts
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
-          java -jar artifacts/MyLocalTon-arm64.jar nogui debug
+          java -jar artifacts/MyLocalTon-arm64.jar nogui debug test-binaries
 
       - name: Build & Test arm64-aarch64 testnet
         timeout-minutes: 10
         run: |
           mvn clean compile package -DskipTests -Dton_branch=testnet
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
-          java -jar artifacts/MyLocalTon-arm64-testnet.jar nogui debug
+          java -jar artifacts/MyLocalTon-arm64-testnet.jar nogui debug test-binaries
 
       - name: Upload artifacts
         uses: actions/upload-artifact@master
