@@ -63,6 +63,16 @@ public class Main {
                     System.setProperty("java.awt.headless", "true");
                 }
 
+                if (arg.equalsIgnoreCase("ton-http-api")) {
+                    log.info("enabling ton-http-api on start (default port 8081)");
+                    settings.getUiSettings().setEnableTonHttpApi(true);
+                }
+
+                if (arg.equalsIgnoreCase("explorer")) {
+                    log.info("enabling ton-blockchain explorer on start (default port 8000)");
+                    settings.getUiSettings().setEnableBlockchainExplorer(true);
+                }
+
                 if (InetAddresses.isInetAddress(arg)) {
                     log.info("listening on public IP " + arg);
                     settings.getGenesisNode().setPublicIp(arg);
@@ -88,7 +98,7 @@ public class Main {
 
             log.info("Starting application at path {}", MyLocalTonUtils.getMyPath());
 
-            App.main(settings, myLocalTon);
+            App.main(settings, myLocalTon, args);
 
         } else {
             log.error("Instance already running.");
