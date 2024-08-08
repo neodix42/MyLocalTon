@@ -223,7 +223,7 @@ public class MyLocalTon {
                     }
                 });
             }
-        }, 0L, 15L, TimeUnit.SECONDS);
+        }, 0L, 10L, TimeUnit.SECONDS);
     }
 
     public static final class AtomicBigInteger {
@@ -1765,7 +1765,7 @@ public class MyLocalTon {
             }
             return;
         }
-        log.info("creating new fullnode {}", node.getNodeName());
+        log.info("creating new {}", node.getNodeName());
         node.extractBinaries();
 
         ValidatorEngine validatorEngine = new ValidatorEngine();

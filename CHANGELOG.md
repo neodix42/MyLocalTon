@@ -1,4 +1,5 @@
 ### Changes in this release
 
-- Update TON binaries as of v2024.06 mainnet
-- Update TON binaries as of v2024.06 testnet
+- new [with-validators-N] parameter (where N must in range of 1..6) allows in nogui mode to add up to 6 additional
+  validators on start.
+- pooling rate of node status reduced to 10 seconds. 

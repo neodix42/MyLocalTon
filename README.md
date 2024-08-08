@@ -57,7 +57,7 @@ https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msv
 
 ## MyLocalTon usage
 
-`java -jar MyLocalTon-x86-64.jar [nogui] [ton-http-api] [explorer] [ip.addr.xxx.xxx] [test-binaries] [debug]`
+`java -jar MyLocalTon-x86-64.jar [nogui] [ton-http-api] [explorer] [ip.addr.xxx.xxx] [test-binaries] [with-validators-N] [debug]`
 
 for ARM64 architecture use:
 
