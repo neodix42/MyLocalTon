@@ -201,6 +201,8 @@ public class App extends Application {
 
         myLocalTon.createInitialWallets(genesisNode);
 
+        myLocalTon.createFaucetWallet();
+
         myLocalTon.runBlockchainExplorer();
         myLocalTon.runTonHttpApi();
 
