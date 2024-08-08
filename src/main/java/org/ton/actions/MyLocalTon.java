@@ -382,6 +382,83 @@ public class MyLocalTon {
         return walletEntity;
     }
 
+    public WalletEntity createFaucetWalletWithFundsAndSmartContract(Node fromNode, WalletVersion walletVersion, long workchain, long subWalletId, BigInteger amount, String mnemonic) throws Exception {
+        MyWallet myWallet = new MyWallet();
+
+
+        WalletAddress walletAddress = myWallet.createFaucetWalletByVersion(walletVersion, workchain, subWalletId, mnemonic);
+
+        WalletEntity walletEntity = WalletEntity.builder()
+                .wc(walletAddress.getWc())
+                .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
+                .walletVersion(walletVersion)
+                .wallet(walletAddress)
+                .accountState(RawAccountState.builder().build())
+                .createdAt(Instant.now().getEpochSecond())
+                .build();
+
+        App.dbPool.insertWallet(walletEntity);
+
+        // TOP UP NEW WALLET
+
+        WalletAddress fromMasterWalletAddress = WalletAddress.builder()
+                .fullWalletAddress(settings.getMainWalletAddrFull())
+                .privateKeyHex(settings.getMainWalletPrvKey())
+                .bounceableAddressBase64url(settings.getMainWalletAddrBase64())
+                .filenameBase("main-wallet")
+                .filenameBaseLocation(settings.getMainWalletFilenameBaseLocation())
+                .build();
+
+        SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
+                .executionNode(settings.getGenesisNode())
+                .fromWallet(fromMasterWalletAddress)
+                .fromWalletVersion(WalletVersion.master) // master
+                .fromSubWalletId(-1L)
+                .destAddr(walletAddress.getNonBounceableAddressBase64Url())
+                .amount(amount)
+                .build();
+
+        boolean sentOK = myWallet.sendTonCoins(sendToncoinsParam);
+
+        if (sentOK) {
+            Thread.sleep(2000);
+            myWallet.installWalletSmartContract(fromNode, walletAddress);
+        } else {
+            App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+        }
+
+        return walletEntity;
+    }
+
+    public void createFaucetWallet() {
+
+        if (!settings.getFaucetWalletSettings().isCreated()) {
+            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            executorService.submit(() -> {
+                Thread.currentThread().setName("Create faucet wallet");
+                try {
+                    long chain = settings.getFaucetWalletSettings().getWorkChain();
+                    long walletId = settings.getFaucetWalletSettings().getSubWalletId();
+                    WalletVersion walletVersion = settings.getFaucetWalletSettings().getWalletVersion();
+                    BigInteger initialBalance = settings.getFaucetWalletSettings().getInitialBalance();
+                    String mnemonic = settings.getFaucetWalletSettings().getMnemonic();
+
+                    MyLocalTon.getInstance().createFaucetWalletEntity(
+                            MyLocalTon.getInstance().getSettings().getGenesisNode(),
+                            walletVersion,
+                            chain,
+                            walletId,
+                            initialBalance,
+                            mnemonic);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+    }
+
     public void createInitialWallets(Node genesisNode) throws Exception {
 
         long installed = App.dbPool.getNumberOfWalletsFromAllDBsAsync();
@@ -448,6 +525,17 @@ public class MyLocalTon {
             }
         } catch (Exception e) {
             log.error("Error creating wallet! Error {} ", e.getMessage());
+            log.error(ExceptionUtils.getStackTrace(e));
+        }
+    }
+
+    public void createFaucetWalletEntity(Node node, WalletVersion walletVersion, long workchain, long subWalletid, BigInteger amount, String mnemonic) {
+        try {
+            WalletEntity wallet = createFaucetWalletWithFundsAndSmartContract(node, walletVersion, workchain, subWalletid, amount, mnemonic);
+            settings.getFaucetWalletSettings().setCreated(true);
+            log.debug("created faucet wallet address {}", wallet.getHexAddress());
+        } catch (Exception e) {
+            log.error("Error creating faucet wallet! Error {} ", e.getMessage());
             log.error(ExceptionUtils.getStackTrace(e));
         }
     }
