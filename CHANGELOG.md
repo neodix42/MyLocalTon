@@ -1,5 +1,9 @@
 ### Changes in this release
 
-- new [with-validators-N] parameter (where N must in range of 1..6) allows in nogui mode to add up to 6 additional
-  validators on start.
-- pooling rate of node status reduced to 10 seconds. 
+Added creation of faucet wallet on start with constant mnemonic and address. v3r2, subWalletId=42, initialBalance =
+1mio.
+
+Faucet wallet raw address and mnemonic will be printed on console. You can find more details in
+MyLocalTonSettings.FaucetWalletSettings too.
+
+
