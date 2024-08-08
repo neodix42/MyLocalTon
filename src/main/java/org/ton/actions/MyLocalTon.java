@@ -455,6 +455,9 @@ public class MyLocalTon {
                     e.printStackTrace();
                 }
             });
+        } else {
+            log.info("Faucet wallet rawAddress: {}", settings.getFaucetWalletSettings().getWalletRawAddress());
+            log.info("Faucet wallet mnemonic: {}", settings.getFaucetWalletSettings().getMnemonic());
         }
 
     }
@@ -533,6 +536,10 @@ public class MyLocalTon {
         try {
             WalletEntity wallet = createFaucetWalletWithFundsAndSmartContract(node, walletVersion, workchain, subWalletid, amount, mnemonic);
             settings.getFaucetWalletSettings().setCreated(true);
+            
+            log.info("Faucet wallet rawAddress: {}", settings.getFaucetWalletSettings().getWalletRawAddress());
+            log.info("Faucet wallet mnemonic: {}", settings.getFaucetWalletSettings().getMnemonic());
+
             log.debug("created faucet wallet address {}", wallet.getHexAddress());
         } catch (Exception e) {
             log.error("Error creating faucet wallet! Error {} ", e.getMessage());
