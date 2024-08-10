@@ -17,6 +17,7 @@ public class SendToncoinsParam {
     Node executionNode;
     WalletAddress fromWallet;
     WalletVersion fromWalletVersion;
+    Long workchain;
     Long fromSubWalletId;
     String destAddr;
     BigInteger amount;

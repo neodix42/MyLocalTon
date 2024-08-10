@@ -736,13 +736,14 @@ public class MyLocalTonUtils {
             // send stake and validator-query.boc to elector
             SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                     .executionNode(node)
+                    .workchain(-1L)
                     .fromWallet(node.getWalletAddress())
                     .fromWalletVersion(WalletVersion.V3R2) // default validator wallet version
                     .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())
                     .destAddr(settings.getElectorSmcAddrHex())
                     .amount(node.getDefaultValidatorStake())
                     .bocLocation(node.getTonBinDir() + "validator-query.boc")
-                    .timeout(600L)
+                    .timeout(60 * 10L)
                     .build();
 
             boolean sentOK = new MyWallet().sendTonCoins(sendToncoinsParam);

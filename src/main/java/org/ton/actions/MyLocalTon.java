@@ -363,6 +363,7 @@ public class MyLocalTon {
 
         SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                 .executionNode(settings.getGenesisNode())
+                .workchain(-1L)
                 .fromWallet(fromMasterWalletAddress)
                 .fromWalletVersion(WalletVersion.master) // master
                 .fromSubWalletId(-1L)
@@ -411,6 +412,7 @@ public class MyLocalTon {
 
         SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                 .executionNode(settings.getGenesisNode())
+                .workchain(-1L)
                 .fromWallet(fromMasterWalletAddress)
                 .fromWalletVersion(WalletVersion.master) // master
                 .fromSubWalletId(-1L)
@@ -495,18 +497,6 @@ public class MyLocalTon {
         }
     }
 
-    public void createWalletAsynchronously(Node node, String fileBaseName, WalletVersion walletVersion, long workchain, long subWalletid, BigInteger amount, boolean validatorWallet) {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-        executorService.execute(() -> {
-            log.info("CreateWalletEntity thread started!");
-            Thread.currentThread().setName("MyLocalTon - Creating wallet - " + walletVersion.getValue() + ",wc=" + workchain + ",walledId=" + subWalletid);
-
-            createWalletEntity(node, fileBaseName, walletVersion, workchain, subWalletid, amount, validatorWallet);
-        });
-
-        executorService.shutdown();
-    }
 
     public void createWalletSynchronously(Node node, String fileBaseName, WalletVersion walletVersion, long workchain, long subWalletid, BigInteger amount, boolean validatorWallet) {
         createWalletEntity(node, fileBaseName, walletVersion, workchain, subWalletid, amount, validatorWallet);
@@ -536,7 +526,7 @@ public class MyLocalTon {
         try {
             WalletEntity wallet = createFaucetWalletWithFundsAndSmartContract(node, walletVersion, workchain, subWalletid, amount, mnemonic);
             settings.getFaucetWalletSettings().setCreated(true);
-            
+
             log.info("Faucet wallet rawAddress: {}", settings.getFaucetWalletSettings().getWalletRawAddress());
             log.info("Faucet wallet mnemonic: {}", settings.getFaucetWalletSettings().getMnemonic());
 
@@ -1709,6 +1699,7 @@ public class MyLocalTon {
                 // send stake and validator-query.boc to elector
                 SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                         .executionNode(node)
+                        .workchain(node.getWalletAddress().getWc())
                         .fromWallet(node.getWalletAddress())
                         .fromWalletVersion(WalletVersion.V3R2) // default validator wallet type
                         .fromSubWalletId(settings.getWalletSettings().getDefaultSubWalletId())

@@ -12,8 +12,17 @@ import org.ton.executors.liteclient.LiteClient;
 import org.ton.java.address.Address;
 import org.ton.java.cell.Cell;
 import org.ton.java.mnemonic.Mnemonic;
-import org.ton.java.smartcontract.types.InitExternalMessage;
-import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.smartcontract.highload.HighloadWalletV3;
+import org.ton.java.smartcontract.types.*;
+import org.ton.java.smartcontract.wallet.Contract;
+import org.ton.java.smartcontract.wallet.v1.WalletV1R1;
+import org.ton.java.smartcontract.wallet.v1.WalletV1R2;
+import org.ton.java.smartcontract.wallet.v1.WalletV1R3;
+import org.ton.java.smartcontract.wallet.v2.WalletV2R1;
+import org.ton.java.smartcontract.wallet.v2.WalletV2R2;
+import org.ton.java.smartcontract.wallet.v3.WalletV3R1;
+import org.ton.java.smartcontract.wallet.v3.WalletV3R2;
+import org.ton.java.smartcontract.wallet.v4.WalletV4R2;
 import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.java.utils.Utils;
 import org.ton.parameters.SendToncoinsParam;
@@ -80,7 +89,7 @@ public class MyWallet {
             resultSendBoc = liteClient.executeSendfile(fromNode, walletAddress.getWalletQueryFileBocLocation());
             log.debug(resultSendBoc);
         } else {
-            tonlib.sendRawMessage(walletAddress.getInitExternalMessage().message.toBase64(false));
+            tonlib.sendRawMessage(walletAddress.getMessage().toCell().toBase64(false));
         }
 
         walletHasContractInstalled(liteClient, fromNode, Address.of(walletAddress.getFullWalletAddress()), "");
@@ -105,82 +114,151 @@ public class MyWallet {
             log.debug("seqno {}", seqno);
 
             if (seqno == -1L) {
-                log.error("Error retrieving seqno from contract {}", fromAddress.toString(false));
+                log.error("Error retrieving seqno from contract {}", fromAddress.toRaw());
                 return false;
             }
 
-            Options options = Options.builder()
-                    .publicKey(nonNull(sendToncoinsParam.getFromWallet().getPublicKeyHex()) ? Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPublicKeyHex()) : null)
-                    .walletId(sendToncoinsParam.getFromSubWalletId())
-                    .wc(sendToncoinsParam.getFromWallet().getWc())
-                    .build();
-
-            log.debug("sending using wallet version {}", sendToncoinsParam.getFromWalletVersion());
-
-            WalletContract contract;
-
             if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1)) {
-                contract = new Wallet(WalletVersion.V1R1, options).create();
-                if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV1ContractR1) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
-                } else {
-                    ((WalletV1ContractR1) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
-                }
+                WalletV1R1 walletV1R1 = WalletV1R1.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
+                        .wc(sendToncoinsParam.getWorkchain())
+                        .tonlib(tonlib)
+                        .build();
+
+                WalletV1R1Config walletV1R1Config = WalletV1R1Config.builder()
+                        .destination(toAddress)
+                        .amount(sendToncoinsParam.getAmount())
+                        .seqno(seqno)
+                        .comment(sendToncoinsParam.getComment())
+                        .build();
+                walletV1R1.send(walletV1R1Config);
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R2)) {
-                contract = new Wallet(WalletVersion.V1R2, options).create();
-                if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV1ContractR2) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
-                } else {
-                    ((WalletV1ContractR2) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
-                }
+                WalletV1R2 walletV1R2 = WalletV1R2.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
+                        .wc(sendToncoinsParam.getWorkchain())
+                        .tonlib(tonlib)
+                        .build();
+
+                WalletV1R2Config walletV1R2Config = WalletV1R2Config.builder()
+                        .destination(toAddress)
+                        .amount(sendToncoinsParam.getAmount())
+                        .seqno(seqno)
+                        .comment(sendToncoinsParam.getComment())
+                        .build();
+                walletV1R2.send(walletV1R2Config);
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R3)) {
-                contract = new Wallet(WalletVersion.V1R3, options).create();
-                if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV1ContractR3) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
-                } else {
-                    ((WalletV1ContractR3) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
-                }
+                WalletV1R3 walletV1R3 = WalletV1R3.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
+                        .wc(sendToncoinsParam.getWorkchain())
+                        .tonlib(tonlib)
+                        .build();
+
+                WalletV1R3Config walletV1R3Config = WalletV1R3Config.builder()
+                        .destination(toAddress)
+                        .amount(sendToncoinsParam.getAmount())
+                        .seqno(seqno)
+                        .comment(sendToncoinsParam.getComment())
+                        .build();
+                walletV1R3.send(walletV1R3Config);
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V2R1)) {
-                contract = new Wallet(WalletVersion.V2R1, options).create();
-                if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV2ContractR1) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
-                } else {
-                    ((WalletV2ContractR1) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
-                }
+                WalletV2R1 walletV2R1 = WalletV2R1.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
+                        .wc(sendToncoinsParam.getWorkchain())
+                        .tonlib(tonlib)
+                        .build();
+
+                WalletV2R1Config walletV2R1Config = WalletV2R1Config.builder()
+                        .destination1(toAddress)
+                        .amount1(sendToncoinsParam.getAmount())
+                        .seqno(seqno)
+                        .comment(sendToncoinsParam.getComment())
+                        .build();
+                walletV2R1.send(walletV2R1Config);
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V2R2)) {
-                contract = new Wallet(WalletVersion.V2R2, options).create();
-                if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV2ContractR2) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
-                } else {
-                    ((WalletV2ContractR2) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
-                }
+                WalletV2R2 walletV2R2 = WalletV2R2.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
+                        .wc(sendToncoinsParam.getWorkchain())
+                        .tonlib(tonlib)
+                        .build();
+
+                WalletV2R2Config walletV2R2Config = WalletV2R2Config.builder()
+                        .destination1(toAddress)
+                        .amount1(sendToncoinsParam.getAmount())
+                        .seqno(seqno)
+                        .comment(sendToncoinsParam.getComment())
+                        .build();
+                walletV2R2.send(walletV2R2Config);
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V3R1)) {
-                contract = new Wallet(WalletVersion.V3R1, options).create();
-                if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV3ContractR1) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
-                } else {
-                    ((WalletV3ContractR1) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
-                }
+                WalletV3R1 walletV3R1 = WalletV3R1.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
+                        .wc(sendToncoinsParam.getWorkchain())
+                        .walletId(sendToncoinsParam.getFromSubWalletId())
+                        .tonlib(tonlib)
+                        .build();
+
+                WalletV3Config walletV3Config = WalletV3Config.builder()
+                        .walletId(sendToncoinsParam.getFromSubWalletId())
+                        .destination(toAddress)
+                        .amount(sendToncoinsParam.getAmount())
+                        .seqno(seqno)
+                        .comment(sendToncoinsParam.getComment())
+                        .build();
+                walletV3R1.send(walletV3Config);
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V3R2)) {
-                contract = new Wallet(WalletVersion.V3R2, options).create();
+                WalletV3R2 walletV3R2 = WalletV3R2.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
+                        .wc(sendToncoinsParam.getWorkchain())
+                        .walletId(sendToncoinsParam.getFromSubWalletId())
+                        .tonlib(tonlib)
+                        .build();
+
                 if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV3ContractR2) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
+                    WalletV3Config walletV3Config = WalletV3Config.builder()
+                            .walletId(sendToncoinsParam.getFromSubWalletId())
+                            .destination(toAddress)
+                            .amount(sendToncoinsParam.getAmount())
+                            .seqno(seqno)
+                            .comment(sendToncoinsParam.getComment())
+                            .build();
+                    walletV3R2.send(walletV3Config);
                 } else {
                     if (nonNull(sendToncoinsParam.getBocLocation())) {
                         byte[] boc = FileUtils.readFileToByteArray(new File(sendToncoinsParam.getBocLocation()));
                         Cell bodyCell = Cell.fromBoc(boc);
-                        ((WalletV3ContractR2) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, bodyCell);
+                        WalletV3Config walletV3Config = WalletV3Config.builder()
+                                .walletId(sendToncoinsParam.getFromSubWalletId())
+                                .destination(toAddress)
+                                .amount(sendToncoinsParam.getAmount())
+                                .seqno(seqno)
+                                .body(bodyCell)
+                                .build();
+                        walletV3R2.send(walletV3Config);
                     } else {
-                        ((WalletV3ContractR2) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
+                        WalletV3Config walletV3Config = WalletV3Config.builder()
+                                .walletId(sendToncoinsParam.getFromSubWalletId())
+                                .destination(toAddress)
+                                .amount(sendToncoinsParam.getAmount())
+                                .seqno(seqno)
+                                .build();
+                        walletV3R2.send(walletV3Config);
                     }
                 }
             } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V4R2)) {
-                contract = new Wallet(WalletVersion.V4R2, options).create();
-                if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
-                    ((WalletV4ContractR2) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno, sendToncoinsParam.getComment());
-                } else {
-                    ((WalletV4ContractR2) contract).sendTonCoins(tonlib, Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex()), toAddress, sendToncoinsParam.getAmount(), seqno);
-                }
+                WalletV4R2 walletV4R2 = WalletV4R2.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(Utils.hexToSignedBytes(sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
+                        .wc(sendToncoinsParam.getWorkchain())
+                        .walletId(sendToncoinsParam.getFromSubWalletId())
+                        .tonlib(tonlib)
+                        .build();
+
+                WalletV4R2Config walletV4Config = WalletV4R2Config.builder()
+                        .walletId(sendToncoinsParam.getFromSubWalletId())
+                        .destination(toAddress)
+                        .amount(sendToncoinsParam.getAmount())
+                        .seqno(seqno)
+                        .comment(sendToncoinsParam.getComment())
+                        .build();
+                walletV4R2.send(walletV4Config);
             } else if ((sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.master)) || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.config))) {
                 // send using fift from master and config wallets using base-file
                 String externalMsgLocation = new Fift().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
@@ -227,6 +305,73 @@ public class MyWallet {
         }
     }
 
+    private Contract createInitExternalMessageByWalletVersion(WalletVersion walletVersion, byte[] privateKey, long wc, long walletId) {
+        switch (WalletVersion.getKeyByValue(walletVersion.getValue())) {
+            case V1R1:
+                return WalletV1R1.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
+                        .wc(wc)
+                        .tonlib(tonlib)
+                        .build();
+            case V1R2:
+                return WalletV1R2.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
+                        .wc(wc)
+                        .tonlib(tonlib)
+                        .build();
+            case V1R3:
+                return WalletV1R3.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
+                        .wc(wc)
+                        .tonlib(tonlib)
+                        .build();
+            case V2R1:
+                return WalletV2R1.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
+                        .wc(wc)
+                        .tonlib(tonlib)
+                        .walletId(walletId)
+                        .build();
+            case V2R2:
+                return WalletV2R2.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
+                        .wc(wc)
+                        .tonlib(tonlib)
+                        .walletId(walletId)
+                        .build();
+            case V3R1:
+                return WalletV3R1.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
+                        .wc(wc)
+                        .tonlib(tonlib)
+                        .walletId(walletId)
+                        .build();
+            case V3R2:
+                return WalletV3R2.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
+                        .wc(wc)
+                        .tonlib(tonlib)
+                        .walletId(walletId)
+                        .build();
+            case V4R2:
+                return WalletV4R2.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
+                        .wc(wc)
+                        .tonlib(tonlib)
+                        .walletId(walletId)
+                        .build();
+            case highloadV3:
+                return HighloadWalletV3.builder()
+                        .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
+                        .wc(wc)
+                        .tonlib(tonlib)
+                        .walletId(walletId)
+                        .build();
+            default:
+                throw new Error("unsupported wallet version");
+        }
+    }
+
     public WalletAddress createWalletByVersion(WalletVersion walletVersion, long workchainId, long walletId) throws Exception {
 
         List<String> mnemonic = Mnemonic.generate(24, "");
@@ -234,16 +379,8 @@ public class MyWallet {
 
         TweetNaclFast.Signature.KeyPair keyPairSig = TweetNaclFast.Signature.keyPair_fromSeed(keyPair.getSecretKey());
 
-        Options options = Options.builder()
-                .publicKey(keyPairSig.getPublicKey())
-                .wc(workchainId)
-                .walletId(walletId)
-                .build();
-
-        WalletContract contract = new Wallet(walletVersion, options).create();
-
-        InitExternalMessage msg = contract.createInitExternalMessage(keyPairSig.getSecretKey());
-        Address address = msg.address;
+        Contract msg = createInitExternalMessageByWalletVersion(walletVersion, keyPairSig.getSecretKey(), workchainId, walletId);
+        Address address = msg.getAddress();
 
         String fullAddress = address.toString(false).toUpperCase();
         String nonBounceableBase64url = address.toString(true, true, false, true);
@@ -260,7 +397,7 @@ public class MyWallet {
                 .wc(Long.parseLong(fullAddress.substring(0, fullAddress.indexOf(":"))))
                 .subWalletId(walletId)
                 .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
-                .initExternalMessage(msg)
+                .message(msg.prepareDeployMsg())
                 .mnemonic(String.join(" ", mnemonic))
                 .privateKeyHex(Hex.encodeHexString(keyPair.getSecretKey()))
                 .publicKeyHex(Hex.encodeHexString(keyPair.getPublicKey()))
@@ -274,16 +411,8 @@ public class MyWallet {
 
         TweetNaclFast.Signature.KeyPair keyPairSig = TweetNaclFast.Signature.keyPair_fromSeed(keyPair.getSecretKey());
 
-        Options options = Options.builder()
-                .publicKey(keyPairSig.getPublicKey())
-                .wc(workchainId)
-                .walletId(walletId)
-                .build();
-
-        WalletContract contract = new Wallet(walletVersion, options).create();
-
-        InitExternalMessage msg = contract.createInitExternalMessage(keyPairSig.getSecretKey());
-        Address address = msg.address;
+        Contract msg = createInitExternalMessageByWalletVersion(walletVersion, keyPairSig.getSecretKey(), workchainId, walletId);
+        Address address = msg.getAddress();
 
         String fullAddress = address.toString(false).toUpperCase();
         String nonBounceableBase64url = address.toString(true, true, false, true);
@@ -300,7 +429,7 @@ public class MyWallet {
                 .wc(Long.parseLong(fullAddress.substring(0, fullAddress.indexOf(":"))))
                 .subWalletId(walletId)
                 .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
-                .initExternalMessage(msg)
+                .message(msg.prepareDeployMsg())
                 .mnemonic(mnemonic)
                 .privateKeyHex(Hex.encodeHexString(keyPair.getSecretKey()))
                 .publicKeyHex(Hex.encodeHexString(keyPair.getPublicKey()))

@@ -83,6 +83,7 @@ public class SendController implements Initializable {
 
                 SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
                         .executionNode(MyLocalTon.getInstance().getSettings().getGenesisNode())
+                        .workchain(fromWalletAddress.getWc())
                         .fromWallet(fromWalletAddress)
                         .fromWalletVersion(fromWallet.getWalletVersion())
                         .fromSubWalletId(fromWallet.getWallet().getSubWalletId())
