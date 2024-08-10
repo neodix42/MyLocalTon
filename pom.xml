@@ -11,7 +11,7 @@
         <java.version>11</java.version>
 
         <ton_branch>master</ton_branch>
-        <ton_branch>master</ton_branch>
+        <arch></arch> <!-- add when work or compile on/for arm64  -aarch64 -->
         <maven.compiler.release>11</maven.compiler.release>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
@@ -100,19 +100,13 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${openjfx.version}</version>
-            <classifier>linux</classifier>
+            <classifier>linux${arch}</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <version>${openjfx.version}</version>
-            <classifier>mac</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-web</artifactId>
-            <version>${openjfx.version}</version>
-            <classifier>mac-aarch64</classifier>
+            <classifier>mac${arch}</classifier>
         </dependency>
 
         <dependency>
@@ -125,19 +119,13 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
             <version>${openjfx.version}</version>
-            <classifier>linux</classifier>
+            <classifier>linux${arch}</classifier>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
             <version>${openjfx.version}</version>
-            <classifier>mac</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-            <version>${openjfx.version}</version>
-            <classifier>mac-aarch64</classifier>
+            <classifier>mac${arch}</classifier>
         </dependency>
 
         <dependency>

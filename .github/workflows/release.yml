@@ -28,13 +28,12 @@ jobs:
 
       - name: Build arm64-aarch64 mainnet
         run: |
-          git checkout arm64-aarch64
-          mvn clean compile package -DskipTests
+          mvn clean compile package -DskipTests -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
 
       - name: Build arm64-aarch64 testnet
         run: |
-          mvn clean compile package -DskipTests -Dton_branch=testnet
+          mvn clean compile package -DskipTests -Dton_branch=testnet -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
 
       - name: Checkout main branch
@@ -62,7 +61,7 @@ jobs:
           release_name: MyLocalTon v${{ github.run_number }}
           body: |
             ${{ steps.read_release.outputs.CHANGELOG_BODY }}
-          draft: false
+          draft: true
           prerelease: true
 
       - name: Upload binaries to release
