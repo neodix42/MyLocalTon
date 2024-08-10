@@ -11,6 +11,7 @@
         <java.version>11</java.version>
 
         <ton_branch>master</ton_branch>
+        <ton_branch>master</ton_branch>
         <maven.compiler.release>11</maven.compiler.release>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
@@ -360,10 +361,7 @@
                                 <include>*ton-win*</include>
                             </includes>
                         </fileset>
-
-
                     </filesets>
-
                 </configuration>
             </plugin>
 
@@ -433,9 +431,8 @@
                                     <then>
                                     </then>
                                     <else>
-                                        <copy todir="${basedir}/src/main/resources/org/ton/binaries">
-                                            <fileset dir="${project.build.directory}" includes="ton-linux-x86_64.zip"/>
-                                        </copy>
+                                        <copy file="${project.build.directory}/binaries-linux-x86_64.zip"
+                                              tofile="${basedir}/src/main/resources/org/ton/binaries/ton-linux-x86_64.zip"/>
                                     </else>
                                 </if>
 
@@ -448,10 +445,8 @@
                                     <then>
                                     </then>
                                     <else>
-                                        <copy todir="${basedir}/src/main/resources/org/ton/binaries">
-                                            <fileset
-                                                    dir="${project.build.directory}" includes="ton-mac-x86_64.zip"/>
-                                        </copy>
+                                        <copy file="${project.build.directory}/binaries-mac-x86_64.zip"
+                                              tofile="${basedir}/src/main/resources/org/ton/binaries/ton-mac-x86_64.zip"/>
                                     </else>
                                 </if>
 
@@ -464,86 +459,14 @@
                                     <then>
                                     </then>
                                     <else>
-                                        <copy todir="${basedir}/src/main/resources/org/ton/binaries">
-                                            <fileset dir="${project.build.directory}" includes="ton-win-x86_64.zip"/>
-                                        </copy>
+                                        <copy file="${project.build.directory}/binaries-windows-x86_64.zip"
+                                              tofile="${basedir}/src/main/resources/org/ton/binaries/ton-win-x86_64.zip"/>
                                     </else>
                                 </if>
+
                                 <copy file="${project.build.directory}/binaries-windows-x86_64/tonlibjson.dll"
                                       tofile="${basedir}/src/main/resources/tonlibjson.dll"/>
                             </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven.assembly.plugin.version}</version>
-                <executions>
-
-                    <execution>
-                        <id>create-final-linux-x86_64-binary-package</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>ton-linux-x86_64</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/assembly/linux-x86_64.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>create-final-mac-x86_64-binary-package</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>ton-mac-x86_64</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/assembly/mac-x86_64.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <id>create-final-win-x86_64-binary-package</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>ton-win-x86_64</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/assembly/win-x86_64.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>MyLocalTon</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <archive>
-                                <manifest>
-                                    <mainClass>org.ton.main.Main</mainClass>
-                                </manifest>
-                            </archive>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
                         </configuration>
                     </execution>
                 </executions>
