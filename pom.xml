@@ -32,7 +32,7 @@
         <jetty.version>11.0.14</jetty.version>
         <jprocesses.version>1.6.5</jprocesses.version>
         <richtextfx.version>0.10.7</richtextfx.version>
-        <ton4j.version>0.4.5</ton4j.version>
+        <ton4j.version>0.5.0</ton4j.version>
         <objectdb.version>2.8.6</objectdb.version>
         <javax.persistence.version>2.1.0</javax.persistence.version>
         <jta.version>1.1</jta.version>
@@ -220,6 +220,13 @@
             <version>${jetty.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>ant-contrib</groupId>
+            <artifactId>ant-contrib</artifactId>
+            <version>1.0b3</version>
+        </dependency>
+
+
         <!-- database -->
         <dependency>
             <groupId>com.objectdb</groupId>
@@ -361,107 +368,107 @@
             </plugin>
 
             <plugin>
-                <groupId>com.googlecode.maven-download-plugin</groupId>
-                <artifactId>download-maven-plugin</artifactId>
-                <version>1.7.1</version>
-                <executions>
-                    <execution>
-                        <id>ton-linux-x86_64</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <overwrite>true</overwrite>
-                            <skipCache>false</skipCache>
-                            <uri>
-                                ${linux.amd64.ton.binaries.uri}
-                            </uri>
-                            <unpack>true</unpack>
-                            <outputDirectory>${project.build.directory}/binaries-linux-x86_64</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ton-mac-x86_64</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <overwrite>true</overwrite>
-                            <skipCache>false</skipCache>
-                            <uri>${mac.amd64.ton.binaries.uri}</uri>
-                            <unpack>true</unpack>
-                            <outputDirectory>${project.build.directory}/binaries-mac-x86_64</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>ton-win-x86_64</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <overwrite>true</overwrite>
-                            <skipCache>false</skipCache>
-                            <uri>${win.amd64.ton.binaries.uri}</uri>
-                            <unpack>true</unpack>
-                            <outputDirectory>${project.build.directory}/binaries-windows-x86_64</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>${maven.clean.plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>copy-final-ton-linux-x86_64_to_resources</id>
-                        <phase>process-resources</phase>
+                        <id>download-files</id>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
                             <target>
-                                <copy todir="${basedir}/src/main/resources/org/ton/binaries">
-                                    <fileset
-                                            dir="${project.build.directory}" includes="ton-linux-x86_64.zip"/>
-                                </copy>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+                                    <classpath>
+                                        <pathelement location="${project.basedir}/ant-contrib-1.0b3.jar"/>
+                                    </classpath>
+                                </taskdef>
+                                <get src="${linux.amd64.ton.binaries.uri}"
+                                     dest="${project.build.directory}/binaries-linux-x86_64.zip"
+                                     verbose="false"
+                                     usetimestamp="true"/>
+                                <if>
+                                    <available file="${project.build.directory}/binaries-linux-x86_64"/>
+                                    <then>
+                                    </then>
+                                    <else>
+                                        <unzip src="${project.build.directory}/binaries-linux-x86_64.zip"
+                                               dest="${project.build.directory}/binaries-linux-x86_64"/>
+                                    </else>
+                                </if>
+
+                                <get src="${mac.amd64.ton.binaries.uri}"
+                                     dest="${project.build.directory}/binaries-mac-x86_64.zip"
+                                     verbose="false"
+                                     usetimestamp="true"/>
+                                <if>
+                                    <available file="${project.build.directory}/binaries-mac-x86_64"/>
+                                    <then>
+                                    </then>
+                                    <else>
+                                        <unzip src="${project.build.directory}/binaries-mac-x86_64.zip"
+                                               dest="${project.build.directory}/binaries-mac-x86_64"/>
+                                    </else>
+                                </if>
+
+                                <get src="${win.amd64.ton.binaries.uri}"
+                                     dest="${project.build.directory}/binaries-windows-x86_64.zip"
+                                     verbose="false"
+                                     usetimestamp="true"/>
+                                <if>
+                                    <available file="${project.build.directory}/binaries-windows-x86_64"/>
+                                    <then>
+                                    </then>
+                                    <else>
+                                        <unzip src="${project.build.directory}/binaries-windows-x86_64.zip"
+                                               dest="${project.build.directory}/binaries-windows-x86_64"/>
+                                    </else>
+                                </if>
+
+                                <if>
+                                    <available
+                                            file="${basedir}/src/main/resources/org/ton/binaries/ton-linux-x86_64.zip"/>
+                                    <then>
+                                    </then>
+                                    <else>
+                                        <copy todir="${basedir}/src/main/resources/org/ton/binaries">
+                                            <fileset dir="${project.build.directory}" includes="ton-linux-x86_64.zip"/>
+                                        </copy>
+                                    </else>
+                                </if>
+
                                 <copy file="${project.build.directory}/binaries-linux-x86_64/libtonlibjson.so"
                                       tofile="${basedir}/src/main/resources/tonlibjson.so"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-final-ton-mac-x86_64_to_resources</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <copy todir="${basedir}/src/main/resources/org/ton/binaries">
-                                    <fileset
-                                            dir="${project.build.directory}" includes="ton-mac-x86_64.zip"/>
-                                </copy>
+
+                                <if>
+                                    <available
+                                            file="${basedir}/src/main/resources/org/ton/binaries/ton-mac-x86_64.zip"/>
+                                    <then>
+                                    </then>
+                                    <else>
+                                        <copy todir="${basedir}/src/main/resources/org/ton/binaries">
+                                            <fileset
+                                                    dir="${project.build.directory}" includes="ton-mac-x86_64.zip"/>
+                                        </copy>
+                                    </else>
+                                </if>
+
                                 <copy file="${project.build.directory}/binaries-mac-x86_64/libtonlibjson.dylib"
                                       tofile="${basedir}/src/main/resources/libtonlibjson.dylib"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-final-ton-win-x86_64_to_resources</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <copy todir="${basedir}/src/main/resources/org/ton/binaries">
-                                    <fileset dir="${project.build.directory}" includes="ton-win-x86_64.zip"/>
-                                </copy>
+
+                                <if>
+                                    <available
+                                            file="${basedir}/src/main/resources/org/ton/binaries/ton-win-x86_64.zip"/>
+                                    <then>
+                                    </then>
+                                    <else>
+                                        <copy todir="${basedir}/src/main/resources/org/ton/binaries">
+                                            <fileset dir="${project.build.directory}" includes="ton-win-x86_64.zip"/>
+                                        </copy>
+                                    </else>
+                                </if>
                                 <copy file="${project.build.directory}/binaries-windows-x86_64/tonlibjson.dll"
                                       tofile="${basedir}/src/main/resources/tonlibjson.dll"/>
                             </target>
@@ -469,6 +476,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -477,7 +485,7 @@
 
                     <execution>
                         <id>create-final-linux-x86_64-binary-package</id>
-                        <phase>generate-resources</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -492,7 +500,7 @@
 
                     <execution>
                         <id>create-final-mac-x86_64-binary-package</id>
-                        <phase>generate-resources</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
@@ -507,7 +515,7 @@
 
                     <execution>
                         <id>create-final-win-x86_64-binary-package</id>
-                        <phase>generate-resources</phase>
+                        <phase>process-resources</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
