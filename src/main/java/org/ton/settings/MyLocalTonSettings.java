@@ -5,6 +5,8 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
+import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.utils.Utils;
 import org.ton.parameters.ValidationParam;
 
 import java.io.File;
@@ -46,6 +48,7 @@ public class MyLocalTonSettings implements Serializable {
         node7 = new Node7();
 
         walletSettings = new WalletSettings();
+        faucetWalletSettings = new FaucetWalletSettings();
         uiSettings = new UiSettings();
         blockchainSettings = new BlockchainSettings();
 
@@ -75,6 +78,7 @@ public class MyLocalTonSettings implements Serializable {
     Queue<String> activeNodes;
 
     WalletSettings walletSettings;
+    FaucetWalletSettings faucetWalletSettings;
     UiSettings uiSettings;
     BlockchainSettings blockchainSettings;
 
@@ -128,6 +132,20 @@ public class MyLocalTonSettings implements Serializable {
         //        WalletVersion walletVersion = WalletVersion.V3R2;
         Long defaultWorkChain = 0L;
         long defaultSubWalletId = 42L;
+    }
+
+    @Getter
+    @Setter
+    public static class FaucetWalletSettings implements Serializable {
+        BigInteger initialBalance = Utils.toNano(1_000_001);
+        String privateKey = "44e67357b8e3333b617eb62f759890c95a6bb3cc95557ba60b80b8619f8b7c9d";
+        String publicKey = "3bd5180d4cd25b282614266f5d5533859752860a4ff7a42368a5771583fa75bc";
+        String walletRawAddress = "0:A560DC2F757589A7152835573D23117910207DDEDEFA717DBC82D8CF932E31B2";
+        String mnemonic = "spoon key tower goat diesel labor camera movie chaos entry panic ceiling panel move sibling genius grunt rival buzz just velvet medal butter foam";
+        WalletVersion walletVersion = WalletVersion.V3R2;
+        Long workChain = 0L;
+        long subWalletId = 42L;
+        boolean created = false;
     }
 
     //options - UI

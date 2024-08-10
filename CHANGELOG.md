@@ -1,4 +1,9 @@
 ### Changes in this release
 
-- Update TON binaries as of v2024.06 mainnet
-- Update TON binaries as of v2024.06 testnet
+Added creation of faucet wallet on start with constant mnemonic and address. v3r2, subWalletId=42, initialBalance =
+1mio.
+
+Faucet wallet raw address and mnemonic will be printed on console. You can find more details in
+MyLocalTonSettings.FaucetWalletSettings too.
+
+

@@ -9,10 +9,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.DbPool;
 import org.ton.executors.dhtserver.DhtServer;
 import org.ton.executors.validatorengine.ValidatorEngine;
+import org.ton.executors.validatorengine.ValidatorEngineExecutor;
+import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.settings.MyLocalTonSettings;
 import org.ton.settings.Node;
 import org.ton.ui.controllers.MainController;
@@ -21,10 +25,13 @@ import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.utils.MyLocalTonUtils;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -95,7 +102,7 @@ public class App extends Application {
         scene.setRoot(fxmlLoader.load());
     }
 
-    public static void main(MyLocalTonSettings settings, MyLocalTon myLocalTon) throws Throwable {
+    public static void main(MyLocalTonSettings settings, MyLocalTon myLocalTon, String[] args) throws Throwable {
 
         // start GUI
         if (!GraphicsEnvironment.isHeadless()) {
@@ -105,6 +112,25 @@ public class App extends Application {
 
         Node genesisNode = settings.getGenesisNode();
         genesisNode.extractBinaries();
+
+        if (!Arrays.asList(args).isEmpty()) {
+            for (String arg : args) {
+
+                if (arg.equalsIgnoreCase("test-binaries")) {
+                    Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(genesisNode, "-V");
+//                    Future<String> f = validator.getRight();
+                    log.info("test feature code {}", validator.getRight().get());
+                    log.info("test exit code {}", validator.getLeft().exitValue());
+                    if (validator.getLeft().exitValue() != 0) {
+                        System.out.println("Simple binary test failed.");
+                        System.exit(10);
+                    } else {
+                        System.out.println("Simple binary test passed.");
+                        System.exit(0);
+                    }
+                }
+            }
+        }
 
         // initialize DB
         dbPool = new DbPool(settings);
@@ -175,6 +201,8 @@ public class App extends Application {
 
         myLocalTon.createInitialWallets(genesisNode);
 
+        myLocalTon.createFaucetWallet();
+
         myLocalTon.runBlockchainExplorer();
         myLocalTon.runTonHttpApi();
 
@@ -189,6 +217,41 @@ public class App extends Application {
         myLocalTon.runAccountsMonitor();
 
         myLocalTon.runValidationMonitor();
+
+        if (!Arrays.asList(args).isEmpty()) {
+            for (String arg : args) {
+                if (arg.contains("with-validators-")) {
+                    int i = Integer.parseInt(arg.replace("with-validators-", ""));
+                    if ((i <= 0) || (i > 6)) {
+                        log.error("Wrong number of validators. Allowed values 1..6. No validators will be added.");
+                        break;
+                    }
+                    log.info("adding {} validators", i);
+
+                    for (int j = 2; j <= i + 1; j++) {
+                        Node node = settings.getNodeByName("node" + j);
+                        if (settings.getActiveNodes().contains(node.getNodeName())) {
+                            log.info(node.getNodeName() + " already added");
+                        } else {
+
+                            //creating additional validator node
+                            log.info("creating validator {}", node.getNodeName());
+
+                            //delete unfinished or failed node creation
+                            FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
+
+                            MyLocalTon.getInstance().createFullnode(node, true, true);
+
+                            settings.getActiveNodes().add(node.getNodeName());
+                            MyLocalTon.getInstance().saveSettingsToGson();
+
+                            log.info("Creating new validator controlling smart-contract (wallet) for node {}", node.getNodeName());
+                            MyLocalTon.getInstance().createWalletEntity(node, null, WalletVersion.V3R2, -1L, settings.getWalletSettings().getDefaultSubWalletId(), node.getInitialValidatorWalletAmount(), true);
+                        }
+                    }
+                }
+            }
+        }
 
         mainController.addValidatorBtn.setDisable(false);
     }

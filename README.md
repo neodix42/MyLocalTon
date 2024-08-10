@@ -39,31 +39,28 @@ In case you are using MacPorts instead of Homebrew on Mac please execute the fol
 
 ## Java installation
 
-If you are new to Java, please follow this guide on how to install OpenJDK 17:
-
-- On Ubuntu
-  https://techviewleo.com/install-java-openjdk-on-ubuntu-linux/
-- On Windows
-  https://java.tutorials24x7.com/blog/how-to-install-openjdk-17-on-windows
-- On MacOS
-  https://knasmueller.net/how-to-install-java-openjdk-17-on-macos-big-sur
-
-In case you have several versions of Java use the following command in order to select the default Java version:
-
-`sudo update-alternatives --config java`
+| Linux                                 | MacOS                         | Windows                                      |
+|---------------------------------------|-------------------------------|----------------------------------------------|
+| ```sudo apt install openjdk-17-jdk``` | ```brew install openjdk@17``` | ```choco install openjdk --version=17.0.2``` |
 
 ## Microsoft Visual C++ Redistributable installation (for Windows only)
 
 Please install Microsoft Visual C++ Redistributable 2015 (and above) x64.
 https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
 
-## Installation and usage
+## MyLocalTon installation
 
-Go to https://github.com/neodiX42/MyLocalTon/releases. Open Assets section and download MyLocalTon for your architecture
+| Archicture | Linux / MacOS                                                                                    | Windows                                                                                           |
+|------------|--------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------|
+| x86-64     | ```wget https://github.com/neodix42/MyLocalTon/releases/latest/download/MyLocalTon-x86-64.jar``` | [download](https://github.com/neodix42/MyLocalTon/releases/latest/download/MyLocalTon-x86-64.jar) |
+| arm64      | ```wget https://github.com/neodix42/MyLocalTon/releases/latest/download/MyLocalTon-arm64.jar```  | [download](https://github.com/neodix42/MyLocalTon/releases/latest/download/MyLocalTon-arm64.jar)  |
 
-Open console and execute the following command:
+## MyLocalTon usage
 
-`java -jar MyLocalTon-x86-64.jar` or
+`java -jar MyLocalTon-x86-64.jar [nogui] [ton-http-api] [explorer] [ip.addr.xxx.xxx] [test-binaries] [with-validators-N] [debug]`
+
+for ARM64 architecture use:
+
 `java -jar MyLocalTon-arm64.jar`
 
 ## Upgrade
@@ -114,3 +111,7 @@ wget https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
 python -m ensurepip --upgrade
 start pip3 install -U ton-http-api
 ```
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=neodix42/MyLocalTon&type=Date)](https://star-history.com/#neodix42/mylocalton&Date)

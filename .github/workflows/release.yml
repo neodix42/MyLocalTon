@@ -1,10 +1,6 @@
 name: Create release
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
+on: [ workflow_dispatch ]
 
 jobs:
   build:
@@ -21,7 +17,7 @@ jobs:
       - name: Build x86-64 mainnet
         run: |
           mkdir artifacts
-          git fetch -a          
+          git fetch -a
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
 

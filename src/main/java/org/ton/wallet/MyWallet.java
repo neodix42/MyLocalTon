@@ -21,6 +21,7 @@ import org.ton.settings.Node;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -261,6 +262,46 @@ public class MyWallet {
                 .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
                 .initExternalMessage(msg)
                 .mnemonic(String.join(" ", mnemonic))
+                .privateKeyHex(Hex.encodeHexString(keyPair.getSecretKey()))
+                .publicKeyHex(Hex.encodeHexString(keyPair.getPublicKey()))
+                .build();
+    }
+
+    public WalletAddress createFaucetWalletByVersion(WalletVersion walletVersion, long workchainId, long walletId, String mnemonic) throws Exception {
+
+        List<String> mnemonicList = Arrays.asList(mnemonic.split(" "));
+        org.ton.java.mnemonic.Pair keyPair = Mnemonic.toKeyPair(mnemonicList, "");
+
+        TweetNaclFast.Signature.KeyPair keyPairSig = TweetNaclFast.Signature.keyPair_fromSeed(keyPair.getSecretKey());
+
+        Options options = Options.builder()
+                .publicKey(keyPairSig.getPublicKey())
+                .wc(workchainId)
+                .walletId(walletId)
+                .build();
+
+        WalletContract contract = new Wallet(walletVersion, options).create();
+
+        InitExternalMessage msg = contract.createInitExternalMessage(keyPairSig.getSecretKey());
+        Address address = msg.address;
+
+        String fullAddress = address.toString(false).toUpperCase();
+        String nonBounceableBase64url = address.toString(true, true, false, true);
+        String bounceableBase64url = address.toString(true, true, true, true);
+        String nonBounceableBase64 = address.toString(true, false, false, true);
+        String bounceableBase64 = address.toString(true, false, true, true);
+
+        return WalletAddress.builder()
+                .nonBounceableAddressBase64Url(nonBounceableBase64url)
+                .bounceableAddressBase64url(bounceableBase64url)
+                .nonBounceableAddressBase64(nonBounceableBase64)
+                .bounceableAddressBase64(bounceableBase64)
+                .fullWalletAddress(fullAddress)
+                .wc(Long.parseLong(fullAddress.substring(0, fullAddress.indexOf(":"))))
+                .subWalletId(walletId)
+                .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
+                .initExternalMessage(msg)
+                .mnemonic(mnemonic)
                 .privateKeyHex(Hex.encodeHexString(keyPair.getSecretKey()))
                 .publicKeyHex(Hex.encodeHexString(keyPair.getPublicKey()))
                 .build();
