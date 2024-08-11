@@ -17,17 +17,15 @@ jobs:
       - name: Build & Test arm64-aarch64 mainnet
         timeout-minutes: 10
         run: |
-          git fetch -a
-          git checkout arm64-aarch64
           mkdir artifacts
-          mvn clean compile package -DskipTests
+          mvn clean compile package -DskipTests -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
           java -jar artifacts/MyLocalTon-arm64.jar nogui debug test-binaries
 
       - name: Build & Test arm64-aarch64 testnet
         timeout-minutes: 10
         run: |
-          mvn clean compile package -DskipTests -Dton_branch=testnet
+          mvn clean compile package -DskipTests -Dton_branch=testnet -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
           java -jar artifacts/MyLocalTon-arm64-testnet.jar nogui debug test-binaries
 
