@@ -430,8 +430,11 @@
                                             <then>
                                             </then>
                                             <else>
-                                                <copy file="${project.build.directory}/binaries-linux-x86_64.zip"
-                                                      tofile="${basedir}/src/main/resources/org/ton/binaries/ton-linux-x86_64.zip"/>
+                                                <zip destfile="${basedir}/src/main/resources/org/ton/binaries/ton-linux-x86_64.zip">
+                                                    <zipfileset filemode="777"
+                                                                dir="${project.build.directory}/binaries-linux-x86_64/"
+                                                                includes="**/*"/>
+                                                </zip>
                                             </else>
                                         </if>
 
@@ -444,8 +447,11 @@
                                             <then>
                                             </then>
                                             <else>
-                                                <copy file="${project.build.directory}/binaries-mac-x86_64.zip"
-                                                      tofile="${basedir}/src/main/resources/org/ton/binaries/ton-mac-x86_64.zip"/>
+                                                <zip destfile="${basedir}/src/main/resources/org/ton/binaries/ton-mac-x86_64.zip">
+                                                    <zipfileset filemode="777"
+                                                                dir="${project.build.directory}/binaries-mac-x86_64/"
+                                                                includes="**/*"/>
+                                                </zip>
                                             </else>
                                         </if>
 
@@ -458,8 +464,11 @@
                                             <then>
                                             </then>
                                             <else>
-                                                <copy file="${project.build.directory}/binaries-windows-x86_64.zip"
-                                                      tofile="${basedir}/src/main/resources/org/ton/binaries/ton-win-x86_64.zip"/>
+                                                <zip destfile="${basedir}/src/main/resources/org/ton/binaries/ton-win-x86_64.zip">
+                                                    <zipfileset filemode="777"
+                                                                dir="${project.build.directory}/binaries-windows-x86_64/"
+                                                                includes="**/*"/>
+                                                </zip>
                                             </else>
                                         </if>
 
@@ -502,8 +511,11 @@
                                             <then>
                                             </then>
                                             <else>
-                                                <copy file="${project.build.directory}/binaries-linux-arm64.zip"
-                                                      tofile="${basedir}/src/main/resources/org/ton/binaries/ton-linux-arm64.zip"/>
+                                                <zip destfile="${basedir}/src/main/resources/org/ton/binaries/ton-linux-arm64.zip">
+                                                    <zipfileset filemode="777"
+                                                                dir="${project.build.directory}/binaries-linux-arm64/"
+                                                                includes="**/*"/>
+                                                </zip>
                                             </else>
                                         </if>
 
@@ -516,8 +528,11 @@
                                             <then>
                                             </then>
                                             <else>
-                                                <copy file="${project.build.directory}/binaries-mac-arm64.zip"
-                                                      tofile="${basedir}/src/main/resources/org/ton/binaries/ton-mac-arm64.zip"/>
+                                                <zip destfile="${basedir}/src/main/resources/org/ton/binaries/ton-mac-arm64.zip">
+                                                    <zipfileset filemode="777"
+                                                                dir="${project.build.directory}/binaries-mac-arm64/"
+                                                                includes="**/*"/>
+                                                </zip>
                                             </else>
                                         </if>
 
