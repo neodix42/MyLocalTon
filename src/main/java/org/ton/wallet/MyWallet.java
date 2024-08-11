@@ -330,14 +330,12 @@ public class MyWallet {
                         .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
                         .wc(wc)
                         .tonlib(tonlib)
-                        .walletId(walletId)
                         .build();
             case V2R2:
                 return WalletV2R2.builder()
                         .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
                         .wc(wc)
                         .tonlib(tonlib)
-                        .walletId(walletId)
                         .build();
             case V3R1:
                 return WalletV3R1.builder()
