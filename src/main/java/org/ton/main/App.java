@@ -141,6 +141,14 @@ public class App extends Application {
 
         myLocalTon.initGenesis(genesisNode);
 
+        if (!Arrays.asList(args).isEmpty()) {
+            for (String arg : args) {
+                if (arg.equalsIgnoreCase("test-tonlib")) {
+                    myLocalTon.testInitTonlib(genesisNode);
+                }
+            }
+        }
+
         dhtServer.addDhtNodesToGlobalConfig(dhtNodes, genesisNode.getNodeGlobalConfigLocation());
 
         dhtServer.startDhtServer(genesisNode, genesisNode.getNodeGlobalConfigLocation());

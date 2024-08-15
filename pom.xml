@@ -456,7 +456,7 @@
                                         </if>
 
                                         <copy file="${project.build.directory}/binaries-mac-x86_64/libtonlibjson.dylib"
-                                              tofile="${basedir}/src/main/resources/libtonlibjson.dylib"/>
+                                              tofile="${basedir}/src/main/resources/tonlibjson.dylib"/>
 
                                         <if>
                                             <available
@@ -537,7 +537,7 @@
                                         </if>
 
                                         <copy file="${project.build.directory}/binaries-mac-arm64/libtonlibjson.dylib"
-                                              tofile="${basedir}/src/main/resources/libtonlibjson.dylib"/>
+                                              tofile="${basedir}/src/main/resources/tonlibjson.dylib"/>
                                     </else>
                                 </if>
                             </target>

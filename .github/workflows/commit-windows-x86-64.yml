@@ -23,6 +23,7 @@ jobs:
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
           java -jar artifacts/MyLocalTon-x86-64.jar nogui debug test-binaries
+          java -jar artifacts/MyLocalTon-x86-64.jar nogui debug test-tonlib
 
       - name: Build & Test x86-64 testnet
         timeout-minutes: 10
@@ -30,6 +31,7 @@ jobs:
           mvn clean compile package -DskipTests -Dton_branch=testnet
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64-testnet.jar
           java -jar artifacts/MyLocalTon-x86-64-testnet.jar nogui debug test-binaries
+          java -jar artifacts/MyLocalTon-x86-64-testnet.jar nogui debug test-tonlib
 
       - name: Upload artifacts
         uses: actions/upload-artifact@master

@@ -377,7 +377,7 @@ public class MyLocalTon {
             Thread.sleep(2000);
             myWallet.installWalletSmartContract(fromNode, walletAddress);
         } else {
-            App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
         }
 
         return walletEntity;
@@ -426,7 +426,7 @@ public class MyLocalTon {
             Thread.sleep(2000);
             myWallet.installWalletSmartContract(fromNode, walletAddress);
         } else {
-            App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
         }
 
         return walletEntity;
@@ -650,45 +650,79 @@ public class MyLocalTon {
         }
     }
 
-    public void initTonlib(Node node) {
-        String tonlibName;
+
+    private String getTonlibName() {
+        String tonlibName = null;
         switch (Utils.getOS()) {
             case LINUX:
                 tonlibName = "tonlibjson.so";
                 break;
             case LINUX_ARM:
-                tonlibName = "tonlibjson-arm.so";
+                tonlibName = "tonlibjson.so";
                 break;
             case WINDOWS:
                 tonlibName = "tonlibjson.dll";
                 break;
             case WINDOWS_ARM:
-                tonlibName = "tonlibjson-arm.dll";
+                tonlibName = "tonlibjson.dll";
                 break;
             case MAC:
                 tonlibName = "tonlibjson";
                 break;
             case MAC_ARM64:
-                tonlibName = "tonlibjson-arm";
+                tonlibName = "tonlibjson";
                 break;
             case UNKNOWN:
-                throw new Error("Operating system is not supported!");
+                System.out.println("Unknown OS. Simple tonlib test failed.");
+                System.exit(11);
             default:
-                throw new IllegalArgumentException();
+                System.out.println("Unknown OS. Simple tonlib test failed.");
+                System.exit(12);
         }
-        tonlib = Tonlib.builder()
-                .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
-                .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
-                .pathToTonlibSharedLib(tonlibName)
-//                .verbosityLevel(VerbosityLevel.DEBUG)
-                .build();
+        return tonlibName;
+    }
+
+    public void initTonlib(Node node) {
+        String tonlibName = getTonlibName();
+
+        try {
+            tonlib = Tonlib.builder()
+                    .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
+                    .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+                    .pathToTonlibSharedLib(tonlibName)
+                    .build();
+        } catch (Throwable e) {
+            System.out.println(ExceptionUtils.getStackTrace(e));
+            log.error("Cannot initialize tonlib!");
+            System.exit(14);
+        }
 
         tonlibBlockMonitor = Tonlib.builder()
                 .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
                 .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
                 .pathToTonlibSharedLib(tonlibName)
-//                .verbosityLevel(VerbosityLevel.DEBUG)
                 .build();
+    }
+
+    public void testInitTonlib(Node node) {
+
+        String tonlibName = getTonlibName();
+        try {
+
+            tonlib = Tonlib.builder()
+                    .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
+                    .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+                    .pathToTonlibSharedLib(tonlibName)
+                    .build();
+
+        } catch (Throwable e) {
+            System.out.println(ExceptionUtils.getStackTrace(e));
+            System.out.println("Simple tonlib test failed.");
+            System.exit(13);
+        }
+
+        System.out.println("Simple tonlib test passed.");
+        System.exit(0);
     }
 
     public void runBlockchainMonitor(Node node) {
