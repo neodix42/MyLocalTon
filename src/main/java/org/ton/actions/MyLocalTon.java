@@ -706,7 +706,7 @@ public class MyLocalTon {
 
     public void testInitTonlib(Node node) {
 
-        String tonlibName = settings.getGenesisNode().getTonBinDir() + File.separator + getTonlibName();
+        String tonlibName = settings.getGenesisNode().getTonBinDir() + getTonlibName();
         try {
 
             tonlib = Tonlib.builder()
