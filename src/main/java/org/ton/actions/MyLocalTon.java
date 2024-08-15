@@ -655,10 +655,10 @@ public class MyLocalTon {
         String tonlibName = null;
         switch (Utils.getOS()) {
             case LINUX:
-                tonlibName = "tonlibjson.so";
+                tonlibName = "libtonlibjson.so";
                 break;
             case LINUX_ARM:
-                tonlibName = "tonlibjson.so";
+                tonlibName = "libtonlibjson.so";
                 break;
             case WINDOWS:
                 tonlibName = "tonlibjson.dll";
@@ -667,10 +667,10 @@ public class MyLocalTon {
                 tonlibName = "tonlibjson.dll";
                 break;
             case MAC:
-                tonlibName = "tonlibjson";
+                tonlibName = "libtonlibjson.dylib";
                 break;
             case MAC_ARM64:
-                tonlibName = "tonlibjson";
+                tonlibName = "libtonlibjson.dylib";
                 break;
             case UNKNOWN:
                 System.out.println("Unknown OS. Simple tonlib test failed.");
@@ -683,7 +683,7 @@ public class MyLocalTon {
     }
 
     public void initTonlib(Node node) {
-        String tonlibName = getTonlibName();
+        String tonlibName = settings.getGenesisNode().getTonBinDir() + getTonlibName();
 
         try {
             tonlib = Tonlib.builder()
@@ -706,7 +706,7 @@ public class MyLocalTon {
 
     public void testInitTonlib(Node node) {
 
-        String tonlibName = getTonlibName();
+        String tonlibName = settings.getGenesisNode().getTonBinDir() + File.separator + getTonlibName();
         try {
 
             tonlib = Tonlib.builder()

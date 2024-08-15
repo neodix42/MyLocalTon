@@ -438,9 +438,6 @@
                                             </else>
                                         </if>
 
-                                        <copy file="${project.build.directory}/binaries-linux-x86_64/libtonlibjson.so"
-                                              tofile="${basedir}/src/main/resources/tonlibjson.so"/>
-
                                         <if>
                                             <available
                                                     file="${basedir}/src/main/resources/org/ton/binaries/ton-mac-x86_64.zip"/>
@@ -454,9 +451,6 @@
                                                 </zip>
                                             </else>
                                         </if>
-
-                                        <copy file="${project.build.directory}/binaries-mac-x86_64/libtonlibjson.dylib"
-                                              tofile="${basedir}/src/main/resources/tonlibjson.dylib"/>
 
                                         <if>
                                             <available
@@ -472,8 +466,6 @@
                                             </else>
                                         </if>
 
-                                        <copy file="${project.build.directory}/binaries-windows-x86_64/tonlibjson.dll"
-                                              tofile="${basedir}/src/main/resources/tonlibjson.dll"/>
                                     </then>
                                     <else>
                                         <echo>"Building MyLocalTon arm64 ${ton_branch}"</echo>
@@ -519,9 +511,6 @@
                                             </else>
                                         </if>
 
-                                        <copy file="${project.build.directory}/binaries-linux-arm64/libtonlibjson.so"
-                                              tofile="${basedir}/src/main/resources/tonlibjson.so"/>
-
                                         <if>
                                             <available
                                                     file="${basedir}/src/main/resources/org/ton/binaries/ton-mac-arm64.zip"/>
@@ -536,8 +525,6 @@
                                             </else>
                                         </if>
 
-                                        <copy file="${project.build.directory}/binaries-mac-arm64/libtonlibjson.dylib"
-                                              tofile="${basedir}/src/main/resources/tonlibjson.dylib"/>
                                     </else>
                                 </if>
                             </target>
