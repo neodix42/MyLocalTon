@@ -680,6 +680,7 @@ public class MyLocalTon {
                 .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
                 .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
                 .pathToTonlibSharedLib(tonlibName)
+                .ignoreCache(false)
 //                .verbosityLevel(VerbosityLevel.DEBUG)
                 .build();
 
@@ -687,6 +688,7 @@ public class MyLocalTon {
                 .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
                 .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
                 .pathToTonlibSharedLib(tonlibName)
+                .ignoreCache(false)
 //                .verbosityLevel(VerbosityLevel.DEBUG)
                 .build();
     }
@@ -730,7 +732,7 @@ public class MyLocalTon {
 
                     executorService.shutdown();
 
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -875,18 +877,12 @@ public class MyLocalTon {
     private void emitResultMessage(WalletEntity walletEntity) {
         if (nonNull(walletEntity)) {
             if (WalletVersion.V1R1.equals(walletEntity.getWalletVersion())) {
-                Platform.runLater(() -> {
-                    emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3));
-                });
+                Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3)));
             } else if (walletEntity.getSeqno() != -1L) {
-                Platform.runLater(() -> {
-                    emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3));
-                });
+                Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3)));
             }
         } else {
-            Platform.runLater(() -> {
-                emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, "Error creating wallet. See logs for details.", 4));
-            });
+            Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, "Error creating wallet. See logs for details.", 4)));
         }
     }
 
@@ -1396,13 +1392,12 @@ public class MyLocalTon {
     private void updateBlocksTabGui(ResultLastBlock lastBlock) {
 
         MainController c = fxmlLoader.getController();
-        ResultLastBlock finalLastBlock = lastBlock;
 
         Platform.runLater(() -> {
             try {
                 // update top bar
-                if (finalLastBlock.getWc().equals(-1L)) {
-                    c.currentBlockNum.setSecondaryText(finalLastBlock.getSeqno().toString());
+                if (lastBlock.getWc().equals(-1L)) {
+                    c.currentBlockNum.setSecondaryText(lastBlock.getSeqno().toString());
                 }
 
                 if (Boolean.TRUE.equals(autoScroll)) {
@@ -1416,11 +1411,11 @@ public class MyLocalTon {
                         log.error("error loading blockrow.fxml file, {}", e.getMessage());
                         return;
                     }
-                    if (finalLastBlock.getWc() == -1L) {
+                    if (lastBlock.getWc() == -1L) {
                         (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
                     }
 
-                    showInGuiOnlyUniqueBlocks(c, finalLastBlock, blockRow);
+                    showInGuiOnlyUniqueBlocks(c, lastBlock, blockRow);
                 }
             } catch (Exception e) {
                 log.error("error displaying block, {}", e.getMessage());
@@ -1641,7 +1636,7 @@ public class MyLocalTon {
                         RawAccountState accountState = tonlib.getRawAccountState(address);
                         WalletVersion walletVersion = MyLocalTonUtils.detectWalletVersion(accountState.getCode(), address);
 
-                        long subWalletId = -1;
+                        long subWalletId;
                         long seqno = -1;
 
                         try {

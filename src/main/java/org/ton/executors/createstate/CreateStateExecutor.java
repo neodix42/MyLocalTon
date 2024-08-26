@@ -30,8 +30,10 @@ public class CreateStateExecutor {
             ProcessBuilder pb = new ProcessBuilder(withBinaryCommand).redirectErrorStream(true);
             Map<String, String> env = pb.environment();
             if ((Utils.getOS() == Utils.OS.WINDOWS) || (Utils.getOS() == Utils.OS.WINDOWS_ARM)) {
+                log.debug("set FIFTPATH=" + node.getTonBinDir() + "lib" + "@" + node.getTonBinDir() + "smartcont");
                 env.put("FIFTPATH", node.getTonBinDir() + "lib" + "@" + node.getTonBinDir() + "smartcont");
             } else {
+                log.debug("export FIFTPATH=" + node.getTonBinDir() + "lib" + ":" + node.getTonBinDir() + "smartcont");
                 env.put("FIFTPATH", node.getTonBinDir() + "lib" + ":" + node.getTonBinDir() + "smartcont");
             }
             pb.directory(new File(node.getTonBinDir() + "zerostate" + File.separator));

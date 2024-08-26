@@ -77,7 +77,6 @@ public class LiteClientExecutor {
                         Thread.currentThread().setName("lite-client-" + node.getNodeName());
 
                         String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-                        log.debug("{} stopped", "lite-client-" + node.getNodeName());
                         p.getInputStream().close();
                         p.getErrorStream().close();
                         p.getOutputStream().close();
