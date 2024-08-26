@@ -732,7 +732,7 @@ public class MyLocalTon {
 
                     executorService.shutdown();
 
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1039,7 +1039,7 @@ public class MyLocalTon {
             txDetails, MainController c, TxEntity txE, javafx.scene.Node
                                                 txRow) {
         String uniqueKey = lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg() + txE.getTxHash();
-        log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
+//        log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
         if (isNull(concurrentTxsHashMap.get(uniqueKey))) {
             if (concurrentTxsHashMap.size() > 800) {
                 concurrentTxsHashMap.keySet().removeAll(Arrays.asList(concurrentTxsHashMap.keySet().toArray()).subList(concurrentTxsHashMap.size() / 2, concurrentTxsHashMap.size())); // truncate
@@ -1047,7 +1047,7 @@ public class MyLocalTon {
 
             concurrentTxsHashMap.put(uniqueKey, lastBlock.getCreatedAt());
 
-            log.debug("showInGuiOnlyUniquShow {}", uniqueKey);
+//            log.debug("showInGuiOnlyUniqueShow {}", uniqueKey);
 
             populateTxRowWithData(lastBlock.getShortBlockSeqno(), tx, txDetails, txRow, txE);
 
