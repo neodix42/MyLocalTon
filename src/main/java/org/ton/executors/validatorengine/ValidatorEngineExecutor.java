@@ -47,6 +47,10 @@ public class ValidatorEngineExecutor {
             onProcessExit.thenAccept(ph -> {
                 log.debug("node {} with PID {} has stopped, exitValue {}", node.getNodeName(), ((Process) ph).pid(), ((Process) ph).exitValue());
 
+                if (((Process) ph).exitValue() == 1) {
+                    log.error("node {} with PID {} has stopped. FATAL ERROR - see node's log file!", node.getNodeName(), ((Process) ph).pid());
+                }
+
                 if ((((Process) ph).exitValue() > 0) && (Main.appActive.get())) {
 
                     if (node.getFlag().equals("cloned")) {

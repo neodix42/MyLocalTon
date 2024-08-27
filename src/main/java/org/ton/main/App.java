@@ -72,9 +72,8 @@ public class App extends Application {
         primaryStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, this::closeWindowEvent);
 
         primaryStage.setOnShown(windowEvent -> {
-            log.debug("onShown, stage loaded");
 
-            if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 0) {
+            if (MyLocalTon.getInstance().getSettings().getActiveNodes().isEmpty()) {
                 mainController.showLoadingPane("Initializing TON blockchain very first time", "It can take up to 2 minutes");
             } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
                 mainController.showLoadingPane("Starting TON blockchain", "Should take no longer than 45 seconds");

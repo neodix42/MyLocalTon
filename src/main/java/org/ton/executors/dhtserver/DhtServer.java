@@ -33,7 +33,7 @@ public class DhtServer {
 
         Pair<Process, Future<String>> dhtServer = new DhtServerExecutor().execute(node,
                 "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                "-t", "2",
+                "-t", "4",
                 "-C", globalConfigFile,
                 "-l", node.getDhtServerDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
                 "-D", node.getDhtServerDir(),

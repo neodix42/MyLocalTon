@@ -46,16 +46,16 @@ public class LiteClientExecutor {
         String[] withBinaryCommand;
         switch (config) {
             case GLOBAL:
-                withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeGlobalConfigLocation(), "-c"};
+                withBinaryCommand = new String[]{binaryPath, "--timeout", "10", "--global-config", node.getNodeGlobalConfigLocation(), "-c"};
                 break;
             case LOCAL:
-                withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeLocalConfigLocation(), "-c"};
+                withBinaryCommand = new String[]{binaryPath, "--timeout", "10", "--global-config", node.getNodeLocalConfigLocation(), "-c"};
                 break;
             case FORKED:
-                withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeForkedGlobalConfigLocation(), "-c"};
+                withBinaryCommand = new String[]{binaryPath, "--timeout", "10", "--global-config", node.getNodeForkedGlobalConfigLocation(), "-c"};
                 break;
             default:
-                withBinaryCommand = new String[]{binaryPath, "-t", "10", "-C", node.getNodeGlobalConfigLocation(), "-c"};
+                withBinaryCommand = new String[]{binaryPath, "--timeout", "10", "--global-config", node.getNodeGlobalConfigLocation(), "-c"};
         }
 
         //String[] withBinaryCommand = {binaryPath, "-C", forked ? node.getNodeForkedGlobalConfigLocation() : node.getNodeGlobalConfigLocation(), "-c"};

@@ -40,17 +40,20 @@ public class ValidatorEngine {
         log.info("starting validator-engine {}", node.getNodeName());
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
-                "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                "-t", "2",
-                "-C", myGlobalConfig,
+                "--verbosity", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
+                "--threads", "4",
+                "--global-config", myGlobalConfig,
                 "--db", node.getTonDbDir(),
-                "-l", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
+                "--logname", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
+                "--session-logs", "",
                 "--ip", node.getPublicIp() + ":" + node.getPublicPort(),
-                "-S", node.getValidatorSyncBefore().toString(), // initial sync download all blocks for last given seconds, default 3600
-                "-s", node.getValidatorStateTtl().toString(), // state will be gc'd after this time (in seconds), default 3600
-                "-b", node.getValidatorBlockTtl().toString(), // blocks will be gc'd after this time (in seconds), default=7*86400
-                "-A", node.getValidatorArchiveTtl().toString(), // archived blocks will be deleted after this time (in seconds), default 365*86400
-                "-K", node.getValidatorKeyProofTtl().toString() // 10 years key blocks will be deleted after this time (in seconds), default 365*86400*10
+                "--sync-before", node.getValidatorSyncBefore().toString(), // initial sync download all blocks for last given seconds, default 3600
+                "--state-ttl", node.getValidatorStateTtl().toString(), // state will be gc'd after this time (in seconds), default 3600
+                "--block-ttl", node.getValidatorBlockTtl().toString(), // blocks will be gc'd after this time (in seconds), default=7*86400
+                "--archive-ttl", node.getValidatorArchiveTtl().toString(), // archived blocks will be deleted after this time (in seconds), default 365*86400
+                "--key-proof-ttl", node.getValidatorKeyProofTtl().toString(), // 10 years key blocks will be deleted after this time (in seconds), default 365*86400*10
+                "--disable-rocksdb-stats", "true",
+                "--celldb-preload-all", "false"
         );
         node.setNodeProcess(validator.getLeft());
         log.info("{} validator-engine started at {}", node.getNodeName(), node.getPublicIp() + ":" + node.getPublicPort());
@@ -62,10 +65,13 @@ public class ValidatorEngine {
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
                 "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                "-t", "2",
-                "-C", myGlobalConfig,
+                "--threads", "4",
+                "--global-config", myGlobalConfig,
                 "--db", node.getTonDbDir(),
-                "-l", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
+                "--logname", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
+                "--session-logs", "",
+                "--disable-rocksdb-stats", "true",
+                "--celldb-preload-all", "false",
                 "--ip", node.getPublicIp() + ":" + node.getPublicPort());
 
         node.setNodeProcess(validator.getLeft());
