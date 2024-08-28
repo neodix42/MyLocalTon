@@ -377,7 +377,7 @@ public class MyLocalTon {
             Thread.sleep(2000);
             myWallet.installWalletSmartContract(fromNode, walletAddress);
         } else {
-            App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
         }
 
         return walletEntity;
@@ -426,7 +426,7 @@ public class MyLocalTon {
             Thread.sleep(2000);
             myWallet.installWalletSmartContract(fromNode, walletAddress);
         } else {
-            App.mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
         }
 
         return walletEntity;
@@ -650,47 +650,79 @@ public class MyLocalTon {
         }
     }
 
-    public void initTonlib(Node node) {
-        String tonlibName;
+
+    private String getTonlibName() {
+        String tonlibName = null;
         switch (Utils.getOS()) {
             case LINUX:
-                tonlibName = "tonlibjson.so";
+                tonlibName = "libtonlibjson.so";
                 break;
             case LINUX_ARM:
-                tonlibName = "tonlibjson-arm.so";
+                tonlibName = "libtonlibjson.so";
                 break;
             case WINDOWS:
                 tonlibName = "tonlibjson.dll";
                 break;
             case WINDOWS_ARM:
-                tonlibName = "tonlibjson-arm.dll";
+                tonlibName = "tonlibjson.dll";
                 break;
             case MAC:
-                tonlibName = "tonlibjson";
+                tonlibName = "libtonlibjson.dylib";
                 break;
             case MAC_ARM64:
-                tonlibName = "tonlibjson-arm";
+                tonlibName = "libtonlibjson.dylib";
                 break;
             case UNKNOWN:
-                throw new Error("Operating system is not supported!");
+                System.out.println("Unknown OS. Simple tonlib test failed.");
+                System.exit(11);
             default:
-                throw new IllegalArgumentException();
+                System.out.println("Unknown OS. Simple tonlib test failed.");
+                System.exit(12);
         }
-        tonlib = Tonlib.builder()
-                .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
-                .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
-                .pathToTonlibSharedLib(tonlibName)
-                .ignoreCache(false)
-//                .verbosityLevel(VerbosityLevel.DEBUG)
-                .build();
+        return tonlibName;
+    }
+
+    public void initTonlib(Node node) {
+        String tonlibName = settings.getGenesisNode().getTonBinDir() + getTonlibName();
+
+        try {
+            tonlib = Tonlib.builder()
+                    .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
+                    .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+                    .pathToTonlibSharedLib(tonlibName)
+                    .build();
+        } catch (Throwable e) {
+            System.out.println(ExceptionUtils.getStackTrace(e));
+            log.error("Cannot initialize tonlib!");
+            System.exit(14);
+        }
 
         tonlibBlockMonitor = Tonlib.builder()
                 .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
                 .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
                 .pathToTonlibSharedLib(tonlibName)
-                .ignoreCache(false)
-//                .verbosityLevel(VerbosityLevel.DEBUG)
                 .build();
+    }
+
+    public void testInitTonlib(Node node) {
+
+        String tonlibName = settings.getGenesisNode().getTonBinDir() + getTonlibName();
+        try {
+
+            tonlib = Tonlib.builder()
+                    .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
+                    .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+                    .pathToTonlibSharedLib(tonlibName)
+                    .build();
+
+        } catch (Throwable e) {
+            System.out.println(ExceptionUtils.getStackTrace(e));
+            System.out.println("Simple tonlib test failed.");
+            System.exit(13);
+        }
+
+        System.out.println("Simple tonlib test passed.");
+        System.exit(0);
     }
 
     public void runBlockchainMonitor(Node node) {
@@ -877,12 +909,18 @@ public class MyLocalTon {
     private void emitResultMessage(WalletEntity walletEntity) {
         if (nonNull(walletEntity)) {
             if (WalletVersion.V1R1.equals(walletEntity.getWalletVersion())) {
-                Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3)));
+                Platform.runLater(() -> {
+                    emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3));
+                });
             } else if (walletEntity.getSeqno() != -1L) {
-                Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3)));
+                Platform.runLater(() -> {
+                    emit(new CustomNotificationEvent(CustomEvent.Type.SUCCESS, "Wallet " + walletEntity.getFullAddress() + " created", 3));
+                });
             }
         } else {
-            Platform.runLater(() -> emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, "Error creating wallet. See logs for details.", 4)));
+            Platform.runLater(() -> {
+                emit(new CustomNotificationEvent(CustomEvent.Type.ERROR, "Error creating wallet. See logs for details.", 4));
+            });
         }
     }
 
@@ -1039,7 +1077,7 @@ public class MyLocalTon {
             txDetails, MainController c, TxEntity txE, javafx.scene.Node
                                                 txRow) {
         String uniqueKey = lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg() + txE.getTxHash();
-//        log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
+        log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
         if (isNull(concurrentTxsHashMap.get(uniqueKey))) {
             if (concurrentTxsHashMap.size() > 800) {
                 concurrentTxsHashMap.keySet().removeAll(Arrays.asList(concurrentTxsHashMap.keySet().toArray()).subList(concurrentTxsHashMap.size() / 2, concurrentTxsHashMap.size())); // truncate
@@ -1047,7 +1085,7 @@ public class MyLocalTon {
 
             concurrentTxsHashMap.put(uniqueKey, lastBlock.getCreatedAt());
 
-//            log.debug("showInGuiOnlyUniqueShow {}", uniqueKey);
+            log.debug("showInGuiOnlyUniquShow {}", uniqueKey);
 
             populateTxRowWithData(lastBlock.getShortBlockSeqno(), tx, txDetails, txRow, txE);
 
@@ -1392,12 +1430,13 @@ public class MyLocalTon {
     private void updateBlocksTabGui(ResultLastBlock lastBlock) {
 
         MainController c = fxmlLoader.getController();
+        ResultLastBlock finalLastBlock = lastBlock;
 
         Platform.runLater(() -> {
             try {
                 // update top bar
-                if (lastBlock.getWc().equals(-1L)) {
-                    c.currentBlockNum.setSecondaryText(lastBlock.getSeqno().toString());
+                if (finalLastBlock.getWc().equals(-1L)) {
+                    c.currentBlockNum.setSecondaryText(finalLastBlock.getSeqno().toString());
                 }
 
                 if (Boolean.TRUE.equals(autoScroll)) {
@@ -1411,11 +1450,11 @@ public class MyLocalTon {
                         log.error("error loading blockrow.fxml file, {}", e.getMessage());
                         return;
                     }
-                    if (lastBlock.getWc() == -1L) {
+                    if (finalLastBlock.getWc() == -1L) {
                         (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
                     }
 
-                    showInGuiOnlyUniqueBlocks(c, lastBlock, blockRow);
+                    showInGuiOnlyUniqueBlocks(c, finalLastBlock, blockRow);
                 }
             } catch (Exception e) {
                 log.error("error displaying block, {}", e.getMessage());
@@ -1636,7 +1675,7 @@ public class MyLocalTon {
                         RawAccountState accountState = tonlib.getRawAccountState(address);
                         WalletVersion walletVersion = MyLocalTonUtils.detectWalletVersion(accountState.getCode(), address);
 
-                        long subWalletId;
+                        long subWalletId = -1;
                         long seqno = -1;
 
                         try {

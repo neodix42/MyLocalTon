@@ -87,7 +87,7 @@ public class Main {
         System.setProperty("objectdb.home", MyLocalTonSettings.DB_DIR);
         System.setProperty("objectdb.conf", MyLocalTonSettings.DB_SETTINGS_FILE);
 
-        if (lockInstance()) {
+        if (lockInstance(args)) {
 
             Thread.currentThread().setName("MyLocalTon - main");
 
@@ -106,15 +106,27 @@ public class Main {
         }
     }
 
-    private static boolean lockInstance() {
+    private static boolean lockInstance(String[] args) {
         try {
             randomAccessFile = new RandomAccessFile(file, "rw");
             fileLock = randomAccessFile.getChannel().tryLock();
             if (nonNull(fileLock)) {
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    log.debug("Shutdown hook triggered...");
-                    MyLocalTonUtils.doShutdown();
-                }));
+                boolean notTesting = true;
+                if (!Arrays.asList(args).isEmpty()) {
+                    for (String arg : args) {
+                        if (arg.equalsIgnoreCase("test-binaries") || arg.equalsIgnoreCase("test-tonlib")) {
+                            log.info("running tests - no shutdown hook enabled");
+                            notTesting = false;
+                        }
+                    }
+                }
+
+                if (notTesting) {
+                    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                        log.debug("Shutdown hook triggered...");
+                        MyLocalTonUtils.doShutdown();
+                    }));
+                }
                 return true;
             }
         } catch (Exception e) {

@@ -429,8 +429,8 @@ public class MyLocalTonUtils {
                 return true;
             }
         } catch (Exception e) {
-            log.error("Unable to shutdown gracefully, error: {}", e.getMessage());
-            log.error(ExceptionUtils.getStackTrace(e));
+            log.warn("Unable to shutdown gracefully.");
+//            log.debug(ExceptionUtils.getStackTrace(e));
             return false;
         }
     }

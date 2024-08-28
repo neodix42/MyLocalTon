@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -117,9 +118,7 @@ public class App extends Application {
 
                 if (arg.equalsIgnoreCase("test-binaries")) {
                     Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(genesisNode, "-V");
-//                    Future<String> f = validator.getRight();
-                    log.info("test feature code {}", validator.getRight().get());
-                    log.info("test exit code {}", validator.getLeft().exitValue());
+                    validator.getLeft().waitFor(5, TimeUnit.SECONDS);
                     if (validator.getLeft().exitValue() != 0) {
                         System.out.println("Simple binary test failed.");
                         System.exit(10);
@@ -139,6 +138,14 @@ public class App extends Application {
         List<String> dhtNodes = dhtServer.initDhtServer(genesisNode);
 
         myLocalTon.initGenesis(genesisNode);
+
+        if (!Arrays.asList(args).isEmpty()) {
+            for (String arg : args) {
+                if (arg.equalsIgnoreCase("test-tonlib")) {
+                    myLocalTon.testInitTonlib(genesisNode);
+                }
+            }
+        }
 
         dhtServer.addDhtNodesToGlobalConfig(dhtNodes, genesisNode.getNodeGlobalConfigLocation());
 
