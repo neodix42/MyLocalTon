@@ -2123,7 +2123,9 @@ public class MainController implements Initializable {
             String next = "Next validators (available only within a Break time): " + System.lineSeparator() + config36.getValidators().getValidators().stream().map(i -> i.getPublicKey() + "  " + i.getAdnlAddress() + "  " + i.getWeight()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
             totalValidators.setTooltip(new Tooltip(previous + current + next));
 
-            blockchainLaunched.setText(MyLocalTonUtils.toLocal(v.getBlockchainLaunchTime()));
+            if (nonNull(v.getBlockchainLaunchTime())) {
+                blockchainLaunched.setText(MyLocalTonUtils.toLocal(v.getBlockchainLaunchTime()));
+            }
 
             colorValidationTiming(v);
 

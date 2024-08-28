@@ -633,8 +633,14 @@ public class MyLocalTonUtils {
 
         LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
-        ResultConfig12 config12 = LiteClientParser.parseConfig12(liteClient.executeBlockchainInfo(node));
-        log.debug("blockchain was launched at {}", MyLocalTonUtils.toLocal(config12.getEnabledSince()));
+        ResultConfig12 config12 = null;
+        try {
+            config12 = LiteClientParser.parseConfig12(liteClient.executeBlockchainInfo(node));
+            log.debug("blockchain was launched at {}", MyLocalTonUtils.toLocal(config12.getEnabledSince()));
+        }
+        catch (Exception e) {
+            log.error("cannot get result from config12");
+        }
 
         long activeElectionId = liteClient.executeGetActiveElectionId(node, getInstance().getSettings().getElectorSmcAddrHex());
         log.info("active election id {}, {}, current time {}", activeElectionId, MyLocalTonUtils.toLocal(activeElectionId), MyLocalTonUtils.toLocal(getCurrentTimeSeconds()));
@@ -671,7 +677,7 @@ public class MyLocalTonUtils {
         return ValidationParam.builder()
                 .totalNodes(1L) // not used
 //                .validatorNodes(config34.getValidators().getTotal())
-                .blockchainLaunchTime(config12.getEnabledSince())
+                .blockchainLaunchTime(nonNull(config12)?config12.getEnabledSince():null)
                 .startValidationCycle(activeElectionId) // same as config34.getValidators().getSince()
                 .endValidationCycle(activeElectionId + config15.getValidatorsElectedFor())
                 .startElections(activeElectionId - config15.getElectionsStartBefore())
