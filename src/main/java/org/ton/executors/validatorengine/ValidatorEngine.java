@@ -64,7 +64,7 @@ public class ValidatorEngine {
         log.debug("starting validator-engine without params {}", node.getNodeName());
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
-                "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
+                "--verbosity", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
                 "--threads", "4",
                 "--global-config", myGlobalConfig,
                 "--db", node.getTonDbDir(),
