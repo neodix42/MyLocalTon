@@ -57,14 +57,6 @@
         </mac.arm64.ton.binaries.uri>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>objectdb</id>
-            <name>ObjectDB Repository</name>
-            <url>https://m2.objectdb.com</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>com.googlecode.lanterna</groupId>
@@ -227,6 +219,8 @@
         <dependency>
             <groupId>com.objectdb</groupId>
             <artifactId>objectdb</artifactId>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/objectdb-${objectdb.version}.jar</systemPath>
             <version>${objectdb.version}</version>
         </dependency>
         <dependency>
