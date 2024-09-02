@@ -406,30 +406,30 @@
                                     <then>
                                         <echo>"Building MyLocalTon x86-64 ${ton_branch}"</echo>
                                         <get retries="3" src="${linux.amd64.ton.binaries.uri}"
-                                             dest="${project.build.directory}/binaries-linux-x86_64.zip"
+                                             dest="${project.build.directory}/ton-linux-x86_64.zip"
                                              verbose="false"
                                              usetimestamp="true"/>
 
                                         <get retries="3" src="${mac.amd64.ton.binaries.uri}"
-                                             dest="${project.build.directory}/binaries-mac-x86_64.zip"
+                                             dest="${project.build.directory}/ton-mac-x86_64.zip"
                                              verbose="false"
                                              usetimestamp="true"/>
 
 
                                         <get retries="3" src="${win.amd64.ton.binaries.uri}"
-                                             dest="${project.build.directory}/binaries-windows-x86_64.zip"
+                                             dest="${project.build.directory}/ton-windows-x86_64.zip"
                                              verbose="false"
                                              usetimestamp="true"/>
                                     </then>
                                     <else>
                                         <echo>"Building MyLocalTon arm64 ${ton_branch}"</echo>
                                         <get retries="3" src="${linux.arm64.ton.binaries.uri}"
-                                             dest="${project.build.directory}/binaries-linux-arm64.zip"
+                                             dest="${project.build.directory}/ton-linux-arm64.zip"
                                              verbose="false"
                                              usetimestamp="true"/>
 
                                         <get retries="3" src="${mac.arm64.ton.binaries.uri}"
-                                             dest="${project.build.directory}/binaries-mac-arm64.zip"
+                                             dest="${project.build.directory}/ton-mac-arm64.zip"
                                              verbose="false"
                                              usetimestamp="true"/>
                                     </else>
