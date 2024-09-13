@@ -64,6 +64,40 @@ for ARM64 architecture use:
 
 `java -jar MyLocalTon-arm64.jar`
 
+### Parameters
+
+* `nogui` - used to run MyLocalTon without GUI interface. Can be used in Docker or server with headless Java.
+* `ton-http-api` - enables ton-http-api service on start. Runs on port `8081`.
+* `explorer` - enables native ton blockchain explorer on start. Runs on port `8000`.
+* `ip.addr.xxx.xxx` - used to bind specific IP to MyLocalTon instead of 127.0.0.1.
+* `with-validators-N` - used to start MyLocalTon with N additional validators.
+* `debug` - used to start MyLocalTon in debug mode, that produces lots of useful log files.
+
+### Lite-client
+
+MyLocalTon uses deterministic (permanent) private and public keys for lite-server and validator-engine-console access.
+These keys can be found [here](./src/main/resources/org/ton/certs).
+Once MyLocalTon is ready, you can use lite-client with the base64 key:
+
+`lite-client -a 127.0.0.1:4443 -b E7XwFSQzNkcRepUC23J2nRpASXpnsEKmyyHYV4u/FZY= -c last`
+
+or validator-engine-console in this way:
+
+`validator-engine-console -a 127.0.0.1:4441 -k <absolute-path>/myLocalTon/genesis/bin/certs/client -p <absolute-path>/myLocalTon/genesis/bin/certs/server.pub`
+
+### Log files
+
+* **MyLocalTon** log files can be found under `./myLocalTon/MyLocalTon.log`.
+* **validator-engine** log files can be found under `./myLocalTon/genesis/db/log`.
+
+### Reporting an issue
+
+* delete the current folder .`/myLocalTon` next to MyLocalTon*.jar
+* execute `java -jar MyLocalTon*.jar debug`. (`*` replace with architecture and branch if needed)
+* wait till the error appears and shutdown MyLocalTon.
+* then send zipped above log files to Telegram @neodix or attach to issue at GitHub.
+* Thanks for reporting. You are making MyLocalTon better.
+
 ## Upgrade
 
 Today upgrade is not supported, that means once you have a new version of MyLocalTon just overwrite the existing

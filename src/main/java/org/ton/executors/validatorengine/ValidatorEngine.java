@@ -99,8 +99,8 @@ public class ValidatorEngine {
 
             //enable access to full node from validator-engine-console - required if you want to become validator later
             GenerateRandomId generateRandomId = new GenerateRandomId();
-            String serverIdBase64 = generateRandomId.generateServerCertificate(node);
-            generateRandomId.generateClientCertificate(node, serverIdBase64);
+            String serverIdBase64 = generateRandomId.getServerCertificate(node);
+            generateRandomId.getClientCertificate(node, serverIdBase64);
         }
     }
 
@@ -111,7 +111,7 @@ public class ValidatorEngine {
         } else {
             log.info("Enabling lite-server...");
 
-            Pair<String, String> liteServerKeys = new GenerateRandomId().generateLiteServerKeys(node);
+            Pair<String, String> liteServerKeys = new GenerateRandomId().getLiteServerKeys(node);
             String liteServers = "\"liteservers\" : [{\"id\":\"" + liteServerKeys.getRight() + "\",\"port\":\"" + node.getLiteServerPort() + "\"}";
             log.debug("liteservers: {} ", liteServers);
 
@@ -135,9 +135,6 @@ public class ValidatorEngine {
                 //add new lite-server to the global config
                 String existingLiteserver = MyLocalTonUtils.sbb(myGlobalTonConfig, "\"liteservers\":[");
                 liteServerConfigNew = "{\"id\":{\"key\":\"" + liteserverPubkeyBase64 + "\", \"@type\":\"pub.ed25519\"}, \"port\": " + node.getLiteServerPort() + ", \"ip\": " + publicIpNum + "}\n]";
-                //liteServerConfigBoth = StringUtils.substring(existingLiteserver, 0, -1) + "," + liteServerConfigNew;
-                //myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, existingLiteserver, liteServerConfigBoth);
-                //FileUtils.writeStringToFile(new File(myGlobalConfig), myGlobalTonConfigNew, StandardCharsets.UTF_8);
 
                 //replace and create new config
                 myGlobalTonConfigNew = StringUtils.replace(myGlobalTonConfig, existingLiteserver, "[" + liteServerConfigNew);
@@ -352,7 +349,6 @@ public class ValidatorEngine {
             // replace path to validator-key-1.pub in gen-zerostate.fif
             String genZeroStateFif = FileUtils.readFileToString(new File(node.getGenesisGenZeroStateFifLocation()), StandardCharsets.UTF_8);
             String genZeroStateFifNew = StringUtils.replace(genZeroStateFif, "// \"path_to_" + node.getNodeName() + "_pub_key\"", "\"" + node.getValidatorKeyPubLocation() + "\"");
-//            genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), node.getDefaultValidatorStake().min(BigDecimal.ONE).multiply(BigDecimal.valueOf(ONE_BLN)).toString());
             genZeroStateFifNew = StringUtils.replace(genZeroStateFifNew, "initial_stake_" + node.getNodeName(), node.getDefaultValidatorStake().min(BigInteger.ONE).toString());
             FileUtils.writeStringToFile(new File(node.getGenesisGenZeroStateFifLocation()), genZeroStateFifNew, StandardCharsets.UTF_8);
         }

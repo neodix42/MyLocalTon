@@ -7,6 +7,7 @@ import org.ton.settings.Node;
 import org.ton.utils.Extractor;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -47,6 +48,36 @@ public class GenerateRandomId {
         }
     }
 
+    public void getClientCertificate(Node node, String serverIdHuman) throws Exception {
+        // Generating server certificate
+        if (Files.exists(Paths.get(node.getTonBinDir() + "certs" + File.separator + "client"))) {
+            log.info("Found existing client certificate, skipping");
+        } else {
+            log.debug("Getting client certificate for remote control");
+            String clientIdHex = "C0E4A79C30225D8A9864AE03806A0FBF4BD1F988E889C191D1BD78D8681CB0F1";
+            String clientIdBase64 = "wOSnnDAiXYqYZK4DgGoPv0vR+YjoicGR0b142GgcsPE=";
+            log.debug("Generated client private certificate for {}: {} {}", node.getNodeName(), clientIdHex, clientIdBase64);
+
+            InputStream stream = Extractor.class.getClassLoader().getResourceAsStream("org/ton/certs/client");
+            Files.copy(stream, Paths.get(node.getTonBinDir() + "certs" + File.separator + "client"), StandardCopyOption.REPLACE_EXISTING);
+            stream.close();
+
+            stream = Extractor.class.getClassLoader().getResourceAsStream("org/ton/certs/client.pub");
+            Files.copy(stream, Paths.get(node.getTonBinDir() + "certs" + File.separator + "client.pub"), StandardCopyOption.REPLACE_EXISTING);
+            stream.close();
+
+            //Adding client permissions
+            String content = Files.readString(Paths.get(Extractor.MY_LOCAL_TON_ROOT_DIR + "templates" + File.separator + "control.template"), StandardCharsets.UTF_8);
+            String replacedTemplate = StringUtils.replace(content, "CONSOLE-PORT", String.valueOf(node.getConsolePort()));
+            replacedTemplate = StringUtils.replace(replacedTemplate, "SERVER-ID", "\"" + serverIdHuman + "\"");
+            replacedTemplate = StringUtils.replace(replacedTemplate, "CLIENT-ID", "\"" + clientIdBase64 + "\"");
+
+            String configFile = Files.readString(Paths.get(node.getTonDbDir() + "config.json"), StandardCharsets.UTF_8);
+            String configNew = StringUtils.replace(configFile, "\"control\" : [", replacedTemplate);
+            Files.writeString(Paths.get(node.getTonDbDir() + "config.json"), configNew, StandardOpenOption.CREATE);
+        }
+    }
+
     /**
      * Creates server key in db and puts into directory db/keyring/hex.
      */
@@ -68,6 +99,33 @@ public class GenerateRandomId {
         }
     }
 
+    public String getServerCertificate(Node node) throws Exception {
+        // Generating server certificate
+        if (Files.exists(Paths.get(node.getTonBinDir() + "certs" + File.separator + "server"))) {
+            log.info("Found existing server certificate, skipping!");
+            return null;
+        } else {
+            String serverIdHex = "40C90E768C026594EFABA6A190C89AC4DB0B5F08EFC72CA06FD7E7E949A068F1";
+            String serverIdBase64 = "QMkOdowCZZTvq6ahkMiaxNsLXwjvxyygb9fn6UmgaPE=";
+
+            log.debug("Server IDs for {}: {} {}", node.getNodeName(), serverIdHex, serverIdBase64);
+
+            InputStream stream = Extractor.class.getClassLoader().getResourceAsStream("org/ton/certs/server");
+            Files.copy(stream, Paths.get(node.getTonDbKeyringDir() + serverIdHex), StandardCopyOption.REPLACE_EXISTING);
+            stream.close();
+
+            stream = Extractor.class.getClassLoader().getResourceAsStream("org/ton/certs/server");
+            Files.copy(stream, Paths.get(node.getTonBinDir() + "certs" + File.separator + "server"), StandardCopyOption.REPLACE_EXISTING);
+            stream.close();
+
+            stream = Extractor.class.getClassLoader().getResourceAsStream("org/ton/certs/server.pub");
+            Files.copy(stream, Paths.get(node.getTonBinDir() + "certs" + File.separator + "server.pub"), StandardCopyOption.REPLACE_EXISTING);
+            stream.close();
+
+            return serverIdBase64;
+        }
+    }
+
     public Pair<String, String> generateLiteServerKeys(Node node) throws Exception {
         String liteserverKeys = new RandomIdExecutor().execute(node, "-m", "keys", "-n", node.getTonDbKeyringDir() + "liteserver");
         String[] liteServerHexBase64 = liteserverKeys.split(" ");
@@ -76,6 +134,26 @@ public class GenerateRandomId {
         log.debug("liteServerIdHex {}, liteServerIdBase64 {} on {}", liteServerIdHex, liteServerIdBase64, node.getNodeName());
 
         Files.copy(Paths.get(node.getTonDbKeyringDir() + "liteserver"), Paths.get(node.getTonDbKeyringDir() + liteServerIdHex), StandardCopyOption.REPLACE_EXISTING);
+        return Pair.of(liteServerIdHex, liteServerIdBase64);
+    }
+
+    public Pair<String, String> getLiteServerKeys(Node node) throws Exception {
+        String liteServerIdHex = "DA46DE8CCCED9AB6F29447B334636FBE07F7F4CAE6B6833D26AF1240A1BB34B1";
+        String liteServerIdBase64 = "2kbejMztmrbylEezNGNvvgf39MrmtoM9Jq8SQKG7NLE=";
+        log.debug("liteServerIdHex {}, liteServerIdBase64 {} on {}", liteServerIdHex, liteServerIdBase64, node.getNodeName());
+
+        InputStream stream = Extractor.class.getClassLoader().getResourceAsStream("org/ton/certs/liteserver");
+        Files.copy(stream, Paths.get(node.getTonDbKeyringDir() + liteServerIdHex), StandardCopyOption.REPLACE_EXISTING);
+        stream.close();
+
+        stream = Extractor.class.getClassLoader().getResourceAsStream("org/ton/certs/liteserver");
+        Files.copy(stream, Paths.get(node.getTonDbKeyringDir() + "liteserver"), StandardCopyOption.REPLACE_EXISTING);
+        stream.close();
+
+        stream = Extractor.class.getClassLoader().getResourceAsStream("org/ton/certs/liteserver.pub");
+        Files.copy(stream, Paths.get(node.getTonDbKeyringDir() + "liteserver.pub"), StandardCopyOption.REPLACE_EXISTING);
+        stream.close();
+
         return Pair.of(liteServerIdHex, liteServerIdBase64);
     }
 }

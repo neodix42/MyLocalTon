@@ -2121,6 +2121,9 @@ public class MainController implements Initializable {
             String previous = "Previous validators (Public key, ADNL address, weight): " + System.lineSeparator() + config32.getValidators().getValidators().stream().map(i -> i.getPublicKey() + "  " + i.getAdnlAddress() + "  " + i.getWeight()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator() + System.lineSeparator();
             String current = "Current validators: " + System.lineSeparator() + config34.getValidators().getValidators().stream().map(i -> i.getPublicKey() + "  " + i.getAdnlAddress() + "  " + i.getWeight()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator() + System.lineSeparator();
             String next = "Next validators (available only within a Break time): " + System.lineSeparator() + config36.getValidators().getValidators().stream().map(i -> i.getPublicKey() + "  " + i.getAdnlAddress() + "  " + i.getWeight()).collect(Collectors.joining(System.lineSeparator())) + System.lineSeparator();
+            log.debug("previous {}", previous);
+            log.debug("current {}", current);
+            log.debug("next {}", next);
             totalValidators.setTooltip(new Tooltip(previous + current + next));
 
             if (nonNull(v.getBlockchainLaunchTime())) {
@@ -2418,6 +2421,7 @@ public class MainController implements Initializable {
     private void colorValidationTiming(ValidationParam v) {
 
         long currentTime = System.currentTimeMillis() / 1000;
+        log.debug("colorValidationTiming: {}, {}", currentTime, MyLocalTonUtils.toUTC(currentTime));
 
         if (v.getStartValidationCycle() > currentTime) {
             startCycle.setTextFill(Color.GREEN);
