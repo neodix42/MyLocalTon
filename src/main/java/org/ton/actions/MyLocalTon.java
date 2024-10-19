@@ -200,7 +200,7 @@ public class MyLocalTon {
                     try {
 
                         Node node = settings.getNodeByName(nodeName);
-                        ResultLastBlock lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
+                        ResultLastBlock lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
                         if (isNull(lastBlock)) {
                             node.setStatus("not ready");
                             log.info("{} is not ready", nodeName);
@@ -642,8 +642,9 @@ public class MyLocalTon {
                 nodeReapRewardsExecutorService.execute(() -> {
                     Thread.currentThread().setName("MyLocalTon - Reaping rewards by " + nodeName);
                     reap(settings.getNodeByName(nodeName));
-
-                    Platform.runLater(() -> updateReapedValuesTab(node));
+                    if (!GraphicsEnvironment.isHeadless()) {
+                        Platform.runLater(() -> updateReapedValuesTab(node));
+                    }
                 });
                 nodeReapRewardsExecutorService.shutdown();
             }

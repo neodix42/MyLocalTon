@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class BlockchainExplorerExecutor {
@@ -36,7 +37,7 @@ public class BlockchainExplorerExecutor {
 
             pb.directory(new File(new File(binaryPath).getParent()));
             Process p = pb.start();
-
+            p.waitFor(5, TimeUnit.SECONDS);
             Future<String> future = executorService.submit(() -> {
                 try {
                     Thread.currentThread().setName("blockchain-explorer-" + node.getNodeName());
@@ -62,6 +63,8 @@ public class BlockchainExplorerExecutor {
         } catch (final IOException e) {
             log.error(e.getMessage());
             return null;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

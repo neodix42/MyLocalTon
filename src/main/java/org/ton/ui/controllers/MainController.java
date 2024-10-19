@@ -3393,8 +3393,10 @@ public class MainController implements Initializable {
                 mainController.addValidatorBtn.setDisable(true);
 
                 org.ton.settings.Node node = MyLocalTonUtils.getNewNode();
+
                 if (nonNull(node)) {
                     log.info("creating validator {}", node.getNodeName());
+                    node.setTonLogLevel(settings.getGenesisNode().getTonLogLevel());
 
                     //delete unfinished or failed node creation
                     FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));

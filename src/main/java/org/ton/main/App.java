@@ -242,6 +242,7 @@ public class App extends Application {
 
                             //creating additional validator node
                             log.info("creating validator {}", node.getNodeName());
+                            node.setTonLogLevel(settings.getGenesisNode().getTonLogLevel());
 
                             //delete unfinished or failed node creation
                             FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
@@ -259,6 +260,8 @@ public class App extends Application {
             }
         }
 
-        mainController.addValidatorBtn.setDisable(false);
+        if (!GraphicsEnvironment.isHeadless()) {
+            mainController.addValidatorBtn.setDisable(false);
+        }
     }
 }

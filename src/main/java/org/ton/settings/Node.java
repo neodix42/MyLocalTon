@@ -321,5 +321,6 @@ public interface Node {
 
     void setDefaultValidatorStake(BigInteger amount);
 
+    void setTonLogLevel(String logLevel);
 
 }

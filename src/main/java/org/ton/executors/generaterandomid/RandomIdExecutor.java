@@ -9,6 +9,7 @@ import org.ton.settings.Node;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class RandomIdExecutor {
@@ -29,7 +30,7 @@ public class RandomIdExecutor {
 
             pb.directory(new File(new File(binaryPath).getParent()));
             Process p = pb.start();
-
+            p.waitFor(5, TimeUnit.SECONDS);
             String result = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
 
             p.getInputStream().close();
@@ -41,6 +42,8 @@ public class RandomIdExecutor {
         } catch (final IOException e) {
             log.error(e.getMessage());
             return null;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

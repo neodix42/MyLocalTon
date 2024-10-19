@@ -65,6 +65,11 @@ public class ValidatorEngineConsole {
         Pair<Process, Future<String>> result = validatorConsole.execute(node, "-k", node.getTonBinDir() + "certs" + File.separator + "client", "-p", node.getTonBinDir() + "certs" + File.separator + "server.pub", "-v", "0", "-a", node.getPublicIp() + ":" + node.getConsolePort().toString(), "-rc", "newkey");
         log.debug(result.getRight().get());
 
+        if(!result.getRight().get().contains("created new key")) {
+            log.error("validator-engine-console on "+node.getNodeName()+" cannot create new key");
+            throw new Error("validator-engine-console on "+node.getNodeName()+" cannot create new key");
+        }
+
         return result.getRight().get().substring(result.getRight().get().length() - 65).trim();
     }
 
