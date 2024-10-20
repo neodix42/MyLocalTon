@@ -249,7 +249,21 @@ public class App extends Application {
 
                             MyLocalTon.getInstance().createFullnode(node, true, true);
 
+//                            DhtServer newDhtServer = new DhtServer();
+//                            List<String> newDhtNodes = newDhtServer.initDhtServer(node);
+//                            newDhtServer.addDhtNodesToGlobalConfig(newDhtNodes, genesisNode.getNodeGlobalConfigLocation());
+//                            newDhtServer.startDhtServer(node, node.getNodeLocalConfigLocation());
+
                             settings.getActiveNodes().add(node.getNodeName());
+
+//                            for (int x = 2; x <= 7; x++) {
+//                                Node nodeTemp = settings.getNodeByName("node" + x);
+//                                if (settings.getActiveNodes().contains(nodeTemp.getNodeName())) {
+//                                    newDhtServer.copyDhtServersFromGenesisGlobalConfig(nodeTemp.getNodeLocalConfigLocation());
+//                                    newDhtServer.copyDhtServersFromGenesisGlobalConfig(nodeTemp.getNodeGlobalConfigLocation());
+//                                }
+//                            }
+
                             MyLocalTon.getInstance().saveSettingsToGson();
 
                             log.info("Creating new validator controlling smart-contract (wallet) for node {}", node.getNodeName());

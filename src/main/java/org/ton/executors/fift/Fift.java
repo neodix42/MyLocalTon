@@ -210,7 +210,7 @@ public class Fift {
                 signatureFromElectionRequest);
 
         String resultStr = result.getRight().get();
-        log.debug(resultStr); // make debug
+//        log.debug(resultStr); // make debug
 
         resultStr = resultStr.replace("\r\n", SPACE).replace("\n", SPACE);
 

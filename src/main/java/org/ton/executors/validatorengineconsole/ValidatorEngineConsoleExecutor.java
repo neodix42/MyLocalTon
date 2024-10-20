@@ -15,7 +15,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-//@Component
 @Slf4j
 public class ValidatorEngineConsoleExecutor {
 
@@ -41,7 +40,7 @@ public class ValidatorEngineConsoleExecutor {
             p.waitFor(5, TimeUnit.SECONDS);
             Future<String> future = executorService.submit(() -> {
                 try {
-                    Thread.currentThread().setName("validator-engine-console" + node.getNodeName());
+                    Thread.currentThread().setName("validator-engine-console " + node.getNodeName());
 
                     String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
                     log.debug("{} stopped", "validator-engine-console " + node.getNodeName());

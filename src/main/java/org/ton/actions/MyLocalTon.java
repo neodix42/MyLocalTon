@@ -741,7 +741,7 @@ public class MyLocalTon {
 
                     executorService.execute(() -> {
                         Thread.currentThread().setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
-                        log.debug("Get last block");
+//                        log.debug("Get last block");
                         ResultLastBlock lastBlock = LiteClientParser.parseLast(liteClient.executeLast(node));
 //                        MasterChainInfo lastBlockM = tonlib.getLast(); // todo next release
 
@@ -760,7 +760,7 @@ public class MyLocalTon {
                         } else {
                             log.debug("last block is null");
                         }
-                        log.debug("Thread is done {}", Thread.currentThread().getName());
+//                        log.debug("Thread is done {}", Thread.currentThread().getName());
                     });
 
                     executorService.shutdown();
