@@ -47,7 +47,7 @@ public class FiftExecutor {
                     Thread.currentThread().setName("fift-" + node.getNodeName());
 
                     String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-                    log.debug("{} stopped", "fift-" + node.getNodeName());
+//                    log.debug("{} stopped", "fift-" + node.getNodeName());
                     p.getInputStream().close();
                     p.getErrorStream().close();
                     p.getOutputStream().close();

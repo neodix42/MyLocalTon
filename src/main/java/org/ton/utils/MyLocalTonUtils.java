@@ -183,7 +183,7 @@ public class MyLocalTonUtils {
     public static WalletVersion detectWalletVersion(String accountCode, Address address) {
 
         accountCode = Hex.encodeHexString(Base64.decodeBase64(accountCode)).toUpperCase();
-        log.debug("{} detected accountCode {}", address.toString(false), accountCode);
+//        log.debug("{} detected accountCode {}", address.toString(false), accountCode);
 
         WalletVersion walletVersion = null;
 
