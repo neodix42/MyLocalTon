@@ -40,20 +40,20 @@
         <log4j.version>2.17.1</log4j.version>
 
         <linux.amd64.ton.binaries.uri>
-            https://github.com/neodix42/ton-actions/releases/latest/download/ton-linux-x86-64-${ton_branch}.zip
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-native-linux-x86-64-${ton_branch}.zip
         </linux.amd64.ton.binaries.uri>
         <mac.amd64.ton.binaries.uri>
-            https://github.com/neodix42/ton-actions/releases/latest/download/ton-mac-x86-64-${ton_branch}.zip
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-native-mac-x86-64-${ton_branch}.zip
         </mac.amd64.ton.binaries.uri>
         <win.amd64.ton.binaries.uri>
-            https://github.com/neodix42/ton-actions/releases/latest/download/ton-win-x86-64-${ton_branch}.zip
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-native-win-x86-64-${ton_branch}.zip
         </win.amd64.ton.binaries.uri>
 
         <linux.arm64.ton.binaries.uri>
-            https://github.com/neodix42/ton-actions/releases/latest/download/ton-linux-arm64-${ton_branch}.zip
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-native-linux-arm64-${ton_branch}.zip
         </linux.arm64.ton.binaries.uri>
         <mac.arm64.ton.binaries.uri>
-            https://github.com/neodix42/ton-actions/releases/latest/download/ton-mac-arm64-${ton_branch}.zip
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-native-mac-arm64-${ton_branch}.zip
         </mac.arm64.ton.binaries.uri>
     </properties>
 
