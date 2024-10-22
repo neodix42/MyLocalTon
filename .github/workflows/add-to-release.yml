@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release number'
+        description: 'Specify target release'
         required: true
         default: 0
         type: number
   workflow_call:
     inputs:
       tag:
-        description: 'Release number'
+        description: 'Specify target release'
         required: true
         default: 0
         type: number
@@ -56,5 +56,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: artifacts-dev/*.jar
           tag: v${{ inputs.tag }}
-          overwrite: false
+          overwrite: true
           file_glob: true
