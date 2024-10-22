@@ -34,7 +34,7 @@ public class DhtServer {
 
         Pair<Process, Future<String>> dhtServer = new DhtServerExecutor().execute(node,
                 "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                "-t", "4",
+                "-t", "1",
                 "-C", globalConfigFile,
                 "-l", node.getDhtServerDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
                 "-D", node.getDhtServerDir(),
@@ -60,7 +60,7 @@ public class DhtServer {
             log.info("Initializing DHT server on node {}", node.getNodeName()); // creating key in dht-server/keyring/hex and config.json
             Pair<Process, Future<String>> dhtServerInit = new DhtServerExecutor().execute(node,
                     "--verbosity", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                    "--threads", "4",
+                    "--threads", "1",
                     "--global-config", EXAMPLE_GLOBAL_CONFIG,
                     "--logname", node.getDhtServerDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
                     "--db", node.getDhtServerDir(),

@@ -41,7 +41,7 @@ public class ValidatorEngine {
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
                 "--verbosity", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                "--threads", "4",
+                "--threads", "1",
                 "--global-config", myGlobalConfig,
                 "--db", node.getTonDbDir(),
                 "--logname", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
@@ -65,7 +65,7 @@ public class ValidatorEngine {
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
                 "--verbosity", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                "--threads", "4",
+                "--threads", "1",
                 "--global-config", myGlobalConfig,
                 "--db", node.getTonDbDir(),
                 "--logname", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
@@ -100,7 +100,7 @@ public class ValidatorEngine {
             //enable access to full node from validator-engine-console - required if you want to become validator later
             GenerateRandomId generateRandomId = new GenerateRandomId();
             String serverIdBase64 = generateRandomId.getServerCertificate(node);
-            generateRandomId.getClientCertificate(node, serverIdBase64);
+             generateRandomId.getClientCertificate(node, serverIdBase64);
         }
     }
 
