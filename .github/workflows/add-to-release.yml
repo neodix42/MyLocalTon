@@ -1,6 +1,20 @@
-name: Create pre-release
+name: Add to release
 
-on: [ workflow_dispatch ]
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release number'
+        required: true
+        default: 0
+        type: number
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Release number'
+        required: true
+        default: 0
+        type: number
 
 jobs:
   build:
@@ -16,43 +30,31 @@ jobs:
 
       - name: Build x86-64 mainnet
         run: |
-          mkdir artifacts
+          mkdir artifacts-dev
           git fetch -a
           mvn clean compile package -DskipTests
-          cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-x86-64-dev.jar
 
       - name: Build x86-64 testnet
         run: |
           mvn clean compile package -DskipTests -Dton_branch=testnet
-          cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64-testnet.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-x86-64-testnet-dev.jar
 
       - name: Build arm64-aarch64 mainnet
         run: |
           mvn clean compile package -DskipTests -Darch=-aarch64
-          cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-arm64-dev.jar
 
       - name: Build arm64-aarch64 testnet
         run: |
           mvn clean compile package -DskipTests -Dton_branch=testnet -Darch=-aarch64
-          cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-arm64-testnet-dev.jar
 
-      - name: Create pre-release
-        id: create_pre_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: MyLocalTon v${{ github.run_number }}
-          draft: false
-          prerelease: true
-
-      - name: Upload binaries to pre-release
+      - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: artifacts/*.jar
-          tag: v${{ github.run_number }}
-          overwrite: true
+          file: artifacts-dev/*.jar
+          tag: v${{ inputs.tag }}
+          overwrite: false
           file_glob: true
-          prerelease: true
