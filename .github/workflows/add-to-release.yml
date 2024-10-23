@@ -4,17 +4,27 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release number'
+        description: 'Target release'
         required: true
         default: 0
         type: number
+      prefix:
+        description: 'Artifact prefix'
+        required: true
+        default: "dev"
+        type: string
   workflow_call:
     inputs:
       tag:
-        description: 'Release number'
+        description: 'Target release'
         required: true
         default: 0
         type: number
+      prefix:
+        description: 'Artifact prefix'
+        required: true
+        default: "dev"
+        type: string
 
 jobs:
   build:
@@ -33,22 +43,22 @@ jobs:
           mkdir artifacts-dev
           git fetch -a
           mvn clean compile package -DskipTests
-          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-x86-64-dev.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-x86-64-${{ prefix.tag }}.jar
 
       - name: Build x86-64 testnet
         run: |
           mvn clean compile package -DskipTests -Dton_branch=testnet
-          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-x86-64-testnet-dev.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-x86-64-testnet-${{ prefix.tag }}.jar
 
       - name: Build arm64-aarch64 mainnet
         run: |
           mvn clean compile package -DskipTests -Darch=-aarch64
-          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-arm64-dev.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-arm64-${{ prefix.tag }}.jar
 
       - name: Build arm64-aarch64 testnet
         run: |
           mvn clean compile package -DskipTests -Dton_branch=testnet -Darch=-aarch64
-          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-arm64-testnet-dev.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-arm64-testnet-${{ prefix.tag }}.jar
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
@@ -56,5 +66,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: artifacts-dev/*.jar
           tag: v${{ inputs.tag }}
-          overwrite: false
+          overwrite: true
           file_glob: true
