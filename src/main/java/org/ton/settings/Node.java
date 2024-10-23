@@ -24,9 +24,6 @@ public interface Node {
     }
 
     default String getTonBinDir() {
-        if (nonNull(getTonCustomBinDir())) {
-            return getTonCustomBinDir() + File.separator;
-        }
         return CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + this.getNodeName() + File.separator + "bin" + File.separator;
     }
 
@@ -325,8 +322,5 @@ public interface Node {
     void setDefaultValidatorStake(BigInteger amount);
 
     void setTonLogLevel(String logLevel);
-
-    void setTonCustomBinDir(String path);
-    String getTonCustomBinDir();
 
 }

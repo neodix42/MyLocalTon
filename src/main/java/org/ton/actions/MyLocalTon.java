@@ -302,7 +302,7 @@ public class MyLocalTon {
         log.debug("Starting temporary full-node...");
         Process validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig).getLeft();
 
-        log.debug("sleep 5sec");
+        log.debug("sleep 5s");
         Thread.sleep(5000);
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
 
@@ -377,7 +377,12 @@ public class MyLocalTon {
             Thread.sleep(2000);
             myWallet.installWalletSmartContract(fromNode, walletAddress);
         } else {
-            mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            if (!GraphicsEnvironment.isHeadless()) {
+                mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            }
+            else {
+                log.error(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()));
+            }
         }
 
         return walletEntity;
@@ -426,7 +431,12 @@ public class MyLocalTon {
             Thread.sleep(2000);
             myWallet.installWalletSmartContract(fromNode, walletAddress);
         } else {
-            mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            if (!GraphicsEnvironment.isHeadless()) {
+                mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            }
+            else {
+                log.error(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()));
+            }
         }
 
         return walletEntity;

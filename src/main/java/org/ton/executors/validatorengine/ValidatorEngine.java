@@ -292,7 +292,7 @@ public class ValidatorEngine {
 
         MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
-        String genZeroStateFifPath = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + "genesis" + File.separator + "bin" + File.separator + "smartcont" + File.separator + "gen-zerostate.fif";
+        String genZeroStateFifPath = settings.getGenesisNode().getTonBinDir() + File.separator + "smartcont" + File.separator + "gen-zerostate.fif";
         String genZeroStateFif = FileUtils.readFileToString(new File(genZeroStateFifPath), StandardCharsets.UTF_8);
         String genZeroStateFifNew = "";
 

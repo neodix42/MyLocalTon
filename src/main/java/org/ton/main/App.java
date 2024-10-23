@@ -112,9 +112,6 @@ public class App extends Application {
 
         Node genesisNode = settings.getGenesisNode();
         genesisNode.extractBinaries();
-        if (nonNull(settings.getCustomTonBinariesPath())) {
-            genesisNode.setTonCustomBinDir(settings.getCustomTonBinariesPath());
-        }
 
         if (!Arrays.asList(args).isEmpty()) {
             for (String arg : args) {
@@ -246,7 +243,6 @@ public class App extends Application {
                             //creating additional validator node
                             log.info("creating validator {}", node.getNodeName());
                             node.setTonLogLevel(settings.getGenesisNode().getTonLogLevel());
-                            node.setTonCustomBinDir(settings.getGenesisNode().getTonCustomBinDir());
 
                             //delete unfinished or failed node creation
                             FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));

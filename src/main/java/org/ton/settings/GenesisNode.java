@@ -42,7 +42,6 @@ public class GenesisNode implements Serializable, Node {
 
     String tonLogLevel = "INFO";
     public String myLocalTonLogLevel = "INFO";
-    String tonCustomBinDir;
 
     String validatorPrvKeyHex;
     String validatorPrvKeyBase64;
