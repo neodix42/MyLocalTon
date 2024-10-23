@@ -123,6 +123,7 @@ public class MyLocalTonSettings implements Serializable {
     public Map<Long, ValidationParam> elections = new ConcurrentSkipListMap<>();
 
     Boolean veryFirstElections = Boolean.TRUE;
+    String customTonBinariesPath;
 
     //options - account and keys
     @Getter

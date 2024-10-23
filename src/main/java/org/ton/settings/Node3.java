@@ -41,6 +41,7 @@ public class Node3 implements Serializable, Node {
     Long validatorSyncBefore = 3600L; // 1h, initial sync download all blocks for last given seconds default=3600, 1 hour
 
     String tonLogLevel = "ERROR";
+    String tonCustomBinDir;
 
     String validatorMonitoringPubKeyHex;
     String validatorMonitoringPubKeyInteger;

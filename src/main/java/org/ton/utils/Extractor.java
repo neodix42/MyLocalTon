@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.ton.actions.MyLocalTon;
 import org.ton.settings.MyLocalTonSettings;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 public class Extractor {
@@ -58,6 +60,13 @@ public class Extractor {
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "static"));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "keyring"));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "log"));
+                if (nonNull(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath())) {
+                    Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()+ File.separator + "tonlib-keystore"));
+                    Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "wallets"));
+                    Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()+ File.separator + "zerostate"));
+                    Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()+ File.separator + "certs"));
+
+                }
 
 
                 if (SystemUtils.IS_OS_WINDOWS) {
