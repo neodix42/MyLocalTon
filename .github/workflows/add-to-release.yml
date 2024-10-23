@@ -43,22 +43,22 @@ jobs:
           mkdir artifacts-dev
           git fetch -a
           mvn clean compile package -DskipTests
-          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-x86-64-${{ prefix.tag }}.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-x86-64-${{ inputs.prefix }}.jar
 
       - name: Build x86-64 testnet
         run: |
           mvn clean compile package -DskipTests -Dton_branch=testnet
-          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-x86-64-testnet-${{ prefix.tag }}.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-x86-64-testnet-${{ inputs.prefix }}.jar
 
       - name: Build arm64-aarch64 mainnet
         run: |
           mvn clean compile package -DskipTests -Darch=-aarch64
-          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-arm64-${{ prefix.tag }}.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-arm64-${{ inputs.prefix }}.jar
 
       - name: Build arm64-aarch64 testnet
         run: |
           mvn clean compile package -DskipTests -Dton_branch=testnet -Darch=-aarch64
-          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-arm64-testnet-${{ prefix.tag }}.jar
+          cp target/MyLocalTon.jar artifacts-dev/MyLocalTon-arm64-testnet-${{ inputs.prefix }}.jar
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
