@@ -33,7 +33,7 @@
         <jetty.version>11.0.14</jetty.version>
         <jprocesses.version>1.6.5</jprocesses.version>
         <richtextfx.version>0.10.7</richtextfx.version>
-        <ton4j.version>0.7.1</ton4j.version>
+        <ton4j.version>0.7.0</ton4j.version>
         <objectdb.version>2.8.6</objectdb.version>
         <javax.persistence.version>2.1.0</javax.persistence.version>
         <jta.version>1.1</jta.version>
