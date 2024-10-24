@@ -191,8 +191,8 @@ public class ValidatorEngine {
 
         String createStateResult = new CreateStateExecutor().execute(node, node.getTonBinDir() + "smartcont" + File.separator + "gen-zerostate.fif");
 
-        log.debug("creating zero-state output: {}", createStateResult);
-//        log.debug("creating zero-state output");
+//        log.debug("creating zero-state output: {}", createStateResult);
+        log.debug("creating zero-state output");
 
         String mainWalletAddrBoth = sb(createStateResult, "wallet address = ", "(Saving address to file");
         String electorSmcAddrBoth = sb(createStateResult, "elector smart contract address = ", "(Saving address to file");
