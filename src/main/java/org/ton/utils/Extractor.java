@@ -2,19 +2,19 @@ package org.ton.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.ZipFile;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.ton.actions.MyLocalTon;
 import org.ton.settings.MyLocalTonSettings;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Slf4j
 public class Extractor {
@@ -58,6 +58,23 @@ public class Extractor {
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "static"));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "keyring"));
                 Files.createDirectories(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "log"));
+//                if (nonNull(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath())) {
+//                    FileUtils.deleteQuietly(new File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "tonlib-keystore"));
+//                    FileUtils.deleteQuietly(new File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "wallets"));
+//                    FileUtils.deleteQuietly(new File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "zerostate"));
+//                    FileUtils.deleteQuietly(new File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "certs"));
+//                    FileUtils.deleteQuietly(new File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "smartcont" + File.separator + "validator-keys-1.pub"));
+//                    FileUtils.deleteQuietly(new File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "smartcont" + File.separator + "validator-keys-2.pub"));
+//                    FileUtils.deleteQuietly(new File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "smartcont" + File.separator + "validator-keys-3.pub"));
+//                    FileUtils.deleteQuietly(new File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "smartcont" + File.separator + "validator-keys-4.pub"));
+//                    FileUtils.deleteQuietly(new File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "smartcont" + File.separator + "validator-keys-5.pub"));
+//                    FileUtils.deleteQuietly(new File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "smartcont" + File.separator + "validator-keys-6.pub"));
+//
+//                    Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()+ File.separator + "tonlib-keystore"));
+//                    Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "wallets"));
+//                    Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()+ File.separator + "zerostate"));
+//                    Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()+ File.separator + "certs"));
+//                }
 
 
                 if (SystemUtils.IS_OS_WINDOWS) {
@@ -81,30 +98,37 @@ public class Extractor {
 
                 // extract other cross-platform files
                 InputStream readGlobalConfig = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/global.config.json");
+                assert readGlobalConfig != null;
                 Files.copy(readGlobalConfig, Paths.get(MY_LOCAL_TON_ROOT_DIR + TEMPLATES + File.separator + "global.config.json"), StandardCopyOption.REPLACE_EXISTING);
                 readGlobalConfig.close();
 
                 InputStream controlTemlate = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/control.template");
+                assert controlTemlate != null;
                 Files.copy(controlTemlate, Paths.get(MY_LOCAL_TON_ROOT_DIR + TEMPLATES + File.separator + "control.template"), StandardCopyOption.REPLACE_EXISTING);
                 controlTemlate.close();
 
                 InputStream globalConfigTemplate = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/ton-private-testnet.config.json.template");
+                assert globalConfigTemplate != null;
                 Files.copy(globalConfigTemplate, Paths.get(MY_LOCAL_TON_ROOT_DIR + TEMPLATES + File.separator + "ton-private-testnet.config.json.template"), StandardCopyOption.REPLACE_EXISTING);
                 globalConfigTemplate.close();
 
                 InputStream exampleConfigJson = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/example.config.json");
+                assert exampleConfigJson != null;
                 Files.copy(exampleConfigJson, Paths.get(MY_LOCAL_TON_ROOT_DIR + TEMPLATES + File.separator + "example.config.json"), StandardCopyOption.REPLACE_EXISTING);
                 exampleConfigJson.close();
 
                 InputStream dbConfig = Extractor.class.getClassLoader().getResourceAsStream("org/ton/db/objectsdb.conf");
+                assert dbConfig != null;
                 Files.copy(dbConfig, Paths.get(MyLocalTonSettings.DB_DIR + File.separator + "objectsdb.conf"), StandardCopyOption.REPLACE_EXISTING);
                 dbConfig.close();
 
                 InputStream showAddr = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/show-addr.fif");
+                assert showAddr != null;
                 Files.copy(showAddr, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + SMARTCONT + File.separator + "show-addr.fif"), StandardCopyOption.REPLACE_EXISTING);
                 showAddr.close();
 
                 InputStream genZeroStateFif = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/patches/gen-zerostate.fif");
+                assert genZeroStateFif != null;
                 Files.copy(genZeroStateFif, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + SMARTCONT + File.separator + "gen-zerostate.fif"), StandardCopyOption.REPLACE_EXISTING);
                 genZeroStateFif.close();
 
@@ -142,25 +166,51 @@ public class Extractor {
         }
     }
 
+    void copyFolder(Path src, Path dest) {
+        try {
+            Files.walk( src ).forEach( s -> {
+                try {
+                    Path d = dest.resolve( src.relativize(s) );
+                    if( Files.isDirectory( s ) ) {
+                        if( !Files.exists( d ) )
+                            Files.createDirectory( d );
+                        return;
+                    }
+                    Files.copy( s, d );// use flag to override existing
+                } catch( Exception e ) {
+                    e.printStackTrace();
+                }
+            });
+        } catch( Exception ex ) {
+            ex.printStackTrace();
+        }
+    }
+
     private void extractWindowsBinaries() {
         try {
-            log.info("extracting " + WINDOWS_ZIP + " on windows");
-
-            InputStream binaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/" + WINDOWS_ZIP);
-            if (isNull(binaries)) {
-                log.error("MyLocalTon executable does not contain resource " + WINDOWS_ZIP);
-                System.exit(1);
+            if (nonNull(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath())) {
+                log.info("copying binaries from " + MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + " on windows");
+                copyFolder( Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()), Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN));
             }
+            else {
+                log.info("extracting " + WINDOWS_ZIP + " on windows");
 
-            Files.copy(binaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + WINDOWS_ZIP), StandardCopyOption.REPLACE_EXISTING);
-            binaries.close();
-            ZipFile zipFile = new ZipFile(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + WINDOWS_ZIP);
-            zipFile.extractAll(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
-            Files.delete(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + WINDOWS_ZIP));
+                InputStream binaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/" + WINDOWS_ZIP);
+                if (isNull(binaries)) {
+                    log.error("MyLocalTon executable does not contain resource " + WINDOWS_ZIP);
+                    System.exit(1);
+                }
 
+                Files.copy(binaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + WINDOWS_ZIP), StandardCopyOption.REPLACE_EXISTING);
+                binaries.close();
+                ZipFile zipFile = new ZipFile(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + WINDOWS_ZIP);
+                zipFile.extractAll(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
+                Files.delete(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + WINDOWS_ZIP));
+            }
             log.debug("windows binaries path: {}", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
 
             extractWindowsUtils();
+
         } catch (Throwable e) {
             log.error("Cannot extract TON binaries. Error {} ", ExceptionUtils.getStackTrace(e));
             System.exit(44);
@@ -168,16 +218,20 @@ public class Extractor {
     }
 
     private void extractUbuntuBinaries(String platform) {
-        log.info("extracting " + platform + " on linux");
-
         try {
-            InputStream binaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/" + platform + ".zip");
-            Files.copy(binaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform + ".zip"), StandardCopyOption.REPLACE_EXISTING);
-            binaries.close();
-            ZipFile zipFile = new ZipFile(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform + ".zip");
-            zipFile.extractAll(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
-            Files.delete(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform + ".zip"));
-
+            if (nonNull(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath())) {
+                log.info("copying binaries from " + MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + " on ubuntu");
+                copyFolder( Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()), Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN));
+            }
+            else {
+                log.info("extracting " + platform + " on linux");
+                InputStream binaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/" + platform + ".zip");
+                Files.copy(binaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform + ".zip"), StandardCopyOption.REPLACE_EXISTING);
+                binaries.close();
+                ZipFile zipFile = new ZipFile(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform + ".zip");
+                zipFile.extractAll(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
+                Files.delete(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform + ".zip"));
+            }
             new ProcessBuilder("chmod", "755", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "create-hardfork").start();
             new ProcessBuilder("chmod", "755", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "create-state").start();
             new ProcessBuilder("chmod", "755", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "dht-server").start();
@@ -198,15 +252,20 @@ public class Extractor {
     }
 
     private void extractMacBinaries(String platform) {
-        log.info("extracting " + platform + " on macos");
         try {
-            InputStream binaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/" + platform);
-            Files.copy(binaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform), StandardCopyOption.REPLACE_EXISTING);
-            binaries.close();
-            ZipFile zipFile = new ZipFile(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform);
-            zipFile.extractAll(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
-            Files.delete(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform));
-
+            if (nonNull(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath())) {
+                log.info("copying binaries from " + MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + " on mac");
+                copyFolder( Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()), Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN));
+            }
+            else {
+                log.info("extracting " + platform + " on macos");
+                InputStream binaries = Extractor.class.getClassLoader().getResourceAsStream("org/ton/binaries/" + platform);
+                Files.copy(binaries, Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform), StandardCopyOption.REPLACE_EXISTING);
+                binaries.close();
+                ZipFile zipFile = new ZipFile(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform);
+                zipFile.extractAll(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
+                Files.delete(Paths.get(MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + platform));
+            }
             new ProcessBuilder("chmod", "755", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "create-hardfork").start();
             new ProcessBuilder("chmod", "755", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "create-state").start();
             new ProcessBuilder("chmod", "755", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN + File.separator + "dht-server").start();

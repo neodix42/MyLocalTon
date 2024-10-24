@@ -40,20 +40,20 @@
         <log4j.version>2.17.1</log4j.version>
 
         <linux.amd64.ton.binaries.uri>
-            https://cicd.neodix.io/view/pipelines/job/${ton_branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-x86-64-linux-portable.zip
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-linux-x86-64-${ton_branch}.zip
         </linux.amd64.ton.binaries.uri>
         <mac.amd64.ton.binaries.uri>
-            https://cicd.neodix.io/view/pipelines/job/${ton_branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-x86-64-macos-portable.zip
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-mac-x86-64-${ton_branch}.zip
         </mac.amd64.ton.binaries.uri>
         <win.amd64.ton.binaries.uri>
-            https://cicd.neodix.io/view/pipelines/job/${ton_branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-x86-64-windows.zip
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-win-x86-64-${ton_branch}.zip
         </win.amd64.ton.binaries.uri>
 
         <linux.arm64.ton.binaries.uri>
-            https://cicd.neodix.io/view/pipelines/job/${ton_branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-arm64-linux-portable.zip
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-linux-arm64-${ton_branch}.zip
         </linux.arm64.ton.binaries.uri>
         <mac.arm64.ton.binaries.uri>
-            https://cicd.neodix.io/view/pipelines/job/${ton_branch}-pipeline/lastSuccessfulBuild/artifact/artifacts/ton-arm64-macos-portable.zip
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-mac-arm64-${ton_branch}.zip
         </mac.arm64.ton.binaries.uri>
     </properties>
 
@@ -406,147 +406,32 @@
                                     <then>
                                         <echo>"Building MyLocalTon x86-64 ${ton_branch}"</echo>
                                         <get retries="3" src="${linux.amd64.ton.binaries.uri}"
-                                             dest="${project.build.directory}/binaries-linux-x86_64.zip"
+                                             dest="${basedir}/src/main/resources/org/ton/binaries/ton-linux-x86_64.zip"
                                              verbose="false"
                                              usetimestamp="true"/>
-                                        <if>
-                                            <available file="${project.build.directory}/binaries-linux-x86_64"/>
-                                            <then>
-                                            </then>
-                                            <else>
-                                                <unzip src="${project.build.directory}/binaries-linux-x86_64.zip"
-                                                       dest="${project.build.directory}/binaries-linux-x86_64"/>
-                                            </else>
-                                        </if>
 
                                         <get retries="3" src="${mac.amd64.ton.binaries.uri}"
-                                             dest="${project.build.directory}/binaries-mac-x86_64.zip"
+                                             dest="${basedir}/src/main/resources/org/ton/binaries/ton-mac-x86_64.zip"
                                              verbose="false"
                                              usetimestamp="true"/>
-                                        <if>
-                                            <available file="${project.build.directory}/binaries-mac-x86_64"/>
-                                            <then>
-                                            </then>
-                                            <else>
-                                                <unzip src="${project.build.directory}/binaries-mac-x86_64.zip"
-                                                       dest="${project.build.directory}/binaries-mac-x86_64"/>
-                                            </else>
-                                        </if>
 
                                         <get retries="3" src="${win.amd64.ton.binaries.uri}"
-                                             dest="${project.build.directory}/binaries-windows-x86_64.zip"
+                                             dest="${basedir}/src/main/resources/org/ton/binaries/ton-win-x86_64.zip"
                                              verbose="false"
                                              usetimestamp="true"/>
-                                        <if>
-                                            <available file="${project.build.directory}/binaries-windows-x86_64"/>
-                                            <then>
-                                            </then>
-                                            <else>
-                                                <unzip src="${project.build.directory}/binaries-windows-x86_64.zip"
-                                                       dest="${project.build.directory}/binaries-windows-x86_64"/>
-                                            </else>
-                                        </if>
-
-                                        <if>
-                                            <available
-                                                    file="${basedir}/src/main/resources/org/ton/binaries/ton-linux-x86_64.zip"/>
-                                            <then>
-                                            </then>
-                                            <else>
-                                                <zip destfile="${basedir}/src/main/resources/org/ton/binaries/ton-linux-x86_64.zip">
-                                                    <zipfileset filemode="777"
-                                                                dir="${project.build.directory}/binaries-linux-x86_64/"
-                                                                includes="**/*"/>
-                                                </zip>
-                                            </else>
-                                        </if>
-
-                                        <if>
-                                            <available
-                                                    file="${basedir}/src/main/resources/org/ton/binaries/ton-mac-x86_64.zip"/>
-                                            <then>
-                                            </then>
-                                            <else>
-                                                <zip destfile="${basedir}/src/main/resources/org/ton/binaries/ton-mac-x86_64.zip">
-                                                    <zipfileset filemode="777"
-                                                                dir="${project.build.directory}/binaries-mac-x86_64/"
-                                                                includes="**/*"/>
-                                                </zip>
-                                            </else>
-                                        </if>
-
-                                        <if>
-                                            <available
-                                                    file="${basedir}/src/main/resources/org/ton/binaries/ton-win-x86_64.zip"/>
-                                            <then>
-                                            </then>
-                                            <else>
-                                                <zip destfile="${basedir}/src/main/resources/org/ton/binaries/ton-win-x86_64.zip">
-                                                    <zipfileset filemode="777"
-                                                                dir="${project.build.directory}/binaries-windows-x86_64/"
-                                                                includes="**/*"/>
-                                                </zip>
-                                            </else>
-                                        </if>
 
                                     </then>
                                     <else>
                                         <echo>"Building MyLocalTon arm64 ${ton_branch}"</echo>
                                         <get retries="3" src="${linux.arm64.ton.binaries.uri}"
-                                             dest="${project.build.directory}/binaries-linux-arm64.zip"
+                                             dest="${basedir}/src/main/resources/org/ton/binaries//ton-linux-arm64.zip"
                                              verbose="false"
                                              usetimestamp="true"/>
-                                        <if>
-                                            <available file="${project.build.directory}/binaries-linux-arm64"/>
-                                            <then>
-                                            </then>
-                                            <else>
-                                                <unzip src="${project.build.directory}/binaries-linux-arm64.zip"
-                                                       dest="${project.build.directory}/binaries-linux-arm64"/>
-                                            </else>
-                                        </if>
 
                                         <get retries="3" src="${mac.arm64.ton.binaries.uri}"
-                                             dest="${project.build.directory}/binaries-mac-arm64.zip"
+                                             dest="${basedir}/src/main/resources/org/ton/binaries//ton-mac-arm64.zip"
                                              verbose="false"
                                              usetimestamp="true"/>
-                                        <if>
-                                            <available file="${project.build.directory}/binaries-mac-arm64"/>
-                                            <then>
-                                            </then>
-                                            <else>
-                                                <unzip src="${project.build.directory}/binaries-mac-arm64.zip"
-                                                       dest="${project.build.directory}/binaries-mac-arm64"/>
-                                            </else>
-                                        </if>
-
-                                        <if>
-                                            <available
-                                                    file="${basedir}/src/main/resources/org/ton/binaries/ton-linux-arm64.zip"/>
-                                            <then>
-                                            </then>
-                                            <else>
-                                                <zip destfile="${basedir}/src/main/resources/org/ton/binaries/ton-linux-arm64.zip">
-                                                    <zipfileset filemode="777"
-                                                                dir="${project.build.directory}/binaries-linux-arm64/"
-                                                                includes="**/*"/>
-                                                </zip>
-                                            </else>
-                                        </if>
-
-                                        <if>
-                                            <available
-                                                    file="${basedir}/src/main/resources/org/ton/binaries/ton-mac-arm64.zip"/>
-                                            <then>
-                                            </then>
-                                            <else>
-                                                <zip destfile="${basedir}/src/main/resources/org/ton/binaries/ton-mac-arm64.zip">
-                                                    <zipfileset filemode="777"
-                                                                dir="${project.build.directory}/binaries-mac-arm64/"
-                                                                includes="**/*"/>
-                                                </zip>
-                                            </else>
-                                        </if>
 
                                     </else>
                                 </if>

@@ -58,7 +58,7 @@ https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msv
 ## MyLocalTon usage
 
 `java -jar MyLocalTon-x86-64.jar [nogui] [ton-http-api] [explorer] [ip.addr.xxx.xxx] [test-binaries] [test-tonlib
-] [with-validators-N] [debug]`
+] [with-validators-N] [custom-binaries=] [debug]`
 
 for ARM64 architecture use:
 
@@ -71,6 +71,7 @@ for ARM64 architecture use:
 * `explorer` - enables native ton blockchain explorer on start. Runs on port `8000`.
 * `ip.addr.xxx.xxx` - used to bind specific IP to MyLocalTon instead of 127.0.0.1.
 * `with-validators-N` - used to start MyLocalTon with N additional validators.
+* `custom-binaries=absolute-path` - used to start MyLocalTon with custom TON binaries. The folder should contain validator-engine, validator-engine-console, lite-client, fift, func, generate-random-id, create-state, dht-server, tonlibjson, blockchain-explorer binaries and also **smartcont** and lib **folders** in its root folder.
 * `debug` - used to start MyLocalTon in debug mode, that produces lots of useful log files.
 
 ### Lite-client

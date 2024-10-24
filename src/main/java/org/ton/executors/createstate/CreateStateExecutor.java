@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class CreateStateExecutor {
@@ -38,7 +39,7 @@ public class CreateStateExecutor {
             }
             pb.directory(new File(node.getTonBinDir() + "zerostate" + File.separator));
             Process p = pb.start();
-
+            p.waitFor(5, TimeUnit.SECONDS);
             String result = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
 
             p.getInputStream().close();
@@ -50,6 +51,8 @@ public class CreateStateExecutor {
         } catch (IOException e) {
             log.error(e.getMessage());
             return null;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

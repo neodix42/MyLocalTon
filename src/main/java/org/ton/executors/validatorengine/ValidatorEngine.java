@@ -41,7 +41,7 @@ public class ValidatorEngine {
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
                 "--verbosity", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                "--threads", "4",
+                "--threads", "1",
                 "--global-config", myGlobalConfig,
                 "--db", node.getTonDbDir(),
                 "--logname", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
@@ -65,7 +65,7 @@ public class ValidatorEngine {
 
         Pair<Process, Future<String>> validator = new ValidatorEngineExecutor().execute(node,
                 "--verbosity", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                "--threads", "4",
+                "--threads", "1",
                 "--global-config", myGlobalConfig,
                 "--db", node.getTonDbDir(),
                 "--logname", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
@@ -100,7 +100,7 @@ public class ValidatorEngine {
             //enable access to full node from validator-engine-console - required if you want to become validator later
             GenerateRandomId generateRandomId = new GenerateRandomId();
             String serverIdBase64 = generateRandomId.getServerCertificate(node);
-            generateRandomId.getClientCertificate(node, serverIdBase64);
+             generateRandomId.getClientCertificate(node, serverIdBase64);
         }
     }
 
@@ -191,7 +191,8 @@ public class ValidatorEngine {
 
         String createStateResult = new CreateStateExecutor().execute(node, node.getTonBinDir() + "smartcont" + File.separator + "gen-zerostate.fif");
 
-        log.debug("creating zero-state output: {}", createStateResult);
+//        log.debug("creating zero-state output: {}", createStateResult);
+        log.debug("creating zero-state output");
 
         String mainWalletAddrBoth = sb(createStateResult, "wallet address = ", "(Saving address to file");
         String electorSmcAddrBoth = sb(createStateResult, "elector smart contract address = ", "(Saving address to file");
@@ -291,7 +292,7 @@ public class ValidatorEngine {
 
         MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
-        String genZeroStateFifPath = CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + "genesis" + File.separator + "bin" + File.separator + "smartcont" + File.separator + "gen-zerostate.fif";
+        String genZeroStateFifPath = settings.getGenesisNode().getTonBinDir() + File.separator + "smartcont" + File.separator + "gen-zerostate.fif";
         String genZeroStateFif = FileUtils.readFileToString(new File(genZeroStateFifPath), StandardCharsets.UTF_8);
         String genZeroStateFifNew = "";
 

@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static org.ton.main.App.mainController;
 
@@ -52,7 +53,7 @@ public class TonHttpApiExecutor {
             final ProcessBuilder pb = new ProcessBuilder(withBinaryCommand);
 
             Process p = pb.start();
-
+            p.waitFor(5, TimeUnit.SECONDS);
             Future<String> future = executorService.submit(() -> {
                 try {
                     Thread.currentThread().setName("ton-http-api-" + node.getNodeName());
@@ -80,6 +81,8 @@ public class TonHttpApiExecutor {
             log.error(e.getMessage());
             mainController.showErrorMsg("Error starting starting ton-http-api", 5);
             return null;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

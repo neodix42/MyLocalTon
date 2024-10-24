@@ -19,7 +19,7 @@ public class Node5 implements Serializable, Node {
     private static final long serialVersionUID = 1L;
 
     String nodeName = "node5";
-    String publicIp = "127.0.0.5";
+    String publicIp = "127.0.0.1";
     Integer consolePort = 4453;
     Integer publicPort = 4454;
     Integer liteServerPort = 4455;
