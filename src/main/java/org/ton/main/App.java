@@ -242,13 +242,28 @@ public class App extends Application {
 
                             //creating additional validator node
                             log.info("creating validator {}", node.getNodeName());
+                            node.setTonLogLevel(settings.getGenesisNode().getTonLogLevel());
 
                             //delete unfinished or failed node creation
                             FileUtils.deleteQuietly(new File(MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
 
                             MyLocalTon.getInstance().createFullnode(node, true, true);
 
+//                            DhtServer newDhtServer = new DhtServer();
+//                            List<String> newDhtNodes = newDhtServer.initDhtServer(node);
+//                            newDhtServer.addDhtNodesToGlobalConfig(newDhtNodes, genesisNode.getNodeGlobalConfigLocation());
+//                            newDhtServer.startDhtServer(node, node.getNodeLocalConfigLocation());
+
                             settings.getActiveNodes().add(node.getNodeName());
+
+//                            for (int x = 2; x <= 7; x++) {
+//                                Node nodeTemp = settings.getNodeByName("node" + x);
+//                                if (settings.getActiveNodes().contains(nodeTemp.getNodeName())) {
+//                                    newDhtServer.copyDhtServersFromGenesisGlobalConfig(nodeTemp.getNodeLocalConfigLocation());
+//                                    newDhtServer.copyDhtServersFromGenesisGlobalConfig(nodeTemp.getNodeGlobalConfigLocation());
+//                                }
+//                            }
+
                             MyLocalTon.getInstance().saveSettingsToGson();
 
                             log.info("Creating new validator controlling smart-contract (wallet) for node {}", node.getNodeName());
@@ -259,6 +274,8 @@ public class App extends Application {
             }
         }
 
-        mainController.addValidatorBtn.setDisable(false);
+        if (!GraphicsEnvironment.isHeadless()) {
+            mainController.addValidatorBtn.setDisable(false);
+        }
     }
 }

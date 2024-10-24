@@ -3,6 +3,7 @@ package org.ton.main;
 import com.google.common.net.InetAddresses;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ton.actions.MyLocalTon;
 import org.ton.settings.MyLocalTonSettings;
@@ -61,6 +62,12 @@ public class Main {
 
                 if (arg.equalsIgnoreCase("nogui")) {
                     System.setProperty("java.awt.headless", "true");
+                }
+
+                if (arg.contains("custom-binaries")) {
+                    String path = StringUtils.remove(arg, "custom-binaries=");
+                    settings.setCustomTonBinariesPath(path);
+                    log.info("using custom TON binaries at path {}", path);
                 }
 
                 if (arg.equalsIgnoreCase("ton-http-api")) {

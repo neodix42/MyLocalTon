@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class FuncExecutor {
@@ -75,7 +76,7 @@ public class FuncExecutor {
 
             pb.directory(new File(new File(binaryPath).getParent()));
             Process p = pb.start();
-
+            p.waitFor(5, TimeUnit.SECONDS);
             String result = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
 
             p.getInputStream().close();
@@ -87,6 +88,8 @@ public class FuncExecutor {
         } catch (final IOException e) {
             log.error(e.getMessage());
             return null;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

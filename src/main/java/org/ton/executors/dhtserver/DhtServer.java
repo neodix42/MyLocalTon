@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.ton.actions.MyLocalTon;
 import org.ton.executors.generaterandomid.RandomIdExecutor;
 import org.ton.settings.Node;
 import org.ton.utils.MyLocalTonUtils;
@@ -33,7 +34,7 @@ public class DhtServer {
 
         Pair<Process, Future<String>> dhtServer = new DhtServerExecutor().execute(node,
                 "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                "-t", "4",
+                "-t", "1",
                 "-C", globalConfigFile,
                 "-l", node.getDhtServerDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
                 "-D", node.getDhtServerDir(),
@@ -56,13 +57,13 @@ public class DhtServer {
 
             Files.createDirectories(Paths.get(node.getDhtServerDir()));
 
-            log.info("Initializing DHT server"); // creating key in dht-server/keyring/hex and config.json
+            log.info("Initializing DHT server on node {}", node.getNodeName()); // creating key in dht-server/keyring/hex and config.json
             Pair<Process, Future<String>> dhtServerInit = new DhtServerExecutor().execute(node,
-                    "-v", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
-                    "-t", "1",
-                    "-C", EXAMPLE_GLOBAL_CONFIG,
-                    "-l", node.getDhtServerDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
-                    "-D", node.getDhtServerDir(),
+                    "--verbosity", MyLocalTonUtils.getTonLogLevel(node.getTonLogLevel()),
+                    "--threads", "1",
+                    "--global-config", EXAMPLE_GLOBAL_CONFIG,
+                    "--logname", node.getDhtServerDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
+                    "--db", node.getDhtServerDir(),
                     "-I", node.getPublicIp() + ":" + node.getDhtPort());
 
             log.debug("dht-server result: {}", dhtServerInit.getRight().get()); // wait for process to exit
@@ -83,6 +84,17 @@ public class DhtServer {
         }
     }
 
+    public void copyDhtServersFromGenesisGlobalConfig(String myGlobalConfigLocation) throws IOException {
+        String globalConfigContent = FileUtils.readFileToString(new File(MyLocalTon.getInstance().getSettings().getGenesisNode().getNodeGlobalConfigLocation()), StandardCharsets.UTF_8);
+        String myConfigContent = FileUtils.readFileToString(new File(myGlobalConfigLocation), StandardCharsets.UTF_8);
+        log.debug("Replace current list of dht nodes with a new one");
+        String myNodes = MyLocalTonUtils.sbb( myConfigContent, "\"nodes\": [");
+        String globalNodes = MyLocalTonUtils.sbb( globalConfigContent, "\"nodes\": [");
+        String replacedLocalConfig = StringUtils.replace(myConfigContent, myNodes, globalNodes);
+        FileUtils.writeStringToFile(new File(myGlobalConfigLocation), replacedLocalConfig, StandardCharsets.UTF_8);
+//        log.debug("dht-nodes updated: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
+    }
+
     /**
      * Adds dht nodes into "nodes:[]" structure inside my-ton-global.config.json
      *
@@ -101,13 +113,15 @@ public class DhtServer {
             log.debug("Replace NODES placeholder with dht-server entry");
             String replaced = StringUtils.replace(globalConfigContent, "\"nodes\": []", "\"nodes\": [" + String.join(",", dhtNodes) + "]");
             FileUtils.writeStringToFile(new File(myGlobalConfig), replaced, StandardCharsets.UTF_8);
-            log.debug("dht-nodes added: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
+//            log.debug("dht-nodes added {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
+            log.debug("dht-nodes added");
         } else { // modify existing
             log.debug("Replace current list of dht nodes with a new one");
             String existingNodes = MyLocalTonUtils.sbb(globalConfigContent, "\"nodes\": [");
             String replacedLocalConfig = StringUtils.replace(globalConfigContent, existingNodes, StringUtils.substring(existingNodes, 0, -1) + "," + String.join(",", dhtNodes) + "]");
             FileUtils.writeStringToFile(new File(myGlobalConfig), replacedLocalConfig, StandardCharsets.UTF_8);
-            log.debug("dht-nodes updated: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
+//            log.debug("dht-nodes updated: {}", Files.readString(Paths.get(myGlobalConfig), StandardCharsets.UTF_8));
+            log.debug("dht-nodes updated");
         }
     }
 

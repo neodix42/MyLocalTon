@@ -200,7 +200,7 @@ public class MyLocalTon {
                     try {
 
                         Node node = settings.getNodeByName(nodeName);
-                        ResultLastBlock lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
+                        ResultLastBlock lastBlock = LiteClientParser.parseLast(LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
                         if (isNull(lastBlock)) {
                             node.setStatus("not ready");
                             log.info("{} is not ready", nodeName);
@@ -302,7 +302,7 @@ public class MyLocalTon {
         log.debug("Starting temporary full-node...");
         Process validatorProcess = new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig).getLeft();
 
-        log.debug("sleep 5sec");
+        log.debug("sleep 5s");
         Thread.sleep(5000);
         ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
 
@@ -377,7 +377,12 @@ public class MyLocalTon {
             Thread.sleep(2000);
             myWallet.installWalletSmartContract(fromNode, walletAddress);
         } else {
-            mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            if (!GraphicsEnvironment.isHeadless()) {
+                mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            }
+            else {
+                log.error(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()));
+            }
         }
 
         return walletEntity;
@@ -426,7 +431,12 @@ public class MyLocalTon {
             Thread.sleep(2000);
             myWallet.installWalletSmartContract(fromNode, walletAddress);
         } else {
-            mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            if (!GraphicsEnvironment.isHeadless()) {
+                mainController.showErrorMsg(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()), 5);
+            }
+            else {
+                log.error(String.format("Failed to send %s Toncoins to %s", amount, walletAddress.getNonBounceableAddressBase64Url()));
+            }
         }
 
         return walletEntity;
@@ -642,8 +652,9 @@ public class MyLocalTon {
                 nodeReapRewardsExecutorService.execute(() -> {
                     Thread.currentThread().setName("MyLocalTon - Reaping rewards by " + nodeName);
                     reap(settings.getNodeByName(nodeName));
-
-                    Platform.runLater(() -> updateReapedValuesTab(node));
+                    if (!GraphicsEnvironment.isHeadless()) {
+                        Platform.runLater(() -> updateReapedValuesTab(node));
+                    }
                 });
                 nodeReapRewardsExecutorService.shutdown();
             }
@@ -740,7 +751,7 @@ public class MyLocalTon {
 
                     executorService.execute(() -> {
                         Thread.currentThread().setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
-                        log.debug("Get last block");
+//                        log.debug("Get last block");
                         ResultLastBlock lastBlock = LiteClientParser.parseLast(liteClient.executeLast(node));
 //                        MasterChainInfo lastBlockM = tonlib.getLast(); // todo next release
 
@@ -759,7 +770,7 @@ public class MyLocalTon {
                         } else {
                             log.debug("last block is null");
                         }
-                        log.debug("Thread is done {}", Thread.currentThread().getName());
+//                        log.debug("Thread is done {}", Thread.currentThread().getName());
                     });
 
                     executorService.shutdown();

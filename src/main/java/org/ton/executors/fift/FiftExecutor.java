@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class FiftExecutor {
@@ -39,13 +40,14 @@ public class FiftExecutor {
 
             pb.directory(new File(new File(fiftBinaryPath).getParent()));
             Process p = pb.start();
+            p.waitFor(5, TimeUnit.SECONDS);
 
             Future<String> future = executorService.submit(() -> {
                 try {
                     Thread.currentThread().setName("fift-" + node.getNodeName());
 
                     String resultInput = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
-                    log.debug("{} stopped", "fift-" + node.getNodeName());
+//                    log.debug("{} stopped", "fift-" + node.getNodeName());
                     p.getInputStream().close();
                     p.getErrorStream().close();
                     p.getOutputStream().close();
@@ -65,6 +67,8 @@ public class FiftExecutor {
         } catch (final IOException e) {
             log.error(e.getMessage());
             return null;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

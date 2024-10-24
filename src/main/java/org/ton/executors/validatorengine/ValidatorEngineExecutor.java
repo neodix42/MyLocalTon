@@ -12,10 +12,7 @@ import org.ton.utils.MyLocalTonUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 import static org.ton.main.App.mainController;
 
@@ -41,7 +38,7 @@ public class ValidatorEngineExecutor {
 
             pb.directory(new File(new File(binaryPath).getParent()));
             Process p = pb.start();
-
+            p.waitFor(5, TimeUnit.SECONDS);
             CompletableFuture onProcessExit = p.onExit();
 
             onProcessExit.thenAccept(ph -> {
@@ -97,6 +94,8 @@ public class ValidatorEngineExecutor {
         } catch (final IOException e) {
             log.error(e.getMessage());
             return null;
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
