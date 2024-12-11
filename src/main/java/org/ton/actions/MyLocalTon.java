@@ -1096,7 +1096,7 @@ public class MyLocalTon {
 
             concurrentTxsHashMap.put(uniqueKey, lastBlock.getCreatedAt());
 
-            log.debug("showInGuiOnlyUniquShow {}", uniqueKey);
+//            log.debug("showInGuiOnlyUniquShow {}", uniqueKey);
 
             populateTxRowWithData(lastBlock.getShortBlockSeqno(), tx, txDetails, txRow, txE);
 
@@ -1228,13 +1228,18 @@ public class MyLocalTon {
             msg = msg.substring(4);
 
             if (StringUtils.isAlphanumericSpace(msg) || StringUtils.isAsciiPrintable(msg)) {
-                txRow.lookup("#txMsgBtn").setVisible(true);
-                txRow.lookup("#txMsgBtn").setUserData(msg);
+                javafx.scene.Node txMsgBtn = (javafx.scene.Node) txRow.lookup("#txMsgBtn");
+                if (nonNull(txMsgBtn)) {
+                    txMsgBtn.setVisible(true);
+                    txMsgBtn.setUserData(msg);
 
-                txRow.lookup("#txMsgBtn").setOnMouseClicked(mouseEvent -> {
-                    log.info("in msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), txRow.lookup("#txMsgBtn").getUserData());
-                    mainController.showMessage(String.valueOf(txRow.lookup("#txMsgBtn").getUserData()));
-                });
+                    txMsgBtn.setOnMouseClicked(mouseEvent -> {
+                        log.info("in msg btn clicked on block {}, {}", ((Label) txRow.lookup("#block")).getText(), txRow.lookup("#txMsgBtn").getUserData());
+                        mainController.showMessage(String.valueOf(txRow.lookup("#txMsgBtn").getUserData()));
+                    });
+                } else {
+                    log.error("cannot get txMsgBtn");
+                }
             }
         }
     }
