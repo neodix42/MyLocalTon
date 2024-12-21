@@ -60,7 +60,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.util.Strings;
-import org.ton.db.DbPool;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
@@ -1827,7 +1826,7 @@ public class MyLocalTon {
                 .roothash(lastBlock.getRootHash())
                 .build();
 
-        DbPool.blockQueue.add(block);
+        App.dbPool.insertBlock(block);
     }
 
     public void runAccountsMonitor() {

@@ -1,6 +1,7 @@
 package org.ton.db;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -8,11 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -63,8 +62,6 @@ public class DbPool {
     public static final String HASH = "hash";
 
     public static final String TOO_MANY_PERSISTENT_OBJECTS_1000000 = "Too many persistent objects (>1000000)";
-    public static final BlockingQueue<BlockEntity> blockQueue = new LinkedBlockingQueue<>();
-    public static final ScheduledExecutorService flushExecutor = Executors.newSingleThreadScheduledExecutor();
     private final AtomicBoolean spawned = new AtomicBoolean(false);
     private final MyLocalTonSettings settings;
     private final Map<String, String> poolInSettings;
@@ -93,7 +90,6 @@ public class DbPool {
         this.poolInSettings = settings.getDbPool();
         this.allDBs = new ArrayList<>();
 
-        scheduleTxAndBlockDbInsert();
         //pick active db
         for (Map.Entry<String, String> entry : poolInSettings.entrySet()) {
             DB2 db = new DB2(entry.getKey());
@@ -107,24 +103,6 @@ public class DbPool {
             spawnNewDb();
             spawned.set(false);
         }
-    }
-
-    private void scheduleTxAndBlockDbInsert() {
-        flushExecutor.scheduleWithFixedDelay(() -> {
-            try {
-                List<BlockEntity> blocks = new ArrayList<>();
-                blockQueue.drainTo(blocks);
-
-                if (!blocks.isEmpty()) {
-                    for (BlockEntity block : blocks) {
-                        insertBlock(block);
-                    }
-                    log.debug("Inserted {} blocks into DB", blocks.size());
-                }
-            } catch (Exception e) {
-                log.error("Error while flushing blocks to DB: {}", e.getMessage(), e);
-            }
-        }, 0, 3, TimeUnit.SECONDS);
     }
 
     private void spawnNewDb() {
@@ -162,6 +140,7 @@ public class DbPool {
      */
     public WalletEntity findWallet(WalletPk walletPk) {
 
+        WalletEntity result = null;
         WalletEntity cachedWallet = walletCache.getIfPresent(walletPk);
         if (cachedWallet != null) {
             log.debug("Wallet {} found in cache", cachedWallet);
@@ -177,9 +156,17 @@ public class DbPool {
                                 .build());
                 callablesList.add(callable);
             }
+            List<Future<WalletCallbackParam>> futures = ForkJoinPool.commonPool()
+                .invokeAll(callablesList);
 
-            WalletCallbackParam resultParam = ForkJoinPool.commonPool().invokeAny(callablesList);
-            return resultParam.getFoundWallet();
+            for (Future<WalletCallbackParam> future : futures) {
+                WalletEntity wallet = future.get().getFoundWallet(); // pick any wallet
+                if (nonNull(wallet)) {
+                    result = wallet;
+                }
+            }
+
+            return result;
         } catch (Exception e) {
             log.error("Error findWallet(), {}", e.getMessage(), e);
             return null;
@@ -187,7 +174,7 @@ public class DbPool {
     }
 
     public TxEntity findTx(TxPk txPk) {
-
+        TxEntity result = null;
         TxEntity cachedTx = txCache.getIfPresent(txPk);
         if (cachedTx != null) {
             log.debug("Tx {} found in cache", cachedTx);
@@ -201,8 +188,17 @@ public class DbPool {
                 callablesList.add(callable);
             }
 
-            TxCallbackParam resultParam = ForkJoinPool.commonPool().invokeAny(callablesList);
-            return resultParam.getFoundTx();
+            List<Future<TxCallbackParam>> futures = ForkJoinPool.commonPool()
+                .invokeAll(callablesList);
+
+            for (Future<TxCallbackParam> future : futures) {
+                TxEntity tx = future.get().getFoundTx(); // pick any wallet
+                if (nonNull(tx)) {
+                    result = tx;
+                }
+            }
+
+            return result;
         } catch (Exception e) {
             log.error("Error findTx(), {}", e.getMessage(), e);
             return null;
@@ -210,7 +206,7 @@ public class DbPool {
     }
 
     public BlockEntity findBlock(BlockPk blockPk) {
-
+        BlockEntity result = null;
         BlockEntity cachedBlock = blockCache.getIfPresent(blockPk);
         if (cachedBlock != null) {
             log.debug("Block {} found in cache", blockPk);
@@ -224,8 +220,17 @@ public class DbPool {
                 callablesList.add(callable);
             }
 
-            BlockCallbackParam resultParam = ForkJoinPool.commonPool().invokeAny(callablesList);
-            return resultParam.getFoundBlock();
+            List<Future<BlockCallbackParam>> futures = ForkJoinPool.commonPool()
+                .invokeAll(callablesList);
+
+            for (Future<BlockCallbackParam> future : futures) {
+                BlockEntity block = future.get().getFoundBlock(); // pick any wallet
+                if (nonNull(block)) {
+                    result = block;
+                }
+            }
+
+            return result;
         } catch (Exception e) {
             log.error("Error findBlock(), {}", e.getMessage(), e);
             return null;
@@ -374,6 +379,7 @@ public class DbPool {
     // blocks
     public List<BlockEntity> loadBlocksBefore(long datetimeFrom) {
 
+        List<BlockEntity> result = new ArrayList<>();
         try {
             List<FindBlocksCallable> callablesList = new ArrayList<>();
             for (DB2 db : allDBs) {
@@ -381,9 +387,17 @@ public class DbPool {
                 callablesList.add(callable);
             }
 
-            BlockCallbackParam resultParam = ForkJoinPool.commonPool().invokeAny(callablesList);
+            List<Future<BlockCallbackParam>> futures = ForkJoinPool.commonPool()
+                .invokeAll(callablesList);
 
-            return resultParam.getFoundBlocks();
+            for (Future<BlockCallbackParam> future : futures) {
+                List<BlockEntity> block = future.get().getFoundBlocks();
+                if (nonNull(block)) {
+                    result = block;
+                }
+            }
+
+            return result;
         } catch (Exception e) {
             log.error("Error loadBlocksBefore(), {}", e.getMessage());
             return null;
@@ -400,8 +414,17 @@ public class DbPool {
                 callablesList.add(callable);
             }
 
-            TxCallbackParam resultParam = ForkJoinPool.commonPool().invokeAny(callablesList);
-            return resultParam.getFoundTxs();
+            List<Future<TxCallbackParam>> futures = ForkJoinPool.commonPool()
+                .invokeAll(callablesList);
+
+            for (Future<TxCallbackParam> future : futures) {
+                List<TxEntity> tx = future.get().getFoundTxs();
+                if (nonNull(tx)) {
+                    result = tx;
+                }
+            }
+
+            return result;
         } catch (Exception e) {
             log.error("Error loadTxsBefore(), {}", e.getMessage());
             return null;
@@ -433,6 +456,7 @@ public class DbPool {
     }
 
     public List<WalletEntity> getAllWallets() {
+        List<WalletEntity> result = new ArrayList<>();
         try {
             List<GetWalletsCallable> callablesList = new ArrayList<>();
             for (DB2 db : allDBs) {
@@ -440,8 +464,17 @@ public class DbPool {
                 callablesList.add(callable);
             }
 
-            WalletCallbackParam resultParam = ForkJoinPool.commonPool().invokeAny(callablesList);
-            return resultParam.getFoundWallets();
+            List<Future<WalletCallbackParam>> futures = ForkJoinPool.commonPool()
+                .invokeAll(callablesList);
+
+            for (Future<WalletCallbackParam> future : futures) {
+                List<WalletEntity> wallets = future.get().getFoundWallets();
+                if (!wallets.isEmpty()) {
+                    result.addAll(wallets);
+                }
+            }
+
+            return result;
         } catch (Exception e) {
             //log.error("Error getAllWallets(), {}" + e.getMessage());
             return new ArrayList<>();
@@ -520,8 +553,17 @@ public class DbPool {
                 callablesList.add(callable);
             }
 
-            BlockCallbackParam resultParam = ForkJoinPool.commonPool().invokeAny(callablesList);
-            return resultParam.getFoundBlocks();
+            List<Future<BlockCallbackParam>> futures = ForkJoinPool.commonPool()
+                .invokeAll(callablesList);
+
+            for (Future<BlockCallbackParam> future : futures) {
+                List<BlockEntity> blocks = future.get().getFoundBlocks();
+                if (!blocks.isEmpty()) {
+                    result.addAll(blocks);
+                }
+            }
+
+            return result;
         } catch (Exception e) {
             log.error("Error searchBlocks(), {}", e.getMessage());
             return result;
@@ -543,9 +585,17 @@ public class DbPool {
                 callablesList.add(callable);
             }
 
-            WalletCallbackParam resultParam = ForkJoinPool.commonPool().invokeAny(callablesList);
+            List<Future<WalletCallbackParam>> futures = ForkJoinPool.commonPool()
+                .invokeAll(callablesList);
 
-            return resultParam.getFoundWallets();
+            for (Future<WalletCallbackParam> future : futures) {
+                List<WalletEntity> wallets = future.get().getFoundWallets();
+                if (!wallets.isEmpty()) {
+                    result.addAll(wallets);
+                }
+            }
+
+            return result;
         } catch (Exception e) {
             log.error("Error searchAccounts(), {}", e.getMessage());
             return result;
@@ -567,8 +617,17 @@ public class DbPool {
                 callablesList.add(callable);
             }
 
-            TxCallbackParam resultParam = ForkJoinPool.commonPool().invokeAny(callablesList);
-            return resultParam.getFoundTxs();
+            List<Future<TxCallbackParam>> futures = ForkJoinPool.commonPool()
+                .invokeAll(callablesList);
+
+            for (Future<TxCallbackParam> future : futures) {
+                List<TxEntity> wallets = future.get().getFoundTxs();
+                if (!wallets.isEmpty()) {
+                    result.addAll(wallets);
+                }
+            }
+
+            return result;
         } catch (Exception e) {
             log.error("Error searchTxs(), {}", e.getMessage());
             return result;

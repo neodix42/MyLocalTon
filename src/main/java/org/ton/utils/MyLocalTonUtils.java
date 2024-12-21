@@ -68,7 +68,6 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.jutils.jprocesses.JProcesses;
 import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
-import org.ton.db.DbPool;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.enums.LiteClientEnum;
@@ -375,7 +374,6 @@ public class MyLocalTonUtils {
 
             if (Main.appActive.get()) {
                 log.debug("Do shutdown");
-                DbPool.flushExecutor.shutdown();
 
                 Main.appActive.set(false);
 
