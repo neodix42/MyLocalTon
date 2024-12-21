@@ -1,5 +1,13 @@
 package org.ton.executors.liteclient;
 
+import static java.util.Objects.isNull;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -8,16 +16,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.ton.enums.LiteClientEnum;
 import org.ton.main.Main;
 import org.ton.settings.Node;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import static java.util.Objects.isNull;
 
 @Slf4j
 public class LiteClientExecutor {
@@ -66,14 +64,12 @@ public class LiteClientExecutor {
             if (Main.appActive.get()) {
                 log.debug("execute: {}", String.join(" ", withBinaryCommand));
 
-                ExecutorService executorService = Executors.newSingleThreadExecutor();
-
                 final ProcessBuilder pb = new ProcessBuilder(withBinaryCommand).redirectErrorStream(true);
 
                 pb.directory(new File(new File(binaryPath).getParent()));
                 Process p = pb.start();
                 p.waitFor(5, TimeUnit.SECONDS);
-                Future<String> future = executorService.submit(() -> {
+                Future<String> future = ForkJoinPool.commonPool().submit(() -> {
                     try {
                         Thread.currentThread().setName("lite-client-" + node.getNodeName());
 
@@ -89,8 +85,6 @@ public class LiteClientExecutor {
                         return null;
                     }
                 });
-
-                executorService.shutdown();
 
                 return Pair.of(p, future);
             }

@@ -1,8 +1,13 @@
 package org.ton.ui.custom.layout;
 
+import static org.ton.ui.custom.events.CustomEventBus.emit;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
+import java.net.URL;
+import java.util.ResourceBundle;
+import java.util.concurrent.ForkJoinPool;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -17,13 +22,6 @@ import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.ui.custom.events.event.CustomNotificationEvent;
-
-import java.net.URL;
-import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static org.ton.ui.custom.events.CustomEventBus.emit;
 
 public class AccountsCreatePaneController implements Initializable {
 
@@ -79,8 +77,7 @@ public class AccountsCreatePaneController implements Initializable {
         emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Creating new wallet...", 3));
         emit(new CustomActionEvent(CustomEvent.Type.DIALOG_CREATE_CLOSE));
 
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.submit(() -> {
+      ForkJoinPool.commonPool().submit(() -> {
             Thread.currentThread().setName("Create new wallet");
             try {
                 long chain = Long.parseLong(StringUtils.isEmpty(workchain.getText()) ? String.valueOf(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultWorkChain()) : workchain.getText());

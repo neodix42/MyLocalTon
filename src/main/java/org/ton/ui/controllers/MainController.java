@@ -1,10 +1,45 @@
 package org.ton.ui.controllers;
 
-import com.jfoenix.controls.*;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
+import static org.ton.main.App.mainController;
+import static org.ton.ui.custom.events.CustomEventBus.emit;
+import static org.ton.ui.custom.events.CustomEventBus.listenFor;
+
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXCheckBox;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXTabPane;
+import com.jfoenix.controls.JFXTextField;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 import javafx.application.HostServices;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -14,9 +49,20 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -44,7 +90,14 @@ import org.ton.enums.LiteClientEnum;
 import org.ton.executors.blockchainexplorer.BlockchainExplorer;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.*;
+import org.ton.executors.liteclient.api.BlockShortSeqno;
+import org.ton.executors.liteclient.api.LiteClientAccountState;
+import org.ton.executors.liteclient.api.ResultConfig32;
+import org.ton.executors.liteclient.api.ResultConfig34;
+import org.ton.executors.liteclient.api.ResultConfig36;
+import org.ton.executors.liteclient.api.ResultLastBlock;
+import org.ton.executors.liteclient.api.ResultListBlockTransactions;
+import org.ton.executors.liteclient.api.ResultListParticipants;
 import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.executors.liteclient.api.config.Validator;
 import org.ton.executors.tonhttpapi.TonHttpApi;
@@ -52,7 +105,14 @@ import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.java.utils.Utils;
 import org.ton.main.App;
 import org.ton.parameters.ValidationParam;
-import org.ton.settings.*;
+import org.ton.settings.GenesisNode;
+import org.ton.settings.MyLocalTonSettings;
+import org.ton.settings.Node2;
+import org.ton.settings.Node3;
+import org.ton.settings.Node4;
+import org.ton.settings.Node5;
+import org.ton.settings.Node6;
+import org.ton.settings.Node7;
 import org.ton.ui.custom.control.CustomComboBox;
 import org.ton.ui.custom.control.CustomInfoLabel;
 import org.ton.ui.custom.control.CustomTextField;
@@ -60,36 +120,12 @@ import org.ton.ui.custom.events.CustomEvent;
 import org.ton.ui.custom.events.event.CustomActionEvent;
 import org.ton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.ui.custom.events.event.CustomSearchEvent;
-import org.ton.ui.custom.layout.*;
+import org.ton.ui.custom.layout.AccountsCreatePaneController;
+import org.ton.ui.custom.layout.ConfirmPaneController;
+import org.ton.ui.custom.layout.CustomLoadingPaneController;
+import org.ton.ui.custom.layout.CustomMainLayout;
+import org.ton.ui.custom.layout.SendCoinPaneController;
 import org.ton.utils.MyLocalTonUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.ton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
-import static org.ton.main.App.mainController;
-import static org.ton.ui.custom.events.CustomEventBus.emit;
-import static org.ton.ui.custom.events.CustomEventBus.listenFor;
 
 @Slf4j
 public class MainController implements Initializable {
@@ -971,7 +1007,7 @@ public class MainController implements Initializable {
         try {
             parent = loader.load();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
         SendCoinPaneController controller = loader.getController();
@@ -1408,23 +1444,48 @@ public class MainController implements Initializable {
 
         mainLayout.getSearchBar().getTextField().setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
-                log.debug("search for {}", mainLayout.getSearchBar().getSearchText());
+                String searchFor = mainLayout.getSearchBar().getSearchText();
+                log.debug("search for {}", searchFor);
 
                 foundBlockslistviewid.getItems().clear();
                 foundTxsvboxid.getItems().clear();
                 foundAccountsvboxid.getItems().clear();
 
-                String searchFor = mainLayout.getSearchBar().getSearchText();
+                Task<Void> searchTask = new Task<>() {
+                    private List<BlockEntity> foundBlocksEntities;
+                    private List<TxEntity> foundTxsEntities;
+                    private List<WalletEntity> foundAccountsEntities;
 
-                List<BlockEntity> foundBlocksEntities = App.dbPool.searchBlocks(searchFor);
-                MyLocalTon.getInstance().showFoundBlocksInGui(foundBlocksEntities, searchFor);
+                    @Override
+                    protected Void call() throws Exception {
+                        foundBlocksEntities = App.dbPool.searchBlocks(searchFor);
+                        foundTxsEntities = App.dbPool.searchTxs(searchFor);
+                        foundAccountsEntities = App.dbPool.searchAccounts(searchFor);
+                        return null;
+                    }
 
-                List<TxEntity> foundTxsEntities = App.dbPool.searchTxs(searchFor);
-                MyLocalTon.getInstance().showFoundTxsInGui(null, foundTxsEntities, searchFor, "");
+                    @Override
+                    protected void succeeded() {
+                        Platform.runLater(() -> {
+                            MyLocalTon instance = MyLocalTon.getInstance();
 
-                List<WalletEntity> foundAccountsEntities = App.dbPool.searchAccounts(searchFor);
-                MyLocalTon.getInstance().showFoundAccountsInGui(foundAccountsEntities, searchFor);
-                Platform.runLater(() -> emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SHOW)));
+                            instance.showFoundBlocksInGui(foundBlocksEntities, searchFor);
+                            instance.showFoundTxsInGui(null, foundTxsEntities, searchFor, "");
+                            instance.showFoundAccountsInGui(foundAccountsEntities, searchFor);
+
+                            emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_SHOW));
+                        });
+                    }
+
+                    @Override
+                    protected void failed() {
+                        log.error("Search task failed", getException());
+                    }
+                };
+
+                Thread searchThread = new Thread(searchTask);
+                searchThread.setDaemon(true);
+                searchThread.start();
             }
         });
 
@@ -1677,8 +1738,26 @@ public class MainController implements Initializable {
 
     public void showAccTxs(String hexAddr) {
         foundAccountsTxsvboxid.getItems().clear();
-        List<TxEntity> foundAccountTxsEntities = App.dbPool.searchTxs(hexAddr);
-        MyLocalTon.getInstance().showFoundTxsInGui(foundAccountsTxsvboxid, foundAccountTxsEntities, hexAddr, hexAddr);
+
+        CompletableFuture.supplyAsync(() -> App.dbPool.searchTxs(hexAddr),
+                ForkJoinPool.commonPool())
+            .thenAccept(foundAccountTxsEntities -> {
+                Platform.runLater(() -> {
+                    MyLocalTon.getInstance().showFoundTxsInGui(
+                        foundAccountsTxsvboxid,
+                        foundAccountTxsEntities,
+                        hexAddr,
+                        hexAddr
+                    );
+                });
+            })
+            .exceptionally(ex -> {
+                log.error("Error occurred during search of account transactions", ex);
+                Platform.runLater(
+                    () -> App.mainController.showErrorMsg("Error searching account transactions",
+                        3));
+                return null;
+            });
     }
 
     public void saveSettings() {
@@ -3384,9 +3463,7 @@ public class MainController implements Initializable {
 
     public void createNewNodeBtn() {
 
-        ExecutorService newNodeExecutorService = Executors.newSingleThreadExecutor();
-
-        newNodeExecutorService.execute(() -> {
+        ForkJoinPool.commonPool().execute(() -> {
             Thread.currentThread().setName("MyLocalTon - Creating validator");
 
             try {
@@ -3428,7 +3505,6 @@ public class MainController implements Initializable {
             }
 
         });
-        newNodeExecutorService.shutdown();
     }
 
     public void deleteValidator2Btn() {

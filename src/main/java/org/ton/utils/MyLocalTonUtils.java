@@ -1,9 +1,55 @@
 package org.ton.utils;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.ton.actions.MyLocalTon.getInstance;
+import static org.ton.executors.liteclient.LiteClientParser.CLOSE;
+import static org.ton.executors.liteclient.LiteClientParser.OPEN;
+import static org.ton.executors.liteclient.LiteClientParser.sb;
+import static org.ton.main.App.fxmlLoader;
+import static org.ton.main.App.mainController;
+import static org.ton.settings.MyLocalTonSettings.SETTINGS_FILE;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.security.CodeSource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
@@ -22,13 +68,24 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.jutils.jprocesses.JProcesses;
 import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
+import org.ton.db.DbPool;
 import org.ton.db.entities.WalletEntity;
 import org.ton.db.entities.WalletPk;
 import org.ton.enums.LiteClientEnum;
 import org.ton.executors.fift.Fift;
 import org.ton.executors.liteclient.LiteClient;
 import org.ton.executors.liteclient.LiteClientParser;
-import org.ton.executors.liteclient.api.*;
+import org.ton.executors.liteclient.api.ResultConfig0;
+import org.ton.executors.liteclient.api.ResultConfig1;
+import org.ton.executors.liteclient.api.ResultConfig12;
+import org.ton.executors.liteclient.api.ResultConfig15;
+import org.ton.executors.liteclient.api.ResultConfig17;
+import org.ton.executors.liteclient.api.ResultConfig2;
+import org.ton.executors.liteclient.api.ResultConfig32;
+import org.ton.executors.liteclient.api.ResultConfig34;
+import org.ton.executors.liteclient.api.ResultConfig36;
+import org.ton.executors.liteclient.api.ResultLastBlock;
+import org.ton.executors.liteclient.api.ResultListParticipants;
 import org.ton.java.address.Address;
 import org.ton.java.smartcontract.types.WalletCodes;
 import org.ton.java.smartcontract.types.WalletVersion;
@@ -39,46 +96,17 @@ import org.ton.main.App;
 import org.ton.main.Main;
 import org.ton.parameters.SendToncoinsParam;
 import org.ton.parameters.ValidationParam;
-import org.ton.settings.*;
+import org.ton.settings.GenesisNode;
+import org.ton.settings.MyLocalTonSettings;
+import org.ton.settings.Node;
+import org.ton.settings.Node2;
+import org.ton.settings.Node3;
+import org.ton.settings.Node4;
+import org.ton.settings.Node5;
+import org.ton.settings.Node6;
+import org.ton.settings.Node7;
 import org.ton.ui.controllers.MainController;
 import org.ton.wallet.MyWallet;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.security.CodeSource;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.ton.actions.MyLocalTon.getInstance;
-import static org.ton.executors.liteclient.LiteClientParser.*;
-import static org.ton.main.App.fxmlLoader;
-import static org.ton.main.App.mainController;
-import static org.ton.settings.MyLocalTonSettings.SETTINGS_FILE;
 
 @Slf4j
 public class MyLocalTonUtils {
@@ -347,6 +375,7 @@ public class MyLocalTonUtils {
 
             if (Main.appActive.get()) {
                 log.debug("Do shutdown");
+                DbPool.flushExecutor.shutdown();
 
                 Main.appActive.set(false);
 
@@ -784,9 +813,7 @@ public class MyLocalTonUtils {
 
     public static void saveSettingsToGson(MyLocalTonSettings settings) {
         try {
-            ExecutorService service = Executors.newSingleThreadExecutor();
-            service.submit(() -> saveSettingsToGsonSynchronized(settings));
-            service.shutdown();
+            ForkJoinPool.commonPool().submit(() -> saveSettingsToGsonSynchronized(settings));
             Thread.sleep(30);
         } catch (Exception e) {
             log.error("Cannot save settings. Error:  {}", e.getMessage());
