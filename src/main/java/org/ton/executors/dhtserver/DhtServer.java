@@ -137,12 +137,9 @@ public class DhtServer {
         for (String file : keyFiles) {
             if (file.length() == 64) { //take only hash files
                 log.debug("found keyring file {}", file);
-
-                if (SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX) {
-                    dhtNodes.add(new RandomIdExecutor().execute(node, "-m", "dht", "-k", node.getDhtServerKeyringDir() + file, "-a", "\"{\\\"@type\\\": \\\"adnl.addressList\\\",  \\\"addrs\\\":[{\\\"@type\\\": \\\"adnl.address.udp\\\", \\\"ip\\\": " + publicIpNum + ", \\\"port\\\": " + node.getDhtPort() + " } ], \\\"version\\\": 0, \\\"reinit_date\\\": 0, \\\"priority\\\": 0, \\\"expire_at\\\": 0}\""));
-                } else {
-                    dhtNodes.add(new RandomIdExecutor().execute(node, "-m", "dht", "-k", node.getDhtServerKeyringDir() + file, "-a", "{\"@type\": \"adnl.addressList\", \"addrs\":[{\"@type\": \"adnl.address.udp\", \"ip\": " + publicIpNum + ", \"port\": " + node.getDhtPort() + " } ], \"version\": 0, \"reinit_date\": 0, \"priority\": 0, \"expire_at\": 0}"));
-                }
+                File tempFile = new File(node.getDhtServerDir()+"adnl_list_tmp.txt");
+                FileUtils.writeStringToFile(tempFile, "{\"@type\": \"adnl.addressList\", \"addrs\":[{\"@type\": \"adnl.address.udp\", \"ip\": " + publicIpNum + ", \"port\": " + node.getDhtPort() + " } ], \"version\": 0, \"reinit_date\": 0, \"priority\": 0, \"expire_at\": 0}", StandardCharsets.UTF_8);
+                dhtNodes.add(new RandomIdExecutor().execute(node, "-m", "dht", "-k", node.getDhtServerKeyringDir() + file, "-f", tempFile.getAbsolutePath()));
             }
         }
 
