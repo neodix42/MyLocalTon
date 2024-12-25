@@ -52,7 +52,6 @@ public class ValidatorEngine {
                 "--block-ttl", node.getValidatorBlockTtl().toString(), // blocks will be gc'd after this time (in seconds), default=7*86400
                 "--archive-ttl", node.getValidatorArchiveTtl().toString(), // archived blocks will be deleted after this time (in seconds), default 365*86400
                 "--key-proof-ttl", node.getValidatorKeyProofTtl().toString(), // 10 years key blocks will be deleted after this time (in seconds), default 365*86400*10
-                "--disable-rocksdb-stats", "true",
                 "--celldb-preload-all", "false"
         );
         node.setNodeProcess(validator.getLeft());
@@ -70,7 +69,6 @@ public class ValidatorEngine {
                 "--db", node.getTonDbDir(),
                 "--logname", node.getTonLogDir() + MyLocalTonUtils.toUtcNoSpace(System.currentTimeMillis()),
                 "--session-logs", "",
-                "--disable-rocksdb-stats", "true",
                 "--celldb-preload-all", "false",
                 "--ip", node.getPublicIp() + ":" + node.getPublicPort());
 
