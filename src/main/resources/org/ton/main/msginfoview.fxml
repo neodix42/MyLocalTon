@@ -9,8 +9,7 @@
   fitToHeight="true"
   fitToWidth="true" fx:controller="org.ton.ui.controllers.MsgInfoController" fx:id="rootScrollPane">
 
-  <TitledPane maxWidth="Infinity" styleClass="label-second-font-14" text="Message"
-    fx:id="msgTitledPane">
+  <TitledPane maxWidth="Infinity" styleClass="label-second-font-14" text="Message" fx:id="msgTitledPane">
     <VBox style="-fx-padding: 10;" spacing="10">
       <!-- srcAddr -->
       <GridPane hgap="10" vgap="5">
