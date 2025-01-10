@@ -16,10 +16,12 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import lombok.extern.slf4j.Slf4j;
@@ -183,8 +185,14 @@ public class TxInfoController implements Initializable {
     addExpandedProperty(actionTitledPane, rootScrollPane);
   }
 
-  public void initData(String txJson) {
+  public void initData(String txJson, Parent rawDumpContent) {
     try {
+      Node currentContent = transactionTitledPane.getContent();
+
+      if (currentContent instanceof Pane) {
+        ((Pane) currentContent).getChildren().add(rawDumpContent);
+      }
+
       JsonObject root = JsonParser.parseString(txJson).getAsJsonObject();
 
       // ---------------- Top-level fields ----------------

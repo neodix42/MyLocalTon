@@ -133,7 +133,6 @@ public class TxController {
           } else {
             showTxDetailsView(txEntity);
           }
-//          showTxDump(txEntity, txEntity.getTx());
         } catch (IOException e) {
           log.error("Error showing tx dump", e);
           App.mainController.showErrorMsg("Error showing transaction dump", 3);
@@ -143,28 +142,40 @@ public class TxController {
   }
 
   private void showMsgDetails(TxEntity txEntity) throws IOException {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ton/main/MsgInfoView.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ton/main/msginfoview.fxml"));
     Parent root = loader.load();
 
     MsgInfoController controller = loader.getController();
 
     String msgJson = new GsonBuilder().setPrettyPrinting().create().toJson(txEntity.getMessage());
-    controller.initData(msgJson);
 
-    generateStage(root, txEntity, 700, 650);
+    controller.initData(msgJson, getRawDumpContent());
+
+    generateStage(root, txEntity, 700, 850);
   }
 
 
   private void showTxDetailsView(TxEntity txEntity) throws IOException {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ton/main/TxInfoView.fxml"));
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ton/main/txinfoview.fxml"));
     Parent root = loader.load();
 
     TxInfoController controller = loader.getController();
 
     String txJson = new GsonBuilder().setPrettyPrinting().create().toJson(txEntity.getTx());
-    controller.initData(txJson);
 
-    generateStage(root, txEntity, 800, 800);
+    controller.initData(txJson, getRawDumpContent());
+
+    generateStage(root, txEntity, 800, 850);
+  }
+
+  private Parent getRawDumpContent() throws IOException {
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        TxController.class
+            .getClassLoader()
+            .getResource("org/ton/main/rawdump.fxml")
+    );
+
+    return fxmlLoader.load();
   }
 
   private void generateStage(Parent root, TxEntity txEntity, int width, int height) {

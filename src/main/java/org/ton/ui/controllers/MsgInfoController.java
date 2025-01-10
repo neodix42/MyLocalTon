@@ -5,13 +5,23 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TitledPane;
+import javafx.scene.layout.Pane;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.utils.MyLocalTonUtils;
 
 @Slf4j
 public class MsgInfoController {
 
+  @FXML
+  private ScrollPane rootScrollPane;
+
+  @FXML
+  private TitledPane msgTitledPane;
   // srcAddr
   @FXML
   private Label srcAddrWcLabel;
@@ -65,8 +75,14 @@ public class MsgInfoController {
   private Label ihrFeeLabel;
 
 
-  public void initData(String msgJson) {
+  public void initData(String msgJson, Parent rawDumpContent) {
     try {
+      Node currentContent = msgTitledPane.getContent();
+
+      if (currentContent instanceof Pane) {
+        ((Pane) currentContent).getChildren().add(rawDumpContent);
+      }
+
       JsonObject root = JsonParser.parseString(msgJson).getAsJsonObject();
 
       // srcAddr
