@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+  fitToHeight="true"
+  fitToWidth="true" fx:controller="org.ton.ui.controllers.MsgInfoController">
+
+  <TitledPane maxWidth="Infinity" styleClass="label-second-font-14" text="Message">
+    <VBox style="-fx-padding: 10;" spacing="10">
+      <!-- srcAddr -->
+      <GridPane hgap="10" vgap="5">
+        <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="type:"
+        />
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="typeLabel"
+        />
+
+        <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="createdAt:"
+        />
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="createdAtLabel"
+        />
+
+        <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="createdLt:"
+        />
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="createdLtLabel"
+        />
+
+        <Label GridPane.columnIndex="0" GridPane.rowIndex="3" text="ihrDisabled:"
+        />
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="3" fx:id="ihrDisabledLabel"
+        />
+
+        <Label GridPane.columnIndex="0" GridPane.rowIndex="4" text="bounce:"
+        />
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="4" fx:id="bounceLabel"
+        />
+
+        <Label GridPane.columnIndex="0" GridPane.rowIndex="5" text="bounced:"
+        />
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="5" fx:id="bouncedLabel"
+        />
+      </GridPane>
+
+      <!-- destAddr -->
+      <GridPane hgap="10" vgap="5">
+        <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="fwdFee:"/>
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="fwdFeeLabel"/>
+
+        <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="importFee:"/>
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="importFeeLabel"/>
+
+        <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="ihrFee:"/>
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="ihrFeeLabel"/>
+      </GridPane>
+
+      <TitledPane VBox.vgrow="ALWAYS" expanded="false" maxWidth="Infinity"
+        styleClass="label-second-font-14" text="srcAddr">
+        <GridPane hgap="10" vgap="5">
+          <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="wc:"
+          />
+          <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="srcAddrWcLabel"
+          />
+
+          <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="addr:"
+          />
+          <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="srcAddrAddrLabel"
+          />
+        </GridPane>
+      </TitledPane>
+
+      <TitledPane VBox.vgrow="ALWAYS" expanded="false" maxWidth="Infinity"
+        styleClass="label-second-font-14" text="value">
+        <GridPane hgap="10" vgap="5">
+          <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="toncoins:"
+          />
+          <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="valueToncoinsLabel"
+          />
+
+          <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="otherCurrencies:"/>
+          <Label GridPane.columnIndex="1" GridPane.rowIndex="1"
+            fx:id="valueOtherCurrenciesLabel"/>
+        </GridPane>
+      </TitledPane>
+
+      <TitledPane VBox.vgrow="ALWAYS" expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+        text="body">
+        <GridPane hgap="10" vgap="5">
+          <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="cells:"
+          />
+          <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="bodyCellsLabel"
+          />
+        </GridPane>
+      </TitledPane>
+
+      <TitledPane VBox.vgrow="ALWAYS" expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+        text="init">
+        <GridPane hgap="10" vgap="5">
+          <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="code:"
+          />
+          <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="initCodeLabel"
+          />
+
+          <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="data:"
+          />
+          <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="initDataLabel"
+          />
+
+          <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="library:"
+          />
+          <Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="initLibraryLabel"
+          />
+        </GridPane>
+      </TitledPane>
+
+      <TitledPane VBox.vgrow="ALWAYS" expanded="false" maxWidth="Infinity"
+        styleClass="label-second-font-14" text="destAddr">
+        <GridPane hgap="10" vgap="5">
+          <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="wc:"
+          />
+          <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="destAddrWcLabel"
+          />
+
+          <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="addr:"
+          />
+          <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="destAddrAddrLabel"
+          />
+        </GridPane>
+      </TitledPane>
+    </VBox>
+  </TitledPane>
+</ScrollPane>

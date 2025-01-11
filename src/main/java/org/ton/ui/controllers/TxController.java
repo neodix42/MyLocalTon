@@ -22,7 +22,6 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -36,7 +35,6 @@ import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.TxPk;
 import org.ton.executors.liteclient.api.BlockShortSeqno;
-import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.main.App;
 import org.ton.utils.MyLocalTonUtils;
 
@@ -85,6 +83,8 @@ public class TxController {
   @FXML
   Label txLt;
 
+  @FXML
+  void txInfoBtn() {
 
   @FXML
   void txInfoBtn() {

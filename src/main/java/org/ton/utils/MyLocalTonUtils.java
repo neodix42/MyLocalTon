@@ -1237,4 +1237,8 @@ public class MyLocalTonUtils {
 
         return seqno.getNumber().longValue();
     }
+
+    public static BigDecimal amountFromNano(String amount) {
+        return new BigDecimal(amount).divide(new BigDecimal(1_000_000_000));
+    }
 }

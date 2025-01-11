@@ -99,6 +99,12 @@ or validator-engine-console in this way:
 * then send zipped above log files to Telegram @neodix or attach to issue at GitHub.
 * Thanks for reporting. You are making MyLocalTon better.
 
+ 
+## MyLocalTon inside Docker
+
+It is not optimal to put this Java version of MyLocalTon to Docker container.
+Please refer to this project https://github.com/neodix42/mylocalton-docker in order to have more optimized and stable MyLocalTon inside Docker.
+
 ## Upgrade
 
 Today upgrade is not supported, that means once you have a new version of MyLocalTon just overwrite the existing
