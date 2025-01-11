@@ -1,274 +1,249 @@
 package org.ton.ui.controllers;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.jfoenix.controls.JFXButton;
-import javafx.embed.swing.SwingNode;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.fife.ui.rtextarea.RTextScrollPane;
-import org.fxmisc.flowless.VirtualizedScrollPane;
-import org.fxmisc.richtext.CodeArea;
-import org.fxmisc.richtext.LineNumberFactory;
-import org.fxmisc.richtext.model.StyleSpans;
-import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.TxPk;
 import org.ton.executors.liteclient.api.BlockShortSeqno;
-import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.main.App;
 import org.ton.utils.MyLocalTonUtils;
-
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.regex.Matcher;
-
-import static org.ton.utils.MyLocalTonUtils.PATTERN;
 
 @Slf4j
 public class TxController {
 
-    @FXML
-    Label block;
+  @FXML
+  Label block;
 
-    @FXML
-    Label txid;
+  @FXML
+  Label txid;
 
-    @FXML
-    Label txidHidden;
+  @FXML
+  Label txidHidden;
 
-    @FXML
-    Label typeMsg;
+  @FXML
+  Label typeMsg;
 
-    @FXML
-    Label typeTx;
+  @FXML
+  Label typeTx;
 
-    @FXML
-    Label time;
+  @FXML
+  Label time;
 
-    @FXML
-    Label from;
+  @FXML
+  Label from;
 
-    @FXML
-    Label to;
+  @FXML
+  Label to;
 
-    @FXML
-    Label amount;
+  @FXML
+  Label amount;
 
-    @FXML
-    Label fees;
+  @FXML
+  Label fees;
 
-    @FXML
-    Label status;
+  @FXML
+  Label status;
 
-    @FXML
-    BorderPane txRowBorderPane;
+  @FXML
+  BorderPane txRowBorderPane;
 
-    @FXML
-    Label txAccAddrHidden;
+  @FXML
+  Label txAccAddrHidden;
 
-    @FXML
-    Label txLt;
+  @FXML
+  Label txLt;
 
+  @FXML
+  void txInfoBtn() {
 
-    @FXML
-    void txInfoBtn() throws Exception {
-
-        String shortseqno = block.getText();
-
-        BlockShortSeqno blockShortSeqno = BlockShortSeqno.builder()
-                .wc(Long.valueOf(StringUtils.substringBetween(shortseqno, "(", ",")))
-                .shard(StringUtils.substringBetween(shortseqno, ",", ","))
-                .seqno(new BigInteger(StringUtils.substring(StringUtils.substringAfterLast(shortseqno, ","), 0, -1)))
-                .build();
-
-        TxPk txPk = TxPk.builder()
-                .createdAt(MyLocalTonUtils.datetimeToTimestamp(time.getText()))
-                .seqno(blockShortSeqno.getSeqno())
-                .wc(blockShortSeqno.getWc())
-                .shard(blockShortSeqno.getShard())
-                .accountAddress(txAccAddrHidden.getText())
-                .txLt(new BigInteger(txLt.getText()))
-                .txHash(txidHidden.getText())
-                .typeTx(typeTx.getText())
-                .typeMsg(typeMsg.getText())
-                .build();
-
-        log.debug("tx infobtn,  block {}, txPk {}, createdAt {}, seconds {}", blockShortSeqno, txPk, time.getText(), MyLocalTonUtils.datetimeToTimestamp(time.getText()));
-
-        TxEntity txEntity = App.dbPool.findTx(txPk);
-        Transaction tx = txEntity.getTx();
-
-        showTxDump(txEntity, tx);
+    String shortSeqno = block.getText();
+    String inside = StringUtils.substringBetween(shortSeqno, "(", ")");
+    if (inside == null) {
+      log.error("Wrong block format: {}", shortSeqno);
+      return;
+    }
+    String[] parts = inside.split(",");
+    if (parts.length < 3) {
+      log.error("Wrong block format, parts < 3: {}", shortSeqno);
+      return;
     }
 
-    private void showTxDump(TxEntity txEntity, Transaction tx) throws IOException {
-        if (!SystemUtils.IS_OS_MAC) {
-            FXMLLoader fxmlLoader = new FXMLLoader(TxController.class.getClassLoader().getResource("org/ton/main/rawdump.fxml"));
-            Parent root = fxmlLoader.load();
-            Stage stage = new Stage();
-            stage.initModality(Modality.NONE);
-            stage.initStyle(StageStyle.DECORATED);
-            stage.setTitle("Tx hash " + txEntity.getTxHash());
+    long wcVal = Long.parseLong(parts[0].trim());
+    String shardVal = parts[1].trim();
+    BigInteger seqnoVal = new BigInteger(parts[2].trim());
 
-            Scene scene = new Scene(root, 1000, 700);
+    BlockShortSeqno blockShortSeqno = BlockShortSeqno.builder()
+        .wc(wcVal)
+        .shard(shardVal)
+        .seqno(seqnoVal)
+        .build();
 
-            scene.setOnKeyPressed(keyEvent -> {
-                        if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                            stage.close();
-                        }
-                    }
-            );
+    long createdAtSeconds = MyLocalTonUtils.datetimeToTimestamp(time.getText());
 
-            stage.setScene(scene);
-            stage.show();
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            RSyntaxTextArea textArea = new RSyntaxTextArea();
-            textArea.setText(gson.toJson(tx));
+    TxPk txPk = TxPk.builder()
+        .createdAt(createdAtSeconds)
+        .seqno(blockShortSeqno.getSeqno())
+        .wc(blockShortSeqno.getWc())
+        .shard(blockShortSeqno.getShard())
+        .accountAddress(txAccAddrHidden.getText())
+        .txLt(new BigInteger(txLt.getText()))
+        .txHash(txidHidden.getText())
+        .typeTx(typeTx.getText())
+        .typeMsg(typeMsg.getText())
+        .build();
 
-            if (txEntity.getTypeTx().equals("Message")) {
-                textArea.setText(gson.toJson(txEntity.getMessage()));
-            } else {
-                textArea.setText(gson.toJson(tx));
-            }
+    log.debug("tx infobtn, block {}, txPk {}, createdAt {}, seconds {}", blockShortSeqno, txPk,
+        time.getText(), createdAtSeconds);
 
-            textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-            textArea.setCodeFoldingEnabled(true);
-            textArea.setAntiAliasingEnabled(true);
-            textArea.setEditable(false);
+    String msg = String.format("Loading block info with seqno %s", seqnoVal);
+    App.mainController.showInfoMsg(msg, 5);
 
-            RTextScrollPane sp = new RTextScrollPane(textArea);
-            SwingNode sn = (SwingNode) root.lookup("#swingid");
-            JFXButton btn = (JFXButton) root.lookup("#showDumpBtn");
-            btn.setUserData("tx#" + txEntity.getFullBlock() + " " + txEntity.getWc() + ":" + tx.getAccountAddr() + " " + tx.getLt());
-            sn.setContent(sp);
-        } else {
-
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            CodeArea codeArea = new CodeArea();
-            codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-            codeArea.setEditable(false);
-            codeArea.getVisibleParagraphs().addModificationObserver
-                    (
-                            new MyLocalTonUtils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
-                    );
-
-            if (txEntity.getTypeTx().equals("Message")) {
-                codeArea.replaceText(0, 0, gson.toJson(txEntity.getMessage()));
-            } else {
-                codeArea.replaceText(0, 0, gson.toJson(tx));
-            }
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.NONE);
-            stage.initStyle(StageStyle.DECORATED);
-            stage.setTitle("Tx hash " + txEntity.getTxHash());
-            Scene scene = new Scene(new StackPane(new VirtualizedScrollPane<>(codeArea)), 1000, 700);
-            scene.getStylesheets().add(TxController.class.getClassLoader().getResource("org/ton/css/java-keywords.css").toExternalForm());
-
-            stage.setScene(scene);
-            stage.show();
+    CompletableFuture.supplyAsync(
+        () -> App.dbPool.findTx(txPk), ForkJoinPool.commonPool()
+    ).thenAccept(txEntity -> {
+      if (txEntity == null) {
+        Platform.runLater(() -> App.mainController.showErrorMsg("Transaction not found", 3));
+        return;
+      }
+      Platform.runLater(() -> {
+        try {
+          if (txEntity.getTypeTx().equals("Message")) {
+            showMsgDetails(txEntity);
+          } else {
+            showTxDetailsView(txEntity);
+          }
+        } catch (IOException e) {
+          log.error("Error showing tx dump", e);
+          App.mainController.showErrorMsg("Error showing transaction dump", 3);
         }
+      });
+    });
+  }
+
+  private void showMsgDetails(TxEntity txEntity) throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ton/main/msginfoview.fxml"));
+    Parent root = loader.load();
+
+    MsgInfoController controller = loader.getController();
+
+    String msgJson = new GsonBuilder().setPrettyPrinting().create().toJson(txEntity.getMessage());
+
+    controller.initData(msgJson, getRawDumpContent());
+
+    generateStage(root, txEntity, 700, 850);
+  }
+
+
+  private void showTxDetailsView(TxEntity txEntity) throws IOException {
+    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ton/main/txinfoview.fxml"));
+    Parent root = loader.load();
+
+    TxInfoController controller = loader.getController();
+
+    String txJson = new GsonBuilder().setPrettyPrinting().create().toJson(txEntity.getTx());
+
+    controller.initData(txJson, getRawDumpContent());
+
+    generateStage(root, txEntity, 800, 850);
+  }
+
+  private Parent getRawDumpContent() throws IOException {
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        TxController.class
+            .getClassLoader()
+            .getResource("org/ton/main/rawdump.fxml")
+    );
+
+    return fxmlLoader.load();
+  }
+
+  private void generateStage(Parent root, TxEntity txEntity, int width, int height) {
+    Stage stage = new Stage();
+    stage.setTitle("Tx hash " + txEntity.getTxHash());
+    stage.initModality(Modality.NONE);
+    stage.initStyle(StageStyle.DECORATED);
+
+    try {
+      Image icon = new Image(Objects.requireNonNull(
+          getClass().getClassLoader().getResourceAsStream("org/ton/images/logo.png")
+      ));
+      stage.getIcons().add(icon);
+    } catch (NullPointerException e) {
+      log.error("Icon not found. Exception thrown {}", e.getMessage(), e);
     }
 
-    public StyleSpans<Collection<String>> computeHighlighting(String text) {
-        Matcher matcher = PATTERN.matcher(text);
-        int lastKwEnd = 0;
-        StyleSpansBuilder<Collection<String>> spansBuilder
-                = new StyleSpansBuilder<>();
-        while (matcher.find()) {
-            String styleClass =
-                    matcher.group("KEYWORD") != null ? "keyword" :
-                            matcher.group("PAREN") != null ? "paren" :
-                                    matcher.group("BRACE") != null ? "brace" :
-                                            matcher.group("BRACKET") != null ? "bracket" :
-                                                    matcher.group("SEMICOLON") != null ? "semicolon" :
-                                                            matcher.group("STRING") != null ? "string" :
-                                                                    matcher.group("COMMENT") != null ? "comment" :
-                                                                            null; /* never happens */
-            assert styleClass != null;
-            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
-            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
-            lastKwEnd = matcher.end();
-        }
-        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
-        return spansBuilder.create();
-    }
+    Scene scene = new Scene(root, width, height);
+    scene.getStylesheets().add(
+        TxController.class
+            .getClassLoader()
+            .getResource("org/ton/css/global-font.css")
+            .toExternalForm()
+    );
 
-    public void txRowSeqnoClick(MouseEvent mouseEvent) {
-        String seq = block.getText();
-        final Clipboard clipboard = Clipboard.getSystemClipboard();
-        final ClipboardContent content = new ClipboardContent();
-        content.putString(seq);
-        clipboard.setContent(content);
-        log.info(seq + " copied");
-        App.mainController.showInfoMsg(seq + " copied to clipboard", 2);
-        mouseEvent.consume();
-    }
+    scene.setOnKeyPressed(keyEvent -> {
+      if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+        stage.close();
+      }
+    });
 
-    public void txRowHashClick(MouseEvent mouseEvent) {
-        String hash = txidHidden.getText();
-        final Clipboard clipboard = Clipboard.getSystemClipboard();
-        final ClipboardContent content = new ClipboardContent();
-        content.putString(hash);
-        clipboard.setContent(content);
-        log.info(hash + " copied");
-        String lightHash = MyLocalTonUtils.getLightAddress(hash);
-        App.mainController.showInfoMsg(lightHash + " copied to clipboard", 2);
-        mouseEvent.consume();
-    }
+    stage.setScene(scene);
+    stage.setResizable(false);
+    stage.show();
+  }
 
-    public void txRowSrcAddrClick(MouseEvent mouseEvent) {
-        String src = from.getText();
-        final Clipboard clipboard = Clipboard.getSystemClipboard();
-        final ClipboardContent content = new ClipboardContent();
-        content.putString(src);
-        clipboard.setContent(content);
-        log.info(src + " copied");
-        String lightSrc = MyLocalTonUtils.getLightAddress(src);
-        App.mainController.showInfoMsg(lightSrc + " copied to clipboard", 2);
-        mouseEvent.consume();
-    }
+  public void txRowSeqnoClick(MouseEvent mouseEvent) {
+    copyToClipboard(block.getText(), "Block seqno");
+    mouseEvent.consume();
+  }
 
-    public void txRowDestAddrClick(MouseEvent mouseEvent) {
-        String src = to.getText();
-        final Clipboard clipboard = Clipboard.getSystemClipboard();
-        final ClipboardContent content = new ClipboardContent();
-        content.putString(src);
-        clipboard.setContent(content);
-        log.info(src + " copied");
-        String lightSrc = MyLocalTonUtils.getLightAddress(src);
-        App.mainController.showInfoMsg(lightSrc + " copied to clipboard", 2);
-        mouseEvent.consume();
-    }
+  public void txRowHashClick(MouseEvent mouseEvent) {
+    String hash = txidHidden.getText();
+    copyToClipboard(hash, "Tx hash");
+    mouseEvent.consume();
+  }
 
-    public void txRowAmountClick(MouseEvent mouseEvent) {
-        String src = amount.getText();
-        final Clipboard clipboard = Clipboard.getSystemClipboard();
-        final ClipboardContent content = new ClipboardContent();
-        content.putString(src);
-        clipboard.setContent(content);
-        log.info(src + " copied");
-        App.mainController.showInfoMsg(src + " copied to clipboard", 2);
-        mouseEvent.consume();
-    }
+  public void txRowSrcAddrClick(MouseEvent mouseEvent) {
+    copyToClipboard(from.getText(), "From address");
+    mouseEvent.consume();
+  }
+
+  public void txRowDestAddrClick(MouseEvent mouseEvent) {
+    copyToClipboard(to.getText(), "To address");
+    mouseEvent.consume();
+  }
+
+  public void txRowAmountClick(MouseEvent mouseEvent) {
+    copyToClipboard(amount.getText(), "Amount");
+    mouseEvent.consume();
+  }
+
+  private void copyToClipboard(String text, String desc) {
+    final Clipboard clipboard = Clipboard.getSystemClipboard();
+    final ClipboardContent content = new ClipboardContent();
+    content.putString(text);
+    clipboard.setContent(content);
+    log.info("{} {} copied", desc, text);
+    App.mainController.showInfoMsg(text + " copied to clipboard", 2);
+  }
 }
