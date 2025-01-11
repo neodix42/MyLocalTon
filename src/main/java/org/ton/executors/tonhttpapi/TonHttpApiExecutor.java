@@ -1,23 +1,21 @@
 package org.ton.executors.tonhttpapi;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.ton.settings.Node;
+import static org.ton.main.App.mainController;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
-import static org.ton.main.App.mainController;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.ton.settings.Node;
 
 @Slf4j
 public class TonHttpApiExecutor {
@@ -48,13 +46,11 @@ public class TonHttpApiExecutor {
 
             log.info("execute: {}", String.join(" ", withBinaryCommand));
 
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-
             final ProcessBuilder pb = new ProcessBuilder(withBinaryCommand);
 
             Process p = pb.start();
             p.waitFor(5, TimeUnit.SECONDS);
-            Future<String> future = executorService.submit(() -> {
+          Future<String> future = ForkJoinPool.commonPool().submit(() -> {
                 try {
                     Thread.currentThread().setName("ton-http-api-" + node.getNodeName());
 
@@ -72,8 +68,6 @@ public class TonHttpApiExecutor {
                     return null;
                 }
             });
-
-            executorService.shutdown();
 
             return Pair.of(p, future);
 

@@ -1,7 +1,44 @@
 package org.ton.actions;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.ton.main.App.fxmlLoader;
+import static org.ton.main.App.mainController;
+import static org.ton.ui.custom.events.CustomEventBus.emit;
+
 import com.google.gson.GsonBuilder;
 import com.jfoenix.controls.JFXListView;
+import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -12,6 +49,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.util.Duration;
+import javafx.util.Pair;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -61,34 +99,6 @@ import org.ton.utils.MyLocalTonUtils;
 import org.ton.wallet.MyWallet;
 import org.ton.wallet.WalletAddress;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.math.RoundingMode;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Paths;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.List;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.ton.main.App.fxmlLoader;
-import static org.ton.main.App.mainController;
-import static org.ton.ui.custom.events.CustomEventBus.emit;
-
 @Slf4j
 @Getter
 @Setter
@@ -108,6 +118,7 @@ public class MyLocalTon {
     public static ScheduledExecutorService validatorsMonitor = null;
     public static Tonlib tonlib;
     public static Tonlib tonlibBlockMonitor;
+    private Runnable fetchTask;
 
     private static final String CURRENT_DIR = System.getProperty("user.dir");
 
@@ -272,9 +283,7 @@ public class MyLocalTon {
     }
 
     public void saveSettingsToGson() throws InterruptedException {
-        ExecutorService service = Executors.newSingleThreadExecutor();
-        service.submit(this::saveSettingsToGsonSynchronized);
-        service.shutdown();
+        ForkJoinPool.commonPool().submit(this::saveSettingsToGsonSynchronized);
         Thread.sleep(30);
     }
 
@@ -445,8 +454,7 @@ public class MyLocalTon {
     public void createFaucetWallet() {
 
         if (!settings.getFaucetWalletSettings().isCreated()) {
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-            executorService.submit(() -> {
+            ForkJoinPool.commonPool().submit(() -> {
                 Thread.currentThread().setName("Create faucet wallet");
                 try {
                     long chain = settings.getFaucetWalletSettings().getWorkChain();
@@ -632,12 +640,10 @@ public class MyLocalTon {
 
             if (node.getStatus().equals("ready")) {
                 log.info("participates in elections {}", nodeName);
-                ExecutorService nodeParticipationExecutorService = Executors.newSingleThreadExecutor();
-                nodeParticipationExecutorService.execute(() -> {
+                ForkJoinPool.commonPool().execute(() -> {
                     Thread.currentThread().setName("MyLocalTon - Participation in elections by " + nodeName);
                     MyLocalTonUtils.participate(node, v);
                 });
-                nodeParticipationExecutorService.shutdown();
             }
         }
     }
@@ -648,15 +654,13 @@ public class MyLocalTon {
 
             if (node.getStatus().equals("ready")) {
 
-                ExecutorService nodeReapRewardsExecutorService = Executors.newSingleThreadExecutor();
-                nodeReapRewardsExecutorService.execute(() -> {
+                ForkJoinPool.commonPool().execute(() -> {
                     Thread.currentThread().setName("MyLocalTon - Reaping rewards by " + nodeName);
                     reap(settings.getNodeByName(nodeName));
                     if (!GraphicsEnvironment.isHeadless()) {
                         Platform.runLater(() -> updateReapedValuesTab(node));
                     }
                 });
-                nodeReapRewardsExecutorService.shutdown();
             }
         }
     }
@@ -739,102 +743,177 @@ public class MyLocalTon {
     public void runBlockchainMonitor(Node node) {
         log.info("Starting node monitor");
 
-        ExecutorService blockchainMonitorExecutorService = Executors.newSingleThreadExecutor();
-
-        blockchainMonitorExecutorService.execute(() -> {
-            Thread.currentThread().setName("MyLocalTon - Blockchain Monitor");
-            ExecutorService executorService;
-            while (Main.appActive.get()) {
-                try {
-                    executorService = Executors.newSingleThreadExecutor();
-                    LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
-
-                    executorService.execute(() -> {
-                        Thread.currentThread().setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
-//                        log.debug("Get last block");
-                        ResultLastBlock lastBlock = LiteClientParser.parseLast(liteClient.executeLast(node));
-//                        MasterChainInfo lastBlockM = tonlib.getLast(); // todo next release
-
-                        if (nonNull(lastBlock)) {
-
-                            if ((!Objects.equals(prevBlockSeqno.get(), lastBlock.getSeqno())) && (lastBlock.getSeqno().compareTo(BigInteger.ZERO) != 0)) {
-
-                                prevBlockSeqno.set(lastBlock.getSeqno());
-                                log.info(lastBlock.getShortBlockSeqno());
-
-                                if (!GraphicsEnvironment.isHeadless()) {
-                                    List<ResultLastBlock> shardsInBlock = insertBlocksAndTransactions(node, lastBlock, true);
-                                    updateTopInfoBarGui(shardsInBlock.size());
-                                }
-                            }
-                        } else {
-                            log.debug("last block is null");
-                        }
-//                        log.debug("Thread is done {}", Thread.currentThread().getName());
-                    });
-
-                    executorService.shutdown();
-
-                    Thread.sleep(1000);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    log.error(e.getMessage());
-                }
+        fetchTask = () -> {
+            if (!Main.appActive.get()) {
+                log.info("Blockchain Monitor has stopped working");
+                return;
             }
-            blockchainMonitorExecutorService.shutdown();
-            log.info("Blockchain Monitor has stopped working");
-        });
+
+            LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
+
+            CompletableFuture
+                .supplyAsync(() -> LiteClientParser.parseLast(liteClient.executeLast(node)),
+                    ForkJoinPool.commonPool())
+                .thenCompose(lastBlock -> {
+                    if (lastBlock != null
+                        && !Objects.equals(prevBlockSeqno.get(), lastBlock.getSeqno())
+                        && lastBlock.getSeqno().compareTo(BigInteger.ZERO) != 0) {
+
+                        prevBlockSeqno.set(lastBlock.getSeqno());
+                        log.info(lastBlock.getShortBlockSeqno());
+
+                        if (!GraphicsEnvironment.isHeadless()) {
+                            return insertBlocksAndTransactions(node, lastBlock, true)
+                                .thenAccept(shardsInBlock -> {
+                                    Platform.runLater(
+                                        () -> updateTopInfoBarGui(shardsInBlock.size()));
+                                });
+                        }
+                    }
+
+                    return CompletableFuture.completedFuture(null);
+                })
+                .thenCompose(lastBlockM -> {
+//                  MasterChainInfo lastBlockM = tonlib.getLast(); // todo next release
+                    return CompletableFuture.completedFuture(null);
+                })
+                .exceptionally(ex -> {
+                    log.error("Error in blockchain monitor task", ex);
+                    Platform.runLater(
+                        () -> App.mainController.showErrorMsg("Blockchain monitor error", 3));
+                    return null;
+                })
+                .thenRun(() -> {
+                    if (Main.appActive.get()) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        fetchTask.run();
+                    } else {
+                        log.info("Blockchain Monitor has stopped working");
+                    }
+                });
+        };
+
+        fetchTask.run();
     }
 
-    public List<ResultLastBlock> insertBlocksAndTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
+    public CompletableFuture<List<ResultLastBlock>> insertBlocksAndTransactions(Node node,
+        ResultLastBlock lastBlock, boolean updateGuiNow) {
+        LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
-        insertBlockEntity(lastBlock);
-
-        if (updateGuiNow) {
-            updateBlocksTabGui(lastBlock);
-        }
-
-        List<ResultLastBlock> shardsInBlock = LiteClient.getInstance(LiteClientEnum.GLOBAL).getShardsFromBlock(node, lastBlock); // txs from basechain shards
-
-        for (ResultLastBlock shard : shardsInBlock) {
-            log.info(shard.getShortBlockSeqno());
-            if (shard.getSeqno().compareTo(BigInteger.ZERO) != 0) {
-                insertBlockEntity(shard);
+        return CompletableFuture
+            .supplyAsync(() -> {
+                insertBlockEntity(lastBlock);
+                return lastBlock;
+            }, ForkJoinPool.commonPool())
+            .thenCompose(lb -> {
                 if (updateGuiNow) {
-                    updateBlocksTabGui(shard);
+                    Platform.runLater(() -> updateBlocksTabGui(lb));
                 }
-            }
-        }
 
-        dumpBlockTransactions(node, lastBlock, updateGuiNow); // txs from master-chain
+                return CompletableFuture.supplyAsync(() -> liteClient.getShardsFromBlock(node, lb),
+                    ForkJoinPool.commonPool());
+            })
+            .thenCompose(shardsInBlock -> {
+                List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        shardsInBlock.stream().filter(b -> (b.getSeqno().compareTo(BigInteger.ZERO) != 0)).forEach(shard -> dumpBlockTransactions(node, shard, updateGuiNow)); // txs from shards
+                futures.add(CompletableFuture.runAsync(
+                    () -> dumpBlockTransactions(node, lastBlock, updateGuiNow),
+                    ForkJoinPool.commonPool()));
 
-        return shardsInBlock;
+                for (ResultLastBlock shard : shardsInBlock) {
+                    if (shard.getSeqno().compareTo(BigInteger.ZERO) != 0) {
+                        futures.add(
+                            CompletableFuture.runAsync(() -> {
+                                insertBlockEntity(shard);
+                                if (updateGuiNow) {
+                                    Platform.runLater(() -> updateBlocksTabGui(shard));
+                                }
+                            }, ForkJoinPool.commonPool()).thenRunAsync(() -> {
+                                dumpBlockTransactions(node, shard, updateGuiNow);
+                            }, ForkJoinPool.commonPool())
+                        );
+                    }
+                }
+
+                return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                    .thenApply(v -> shardsInBlock);
+            })
+            .exceptionally(ex -> {
+                log.error("Error inserting blocks and transactions", ex);
+                Platform.runLater(
+                    () -> App.mainController.showErrorMsg("Error inserting blocks and transactions",
+                        3));
+                return Collections.emptyList();
+            });
     }
 
     public void dumpBlockTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
 
         LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
-        List<ResultListBlockTransactions> txs = LiteClientParser.parseListBlockTrans(liteClient.executeListblocktrans(node, lastBlock, 0));
-        log.debug("found {} transactions in block {}", txs.size(), lastBlock.getShortBlockSeqno());
+        class TxGuiUpdateInfo {
 
-        for (ResultListBlockTransactions tx : txs) {
-            Transaction txDetails = LiteClientParser.parseDumpTrans(liteClient.executeDumptrans(node, lastBlock, tx), settings.getUiSettings().isShowBodyInMessage());
-            if (nonNull(txDetails)) {
+            final ResultLastBlock lastBlock;
+            final ResultListBlockTransactions tx;
+            final Transaction txDetails;
+            final List<TxEntity> txEntities;
 
-                List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, tx, txDetails);
-
-                txEntities.forEach(App.dbPool::insertTx);
-
-                detectNewAccount(lastBlock, tx, txDetails);
-
-                if (updateGuiNow) {
-                    updateTxTabGui(lastBlock, tx, txDetails, txEntities);
-                }
+            TxGuiUpdateInfo(ResultLastBlock lastBlock, ResultListBlockTransactions tx,
+                Transaction txDetails, List<TxEntity> txEntities) {
+                this.lastBlock = lastBlock;
+                this.tx = tx;
+                this.txDetails = txDetails;
+                this.txEntities = txEntities;
             }
         }
+
+        CompletableFuture
+            .supplyAsync(() -> {
+                List<ResultListBlockTransactions> txs = LiteClientParser.parseListBlockTrans(
+                    liteClient.executeListblocktrans(node, lastBlock, 0)
+                );
+                log.debug("found {} transactions in block {}", txs.size(),
+                    lastBlock.getShortBlockSeqno());
+
+                List<TxGuiUpdateInfo> updates = new ArrayList<>();
+
+                for (ResultListBlockTransactions tx : txs) {
+                    Transaction txDetails = LiteClientParser.parseDumpTrans(
+                        liteClient.executeDumptrans(node, lastBlock, tx),
+                        settings.getUiSettings().isShowBodyInMessage()
+                    );
+
+                    if (txDetails != null) {
+                        List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, tx, txDetails);
+                        txEntities.forEach(App.dbPool::insertTx);
+                        detectNewAccount(lastBlock, tx, txDetails);
+
+                        if (updateGuiNow) {
+                            updates.add(new TxGuiUpdateInfo(lastBlock, tx, txDetails, txEntities));
+                        }
+                    }
+                }
+
+                return updates;
+            }, ForkJoinPool.commonPool())
+            .thenAccept(updates -> {
+                if (updateGuiNow && !updates.isEmpty()) {
+                    Platform.runLater(() -> {
+                        for (TxGuiUpdateInfo info : updates) {
+                            updateTxTabGui(info.lastBlock, info.tx, info.txDetails,
+                                info.txEntities);
+                        }
+                    });
+                }
+            })
+            .exceptionally(ex -> {
+                log.error("Error dumping block transactions", ex);
+                Platform.runLater(
+                    () -> App.mainController.showErrorMsg("Error dumping block transactions", 3));
+                return null;
+            });
     }
 
     private void detectNewAccount(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails) {
@@ -886,35 +965,51 @@ public class MyLocalTon {
     }
 
     private void updateAccountsTabGui(WalletEntity walletEntity) {
-        if (isNull(walletEntity) || isNull(walletEntity.getAccountState())) {
+        if (walletEntity == null || walletEntity.getAccountState() == null) {
             return;
         }
+
         log.debug("updateAccountsTabGui, wallet account addr {}, state {}", walletEntity.getHexAddress(), walletEntity.getAccountState());
 
-        if (Boolean.TRUE.equals(autoScroll)) {
+        if (!Boolean.TRUE.equals(autoScroll)) {
+            return;
+        }
 
-            MainController c = fxmlLoader.getController();
+        MainController c = fxmlLoader.getController();
 
-            Platform.runLater(() -> {
-
-                FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("accountrow.fxml"));
-                javafx.scene.Node accountRow;
+        CompletableFuture
+            .supplyAsync(() -> {
+                FXMLLoader loader = new FXMLLoader(App.class.getResource("accountrow.fxml"));
                 try {
-                    accountRow = fxmlLoader.load();
+                    return (javafx.scene.Node) loader.load();
                 } catch (IOException e) {
-                    log.error("error loading accountrow.fxml file, {}", e.getMessage());
+                    log.error("Error loading accountrow.fxml file: {}", e.getMessage(), e);
+                    return null;
+                }
+            }, ForkJoinPool.commonPool())
+            .thenAccept(accountRow -> {
+                if (accountRow == null) {
                     return;
                 }
 
-                if (walletEntity.getWc() == -1L) {
-                    (accountRow.lookup("#accRowBorderPane")).getStyleClass().add("row-pane-gray");
-                    (accountRow.lookup("#hBoxDeletetn")).getStyleClass().add("background-acc-delete-button-gray");
-                    (accountRow.lookup("#hBoxSendBtn")).getStyleClass().add("background-acc-send-button-gray");
-                }
+                Platform.runLater(() -> {
+                    if (walletEntity.getWc() == -1L) {
+                        accountRow.lookup("#accRowBorderPane").getStyleClass().add("row-pane-gray");
+                        accountRow.lookup("#hBoxDeletetn").getStyleClass()
+                            .add("background-acc-delete-button-gray");
+                        accountRow.lookup("#hBoxSendBtn").getStyleClass()
+                            .add("background-acc-send-button-gray");
+                    }
 
-                showInGuiOnlyUniqueAccounts(walletEntity, c, accountRow);
+                    showInGuiOnlyUniqueAccounts(walletEntity, c, accountRow);
+                });
+            })
+            .exceptionally(ex -> {
+                log.error("Error updating accounts tab GUI", ex);
+                Platform.runLater(
+                    () -> App.mainController.showErrorMsg("Error updating accounts tab", 3));
+                return null;
             });
-        }
     }
 
     private void emitResultMessage(WalletEntity walletEntity) {
@@ -936,39 +1031,52 @@ public class MyLocalTon {
     }
 
     private void showInGuiOnlyUniqueAccounts(WalletEntity walletEntity, MainController c, javafx.scene.Node accountRow) {
-        if (isNull(concurrentAccountsHashMap.get(walletEntity.getWallet().getFullWalletAddress().toUpperCase()))) {
-            log.debug("add to gui list 1 new account {}", walletEntity.getWallet().getFullWalletAddress());
+        String upperAddr = walletEntity.getWallet().getFullWalletAddress().toUpperCase();
 
-            //show in gui only unique accounts. some might come from: scroll event, blockchain monitor or manual creation
+        if (!concurrentAccountsHashMap.containsKey(upperAddr)) {
+            log.debug("add to gui list 1 new account {}", upperAddr);
+
             if (concurrentAccountsHashMap.size() > 100) {
-                concurrentAccountsHashMap.keySet().removeAll(Arrays.asList(concurrentAccountsHashMap.keySet().toArray()).subList(concurrentAccountsHashMap.size() / 2, concurrentAccountsHashMap.size())); // truncate
+                int targetSize = 50;
+                int toRemove = concurrentAccountsHashMap.size() - targetSize;
+                Iterator<String> it = concurrentAccountsHashMap.keySet().iterator();
+                while (it.hasNext() && toRemove > 0) {
+                    it.next();
+                    it.remove();
+                    toRemove--;
+                }
             }
 
-            concurrentAccountsHashMap.put(walletEntity.getWallet().getFullWalletAddress().toUpperCase(), 1L);
+            concurrentAccountsHashMap.put(upperAddr, 1L);
 
-            ((Label) accountRow.lookup("#hexAddrLabel")).setText(MyLocalTonUtils.getNodeNameByWalletAddress(walletEntity.getWallet().getFullWalletAddress().toUpperCase()) + "Hex:");
+            ((Label) accountRow.lookup("#hexAddrLabel")).setText(
+                MyLocalTonUtils.getNodeNameByWalletAddress(upperAddr) + "Hex:"
+            );
 
             populateAccountRowWithData(walletEntity, accountRow, "--------------------");
 
-            log.debug("add to gui list 2 new account {}", walletEntity.getWallet().getFullWalletAddress());
+            log.debug("add to gui list 2 new account {}", upperAddr);
 
-            int size = c.accountsvboxid.getItems().size();
+            ObservableList<javafx.scene.Node> items = c.accountsvboxid.getItems();
+            int size = items.size();
 
             if (size > accountsScrollBarHighWaterMark.get()) {
-                c.accountsvboxid.getItems().remove(size - 1);
+                items.remove(size - 1);
             }
 
-            c.accountsvboxid.getItems().add(0, accountRow);
+            items.add(0, accountRow);
 
-            log.debug("accounts gui size {}", c.accountsvboxid.getItems().size());
+            log.debug("accounts gui size {}", items.size());
 
         } else {
-            log.debug("update gui list with account {}", walletEntity.getWallet().getFullWalletAddress());
-            if (nonNull(walletEntity.getAccountState())) {
+            log.debug("update gui list with account {}", upperAddr);
+            if (walletEntity.getAccountState() != null) {
                 log.debug("update account details in gui {}, {}", walletEntity.getFullAddress(), walletEntity.getAccountState());
                 for (javafx.scene.Node node : c.accountsvboxid.getItems()) {
-                    if (((Label) node.lookup("#hexAddr")).getText().equals(walletEntity.getFullAddress().toUpperCase())) {
+                    Label hexAddrLabel = (Label) node.lookup("#hexAddr");
+                    if (hexAddrLabel != null && hexAddrLabel.getText().equals(upperAddr)) {
                         populateAccountRowWithData(walletEntity, node, "--------------------");
+                        break;
                     }
                 }
             }
@@ -1052,61 +1160,89 @@ public class MyLocalTon {
         }
     }
 
-    private void updateTxTabGui(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction
-            txDetails, List<TxEntity> txEntities) {
+    private void updateTxTabGui(ResultLastBlock lastBlock, ResultListBlockTransactions tx,
+        Transaction txDetails, List<TxEntity> txEntities) {
+        if (!Boolean.TRUE.equals(autoScroll)) {
+            return;
+        }
 
-        if (Boolean.TRUE.equals(autoScroll)) {
+        MainController c = fxmlLoader.getController();
 
-            MainController c = fxmlLoader.getController();
-
-            Platform.runLater(() -> {
-
+        CompletableFuture
+            .supplyAsync(() -> {
                 applyTxGuiFilters(txEntities);
 
+                List<Pair<TxEntity, javafx.scene.Node>> txRows = new ArrayList<>();
+
                 for (TxEntity txE : txEntities) {
-
-                    FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("txrow.fxml"));
-                    javafx.scene.Node txRow;
                     try {
-                        txRow = fxmlLoader.load();
+                        FXMLLoader rowLoader = new FXMLLoader(App.class.getResource("txrow.fxml"));
+                        javafx.scene.Node txRow = rowLoader.load();
+
+                        if ("Message".equals(txE.getTypeTx())) {
+                            txRow.lookup("#txRowBorderPane").getStyleClass().add("row-pane-gray");
+                        }
+
+                        txRows.add(new Pair<>(txE, txRow));
                     } catch (IOException e) {
-                        log.error("error loading txrow.fxml file, {}", e.getMessage());
-                        return;
+                        log.error("Error loading txrow.fxml file, {}", e.getMessage(), e);
                     }
-
-                    if (txE.getTypeTx().equals("Message")) {
-                        (txRow.lookup("#txRowBorderPane")).getStyleClass().add("row-pane-gray");
-                    }
-
-                    showInGuiOnlyUniqueTxs(lastBlock, tx, txDetails, c, txE, txRow);  //show in gui only unique values. some might come from scroll event
                 }
+
+                return txRows;
+            }, ForkJoinPool.commonPool())
+            .thenAccept(txRows -> {
+                Platform.runLater(() -> {
+                    for (Pair<TxEntity, javafx.scene.Node> rowData : txRows) {
+                        showInGuiOnlyUniqueTxs(lastBlock, tx, txDetails, c, rowData.getKey(),
+                            rowData.getValue());
+                    }
+                });
+            })
+            .exceptionally(ex -> {
+                log.error("Error updating TX tab GUI", ex);
+                Platform.runLater(
+                    () -> App.mainController.showErrorMsg("Error updating TX tab", 3));
+                return null;
             });
-        }
     }
 
-    private void showInGuiOnlyUniqueTxs(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction
-            txDetails, MainController c, TxEntity txE, javafx.scene.Node
-                                                txRow) {
+    private void showInGuiOnlyUniqueTxs(
+        ResultLastBlock lastBlock,
+        ResultListBlockTransactions tx,
+        Transaction txDetails,
+        MainController c,
+        TxEntity txE,
+        javafx.scene.Node txRow
+    ) {
         String uniqueKey = lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg() + txE.getTxHash();
         log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
-        if (isNull(concurrentTxsHashMap.get(uniqueKey))) {
+
+        if (!concurrentTxsHashMap.containsKey(uniqueKey)) {
+
             if (concurrentTxsHashMap.size() > 800) {
-                concurrentTxsHashMap.keySet().removeAll(Arrays.asList(concurrentTxsHashMap.keySet().toArray()).subList(concurrentTxsHashMap.size() / 2, concurrentTxsHashMap.size())); // truncate
+                int targetSize = 400;
+                int toRemove = concurrentTxsHashMap.size() - targetSize;
+                Iterator<String> it = concurrentTxsHashMap.keySet().iterator();
+                while (it.hasNext() && toRemove > 0) {
+                    it.next();
+                    it.remove();
+                    toRemove--;
+                }
             }
 
             concurrentTxsHashMap.put(uniqueKey, lastBlock.getCreatedAt());
 
-//            log.debug("showInGuiOnlyUniquShow {}", uniqueKey);
-
             populateTxRowWithData(lastBlock.getShortBlockSeqno(), tx, txDetails, txRow, txE);
 
-            int size = c.transactionsvboxid.getItems().size();
+            ObservableList<javafx.scene.Node> items = c.transactionsvboxid.getItems();
+            int size = items.size();
 
             if (size > txsScrollBarHighWaterMark.get()) {
-                c.transactionsvboxid.getItems().remove(size - 1);
+                items.remove(size - 1);
             }
 
-            c.transactionsvboxid.getItems().add(0, txRow);
+            items.add(0, txRow);
         }
     }
 
@@ -1444,59 +1580,75 @@ public class MyLocalTon {
     }
 
     private void updateBlocksTabGui(ResultLastBlock lastBlock) {
-
         MainController c = fxmlLoader.getController();
-        ResultLastBlock finalLastBlock = lastBlock;
 
-        Platform.runLater(() -> {
-            try {
-                // update top bar
-                if (finalLastBlock.getWc().equals(-1L)) {
-                    c.currentBlockNum.setSecondaryText(finalLastBlock.getSeqno().toString());
+        CompletableFuture
+            .supplyAsync(() -> {
+                if (!Boolean.TRUE.equals(autoScroll)) {
+                    return null;
                 }
 
-                if (Boolean.TRUE.equals(autoScroll)) {
-
-                    // update blocks row
-                    FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("blockrow.fxml"));
-                    javafx.scene.Node blockRow;
+                try {
+                    FXMLLoader blockRowLoader = new FXMLLoader(
+                        App.class.getResource("blockrow.fxml"));
+                    return (javafx.scene.Node) blockRowLoader.load();
+                } catch (IOException e) {
+                    log.error("Error loading blockrow.fxml file: {}", e.getMessage(), e);
+                    return null;
+                }
+            }, ForkJoinPool.commonPool())
+            .thenAccept(blockRow -> {
+                Platform.runLater(() -> {
                     try {
-                        blockRow = fxmlLoader.load();
-                    } catch (IOException e) {
-                        log.error("error loading blockrow.fxml file, {}", e.getMessage());
-                        return;
-                    }
-                    if (finalLastBlock.getWc() == -1L) {
-                        (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
-                    }
+                        if (lastBlock.getWc().equals(-1L)) {
+                            c.currentBlockNum.setSecondaryText(lastBlock.getSeqno().toString());
+                        }
 
-                    showInGuiOnlyUniqueBlocks(c, finalLastBlock, blockRow);
-                }
-            } catch (Exception e) {
-                log.error("error displaying block, {}", e.getMessage());
-            }
-        });
+                        if (Boolean.TRUE.equals(autoScroll) && blockRow != null) {
+                            if (lastBlock.getWc() == -1L) {
+                                blockRow.lookup("#blockRowBorderPane").getStyleClass()
+                                    .add("row-pane-gray");
+                            }
+
+                            showInGuiOnlyUniqueBlocks(c, lastBlock, blockRow);
+                        }
+                    } catch (Exception e) {
+                        log.error("Error displaying block: {}", e.getMessage(), e);
+                    }
+                });
+            });
     }
 
     private void showInGuiOnlyUniqueBlocks(MainController c, ResultLastBlock finalLastBlock, javafx.scene.Node blockRow) {
-        if (isNull(concurrentBlocksHashMap.get(finalLastBlock.getShortBlockSeqno()))) {
+        String shortBlockSeq = finalLastBlock.getShortBlockSeqno();
+
+        if (!concurrentBlocksHashMap.containsKey(shortBlockSeq)) {
+
             if (concurrentBlocksHashMap.size() > 400) {
-                concurrentBlocksHashMap.keySet().removeAll(Arrays.asList(concurrentBlocksHashMap.keySet().toArray()).subList(concurrentBlocksHashMap.size() / 2, concurrentBlocksHashMap.size())); // truncate
+                int targetSize = 200;
+                int toRemove = concurrentBlocksHashMap.size() - targetSize;
+                Iterator<String> it = concurrentBlocksHashMap.keySet().iterator();
+                while (it.hasNext() && toRemove > 0) {
+                    it.next();
+                    it.remove();
+                    toRemove--;
+                }
             }
 
-            concurrentBlocksHashMap.put(finalLastBlock.getShortBlockSeqno(), finalLastBlock.getCreatedAt());
+            concurrentBlocksHashMap.put(shortBlockSeq, finalLastBlock.getCreatedAt());
 
             populateBlockRowWithData(finalLastBlock, blockRow, null);
 
-            int size = c.blockslistviewid.getItems().size();
-            if (size > blocksScrollBarHighWaterMark.get()) { // by default we show 30 blocks in GUI, we can fetch up to 1000 blocks by scrolling
-                c.blockslistviewid.getItems().remove(size - 1);
-                //concurrentHashMap.truncate
+            ObservableList<javafx.scene.Node> items = c.blockslistviewid.getItems();
+
+            if (items.size() > blocksScrollBarHighWaterMark.get()) {
+                items.remove(items.size() - 1);
             }
 
-            c.blockslistviewid.getItems().add(0, blockRow);
+            items.add(0, blockRow);
         }
     }
+
 
     public void showFoundBlocksInGui(List<BlockEntity> foundBlocks, String searchFor) {
 

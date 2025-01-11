@@ -1,5 +1,14 @@
 package org.ton.executors.validatorengine;
 
+import static org.ton.main.App.mainController;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -8,13 +17,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.ton.main.Main;
 import org.ton.settings.Node;
 import org.ton.utils.MyLocalTonUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.concurrent.*;
-
-import static org.ton.main.App.mainController;
 
 @Slf4j
 public class ValidatorEngineExecutor {
@@ -32,23 +34,23 @@ public class ValidatorEngineExecutor {
         try {
             log.debug("execute: {}", String.join(" ", withBinaryCommand));
 
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-
             final ProcessBuilder pb = new ProcessBuilder(withBinaryCommand).redirectErrorStream(true);
 
             pb.directory(new File(new File(binaryPath).getParent()));
             Process p = pb.start();
             p.waitFor(5, TimeUnit.SECONDS);
-            CompletableFuture onProcessExit = p.onExit();
+            CompletableFuture<Process> onProcessExit = p.onExit();
 
             onProcessExit.thenAccept(ph -> {
-                log.debug("node {} with PID {} has stopped, exitValue {}", node.getNodeName(), ((Process) ph).pid(), ((Process) ph).exitValue());
+                log.debug("node {} with PID {} has stopped, exitValue {}", node.getNodeName(),
+                    ph.pid(), ph.exitValue());
 
-                if (((Process) ph).exitValue() == 1) {
-                    log.error("node {} with PID {} has stopped. FATAL ERROR - see node's log file!", node.getNodeName(), ((Process) ph).pid());
+                if (ph.exitValue() == 1) {
+                    log.error("node {} with PID {} has stopped. FATAL ERROR - see node's log file!",
+                        node.getNodeName(), ph.pid());
                 }
 
-                if ((((Process) ph).exitValue() > 0) && (Main.appActive.get())) {
+                if ((ph.exitValue() > 0) && (Main.appActive.get())) {
 
                     if (node.getFlag().equals("cloned")) {
                         log.info("re-starting validator {}...", node.getNodeName());
@@ -57,18 +59,16 @@ public class ValidatorEngineExecutor {
                     } else {
                         if (!node.getNodeName().equals("genesis")) {
                             log.info("failed {} creation, delete it", node.getNodeName());
-                            ExecutorService service = Executors.newSingleThreadExecutor();
-                            service.execute(() -> {
+                            ForkJoinPool.commonPool().execute(() -> {
                                 MyLocalTonUtils.doDelete(node.getNodeName());
                                 mainController.showDialogMessage("Error", "Validator " + node.getNodeName() + " could not be created. For more information refer to the log files.");
                             });
-                            service.shutdown();
                         }
                     }
                 }
             });
 
-            Future<String> future = executorService.submit(() -> {
+            Future<String> future = ForkJoinPool.commonPool().submit(() -> {
                 try {
                     Thread.currentThread().setName("validator-engine-" + node.getNodeName());
 
@@ -86,8 +86,6 @@ public class ValidatorEngineExecutor {
                     return null;
                 }
             });
-
-            executorService.shutdown();
 
             return Pair.of(p, future);
 

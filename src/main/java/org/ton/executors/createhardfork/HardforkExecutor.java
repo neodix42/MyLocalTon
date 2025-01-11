@@ -1,19 +1,17 @@
 package org.ton.executors.createhardfork;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.settings.Node;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class HardforkExecutor {
@@ -31,14 +29,12 @@ public class HardforkExecutor {
         try {
             log.debug("execute: {}", String.join(" ", withBinaryCommand));
 
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
-
             final ProcessBuilder pb = new ProcessBuilder(withBinaryCommand).redirectErrorStream(true);
 
             pb.directory(new File(new File(binaryPath).getParent()));
             Process p = pb.start();
             p.waitFor(5, TimeUnit.SECONDS);
-            Future<String> future = executorService.submit(() -> {
+          Future<String> future = ForkJoinPool.commonPool().submit(() -> {
                 try {
                     Thread.currentThread().setName("create-hardfork-" + node.getNodeName());
 
@@ -55,8 +51,6 @@ public class HardforkExecutor {
                     return null;
                 }
             });
-
-            executorService.shutdown();
 
             return Pair.of(p, future);
 
