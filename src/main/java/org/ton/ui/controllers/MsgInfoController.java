@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +15,6 @@ import org.ton.utils.MyLocalTonUtils;
 
 @Slf4j
 public class MsgInfoController {
-
-  @FXML
-  private ScrollPane rootScrollPane;
 
   @FXML
   private TitledPane msgTitledPane;
