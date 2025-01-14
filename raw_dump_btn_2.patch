@@ -1,0 +1,460 @@
+Subject: [PATCH] raw dump btn 2
+---
+Index: src/main/java/org/ton/ui/controllers/TxInfoController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/ton/ui/controllers/TxInfoController.java b/src/main/java/org/ton/ui/controllers/TxInfoController.java
+--- a/src/main/java/org/ton/ui/controllers/TxInfoController.java	(revision 2b6e0204ce34f8cb08e478f07372aebf0091df99)
++++ b/src/main/java/org/ton/ui/controllers/TxInfoController.java	(date 1736525508108)
+@@ -16,10 +16,12 @@
+ import javafx.geometry.Bounds;
+ import javafx.geometry.Insets;
+ import javafx.scene.Node;
++import javafx.scene.Parent;
+ import javafx.scene.control.Label;
+ import javafx.scene.control.ScrollPane;
+ import javafx.scene.control.TitledPane;
+ import javafx.scene.layout.GridPane;
++import javafx.scene.layout.Pane;
+ import javafx.scene.layout.VBox;
+ import javafx.util.Duration;
+ import lombok.extern.slf4j.Slf4j;
+@@ -183,8 +185,14 @@
+     addExpandedProperty(actionTitledPane, rootScrollPane);
+   }
+ 
+-  public void initData(String txJson) {
++  public void initData(String txJson, Parent rawDumpContent) {
+     try {
++      Node currentContent = transactionTitledPane.getContent();
++
++      if (currentContent instanceof Pane) {
++        ((Pane) currentContent).getChildren().add(rawDumpContent);
++      }
++
+       JsonObject root = JsonParser.parseString(txJson).getAsJsonObject();
+ 
+       // ---------------- Top-level fields ----------------
+Index: src/main/resources/org/ton/main/MsgInfoView.fxml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/org/ton/main/MsgInfoView.fxml b/src/main/resources/org/ton/main/MsgInfoView.fxml
+--- a/src/main/resources/org/ton/main/MsgInfoView.fxml	(revision 2b6e0204ce34f8cb08e478f07372aebf0091df99)
++++ b/src/main/resources/org/ton/main/MsgInfoView.fxml	(date 1736525508109)
+@@ -7,9 +7,10 @@
+ <?import javafx.scene.layout.VBox?>
+ <ScrollPane xmlns:fx="http://javafx.com/fxml"
+   fitToHeight="true"
+-  fitToWidth="true" fx:controller="org.ton.ui.controllers.MsgInfoController">
++  fitToWidth="true" fx:controller="org.ton.ui.controllers.MsgInfoController" fx:id="rootScrollPane">
+ 
+-  <TitledPane maxWidth="Infinity" styleClass="label-second-font-14" text="Message">
++  <TitledPane maxWidth="Infinity" styleClass="label-second-font-14" text="Message"
++    fx:id="msgTitledPane">
+     <VBox style="-fx-padding: 10;" spacing="10">
+       <!-- srcAddr -->
+       <GridPane hgap="10" vgap="5">
+Index: src/main/resources/org/ton/main/rawdump.fxml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/org/ton/main/rawdump.fxml b/src/main/resources/org/ton/main/rawdump.fxml
+--- a/src/main/resources/org/ton/main/rawdump.fxml	(revision 2b6e0204ce34f8cb08e478f07372aebf0091df99)
++++ b/src/main/resources/org/ton/main/rawdump.fxml	(date 1736525508109)
+@@ -4,7 +4,9 @@
+ <?import javafx.embed.swing.SwingNode?>
+ <?import javafx.scene.layout.BorderPane?>
+ <?import javafx.scene.layout.HBox?>
+-<?import javafx.scene.paint.*?>
++<?import javafx.scene.paint.Color?>
++<?import javafx.scene.paint.LinearGradient?>
++<?import javafx.scene.paint.Stop?>
+ <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1"
+             xmlns="http://javafx.com/javafx/17.0.2" fx:controller="org.ton.ui.controllers.RawDumpController">
+     <center>
+@@ -15,7 +17,7 @@
+     <bottom>
+         <HBox alignment="CENTER">
+             <JFXButton fx:id="showDumpBtn" onAction="#showRawDump" style="-fx-alignment: bottom-right; -fx-padding: 2 10 2 10; -fx-background-color: grey;" text="Show raw dump" textFill="WHITE"
+-                       userData="block">
++              userData="block#data">
+                 <ripplerFill>
+                     <LinearGradient>
+                         <stops>
+Index: src/main/java/org/ton/ui/controllers/MsgInfoController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/ton/ui/controllers/MsgInfoController.java b/src/main/java/org/ton/ui/controllers/MsgInfoController.java
+--- a/src/main/java/org/ton/ui/controllers/MsgInfoController.java	(revision 2b6e0204ce34f8cb08e478f07372aebf0091df99)
++++ b/src/main/java/org/ton/ui/controllers/MsgInfoController.java	(date 1736525508108)
+@@ -5,13 +5,23 @@
+ import com.google.gson.JsonObject;
+ import com.google.gson.JsonParser;
+ import javafx.fxml.FXML;
++import javafx.scene.Node;
++import javafx.scene.Parent;
+ import javafx.scene.control.Label;
++import javafx.scene.control.ScrollPane;
++import javafx.scene.control.TitledPane;
++import javafx.scene.layout.Pane;
+ import lombok.extern.slf4j.Slf4j;
+ import org.ton.utils.MyLocalTonUtils;
+ 
+ @Slf4j
+ public class MsgInfoController {
+ 
++  @FXML
++  private ScrollPane rootScrollPane;
++
++  @FXML
++  private TitledPane msgTitledPane;
+   // srcAddr
+   @FXML
+   private Label srcAddrWcLabel;
+@@ -65,8 +75,14 @@
+   private Label ihrFeeLabel;
+ 
+ 
+-  public void initData(String msgJson) {
++  public void initData(String msgJson, Parent rawDumpContent) {
+     try {
++      Node currentContent = msgTitledPane.getContent();
++
++      if (currentContent instanceof Pane) {
++        ((Pane) currentContent).getChildren().add(rawDumpContent);
++      }
++
+       JsonObject root = JsonParser.parseString(msgJson).getAsJsonObject();
+ 
+       // srcAddr
+Index: src/main/resources/org/ton/main/txinfoview.fxml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/org/ton/main/txinfoview.fxml b/src/main/resources/org/ton/main/txinfoview.fxml
+new file mode 100644
+--- /dev/null	(date 1736525508109)
++++ b/src/main/resources/org/ton/main/txinfoview.fxml	(date 1736525508109)
+@@ -0,0 +1,251 @@
++<?xml version="1.0" encoding="UTF-8"?>
++
++<?import javafx.scene.control.Label?>
++<?import javafx.scene.control.ScrollPane?>
++<?import javafx.scene.control.TitledPane?>
++<?import javafx.scene.layout.GridPane?>
++<?import javafx.scene.layout.VBox?>
++<ScrollPane xmlns:fx="http://javafx.com/fxml"
++  fitToHeight="true"
++  fitToWidth="true"
++  fx:controller="org.ton.ui.controllers.TxInfoController" fx:id="rootScrollPane">
++
++  <TitledPane maxWidth="Infinity" styleClass="label-second-font-14" text="Transaction"
++    fx:id="transactionTitledPane">
++    <VBox style="-fx-padding: 10;" alignment="CENTER" spacing="10">
++
++      <GridPane style="-fx-padding: 5;" hgap="10" vgap="5">
++        <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="origStatus:"/>
++        <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="origStatusLabel"/>
++
++        <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="endStatus:"/>
++        <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="endStatusLabel"/>
++
++        <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="accountAddr:"/>
++        <Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="accountAddrLabel"/>
++
++        <Label GridPane.columnIndex="0" GridPane.rowIndex="3" text="outMsgsCount:"/>
++        <Label GridPane.columnIndex="1" GridPane.rowIndex="3" fx:id="outMsgsCountLabel"/>
++
++        <Label GridPane.columnIndex="0" GridPane.rowIndex="4" text="prevTxHash:"/>
++        <Label GridPane.columnIndex="1" GridPane.rowIndex="4" fx:id="prevTxHashLabel"/>
++
++        <Label GridPane.columnIndex="0" GridPane.rowIndex="5" text="lt:"/>
++        <Label GridPane.columnIndex="1" GridPane.rowIndex="5" fx:id="ltLabel"/>
++
++        <Label GridPane.columnIndex="0" GridPane.rowIndex="6" text="prevTxLt:"/>
++        <Label GridPane.columnIndex="1" GridPane.rowIndex="6" fx:id="prevTxLtLabel"/>
++
++        <Label GridPane.columnIndex="0" GridPane.rowIndex="7" text="now:"/>
++        <Label GridPane.columnIndex="1" GridPane.rowIndex="7" fx:id="nowLabel"/>
++
++        <Label GridPane.columnIndex="0" GridPane.rowIndex="8" text="oldHash:"/>
++        <Label GridPane.columnIndex="1" GridPane.rowIndex="8" fx:id="oldHashLabel"/>
++
++        <Label GridPane.columnIndex="0" GridPane.rowIndex="9" text="newHash:"/>
++        <Label GridPane.columnIndex="1" GridPane.rowIndex="9" fx:id="newHashLabel"/>
++      </GridPane>
++
++      <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
++        text="inMsgs">
++        <VBox style="-fx-padding: 10;" spacing="10" fx:id="inMsgsContainer"/>
++      </TitledPane>
++
++      <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
++        text="outMsgs">
++        <VBox style="-fx-padding: 10;" spacing="10" fx:id="outMsgsContainer"/>
++      </TitledPane>
++
++      <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
++        text="totalFees" fx:id="totalFeesTitledPane">
++        <GridPane style="-fx-padding: 10;" hgap="10" vgap="5">
++          <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="toncoins:"/>
++          <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="totalFeesToncoinsLabel"/>
++
++          <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="otherCurrencies:"/>
++          <Label GridPane.columnIndex="1" GridPane.rowIndex="1"
++            fx:id="totalFeesOtherCurrenciesLabel"/>
++        </GridPane>
++      </TitledPane>
++
++      <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
++        text="description" fx:id="descriptionTitledPane">
++        <VBox style="-fx-padding: 10;" spacing="10">
++          <GridPane hgap="10" vgap="5">
++            <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="type:"/>
++            <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="descTypeLabel"/>
++          </GridPane>
++
++          <GridPane hgap="10" vgap="5">
++            <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="aborted:"/>
++            <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="descAbortedLabel"/>
++
++            <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="destroyed:"/>
++            <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="descDestroyedLabel"/>
++
++            <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="creditFirst:"/>
++            <Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="descCreditFirstLabel"/>
++          </GridPane>
++
++          <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
++            text="credit" fx:id="creditTitledPane">
++            <VBox style="-fx-padding: 5;" spacing="10">
++              <GridPane hgap="10" vgap="5">
++                <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="dueFeesCollected:"/>
++                <Label GridPane.columnIndex="1" GridPane.rowIndex="0"
++                  fx:id="descCreditDueFeesCollectedLabel"/>
++              </GridPane>
++              <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
++                text="credit -> credit" fx:id="innerCreditTitledPane">
++                <GridPane style="-fx-padding: 5;" hgap="10" vgap="5">
++                  <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="toncoins:"/>
++                  <Label GridPane.columnIndex="1" GridPane.rowIndex="0"
++                    fx:id="descCreditCreditToncoinsLabel"/>
++
++                  <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="otherCurrencies:"/>
++                  <Label GridPane.columnIndex="1" GridPane.rowIndex="1"
++                    fx:id="descCreditCreditOtherCurrenciesLabel"/>
++                </GridPane>
++              </TitledPane>
++            </VBox>
++          </TitledPane>
++
++          <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
++            text="compute" fx:id="computeTitledPane">
++            <GridPane style="-fx-padding: 5;" hgap="10" vgap="5">
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="gasFees:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="0"
++                fx:id="descComputeGasFeesLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="gasUsed:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="1"
++                fx:id="descComputeGasUsedLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="gasLimit:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="2"
++                fx:id="descComputeGasLimitLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="3" text="gasCredit:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="3"
++                fx:id="descComputeGasCreditLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="4" text="vmInitStateHash:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="4"
++                fx:id="descComputeVmInitStateHashLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="5" text="vmFinalStateHash:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="5"
++                fx:id="descComputeVmFinalStateHashLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="6" text="accountActivated:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="6"
++                fx:id="descComputeAccountActivatedLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="7" text="msgStateUsed:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="7"
++                fx:id="descComputeMsgStateUsedLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="8" text="success:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="8"
++                fx:id="descComputeSuccessLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="9" text="exitArg:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="9"
++                fx:id="descComputeExitArgLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="10" text="exitCode:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="10"
++                fx:id="descComputeExitCodeLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="11" text="vmSteps:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="11"
++                fx:id="descComputeVmStepsLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="12" text="mode:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="12" fx:id="descComputeModeLabel"/>
++            </GridPane>
++          </TitledPane>
++
++          <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
++            text="action" fx:id="actionTitledPane">
++            <GridPane style="-fx-padding: 5;" hgap="10" vgap="5">
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="success:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="descActionSuccessLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="valid:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="descActionValidLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="noFunds:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="descActionNoFundsLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="3" text="statusChange:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="3"
++                fx:id="descActionStatusChangeLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="4" text="totalFwdFee:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="4"
++                fx:id="descActionTotalFwdFeeLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="5" text="totalActionFee:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="5"
++                fx:id="descActionTotalActionFeeLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="6" text="resultArg:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="6"
++                fx:id="descActionResultArgLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="7" text="resultCode:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="7"
++                fx:id="descActionResultCodeLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="8" text="totActions:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="8"
++                fx:id="descActionTotActionsLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="9" text="specActions:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="9"
++                fx:id="descActionSpecActionsLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="10" text="skippedActions:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="10"
++                fx:id="descActionSkippedActionsLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="11" text="msgsCreated:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="11"
++                fx:id="descActionMsgsCreatedLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="12" text="totalMsgSizeCells:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="12"
++                fx:id="descActionTotalMsgSizeCellsLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="13" text="totalMsgSizeBits:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="13"
++                fx:id="descActionTotalMsgSizeBitsLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="14" text="actionListHash:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="14"
++                fx:id="descActionListHashLabel"/>
++            </GridPane>
++          </TitledPane>
++
++          <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
++            text="storage" fx:id="storageTitledPane">
++            <GridPane style="-fx-padding: 5;" hgap="10" vgap="5">
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="feesCollected:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="0"
++                fx:id="descStorageFeesCollectedLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="feesDue:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="1"
++                fx:id="descStorageFeesDueLabel"/>
++
++              <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="statusChange:"/>
++              <Label GridPane.columnIndex="1" GridPane.rowIndex="2"
++                fx:id="descStorageStatusChangeLabel"/>
++            </GridPane>
++          </TitledPane>
++        </VBox>
++      </TitledPane>
++    </VBox>
++  </TitledPane>
++</ScrollPane>
+Index: src/main/java/org/ton/ui/controllers/TxController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/ton/ui/controllers/TxController.java b/src/main/java/org/ton/ui/controllers/TxController.java
+--- a/src/main/java/org/ton/ui/controllers/TxController.java	(revision 2b6e0204ce34f8cb08e478f07372aebf0091df99)
++++ b/src/main/java/org/ton/ui/controllers/TxController.java	(date 1736525508108)
+@@ -133,7 +133,6 @@
+           } else {
+             showTxDetailsView(txEntity);
+           }
+-//          showTxDump(txEntity, txEntity.getTx());
+         } catch (IOException e) {
+           log.error("Error showing tx dump", e);
+           App.mainController.showErrorMsg("Error showing transaction dump", 3);
+@@ -143,28 +142,40 @@
+   }
+ 
+   private void showMsgDetails(TxEntity txEntity) throws IOException {
+-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ton/main/MsgInfoView.fxml"));
++    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ton/main/msginfoview.fxml"));
+     Parent root = loader.load();
+ 
+     MsgInfoController controller = loader.getController();
+ 
+     String msgJson = new GsonBuilder().setPrettyPrinting().create().toJson(txEntity.getMessage());
+-    controller.initData(msgJson);
+ 
+-    generateStage(root, txEntity, 700, 650);
++    controller.initData(msgJson, getRawDumpContent());
++
++    generateStage(root, txEntity, 700, 850);
+   }
+ 
+ 
+   private void showTxDetailsView(TxEntity txEntity) throws IOException {
+-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ton/main/TxInfoView.fxml"));
++    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/ton/main/txinfoview.fxml"));
+     Parent root = loader.load();
+ 
+     TxInfoController controller = loader.getController();
+ 
+     String txJson = new GsonBuilder().setPrettyPrinting().create().toJson(txEntity.getTx());
+-    controller.initData(txJson);
++
++    controller.initData(txJson, getRawDumpContent());
+ 
+-    generateStage(root, txEntity, 800, 800);
++    generateStage(root, txEntity, 800, 850);
++  }
++
++  private Parent getRawDumpContent() throws IOException {
++    FXMLLoader fxmlLoader = new FXMLLoader(
++        TxController.class
++            .getClassLoader()
++            .getResource("org/ton/main/rawdump.fxml")
++    );
++
++    return fxmlLoader.load();
+   }
+ 
+   private void generateStage(Parent root, TxEntity txEntity, int width, int height) {

@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import lombok.extern.slf4j.Slf4j;
@@ -16,59 +17,27 @@ import org.ton.utils.MyLocalTonUtils;
 @Slf4j
 public class MsgInfoController {
 
-  @FXML
-  private TitledPane msgTitledPane;
-  // srcAddr
-  @FXML
-  private Label srcAddrWcLabel;
-  @FXML
-  private Label srcAddrAddrLabel;
-
-  // destAddr
-  @FXML
-  private Label destAddrWcLabel;
-  @FXML
-  private Label destAddrAddrLabel;
-
-  // прочие поля
-  @FXML
-  private Label typeLabel;
-  @FXML
-  private Label createdAtLabel;
-  @FXML
-  private Label createdLtLabel;
-  @FXML
-  private Label ihrDisabledLabel;
-  @FXML
-  private Label bounceLabel;
-  @FXML
-  private Label bouncedLabel;
-
-  // value
-  @FXML
-  private Label valueToncoinsLabel;
-  @FXML
-  private Label valueOtherCurrenciesLabel;
-
-  // body
-  @FXML
-  private Label bodyCellsLabel;
-
-  // init
-  @FXML
-  private Label initCodeLabel;
-  @FXML
-  private Label initDataLabel;
-  @FXML
-  private Label initLibraryLabel;
-
-  // fees
-  @FXML
-  private Label fwdFeeLabel;
-  @FXML
-  private Label importFeeLabel;
-  @FXML
-  private Label ihrFeeLabel;
+  @FXML private ScrollPane rootScrollPane;
+  @FXML private TitledPane msgTitledPane;
+  @FXML private Label srcAddrWcLabel;
+  @FXML private Label srcAddrAddrLabel;
+  @FXML private Label destAddrWcLabel;
+  @FXML private Label destAddrAddrLabel;
+  @FXML private Label typeLabel;
+  @FXML private Label createdAtLabel;
+  @FXML private Label createdLtLabel;
+  @FXML private Label ihrDisabledLabel;
+  @FXML private Label bounceLabel;
+  @FXML private Label bouncedLabel;
+  @FXML private Label valueToncoinsLabel;
+  @FXML private Label valueOtherCurrenciesLabel;
+  @FXML private Label bodyCellsLabel;
+  @FXML private Label initCodeLabel;
+  @FXML private Label initDataLabel;
+  @FXML private Label initLibraryLabel;
+  @FXML private Label fwdFeeLabel;
+  @FXML private Label importFeeLabel;
+  @FXML private Label ihrFeeLabel;
 
 
   public void initData(String msgJson, Parent rawDumpContent) {
@@ -76,7 +45,7 @@ public class MsgInfoController {
       Node currentContent = msgTitledPane.getContent();
 
       if (currentContent instanceof Pane) {
-        ((Pane) currentContent).getChildren().add(rawDumpContent);
+        ((Pane) currentContent).getChildren().add(0, rawDumpContent);
       }
 
       JsonObject root = JsonParser.parseString(msgJson).getAsJsonObject();

@@ -4,6 +4,7 @@ import static org.ton.utils.MyLocalTonUtils.PATTERN;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jfoenix.controls.JFXButton;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Collection;
@@ -14,6 +15,9 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Matcher;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -22,7 +26,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -48,28 +53,14 @@ import org.ton.utils.MyLocalTonUtils;
 @Slf4j
 public class BlockController {
 
-  @FXML
-  public Label seqno;
-
-  @FXML
-  public Label wc;
-
-  @FXML
-  public Label shard;
-
-  @FXML
-  public Label createdatDate;
-
-  @FXML
-  public Label createdatTime;
-  @FXML
-  public Label filehash;
-
-  @FXML
-  public BorderPane blockRowBorderPane;
-
-  @FXML
-  public Label roothash;
+  @FXML private Label seqno;
+  @FXML private Label wc;
+  @FXML private Label shard;
+  @FXML private Label createdatDate;
+  @FXML private Label createdatTime;
+  @FXML private Label filehash;
+  @FXML private BorderPane blockRowBorderPane;
+  @FXML private Label roothash;
 
   @FXML
   void blockInfoBtn() {
@@ -129,18 +120,6 @@ public class BlockController {
   }
 
   private void showBlockDump(BlockEntity blockEntity, Block block) throws IOException {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-    CodeArea codeArea = new CodeArea();
-    codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-    codeArea.setEditable(false);
-
-    codeArea.getVisibleParagraphs().addModificationObserver(
-        new MyLocalTonUtils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
-    );
-
-    codeArea.replaceText(0, 0, gson.toJson(block));
-
     Stage stage = new Stage();
     stage.initModality(Modality.NONE);
     stage.initStyle(StageStyle.DECORATED);
@@ -148,13 +127,24 @@ public class BlockController {
 
     try {
       Image icon = new Image(Objects.requireNonNull(
-          getClass().getClassLoader().getResourceAsStream("org/ton/images/logo.png")));
+          getClass().getClassLoader().getResourceAsStream("org/ton/images/logo.png"))
+      );
       stage.getIcons().add(icon);
     } catch (NullPointerException e) {
       log.error("Icon not found. Exception thrown {}", e.getMessage(), e);
     }
 
-    Scene scene = new Scene(new StackPane(new VirtualizedScrollPane<>(codeArea)), 1000, 700);
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        BlockController.class.getClassLoader().getResource("org/ton/main/rawdump.fxml")
+    );
+    Parent root = fxmlLoader.load();
+
+    Scene scene = new Scene(root, 1000, 700);
+    scene.setOnKeyPressed(keyEvent -> {
+      if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+        stage.close();
+      }
+    });
 
     scene.getStylesheets().add(
         TxController.class
@@ -163,15 +153,40 @@ public class BlockController {
             .toExternalForm()
     );
 
-    scene.setOnKeyPressed(keyEvent -> {
-      if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-        stage.close();
-      }
-    });
-
     stage.setScene(scene);
     stage.show();
+
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    String json = gson.toJson(block);
+
+    CodeArea codeArea = new CodeArea();
+    codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea)); // нумерация строк
+    codeArea.setEditable(false);
+
+    codeArea.getVisibleParagraphs().addModificationObserver(
+        new MyLocalTonUtils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
+    );
+
+    codeArea.replaceText(0, 0, json);
+
+    VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(codeArea);
+
+    VBox vbox = (VBox) root.lookup("#vboxid");
+    vbox.getChildren().add(vsPane);
+    VBox.setVgrow(vsPane, Priority.ALWAYS);
+    vbox.setAlignment(Pos.CENTER);
+    vbox.setFillWidth(true);
+
+    JFXButton btn = (JFXButton) root.lookup("#showDumpBtn");
+    btn.setUserData("block#" + MyLocalTonUtils.constructFullBlockSeq(
+        blockEntity.getWc(),
+        blockEntity.getShard(),
+        blockEntity.getSeqno(),
+        blockEntity.getRoothash(),
+        blockEntity.getFilehash()
+    ));
   }
+
 
   public StyleSpans<Collection<String>> computeHighlighting(String text) {
     Matcher matcher = PATTERN.matcher(text);

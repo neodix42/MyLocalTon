@@ -12,6 +12,7 @@ import com.jfoenix.controls.JFXToggleButton;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
 import java.util.regex.Matcher;
@@ -19,16 +20,19 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -47,51 +51,30 @@ import org.ton.utils.MyLocalTonUtils;
 @Slf4j
 public class AccountController {
 
-  public static JFXDialog yesNoDialog;
-  @FXML
-  public JFXToggleButton toggleBtn;
-  @FXML
-  public GridPane grid;
-  @FXML
-  public Label hexAddrLabel;
-  @FXML
-  public Label hexAddr;
-  @FXML
-  public Label b64AddrLabel;
-  @FXML
-  public Label b64Addr;
-  @FXML
-  public Label b64urlAddrLabel;
-  @FXML
-  public Label b64urlAddr;
-  @FXML
-  public Label nb64AddrLabel;
-  @FXML
-  public Label nb64Addr;
-  @FXML
-  public Label nb64urlAddrLabel;
-  @FXML
-  public Label nb64urlAddr;
-  @FXML
-  public Label balance;
-  @FXML
-  public Label type;
-  @FXML
-  public Label seqno;
-  @FXML
-  public Label createdat;
-  @FXML
-  Label status;
-  @FXML
-  BorderPane accRowBorderPane;
-  @FXML
-  JFXButton accSendBtn;
-  @FXML
-  JFXButton createSubWalletBtn;
-  @FXML
-  Label walledId;
-  @FXML
-  JFXButton walletDeleteBtn;
+  private static JFXDialog yesNoDialog;
+
+  @FXML private JFXToggleButton toggleBtn;
+  @FXML private GridPane grid;
+  @FXML private Label hexAddrLabel;
+  @FXML private Label hexAddr;
+  @FXML private Label b64AddrLabel;
+  @FXML private Label b64Addr;
+  @FXML private Label b64urlAddrLabel;
+  @FXML private Label b64urlAddr;
+  @FXML private Label nb64AddrLabel;
+  @FXML private Label nb64Addr;
+  @FXML private Label nb64urlAddrLabel;
+  @FXML private Label nb64urlAddr;
+  @FXML private Label balance;
+  @FXML private Label type;
+  @FXML private Label seqno;
+  @FXML private Label createdat;
+  @FXML private Label status;
+  @FXML private BorderPane accRowBorderPane;
+  @FXML private JFXButton accSendBtn;
+  @FXML private JFXButton createSubWalletBtn;
+  @FXML private Label walledId;
+  @FXML private JFXButton walletDeleteBtn;
 
   public void accSendBtnAction() throws IOException {
     log.info("acc send {}", hexAddr.getText());
@@ -130,24 +113,31 @@ public class AccountController {
   }
 
   private void showAccountDump(WalletEntity walletEntity) throws IOException {
-    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-    CodeArea codeArea = new CodeArea();
-    codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
-    codeArea.setEditable(false);
-    codeArea.getVisibleParagraphs().addModificationObserver(
-        new MyLocalTonUtils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
-    );
-
-    codeArea.replaceText(0, 0, gson.toJson(walletEntity));
-
     Stage stage = new Stage();
     stage.initModality(Modality.NONE);
     stage.initStyle(StageStyle.DECORATED);
     stage.setTitle("Account " + walletEntity.getFullAddress());
 
-    VirtualizedScrollPane<CodeArea> scrollPane = new VirtualizedScrollPane<>(codeArea);
-    Scene scene = new Scene(new StackPane(scrollPane), 1000, 700);
+    try {
+      Image icon = new Image(Objects.requireNonNull(
+          getClass().getClassLoader().getResourceAsStream("org/ton/images/logo.png"))
+      );
+      stage.getIcons().add(icon);
+    } catch (NullPointerException e) {
+      log.error("Icon not found. Exception thrown {}", e.getMessage(), e);
+    }
+
+    FXMLLoader fxmlLoader = new FXMLLoader(
+        BlockController.class.getClassLoader().getResource("org/ton/main/rawdump.fxml")
+    );
+    Parent root = fxmlLoader.load();
+
+    Scene scene = new Scene(root, 1000, 700);
+    scene.setOnKeyPressed(keyEvent -> {
+      if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+        stage.close();
+      }
+    });
 
     scene.getStylesheets().add(
         TxController.class
@@ -156,14 +146,35 @@ public class AccountController {
             .toExternalForm()
     );
 
-    scene.setOnKeyPressed(keyEvent -> {
-      if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-        stage.close();
-      }
-    });
-
     stage.setScene(scene);
     stage.show();
+
+    Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    String json = gson.toJson(walletEntity);
+
+    CodeArea codeArea = new CodeArea();
+    codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+    codeArea.setEditable(false);
+
+    codeArea.getVisibleParagraphs().addModificationObserver(
+        new MyLocalTonUtils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting)
+    );
+
+    codeArea.replaceText(0, 0, json);
+
+    VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(codeArea);
+
+    VBox vbox = (VBox) root.lookup("#vboxid");
+    vbox.getChildren().add(vsPane);
+    VBox.setVgrow(vsPane, Priority.ALWAYS);
+    vbox.setAlignment(Pos.CENTER);
+    vbox.setFillWidth(true);
+
+    JFXButton btn = (JFXButton) root.lookup("#showDumpBtn");
+    if (btn != null) {
+      btn.setUserData("account#" + walletEntity.getFullAddress());
+    }
+
   }
 
   public StyleSpans<Collection<String>> computeHighlighting(String text) {
