@@ -30,148 +30,73 @@ import org.ton.utils.MyLocalTonUtils;
 @Slf4j
 public class TxInfoController implements Initializable {
 
-  @FXML
-  private ScrollPane rootScrollPane;
+  @FXML private ScrollPane rootScrollPane;
 
-  // -- Top-level fields --
-  @FXML
-  private Label origStatusLabel;
-  @FXML
-  private Label endStatusLabel;
-  @FXML
-  private Label accountAddrLabel;
-  @FXML
-  private Label outMsgsCountLabel;
-  @FXML
-  private Label prevTxHashLabel;
-  @FXML
-  private Label ltLabel;
-  @FXML
-  private Label prevTxLtLabel;
-  @FXML
-  private Label nowLabel;
-  @FXML
-  private Label oldHashLabel;
-  @FXML
-  private Label newHashLabel;
+  @FXML private Label origStatusLabel;
+  @FXML private Label endStatusLabel;
+  @FXML private Label accountAddrLabel;
+  @FXML private Label outMsgsCountLabel;
+  @FXML private Label prevTxHashLabel;
+  @FXML private Label ltLabel;
+  @FXML private Label prevTxLtLabel;
+  @FXML private Label nowLabel;
+  @FXML private Label oldHashLabel;
+  @FXML private Label newHashLabel;
+  @FXML private VBox inMsgsContainer;
+  @FXML private VBox outMsgsContainer;
+  @FXML private Label totalFeesToncoinsLabel;
+  @FXML private Label totalFeesOtherCurrenciesLabel;
 
-  // -- Containers for the inMsg / outMsgs fields --
-  @FXML
-  private VBox inMsgsContainer;
-  @FXML
-  private VBox outMsgsContainer;
+  @FXML private Label descTypeLabel;
+  @FXML private Label descStorageFeesCollectedLabel;
+  @FXML private Label descStorageFeesDueLabel;
+  @FXML private Label descStorageStatusChangeLabel;
 
-  // -- totalFees --
-  @FXML
-  private Label totalFeesToncoinsLabel;
-  @FXML
-  private Label totalFeesOtherCurrenciesLabel;
+  @FXML private Label descCreditDueFeesCollectedLabel;
+  @FXML private Label descCreditCreditToncoinsLabel;
+  @FXML private Label descCreditCreditOtherCurrenciesLabel;
 
-  // -- description (type + storage + credit + compute + action + aborted/destroyed/creditFirst) --
-  // description -> type
-  @FXML
-  private Label descTypeLabel;
+  @FXML private Label descComputeGasFeesLabel;
+  @FXML private Label descComputeGasUsedLabel;
+  @FXML private Label descComputeGasLimitLabel;
+  @FXML private Label descComputeGasCreditLabel;
+  @FXML private Label descComputeVmInitStateHashLabel;
+  @FXML private Label descComputeVmFinalStateHashLabel;
+  @FXML private Label descComputeAccountActivatedLabel;
+  @FXML private Label descComputeMsgStateUsedLabel;
+  @FXML private Label descComputeSuccessLabel;
+  @FXML private Label descComputeExitArgLabel;
+  @FXML private Label descComputeExitCodeLabel;
+  @FXML private Label descComputeVmStepsLabel;
+  @FXML private Label descComputeModeLabel;
 
-  // description -> storage
-  @FXML
-  private Label descStorageFeesCollectedLabel;
-  @FXML
-  private Label descStorageFeesDueLabel;
-  @FXML
-  private Label descStorageStatusChangeLabel;
+  @FXML private Label descActionSuccessLabel;
+  @FXML private Label descActionValidLabel;
+  @FXML private Label descActionNoFundsLabel;
+  @FXML private Label descActionStatusChangeLabel;
+  @FXML private Label descActionTotalFwdFeeLabel;
+  @FXML private Label descActionTotalActionFeeLabel;
+  @FXML private Label descActionResultArgLabel;
+  @FXML private Label descActionResultCodeLabel;
+  @FXML private Label descActionTotActionsLabel;
+  @FXML private Label descActionSpecActionsLabel;
+  @FXML private Label descActionSkippedActionsLabel;
+  @FXML private Label descActionMsgsCreatedLabel;
+  @FXML private Label descActionTotalMsgSizeCellsLabel;
+  @FXML private Label descActionTotalMsgSizeBitsLabel;
+  @FXML private Label descActionListHashLabel;
+  @FXML private Label descAbortedLabel;
+  @FXML private Label descDestroyedLabel;
+  @FXML private Label descCreditFirstLabel;
 
-  // description -> credit
-  @FXML
-  private Label descCreditDueFeesCollectedLabel;
-  @FXML
-  private Label descCreditCreditToncoinsLabel;
-  @FXML
-  private Label descCreditCreditOtherCurrenciesLabel;
-
-  // description -> compute
-  @FXML
-  private Label descComputeGasFeesLabel;
-  @FXML
-  private Label descComputeGasUsedLabel;
-  @FXML
-  private Label descComputeGasLimitLabel;
-  @FXML
-  private Label descComputeGasCreditLabel;
-  @FXML
-  private Label descComputeVmInitStateHashLabel;
-  @FXML
-  private Label descComputeVmFinalStateHashLabel;
-  @FXML
-  private Label descComputeAccountActivatedLabel;
-  @FXML
-  private Label descComputeMsgStateUsedLabel;
-  @FXML
-  private Label descComputeSuccessLabel;
-  @FXML
-  private Label descComputeExitArgLabel;
-  @FXML
-  private Label descComputeExitCodeLabel;
-  @FXML
-  private Label descComputeVmStepsLabel;
-  @FXML
-  private Label descComputeModeLabel;
-
-  // description -> action
-  @FXML
-  private Label descActionSuccessLabel;
-  @FXML
-  private Label descActionValidLabel;
-  @FXML
-  private Label descActionNoFundsLabel;
-  @FXML
-  private Label descActionStatusChangeLabel;
-  @FXML
-  private Label descActionTotalFwdFeeLabel;
-  @FXML
-  private Label descActionTotalActionFeeLabel;
-  @FXML
-  private Label descActionResultArgLabel;
-  @FXML
-  private Label descActionResultCodeLabel;
-  @FXML
-  private Label descActionTotActionsLabel;
-  @FXML
-  private Label descActionSpecActionsLabel;
-  @FXML
-  private Label descActionSkippedActionsLabel;
-  @FXML
-  private Label descActionMsgsCreatedLabel;
-  @FXML
-  private Label descActionTotalMsgSizeCellsLabel;
-  @FXML
-  private Label descActionTotalMsgSizeBitsLabel;
-  @FXML
-  private Label descActionListHashLabel;
-
-  // description -> aborted / destroyed / creditFirst
-  @FXML
-  private Label descAbortedLabel;
-  @FXML
-  private Label descDestroyedLabel;
-  @FXML
-  private Label descCreditFirstLabel;
-
-  @FXML
-  private TitledPane transactionTitledPane;
-  @FXML
-  private TitledPane totalFeesTitledPane;
-  @FXML
-  private TitledPane descriptionTitledPane;
-  @FXML
-  private TitledPane storageTitledPane;
-  @FXML
-  private TitledPane creditTitledPane;
-  @FXML
-  private TitledPane innerCreditTitledPane;
-  @FXML
-  private TitledPane computeTitledPane;
-  @FXML
-  private TitledPane actionTitledPane;
+  @FXML private TitledPane transactionTitledPane;
+  @FXML private TitledPane totalFeesTitledPane;
+  @FXML private TitledPane descriptionTitledPane;
+  @FXML private TitledPane storageTitledPane;
+  @FXML private TitledPane creditTitledPane;
+  @FXML private TitledPane innerCreditTitledPane;
+  @FXML private TitledPane computeTitledPane;
+  @FXML private TitledPane actionTitledPane;
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -190,7 +115,7 @@ public class TxInfoController implements Initializable {
       Node currentContent = transactionTitledPane.getContent();
 
       if (currentContent instanceof Pane) {
-        ((Pane) currentContent).getChildren().add(rawDumpContent);
+        ((Pane) currentContent).getChildren().add(0, rawDumpContent);
       }
 
       JsonObject root = JsonParser.parseString(txJson).getAsJsonObject();

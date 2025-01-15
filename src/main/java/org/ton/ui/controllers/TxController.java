@@ -1,6 +1,7 @@
 package org.ton.ui.controllers;
 
 import com.google.gson.GsonBuilder;
+import com.jfoenix.controls.JFXButton;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Objects;
@@ -26,53 +27,27 @@ import org.apache.commons.lang3.StringUtils;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.TxPk;
 import org.ton.executors.liteclient.api.BlockShortSeqno;
+import org.ton.executors.liteclient.api.block.Transaction;
 import org.ton.main.App;
 import org.ton.utils.MyLocalTonUtils;
 
 @Slf4j
 public class TxController {
 
-  @FXML
-  Label block;
-
-  @FXML
-  Label txid;
-
-  @FXML
-  Label txidHidden;
-
-  @FXML
-  Label typeMsg;
-
-  @FXML
-  Label typeTx;
-
-  @FXML
-  Label time;
-
-  @FXML
-  Label from;
-
-  @FXML
-  Label to;
-
-  @FXML
-  Label amount;
-
-  @FXML
-  Label fees;
-
-  @FXML
-  Label status;
-
-  @FXML
-  BorderPane txRowBorderPane;
-
-  @FXML
-  Label txAccAddrHidden;
-
-  @FXML
-  Label txLt;
+  @FXML private Label block;
+  @FXML private Label txid;
+  @FXML private Label txidHidden;
+  @FXML private Label typeMsg;
+  @FXML private Label typeTx;
+  @FXML private Label time;
+  @FXML private Label from;
+  @FXML private Label to;
+  @FXML private Label amount;
+  @FXML private Label fees;
+  @FXML private Label status;
+  @FXML private BorderPane txRowBorderPane;
+  @FXML private Label txAccAddrHidden;
+  @FXML private Label txLt;
 
   @FXML
   void txInfoBtn() {
@@ -149,7 +124,7 @@ public class TxController {
 
     String msgJson = new GsonBuilder().setPrettyPrinting().create().toJson(txEntity.getMessage());
 
-    controller.initData(msgJson, getRawDumpContent());
+    controller.initData(msgJson, getRawDumpContent(txEntity, txEntity.getTx()));
 
     generateStage(root, txEntity, 700, 850);
   }
@@ -163,19 +138,23 @@ public class TxController {
 
     String txJson = new GsonBuilder().setPrettyPrinting().create().toJson(txEntity.getTx());
 
-    controller.initData(txJson, getRawDumpContent());
+    controller.initData(txJson, getRawDumpContent(txEntity, txEntity.getTx()));
 
     generateStage(root, txEntity, 800, 850);
   }
 
-  private Parent getRawDumpContent() throws IOException {
+  private Parent getRawDumpContent(TxEntity txEntity, Transaction tx) throws IOException {
     FXMLLoader fxmlLoader = new FXMLLoader(
         TxController.class
             .getClassLoader()
             .getResource("org/ton/main/rawdump.fxml")
     );
 
-    return fxmlLoader.load();
+    Parent root = fxmlLoader.load();
+    JFXButton btn = (JFXButton) root.lookup("#showDumpBtn");
+    btn.setUserData("tx#" + txEntity.getFullBlock() + " " + txEntity.getWc() + ":" + tx.getAccountAddr() + " " + tx.getLt());
+
+    return root;
   }
 
   private void generateStage(Parent root, TxEntity txEntity, int width, int height) {
