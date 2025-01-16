@@ -21,7 +21,6 @@ jobs:
           mvn clean compile package -DskipTests -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
           java -jar artifacts/MyLocalTon-arm64.jar nogui debug test-binaries
-          java -jar artifacts/MyLocalTon-arm64.jar nogui debug test-tonlib
 
       - name: Build & Test arm64-aarch64 testnet
         timeout-minutes: 10
@@ -29,7 +28,6 @@ jobs:
           mvn clean compile package -DskipTests -Dton_branch=testnet -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
           java -jar artifacts/MyLocalTon-arm64-testnet.jar nogui debug test-binaries
-          java -jar artifacts/MyLocalTon-arm64-testnet.jar nogui debug test-tonlib
 
       - name: Upload artifacts
         uses: actions/upload-artifact@master

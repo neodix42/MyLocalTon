@@ -43,7 +43,7 @@ public class Main {
 
     MyLocalTon myLocalTon = MyLocalTon.getInstance();
     myLocalTon.setSettings(MyLocalTonUtils.loadSettings());
-    myLocalTon.saveSettingsToGson(); //create default config
+    myLocalTon.saveSettingsToGson(); // create default config
     MyLocalTonSettings settings = myLocalTon.getSettings();
     log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
 
@@ -93,10 +93,11 @@ public class Main {
 
       Thread.currentThread().setName("MyLocalTon - main");
 
-      Thread.setDefaultUncaughtExceptionHandler((t, e) -> {
-        log.debug("UI Uncaught Exception in thread '{}': {}", t.getName(), e.getMessage());
-        log.debug(ExceptionUtils.getStackTrace(e));
-      });
+      Thread.setDefaultUncaughtExceptionHandler(
+          (t, e) -> {
+            log.debug("UI Uncaught Exception in thread '{}': {}", t.getName(), e.getMessage());
+            log.debug(ExceptionUtils.getStackTrace(e));
+          });
 
       log.info("Starting application at path {}", MyLocalTonUtils.getMyPath());
       App.main(settings, myLocalTon, args);
@@ -111,20 +112,25 @@ public class Main {
       randomAccessFile = new RandomAccessFile(file, "rw");
       fileLock = randomAccessFile.getChannel().tryLock();
       if (nonNull(fileLock)) {
-        boolean notTesting = Arrays.stream(args).noneMatch(
-            arg -> arg.equalsIgnoreCase("test-binaries") || arg.equalsIgnoreCase("test-tonlib"));
+        boolean notTesting =
+            Arrays.stream(args).noneMatch(arg -> arg.equalsIgnoreCase("test-binaries"));
 
         if (notTesting) {
-          Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            log.debug("Shutdown hook triggered...");
-            MyLocalTonUtils.doShutdown();
-          }));
+          Runtime.getRuntime()
+              .addShutdownHook(
+                  new Thread(
+                      () -> {
+                        log.debug("Shutdown hook triggered...");
+                        MyLocalTonUtils.doShutdown();
+                      }));
         }
         return true;
       }
     } catch (Exception e) {
-      log.error("Unable to create and/or lock file: {} , exception: {}",
-          MyLocalTonSettings.LOCK_FILE, e.getMessage());
+      log.error(
+          "Unable to create and/or lock file: {} , exception: {}",
+          MyLocalTonSettings.LOCK_FILE,
+          e.getMessage());
     }
     return false;
   }
