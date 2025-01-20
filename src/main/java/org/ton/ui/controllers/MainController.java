@@ -3604,12 +3604,7 @@ public class MainController implements Initializable {
     public void TonHttpApiCheckBoxClick(MouseEvent mouseEvent) {
         log.debug("TonHttpApiCheckBoxClick {}", enableTonHttpApi.isSelected());
         if (enableTonHttpApi.isSelected()) {
-            if (!python3Installed()) {
-                log.info("python3 is not installed");
-                enableTonHttpApi.setSelected(false);
-                showDialogInstallPython();
-                return;
-            } else if (!pipInstalled()) {
+            if (!pipInstalled()) {
                 log.info("pip is not installed");
                 enableTonHttpApi.setSelected(false);
                 showDialogInstallPip();
@@ -3624,24 +3619,6 @@ public class MainController implements Initializable {
         }
     }
 
-    private boolean python3Installed() {
-        return true;
-//        try {
-//            Process p = Runtime.getRuntime().exec((SystemUtils.IS_OS_WINDOWS ? "python" : "python3") + " --version");
-//            p.waitFor(5, TimeUnit.SECONDS);
-//            if (SystemUtils.IS_OS_MAC) {
-//                String pythonVersion = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
-//                ComparableVersion v = new ComparableVersion(StringUtils.split(pythonVersion, " ")[1]);
-//                if (v.compareTo(new ComparableVersion("3.11")) < 0) {
-//                    return false;
-//                }
-//            }
-//
-//            return (p.exitValue() == 0);
-//        } catch (Exception e) {
-//            return false;
-//        }
-    }
 
     private boolean pipInstalled() {
         try {
