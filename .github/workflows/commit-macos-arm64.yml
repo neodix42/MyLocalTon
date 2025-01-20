@@ -13,6 +13,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'adopt'
+          architecture: 'aarch64'
 
       - name: Build & Test arm64-aarch64 mainnet
         timeout-minutes: 10
