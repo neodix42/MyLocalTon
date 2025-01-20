@@ -1,10 +1,10 @@
-name: Test on Ubuntu 22.04 x86-64
+name: Test on Ubuntu 22.04 arm64
 
 on: [ push,workflow_dispatch,workflow_call ]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-22.04-arm
 
     steps:
       - uses: actions/checkout@v3
@@ -14,15 +14,15 @@ jobs:
           java-version: '17'
           distribution: 'adopt'
 
-      - name: Build & Test x86-64 mainnet
+      - name: Build & Test arm64 mainnet
         timeout-minutes: 10
         run: |
           git fetch -a
           git checkout main
           mkdir artifacts                 
-          mvn clean compile package -DskipTests
-          cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
-          java -jar artifacts/MyLocalTon-x86-64.jar nogui debug test-binaries
+          mvn clean compile package -DskipTests -Darch=-aarch64
+          cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
+          java -jar artifacts/MyLocalTon-arm64.jar nogui debug test-binaries
 
       - name: Upload artifacts
         uses: actions/upload-artifact@master
