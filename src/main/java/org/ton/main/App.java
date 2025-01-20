@@ -60,6 +60,7 @@ public class App extends Application {
     } else {
       // Headless mode - without UI, instant background initialization
       doBackgroundInitialization();
+        log.info("exiting 1");
     }
   }
 

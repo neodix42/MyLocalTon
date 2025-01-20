@@ -81,7 +81,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.ton.actions.MyLocalTon;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
@@ -2846,7 +2845,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2858,7 +2857,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2873,7 +2872,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.info(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2885,7 +2884,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2897,7 +2896,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2909,7 +2908,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2921,7 +2920,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2934,7 +2933,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(electionId);
         clipboard.setContent(content);
-        log.debug(electionId + " copied");
+        log.debug("{} copied", electionId);
         App.mainController.showInfoMsg(electionId + " copied to clipboard", 2);
         mouseEvent.consume();
     }
@@ -2945,7 +2944,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2957,7 +2956,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2972,7 +2971,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.info(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2984,7 +2983,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -2996,7 +2995,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3008,7 +3007,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3020,7 +3019,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3032,7 +3031,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3044,7 +3043,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3059,7 +3058,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.info(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3071,7 +3070,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3083,7 +3082,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3095,7 +3094,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3107,7 +3106,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3119,7 +3118,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3131,7 +3130,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3146,7 +3145,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.info(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3158,7 +3157,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3170,7 +3169,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3182,7 +3181,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3194,7 +3193,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3206,7 +3205,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3218,7 +3217,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3233,7 +3232,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.info(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3257,7 +3256,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3269,7 +3268,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3281,7 +3280,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3293,7 +3292,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3305,7 +3304,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3320,7 +3319,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.info(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3332,7 +3331,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3344,7 +3343,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3356,7 +3355,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3368,7 +3367,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3380,7 +3379,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3392,7 +3391,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3407,7 +3406,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.info(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3419,7 +3418,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3431,7 +3430,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3443,7 +3442,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3455,7 +3454,7 @@ public class MainController implements Initializable {
         final ClipboardContent content = new ClipboardContent();
         content.putString(addr);
         clipboard.setContent(content);
-        log.debug(addr + " copied");
+        log.debug("{} copied", addr);
         String lightAddr = MyLocalTonUtils.getLightAddress(addr);
         App.mainController.showInfoMsg(lightAddr + " copied to clipboard", 2);
         mouseEvent.consume();
@@ -3596,17 +3595,6 @@ public class MainController implements Initializable {
         hostServices.showDocument(TELEGRAM_NEODIX);
     }
 
-//    public void copyDonationTonAddress(MouseEvent mouseEvent) {
-//        String addr = tonDonationAddress.getText();
-//        final Clipboard clipboard = Clipboard.getSystemClipboard();
-//        final ClipboardContent content = new ClipboardContent();
-//        content.putString(addr);
-//        clipboard.setContent(content);
-//        log.debug(addr + " copied");
-//        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
-//        mouseEvent.consume();
-//    }
-
     public void BlockChainExplorerCheckBoxClick(MouseEvent mouseEvent) {
         if (enableBlockchainExplorer.isSelected()) {
             App.mainController.showInfoMsg("Native blockchain-explorer will be available on start", 5);
@@ -3637,21 +3625,22 @@ public class MainController implements Initializable {
     }
 
     private boolean python3Installed() {
-        try {
-            Process p = Runtime.getRuntime().exec((SystemUtils.IS_OS_WINDOWS ? "python" : "python3") + " --version");
-            p.waitFor(5, TimeUnit.SECONDS);
-            if (SystemUtils.IS_OS_MAC) {
-                String pythonVersion = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
-                ComparableVersion v = new ComparableVersion(StringUtils.split(pythonVersion, " ")[1]);
-                if (v.compareTo(new ComparableVersion("3.11")) < 0) {
-                    return false;
-                }
-            }
-
-            return (p.exitValue() == 0);
-        } catch (Exception e) {
-            return false;
-        }
+        return true;
+//        try {
+//            Process p = Runtime.getRuntime().exec((SystemUtils.IS_OS_WINDOWS ? "python" : "python3") + " --version");
+//            p.waitFor(5, TimeUnit.SECONDS);
+//            if (SystemUtils.IS_OS_MAC) {
+//                String pythonVersion = IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
+//                ComparableVersion v = new ComparableVersion(StringUtils.split(pythonVersion, " ")[1]);
+//                if (v.compareTo(new ComparableVersion("3.11")) < 0) {
+//                    return false;
+//                }
+//            }
+//
+//            return (p.exitValue() == 0);
+//        } catch (Exception e) {
+//            return false;
+//        }
     }
 
     private boolean pipInstalled() {

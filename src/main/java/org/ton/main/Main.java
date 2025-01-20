@@ -101,6 +101,7 @@ public class Main {
 
       log.info("Starting application at path {}", MyLocalTonUtils.getMyPath());
       App.main(settings, myLocalTon, args);
+      log.info("exiting 2");
     } else {
       log.error("Instance already running.");
       System.exit(1);
