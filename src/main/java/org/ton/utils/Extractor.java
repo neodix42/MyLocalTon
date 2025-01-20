@@ -280,7 +280,7 @@ public class Extractor {
             log.debug("mac binaries path: {}", MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + BIN);
 
         } catch (Throwable e) {
-            log.error("Cannot extract TON binaries. Error {} ", ExceptionUtils.getStackTrace(e));
+            log.error("Cannot extract TON binaries.");
             System.exit(44);
         }
     }

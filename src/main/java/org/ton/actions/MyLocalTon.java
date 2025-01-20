@@ -223,8 +223,8 @@ public class MyLocalTon {
                           try {
 
                             if (App.testBinaries) {
-                              if (tonlib.getLast().getLast().getSeqno() > 40) {
-                                log.info("force exiting since in testing mode");
+                              if (nonNull(tonlib) && tonlib.getLast().getLast().getSeqno() > 40) {
+                                log.info("force exiting since in testing mode - test PASSED");
                                 System.exit(0);
                               }
                             }

@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -51,7 +54,7 @@ public class App extends Application {
   private static MyLocalTon myLocalTon;
   private static String[] appArgs;
 
-  public static void main(MyLocalTonSettings s, MyLocalTon mlt, String[] args) {
+  public static void main(MyLocalTonSettings s, MyLocalTon mlt, String[] args) throws ExecutionException, InterruptedException, TimeoutException {
     settings = s;
     myLocalTon = mlt;
     appArgs = args;
@@ -59,8 +62,8 @@ public class App extends Application {
       launch(args);
     } else {
       // Headless mode - without UI, instant background initialization
-      doBackgroundInitialization();
-        log.info("exiting 1");
+      doBackgroundInitialization().get(365, TimeUnit.DAYS);
+      log.info("exiting 1");
     }
   }
 

@@ -17,8 +17,6 @@ jobs:
       - name: Build & Test x86-64 mainnet
         timeout-minutes: 10
         run: |
-          git fetch -a
-          git checkout dev
           mkdir artifacts                 
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
