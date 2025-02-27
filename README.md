@@ -19,29 +19,27 @@ alpha version and cannot be treated as production ready.
 
 <img alt="MyLocalton gif demo" src='./screens/MyLocalTon-demo.gif'>
 
-## Matrix of supported OS & Java
+## Supported OS & Java
 
-| OS \ Java           | 11                 | 13                 | 15                 | 17                 | 19                 |
-|---------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
-| Linux x86_64        | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| Linux arm64/aarch64 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| MacOS x86_64 (12+)  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| MacOS arm64/aarch64 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| Windows x86_64      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| OS \ Java           | 21 and higher      | 
+|---------------------|--------------------|
+| Linux x86_64        | :heavy_check_mark: | 
+| Linux arm64/aarch64 | :heavy_check_mark: |
+| MacOS x86_64 (12+)  | :heavy_check_mark: |
+| MacOS arm64/aarch64 | :heavy_check_mark: |
+| Windows x86_64      | :heavy_check_mark: |
 
-Please make sure you are not using headless (no GUI) Java and OS/Java combination matches as per table above.
+## Quick Java 21 installation
+
+| Linux                                 | MacOS                         | Windows                                      |
+|---------------------------------------|-------------------------------|----------------------------------------------|
+| ```sudo apt install openjdk-21-jdk``` | ```brew install openjdk@21``` | ```choco install openjdk --version=21.0.2``` |
 
 ### For MacOS users
 
 In case you are using MacPorts instead of Homebrew on Mac please execute the following command:
 
 `mkdir -p /usr/local/opt/readline/lib; ln -s /opt/local/lib/libreadline.8.dylib /usr/local/opt/readline/lib/`
-
-## Java installation
-
-| Linux                                 | MacOS                         | Windows                                      |
-|---------------------------------------|-------------------------------|----------------------------------------------|
-| ```sudo apt install openjdk-17-jdk``` | ```brew install openjdk@17``` | ```choco install openjdk --version=17.0.2``` |
 
 ## Microsoft Visual C++ Redistributable installation (for Windows only)
 
