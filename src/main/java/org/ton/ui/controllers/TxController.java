@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.ton.actions.DynamicTreeLayout;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.TxPk;
 import org.ton.executors.liteclient.api.BlockShortSeqno;
@@ -48,6 +49,49 @@ public class TxController {
   @FXML private BorderPane txRowBorderPane;
   @FXML private Label txAccAddrHidden;
   @FXML private Label txLt;
+
+  @FXML
+  void txTraceBtn() {
+    String shortseqno = block.getText();
+
+    BlockShortSeqno blockShortSeqno = BlockShortSeqno.builder()
+            .wc(Long.valueOf(StringUtils.substringBetween(shortseqno, "(", ",")))
+            .shard(StringUtils.substringBetween(shortseqno, ",", ","))
+            .seqno(new BigInteger(StringUtils.substring(StringUtils.substringAfterLast(shortseqno, ","), 0, -1)))
+            .build();
+
+    TxPk txPk = TxPk.builder()
+            .createdAt(MyLocalTonUtils.datetimeToTimestamp(time.getText()))
+            .seqno(blockShortSeqno.getSeqno())
+            .wc(blockShortSeqno.getWc())
+            .shard(blockShortSeqno.getShard())
+            .accountAddress(txAccAddrHidden.getText())
+            .txLt(new BigInteger(txLt.getText()))
+            .txHash(txidHidden.getText())
+            .typeTx(typeTx.getText())
+            .typeMsg(typeMsg.getText())
+            .build();
+
+    log.debug("txTraceBtn,  block {}, txPk {}, createdAt {}, seconds {}", blockShortSeqno, txPk, time.getText(), MyLocalTonUtils.datetimeToTimestamp(time.getText()));
+
+    CompletableFuture.supplyAsync(
+            () -> App.dbPool.findTx(txPk), ForkJoinPool.commonPool()
+    ).thenAccept(txEntity -> {
+      if (txEntity == null) {
+        Platform.runLater(() -> App.mainController.showErrorMsg("Transaction not found", 3));
+        return;
+      }
+      Platform.runLater(() -> {
+        try {
+          new DynamicTreeLayout().showTree(txEntity, txEntity.getTx());
+        } catch (Exception e) {
+          log.error("Error showing tx dump", e);
+          App.mainController.showErrorMsg("Error showing transaction dump", 3);
+        }
+      });
+    });
+
+  }
 
   @FXML
   void txInfoBtn() {
