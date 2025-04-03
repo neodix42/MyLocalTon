@@ -140,3 +140,34 @@
     -fx-fill: #888888;
     -fx-opacity: 1.0 ;
 }
+
+
+.graph-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #0088CC;
+    -fx-stroke-width: 2;
+    -fx-stroke-linecap: round;
+    -fx-stroke-linejoin: round;
+
+    -fx-scale-x: 0.5;
+    -fx-scale-y: 0.5;
+}
+
+.graph-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+
+    -fx-padding: 2;
+    -fx-min-width: 32;
+    -fx-min-height: 32;
+    -fx-max-width: 32;
+    -fx-max-height: 32;
+}
+
+.graph-button:hover > .graph-icon {
+    -fx-stroke: #FFFFFF;
+}
+
+.graph-button:hover {
+    -fx-background-color: #0088CC;
+}
