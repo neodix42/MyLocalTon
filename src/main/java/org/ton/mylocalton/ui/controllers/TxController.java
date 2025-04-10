@@ -1,9 +1,7 @@
 package org.ton.mylocalton.ui.controllers;
 
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jfoenix.controls.JFXButton;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Objects;
@@ -161,12 +159,13 @@ public class TxController {
                 return;
               }
 
-              Gson gson = new GsonBuilder().setPrettyPrinting().create();
-              try (FileWriter writer = new FileWriter("txEntity" + txEntity.getSeqno() + ".json")) {
-                gson.toJson(txEntity, writer);
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
+              //              Gson gson = new GsonBuilder().setPrettyPrinting().create();
+              //              try (FileWriter writer = new FileWriter("txEntity" +
+              // txEntity.getSeqno() + ".json")) {
+              //                gson.toJson(txEntity, writer);
+              //              } catch (IOException e) {
+              //                e.printStackTrace();
+              //              }
               Platform.runLater(
                   () -> {
                     try {
@@ -185,7 +184,7 @@ public class TxController {
 
   private void showMsgDetails(TxEntity txEntity) throws IOException {
     FXMLLoader loader =
-        new FXMLLoader(getClass().getResource("org/ton/mylocalton/main/msginfoview.fxml"));
+        new FXMLLoader(getClass().getResource("/org/ton/mylocalton/main/msginfoview.fxml"));
     Parent root = loader.load();
 
     MsgInfoController controller = loader.getController();
@@ -199,7 +198,7 @@ public class TxController {
 
   private void showTxDetailsView(TxEntity txEntity) throws IOException {
     FXMLLoader loader =
-        new FXMLLoader(getClass().getResource("org/ton/mylocalton/main/txinfoview.fxml"));
+        new FXMLLoader(getClass().getResource("/org/ton/mylocalton/main/txinfoview.fxml"));
     Parent root = loader.load();
 
     TxInfoController controller = loader.getController();
