@@ -124,10 +124,10 @@ public class App extends Application {
           } catch (Exception e) {
             log.error(e.getMessage(), e);
           }
-          myLocalTon.createFaucetWallet();
 
           myLocalTon.runBlockchainExplorer();
           myLocalTon.runTonHttpApi();
+          myLocalTon.runDataGenerator();
 
           if (!Arrays.asList(appArgs).isEmpty()) {
             for (String arg : appArgs) {
@@ -148,7 +148,7 @@ public class App extends Application {
                       }
                       settings.getActiveNodes().add(node.getNodeName());
                       MyLocalTon.getInstance()
-                          .createWalletEntity(
+                          .createWalletEntity( // later todo createcontrollingvalidator
                               node,
                               null,
                               WalletVersion.V3R2,
@@ -230,7 +230,8 @@ public class App extends Application {
                           mainController.removeLoadingPane();
                           mainController.showSuccessMsg("TON blockchain is ready!", 2);
                           emit(new CustomActionEvent(CustomEvent.Type.BLOCKCHAIN_READY));
-                          mainController.showSuccessMsg("Wallets are ready. You are all set!", 5);
+                          //                          mainController.showSuccessMsg("Wallets are
+                          // ready. You are all set!", 5);
                         });
                   });
         });

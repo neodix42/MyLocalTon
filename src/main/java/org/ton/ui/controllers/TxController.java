@@ -1,7 +1,9 @@
 package org.ton.ui.controllers;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jfoenix.controls.JFXButton;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Objects;
@@ -144,6 +146,13 @@ public class TxController {
       if (txEntity == null) {
         Platform.runLater(() -> App.mainController.showErrorMsg("Transaction not found", 3));
         return;
+      }
+
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      try (FileWriter writer = new FileWriter("txEntity"+txEntity.getSeqno()+".json")) {
+        gson.toJson(txEntity, writer);
+      } catch (IOException e) {
+        e.printStackTrace();
       }
       Platform.runLater(() -> {
         try {

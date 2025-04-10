@@ -1,18 +1,17 @@
 package org.ton.settings;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.jutils.jprocesses.JProcesses;
-import org.ton.utils.Extractor;
-import org.ton.wallet.WalletAddress;
+import static java.util.Objects.nonNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
-
-import static java.util.Objects.nonNull;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.jutils.jprocesses.JProcesses;
+import org.ton.utils.Extractor;
+import org.ton.wallet.WalletAddress;
 
 public interface Node {
 
@@ -78,6 +77,8 @@ public interface Node {
     default String getValidatorKeyPubLocation() {
         return getTonBinDir() + "smartcont" + File.separator + "validator-keys-1.pub";
     }
+
+    String getValidatorBaseFile();
 
     default void extractBinaries() throws IOException {
         new Extractor(this.getNodeName());
@@ -191,9 +192,9 @@ public interface Node {
 
     Process getNodeProcess();
 
-    Process getDhtServerProcess();
-
     void setNodeProcess(Process process);
+
+    Process getDhtServerProcess();
 
     void setDhtServerProcess(Process process);
 
@@ -222,16 +223,24 @@ public interface Node {
     //outdated?
     String getValidatorPrvKeyHex();
 
+    void setValidatorPrvKeyHex(String validatorPrvKeyHex);
+
     String getValidatorPrvKeyBase64();
+
+    void setValidatorPrvKeyBase64(String validatorPrvKeyBase64);
+    //---
 
     String getValidatorPubKeyHex();
 
-    String getValidatorPubKeyBase64();
-    //---
+    void setValidatorPubKeyHex(String validatorPubKeyHex);
 
-    void setWalletAddress(WalletAddress walletAddress);
+    String getValidatorPubKeyBase64();
+
+    void setValidatorPubKeyBase64(String validatorPubKeyHex);
 
     WalletAddress getWalletAddress();
+
+    void setWalletAddress(WalletAddress walletAddress);
 
     BigDecimal getTotalRewardsCollected();
 
@@ -253,17 +262,9 @@ public interface Node {
 
     void setAvgPureRewardCollected(BigDecimal avgPureRewardCollected);
 
-    void setValidatorPrvKeyHex(String validatorPrvKeyHex);
-
-    void setValidatorPrvKeyBase64(String validatorPrvKeyBase64);
-
-    void setValidatorPubKeyHex(String validatorPubKeyHex);
-
-    void setValidatorPubKeyBase64(String validatorPubKeyHex);
+    String getValidatorAdnlAddrHex();
 
     void setValidatorAdnlAddrHex(String validatorAdnlAddrHex);
-
-    String getValidatorAdnlAddrHex();
 
     String getNodeGlobalConfigLocation();
 
@@ -277,10 +278,6 @@ public interface Node {
 
     void setNodeForkedGlobalConfigLocation(String nodeForkedGlobalConfigLocation);
 
-    void setValidationSigningKey(String validationSigningKey);
-
-    void setValidationSigningPubKey(String validationSigningPubKey);
-
     String getValidationAndlKey();
 
     void setValidationAndlKey(String prevValidationAndlKey);
@@ -291,7 +288,11 @@ public interface Node {
 
     String getValidationSigningKey();
 
+    void setValidationSigningKey(String validationSigningKey);
+
     String getValidationSigningPubKey();
+
+    void setValidationSigningPubKey(String validationSigningPubKey);
 
     BigDecimal getElectionsRipped();
 
@@ -302,6 +303,8 @@ public interface Node {
     void setElectionsCounter(Map<Long, Long> elections);
 
     String getTonLogLevel();
+
+    void setTonLogLevel(String logLevel);
 
     Long getValidatorSyncBefore();
 
@@ -320,7 +323,5 @@ public interface Node {
     BigInteger getDefaultValidatorStake();
 
     void setDefaultValidatorStake(BigInteger amount);
-
-    void setTonLogLevel(String logLevel);
 
 }

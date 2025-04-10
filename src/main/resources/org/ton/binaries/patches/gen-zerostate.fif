@@ -126,6 +126,205 @@ Masterchain swap
 ."elector smart contract address = " 2dup .addr cr 2dup 7 .Addr cr
 "elector" +suffix +".addr" save-address-verbose
 
+// validator-0 wallet-v3 - validator on genesis node
+"wallet-v3-code.fif" include
+// code
+<b 0 32 u, 42 32 u,
+   "validator.pk" load-keypair constant validator_pk
+   B,
+b> // data
+empty_cell // no libraries
+GR$50005   // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."validator-0 address = " .addr cr 2dup 6 .Addr cr
+"validator.addr" save-address-verbose
+
+
+"wallet-v3-code.fif" include
+// code
+<b 0 32 u, 42 32 u,
+   "validator-1.pk" load-keypair constant validator1_pk
+   B,
+b> // data
+empty_cell // no libraries
+GR$50005   // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."validator-1 address = " .addr cr 2dup 6 .Addr cr
+"validator-1.addr" save-address-verbose
+
+
+"wallet-v3-code.fif" include
+// code
+<b 0 32 u, 42 32 u,
+   "validator-2.pk" load-keypair constant validator2_pk
+   B,
+b> // data
+empty_cell // no libraries
+GR$50005   // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."validator-2 address = " .addr cr 2dup 6 .Addr cr
+"validator-2.addr" save-address-verbose
+
+
+"wallet-v3-code.fif" include
+// code
+<b 0 32 u, 42 32 u,
+   "validator-3.pk" load-keypair constant validator3_pk
+   B,
+b> // data
+empty_cell // no libraries
+GR$50005   // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."validator-3 address = " .addr cr 2dup 6 .Addr cr
+"validator-3.addr" save-address-verbose
+
+
+"wallet-v3-code.fif" include
+// code
+<b 0 32 u, 42 32 u,
+   "validator-4.pk" load-keypair constant validator4_pk
+   B,
+b> // data
+empty_cell // no libraries
+GR$50005   // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."validator-4 address = " .addr cr 2dup 6 .Addr cr
+"validator-4.addr" save-address-verbose
+
+
+"wallet-v3-code.fif" include
+// code
+<b 0 32 u, 42 32 u,
+   "validator-5.pk" load-keypair constant validator5_pk
+   B,
+b> // data
+empty_cell // no libraries
+GR$50005   // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."validator-5 address = " .addr cr 2dup 6 .Addr cr
+"validator-5.addr" save-address-verbose
+
+"wallet-v3-code.fif" include
+// code
+<b 0 32 u, 42 32 u,
+   "validator-6.pk" load-keypair constant validator6_pk
+   B,
+b> // data
+empty_cell // no libraries
+GR$50005   // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."validator-6 address = " .addr cr 2dup 6 .Addr cr
+"validator-6.addr" save-address-verbose
+
+
+"wallet-v3-code.fif" include
+// code
+<b 0 32 u, 42 32 u,
+   "validator-7.pk" load-keypair constant validator7_pk
+   B,
+b> // data
+empty_cell // no libraries
+GR$50005   // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."validator-7 address = " .addr cr 2dup 6 .Addr cr
+"validator-7.addr" save-address-verbose
+
+// Faucet smartcontract - wallet-v3
+"wallet-v3-code.fif" include
+// code
+<b 0 32 u, 42 32 u,
+   "faucet.pk" load-keypair constant faucet_pk
+   B,
+b> // data
+empty_cell // no libraries
+GR$1000001   // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."faucet address = " .addr cr 2dup 6 .Addr cr
+"faucet.addr" save-address-verbose
+
+// new-highload-wallet-v2.fif
+"highload-wallet-v2-code.fif" include
+// code
+<b 42 32 i, 0 64 u,
+   "faucet-highload.pk" load-keypair constant faucet_hl_pk
+   B,
+   false 1 i,
+b> // data
+empty_cell // no libraries
+GR$1000001   // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."faucet-highload address = " .addr cr 2dup 6 .Addr cr
+"faucet-highload.addr" save-address-verbose
+
+// new-highload-wallet-v2.fif
+"highload-wallet-v2-code.fif" include
+// code
+<b 42 32 i, 0 64 u,
+   "data-highload.pk" load-keypair constant data_hl_pk
+   B,
+   false 1 i,
+b> // data
+empty_cell // no libraries
+GR$1000001  // balance
+0 // split_depth
+0 // ticktock
+2 // mode: create + setaddr
+register_smc
+dup make_special dup constant faucet_addr
+Masterchain over
+2dup ."data-highload address = " .addr cr 2dup 6 .Addr cr
+"data-highload.addr" save-address-verbose
+
 /*
  *
  * Configuration Parameters

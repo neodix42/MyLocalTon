@@ -59,6 +59,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.util.Strings;
+import org.ton.data.Runner;
 import org.ton.db.entities.BlockEntity;
 import org.ton.db.entities.TxEntity;
 import org.ton.db.entities.WalletEntity;
@@ -139,6 +140,7 @@ public class MyLocalTon {
   public static ScheduledExecutorService validatorsMonitor = null;
   public static Tonlib tonlib;
   public static Tonlib tonlibBlockMonitor;
+  public static Tonlib tonlibDataGenerator;
   private static MyLocalTon singleInstance = null;
   AtomicBigInteger prevBlockSeqno;
   ConcurrentHashMap<String, Long> concurrentBlocksHashMap = new ConcurrentHashMap<>();
@@ -442,12 +444,12 @@ public class MyLocalTon {
       long workchain,
       long subWalletId,
       BigInteger amount,
-      String mnemonic)
+      String privateKey)
       throws Exception {
     MyWallet myWallet = new MyWallet();
 
     WalletAddress walletAddress =
-        myWallet.createFaucetWalletByVersion(walletVersion, workchain, subWalletId, mnemonic);
+        myWallet.createFaucetWalletByVersion(walletVersion, workchain, subWalletId, privateKey);
 
     WalletEntity walletEntity =
         WalletEntity.builder()
@@ -506,57 +508,21 @@ public class MyLocalTon {
     return walletEntity;
   }
 
-  public void createFaucetWallet() {
-
-    if (!settings.getFaucetWalletSettings().isCreated()) {
-      ForkJoinPool.commonPool()
-          .submit(
-              () -> {
-                Thread.currentThread().setName("Create faucet wallet");
-                try {
-                  long chain = settings.getFaucetWalletSettings().getWorkChain();
-                  long walletId = settings.getFaucetWalletSettings().getSubWalletId();
-                  WalletVersion walletVersion =
-                      settings.getFaucetWalletSettings().getWalletVersion();
-                  BigInteger initialBalance =
-                      settings.getFaucetWalletSettings().getInitialBalance();
-                  String mnemonic = settings.getFaucetWalletSettings().getMnemonic();
-
-                  MyLocalTon.getInstance()
-                      .createFaucetWalletEntity(
-                          MyLocalTon.getInstance().getSettings().getGenesisNode(),
-                          walletVersion,
-                          chain,
-                          walletId,
-                          initialBalance,
-                          mnemonic);
-
-                } catch (Exception e) {
-                  e.printStackTrace();
-                }
-              });
-    } else {
-      log.info(
-          "Faucet wallet rawAddress: {}", settings.getFaucetWalletSettings().getWalletRawAddress());
-      log.info("Faucet wallet mnemonic: {}", settings.getFaucetWalletSettings().getMnemonic());
-    }
-  }
-
   public void createInitialWallets(Node genesisNode) throws Exception {
 
     long installed = App.dbPool.getNumberOfWalletsFromAllDBsAsync();
 
-    if (installed < 3) {
-      Thread.sleep(1000);
-      if (!GraphicsEnvironment.isHeadless()) {
-        mainController.showInfoMsg("Creating initial wallets...", 6);
-      } else {
-        log.info("Creating initial wallets...");
-      }
-    }
+    //    if (installed < 3) {
+    //      Thread.sleep(1000);
+    //      if (!GraphicsEnvironment.isHeadless()) {
+    //        mainController.showInfoMsg("Creating initial wallets...", 6);
+    //      } else {
+    //        log.info("Creating initial wallets...");
+    //      }
+    //    }
 
     if (App.dbPool.existsMainWallet() == 0) {
-      createWalletSynchronously(
+      createWalletEntity(
           genesisNode,
           getSettings().getGenesisNode().getTonBinDir()
               + ZEROSTATE
@@ -570,7 +536,7 @@ public class MyLocalTon {
     }
 
     if (App.dbPool.existsConfigWallet() == 0) {
-      createWalletSynchronously(
+      createWalletEntity(
           genesisNode,
           getSettings().getGenesisNode().getTonBinDir()
               + ZEROSTATE
@@ -583,18 +549,11 @@ public class MyLocalTon {
           false); // WC -1
     }
 
-    if (isNull(genesisNode.getWalletAddress())) {
-      log.info(
-          "Creating validator controlling smart-contract for node {}", genesisNode.getNodeName());
-      createWalletSynchronously(
-          genesisNode,
-          null,
-          WalletVersion.V3R2,
-          -1L,
-          settings.getWalletSettings().getDefaultSubWalletId(),
-          genesisNode.getInitialValidatorWalletAmount(),
-          true);
-    }
+    createValidatorControllingSmartContract(genesisNode);
+
+    createWalletFromBaseFile(genesisNode, WalletVersion.V3R2, "faucet");
+    createWalletFromBaseFile(genesisNode, WalletVersion.highload, "faucet-highload");
+    createWalletFromBaseFile(genesisNode, WalletVersion.highload, "data-highload");
 
     while (installed < 3) {
       installed = App.dbPool.getNumberOfWalletsFromAllDBsAsync();
@@ -603,17 +562,84 @@ public class MyLocalTon {
     }
   }
 
-  public void createWalletSynchronously(
-      Node node,
-      String fileBaseName,
-      WalletVersion walletVersion,
-      long workchain,
-      long subWalletid,
-      BigInteger amount,
-      boolean validatorWallet) {
-    createWalletEntity(
-        node, fileBaseName, walletVersion, workchain, subWalletid, amount, validatorWallet);
+  public void createValidatorControllingSmartContract(Node node) {
+    if (isNull(node.getWalletAddress())) {
+      log.info("Creating validator controlling smart-contract for node {}", node.getNodeName());
+      createWalletEntity(
+          node,
+          node.getValidatorBaseFile(),
+          WalletVersion.V3R2,
+          -1L,
+          settings.getWalletSettings().getDefaultSubWalletId(),
+          node.getInitialValidatorWalletAmount(),
+          true);
+    }
   }
+
+  private void createWalletFromBaseFile(Node node, WalletVersion walletVersion, String baseFile) {
+
+    boolean created = false;
+    if (baseFile.contains("faucet-highload")) {
+      created = settings.getFaucetHighloadWalletSettings().isCreated();
+    } else if (baseFile.contains("data-highload")) {
+      created = settings.getFaucetDataWalletSettings().isCreated();
+    } else if (baseFile.contains("faucet")) {
+      created = settings.getFaucetWalletSettings().isCreated();
+    }
+    if (!created) {
+      log.info("Creating faucet wallet {} {} {}", node.getNodeName(), walletVersion, baseFile);
+      createWalletEntity(
+          node,
+          getSettings().getGenesisNode().getTonBinDir() + ZEROSTATE + File.separator + baseFile,
+          walletVersion,
+          -1L,
+          settings.getWalletSettings().getDefaultSubWalletId(),
+          node.getInitialValidatorWalletAmount(),
+          false);
+
+      if (baseFile.contains("faucet-highload")) {
+        settings.getFaucetHighloadWalletSettings().setCreated(true);
+      } else if (baseFile.contains("data-highload")) {
+        settings.getFaucetDataWalletSettings().setCreated(true);
+      } else if (baseFile.contains("faucet")) {
+        settings.getFaucetWalletSettings().setCreated(true);
+      }
+    }
+  }
+
+  //  private void createValidator2ControllingSmartContract(Node node) {
+  //    if (isNull(node.getWalletAddress())) {
+  //      log.info("Creating validator controlling smart-contract for node {}", node.getNodeName());
+  //      createWalletSynchronously(
+  //          node,
+  //          getSettings().getGenesisNode().getTonBinDir()
+  //              + ZEROSTATE
+  //              + File.separator
+  //              + "validator-1",
+  //          WalletVersion.V3R2,
+  //          -1L,
+  //          settings.getWalletSettings().getDefaultSubWalletId(),
+  //          node.getInitialValidatorWalletAmount(),
+  //          true);
+  //    }
+  //  }
+  //
+  //  private void createValidator3ControllingSmartContract(Node node) {
+  //    if (isNull(node.getWalletAddress())) {
+  //      log.info("Creating validator controlling smart-contract for node {}", node.getNodeName());
+  //      createWalletSynchronously(
+  //          node,
+  //          getSettings().getGenesisNode().getTonBinDir()
+  //              + ZEROSTATE
+  //              + File.separator
+  //              + "validator-1",
+  //          WalletVersion.V3R2,
+  //          -1L,
+  //          settings.getWalletSettings().getDefaultSubWalletId(),
+  //          node.getInitialValidatorWalletAmount(),
+  //          true);
+  //    }
+  //  }
 
   public void createWalletEntity(
       Node node,
@@ -632,7 +658,8 @@ public class MyLocalTon {
         log.debug("created wallet address {}", wallet.getHexAddress());
       } else { // read address of initially created wallet (main-wallet and config-master)
         wallet = new Fift().getWalletByBasename(node, fileBaseName);
-        log.debug("read wallet address: {}", wallet.getHexAddress());
+        log.debug(
+            "created wallet from baseFile {}, address: {}", fileBaseName, wallet.getHexAddress());
       }
 
       if (validatorWallet) {
@@ -650,11 +677,11 @@ public class MyLocalTon {
       long workchain,
       long subWalletid,
       BigInteger amount,
-      String mnemonic) {
+      String privateKey) {
     try {
       WalletEntity wallet =
           createFaucetWalletWithFundsAndSmartContract(
-              node, walletVersion, workchain, subWalletid, amount, mnemonic);
+              node, walletVersion, workchain, subWalletid, amount, privateKey);
       settings.getFaucetWalletSettings().setCreated(true);
 
       log.info(
@@ -664,6 +691,32 @@ public class MyLocalTon {
       log.debug("created faucet wallet address {}", wallet.getHexAddress());
     } catch (Exception e) {
       log.error("Error creating faucet wallet! Error {} ", e.getMessage());
+      log.error(ExceptionUtils.getStackTrace(e));
+    }
+  }
+
+  public void createFaucetDataWalletEntity(
+      Node node,
+      WalletVersion walletVersion,
+      long workchain,
+      long subWalletid,
+      BigInteger amount,
+      String privateKey) {
+    try {
+      WalletEntity wallet =
+          createFaucetWalletWithFundsAndSmartContract(
+              node, walletVersion, workchain, subWalletid, amount, privateKey);
+      settings.getFaucetDataWalletSettings().setCreated(true);
+
+      log.info(
+          "Faucet data wallet rawAddress: {}",
+          settings.getFaucetDataWalletSettings().getWalletRawAddress());
+      log.info(
+          "Faucet data wallet mnemonic: {}", settings.getFaucetDataWalletSettings().getMnemonic());
+
+      log.debug("created faucet data wallet address {}", wallet.getHexAddress());
+    } catch (Exception e) {
+      log.error("Error creating faucet data wallet! Error {} ", e.getMessage());
       log.error(ExceptionUtils.getStackTrace(e));
     }
   }
@@ -770,6 +823,19 @@ public class MyLocalTon {
             TimeUnit.SECONDS);
   }
 
+  public void runDataGenerator() {
+    if (settings.getUiSettings().isEnableDataGenerator()) {
+      log.info("Starting data generator");
+      ForkJoinPool.commonPool()
+          .execute(
+              () -> {
+                Thread.currentThread().setName("MyLocalTon - data-generator");
+                Runner runner = Runner.builder().tonlib(tonlibDataGenerator).period(1).build();
+                runner.run();
+              });
+    }
+  }
+
   private void participateAll(ValidationParam v) {
     for (String nodeName : settings.getActiveNodes()) {
       Node node = settings.getNodeByName(nodeName);
@@ -854,6 +920,13 @@ public class MyLocalTon {
     }
 
     tonlibBlockMonitor =
+        Tonlib.builder()
+            .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
+            .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
+            .pathToTonlibSharedLib(tonlibName)
+            .build();
+
+    tonlibDataGenerator =
         Tonlib.builder()
             .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
             .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
@@ -1151,10 +1224,10 @@ public class MyLocalTon {
       return;
     }
 
-    log.debug(
-        "updateAccountsTabGui, wallet account addr {}, state {}",
-        walletEntity.getHexAddress(),
-        walletEntity.getAccountState());
+    //    log.debug(
+    //        "updateAccountsTabGui, wallet account addr {}, state {}",
+    //        walletEntity.getHexAddress(),
+    //        walletEntity.getAccountState());
 
     if (!Boolean.TRUE.equals(autoScroll)) {
       return;
@@ -1277,10 +1350,10 @@ public class MyLocalTon {
     } else {
       log.debug("update gui list with account {}", upperAddr);
       if (walletEntity.getAccountState() != null) {
-        log.debug(
-            "update account details in gui {}, {}",
-            walletEntity.getFullAddress(),
-            walletEntity.getAccountState());
+        //        log.debug(
+        //            "update account details in gui {}, {}",
+        //            walletEntity.getFullAddress(),
+        //            walletEntity.getAccountState());
         for (javafx.scene.Node node : c.accountsvboxid.getItems()) {
           Label hexAddrLabel = (Label) node.lookup("#hexAddr");
           if (hexAddrLabel != null && hexAddrLabel.getText().equals(upperAddr)) {

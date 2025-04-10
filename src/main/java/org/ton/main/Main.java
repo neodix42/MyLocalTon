@@ -76,6 +76,11 @@ public class Main {
         settings.getUiSettings().setEnableBlockchainExplorer(true);
       }
 
+      if (arg.equalsIgnoreCase("data-generator")) {
+        log.info("enabling data-generator on start");
+        settings.getUiSettings().setEnableDataGenerator(true);
+      }
+
       if (InetAddresses.isInetAddress(arg)) {
         log.info("listening on public IP " + arg);
         settings.getGenesisNode().setPublicIp(arg);
