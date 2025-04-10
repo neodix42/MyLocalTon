@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<fx:root type="javafx.scene.layout.HBox" prefHeight="30.0" prefWidth="190.0"
+         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+         stylesheets="@../../../css/global-font.css">
+    <children>
+
+        <Label fx:id="primaryLabel" prefHeight="30.0" styleClass="secondary-label"/>
+
+        <Label fx:id="secondaryLabel" prefHeight="30.0" styleClass="secondary-label"/>
+
+    </children>
+</fx:root>

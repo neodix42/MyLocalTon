@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<Tab fx:id="foundtxstab" text="TXs/Messages" xmlns="http://javafx.com/javafx/17.0.2" xmlns:fx="http://javafx.com/fxml/1">
+    <BorderPane fx:id="foundtxsbp" prefHeight="592.0" prefWidth="1079.0" style="-fx-background-color: dbedff; -fx-padding: 0 0 0 0;" xmlns:fx="http://javafx.com/fxml/1">
+        <top>
+            <VBox prefHeight="595.0" prefWidth="1079.0">
+                <HBox prefHeight="44.0" prefWidth="978.0" BorderPane.alignment="CENTER">
+                    <VBox minWidth="205.0" prefHeight="55.0" prefWidth="205.0">
+                        <Label minWidth="205.0" prefHeight="48.0" prefWidth="205.0" style="-fx-alignment: center;-fx-font-size: 16;" text="BLOCK/STATUS"/>
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="127.0">
+                        <Label prefHeight="48.0" prefWidth="127.0" style="-fx-alignment: center; -fx-font-size: 16;" text="HASH/TIME"/>
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="127.0">
+                        <Label contentDisplay="CENTER" prefHeight="48.0" prefWidth="105.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TYPE"/>
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="350.0">
+                        <Label prefHeight="48.0" prefWidth="350.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FROM/TO"/>
+                    </VBox>
+                    <VBox prefHeight="55.0" prefWidth="160.0">
+                        <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TONCOINS/FEES"/>
+                    </VBox>
+                </HBox>
+                <JFXListView fx:id="foundTxsvboxid" focusTraversable="false" prefHeight="554.0" prefWidth="1079.0"
+                             style="-fx-background-color: dbedff;" BorderPane.alignment="CENTER">
+                    <!-- add dynamic content here -->
+                </JFXListView>
+            </VBox>
+        </top>
+    </BorderPane>
+</Tab>

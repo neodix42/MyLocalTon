@@ -1,0 +1,275 @@
+@font-face{
+    font-family: 'Roboto Mono Medium';
+    src: url("../fonts/RobotoMono-Medium.ttf");
+}
+
+@font-face {
+  font-family: 'Mulish';
+  src: url('../fonts/Mulish-Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Mulish ExtraBold';
+  src: url('../fonts/Mulish-ExtraBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Mulish SemiBold';
+  src: url('../fonts/Mulish-SemiBold.ttf') format('truetype');
+}
+
+.list-cell {
+    -fx-padding: 0px;
+}
+
+<!--
+#subWalletId:focused {
+    -fx-prompt-text-fill: red;
+}
+-->
+
+.jfx-snackbar-content:info-toast {
+    -fx-background-color: dbedff;
+}
+
+.jfx-snackbar-content:success-toast{
+    -fx-background-color: limegreen;
+}
+.jfx-snackbar-content:warning-toast{
+    -fx-background-color: ORANGE;
+}
+.jfx-snackbar-content:error-toast{
+    -fx-background-color: lightcoral;
+}
+.jfx-snackbar-content:fatal-toast{
+    -fx-background-color: BLACK;
+}
+
+<!--
+.label:hover {
+    -fx-background-color: #9ACD32;
+}
+-->
+
+/* Styling the filled track */
+.jfx-slider>.colored-track {
+    -fx-background-color: #0088CC;
+}
+
+.jfx-slider>.track {
+    -fx-background-color: #0088CC;
+}
+
+.jfx-slider>.animated-thumb {
+    -fx-background-color: #0088CC;
+}
+
+/* Styling the slider thumb */
+.jfx-slider>.thumb {
+    -fx-background-color: #0088CC;
+}
+
+
+.progress-bar {
+    -fx-accent: #0088CC;
+}
+
+.progress-bar .bar {
+    -fx-padding: 1px;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+.progress-bar > .track {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-text-box-border: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.jfx-tab-pane .headers-region {
+    -fx-background-color: #FFFFFF;
+}
+
+.jfx-tab-pane .tab-header-background {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #1F1F1F;
+}
+
+.jfx-tab-pane : selected {
+    -fx-background-color: #FFFFFF;
+}
+
+.jfx-tab-pane .tab-selected-line {
+    -fx-scale-x: 75%;
+    -fx-stroke: #0088CC;
+    -fx-stroke-width: 3pt;
+}
+
+.jfx-tab-pane .tab-header-area .tab-selected-line {
+    -fx-background-color: #0088CC;
+}
+
+/* All classes that uses Fonts */
+
+.content-header-label {
+    -fx-font-family: "Mulish ExtraBold";
+    -fx-text-fill: #303757;
+    -fx-font-size: 16px;
+    -fx-alignment: center_left;
+}
+
+.label-second-font-14 {
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 14px;
+}
+
+.label-second-font-16 {
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 16px;
+}
+
+#infoValidator > Label, #paneValidator1 > Label, #paneValidator2 > Label, #paneValidator3 > Label,
+#paneValidator4 > Label, #paneValidator5 > Label, #paneValidator6 > Label, #paneValidator7 > Label,
+#settingsPaneValidator1 > Label, #settingsPaneValidator1 > JFXTextField, #settingsPaneValidator2 > Label, #settingsPaneValidator2 > JFXTextField,
+#settingsPaneValidator3 > Label, #settingsPaneValidator3 > JFXTextField, #settingsPaneValidator4 > Label, #settingsPaneValidator4 > JFXTextField,
+#settingsPaneValidator5 > Label, #settingsPaneValidator5 > JFXTextField, #settingsPaneValidator6 > Label, #settingsPaneValidator6 > JFXTextField,
+#settingsPaneValidator7 > Label, #settingsPaneValidator7 > JFXTextField {
+        -fx-font-family: "Roboto Mono Medium";
+        -fx-text-fill: #1F1F1F;
+}
+
+.tab-label {
+    -fx-font-family: "Roboto Mono Medium";
+    -fx-text-fill: #1F1F1F;
+}
+
+
+.row-label-normal {
+    -fx-font-family: "Roboto Mono Medium";
+    -fx-alignment: center_left;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 14px;
+}
+
+.row-label-small {
+    -fx-font-family: "Roboto Mono Medium";
+    -fx-alignment: center_left;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 12px;
+}
+
+.row-label-small-right {
+    -fx-font-family: "Roboto Mono Medium";
+    -fx-alignment: center-right;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 12px;
+}
+
+.row-label-small-left {
+    -fx-font-family: "Roboto Mono Medium";
+    -fx-alignment: center-left;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-size: 12px;
+}
+
+.textfield-font {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6E6E6E;
+    -fx-font-family: "Mulish SemiBold";
+}
+
+.combobox-font {
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.combobox-font > .list-cell  {
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.combo-box-popup > .list-view  {
+    -fx-padding: 0 10 0 10;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.combobox-font .input-focused-line {
+	-fx-pref-height: 0px;
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.combobox-font : selected {
+    -fx-font-size: 16px;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #6E6E6E;
+}
+
+.main-label {
+    -fx-font-size: 16px;
+    -fx-padding: 0 0 0 10;
+    -fx-font-family: "Mulish";
+    -fx-text-fill: #303757;
+    -fx-font-weight: 700;
+}
+
+.menu-button:activated > #mainLabel {
+    -fx-font-size: 16px;
+    -fx-padding: 0 0 0 10;
+    -fx-font-family: "Mulish";
+    -fx-font-weight: 700;
+    -fx-text-fill: #FFFFFF;
+}
+
+.submenu-button {
+    -fx-font-size: 13px;
+    -fx-padding: 0 0 0 10;
+    -fx-text-fill: #6E6E6E;
+    -fx-font-family: "Mulish";
+    -fx-font-weight: 700;
+}
+
+.primary-label {
+    -fx-font-size: 14px;
+    -fx-font-family: "Mulish ExtraBold";
+    -fx-text-fill: #888888;
+}
+
+.secondary-label {
+    -fx-font-size: 14px;
+    -fx-font-family: "Mulish SemiBold";
+    -fx-text-fill: #888888;
+}
+
+
+
+
+.modal-pane-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #303757;
+    -fx-font-family: "Mulish ExtraBold";
+}
+
+/*
+.modal-second-content-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: #1F1F1F;
+    -fx-font-family: "Mulish";
+}*/
+
+.custom-button-form {
+    -fx-background-radius: 40;
+    -fx-background-color: #0088CC;
+    -fx-text-fill: #F7F9FB;
+    -fx-font-size: 14px;
+    -fx-font-family: "Mulish ExtraBold";
+}
