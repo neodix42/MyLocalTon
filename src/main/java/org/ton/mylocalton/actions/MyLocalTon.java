@@ -41,7 +41,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.util.Duration;
-import javafx.util.Pair;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -651,56 +650,6 @@ public class MyLocalTon {
     }
   }
 
-  public void createFaucetWalletEntity(
-      Node node,
-      WalletVersion walletVersion,
-      long workchain,
-      long subWalletid,
-      BigInteger amount,
-      String privateKey) {
-    try {
-      WalletEntity wallet =
-          createFaucetWalletWithFundsAndSmartContract(
-              node, walletVersion, workchain, subWalletid, amount, privateKey);
-      settings.getFaucetWalletSettings().setCreated(true);
-
-      log.info(
-          "Faucet wallet rawAddress: {}", settings.getFaucetWalletSettings().getWalletRawAddress());
-      log.info("Faucet wallet mnemonic: {}", settings.getFaucetWalletSettings().getMnemonic());
-
-      log.debug("created faucet wallet address {}", wallet.getHexAddress());
-    } catch (Exception e) {
-      log.error("Error creating faucet wallet! Error {} ", e.getMessage());
-      log.error(ExceptionUtils.getStackTrace(e));
-    }
-  }
-
-  public void createFaucetDataWalletEntity(
-      Node node,
-      WalletVersion walletVersion,
-      long workchain,
-      long subWalletid,
-      BigInteger amount,
-      String privateKey) {
-    try {
-      WalletEntity wallet =
-          createFaucetWalletWithFundsAndSmartContract(
-              node, walletVersion, workchain, subWalletid, amount, privateKey);
-      settings.getFaucetDataWalletSettings().setCreated(true);
-
-      log.info(
-          "Faucet data wallet rawAddress: {}",
-          settings.getFaucetDataWalletSettings().getWalletRawAddress());
-      log.info(
-          "Faucet data wallet mnemonic: {}", settings.getFaucetDataWalletSettings().getMnemonic());
-
-      log.debug("created faucet data wallet address {}", wallet.getHexAddress());
-    } catch (Exception e) {
-      log.error("Error creating faucet data wallet! Error {} ", e.getMessage());
-      log.error(ExceptionUtils.getStackTrace(e));
-    }
-  }
-
   public void runBlockchainSizeMonitor() {
     monitorExecutorService = Executors.newSingleThreadScheduledExecutor();
     monitorExecutorService.scheduleWithFixedDelay(
@@ -993,73 +942,28 @@ public class MyLocalTon {
   public void dumpBlockTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
 
     LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
-    class TxGuiUpdateInfo {
+    List<ResultListBlockTransactions> txs =
+        LiteClientParser.parseListBlockTrans(liteClient.executeListblocktrans(node, lastBlock, 0));
+    log.debug("found {} transactions in block {}", txs.size(), lastBlock.getShortBlockSeqno());
 
-      final ResultLastBlock lastBlock;
-      final ResultListBlockTransactions tx;
-      final Transaction txDetails;
-      final List<TxEntity> txEntities;
+    for (ResultListBlockTransactions tx : txs) {
+      Transaction txDetails =
+          LiteClientParser.parseDumpTrans(
+              liteClient.executeDumptrans(node, lastBlock, tx),
+              settings.getUiSettings().isShowBodyInMessage());
+      if (nonNull(txDetails)) {
 
-      TxGuiUpdateInfo(
-          ResultLastBlock lastBlock,
-          ResultListBlockTransactions tx,
-          Transaction txDetails,
-          List<TxEntity> txEntities) {
-        this.lastBlock = lastBlock;
-        this.tx = tx;
-        this.txDetails = txDetails;
-        this.txEntities = txEntities;
+        List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, tx, txDetails);
+
+        txEntities.forEach(App.dbPool::insertTx);
+
+        detectNewAccount(lastBlock, tx, txDetails);
+
+        if (updateGuiNow) {
+          updateTxTabGui(lastBlock, tx, txDetails, txEntities);
+        }
       }
     }
-
-    CompletableFuture.supplyAsync(
-            () -> {
-              List<ResultListBlockTransactions> txs =
-                  LiteClientParser.parseListBlockTrans(
-                      liteClient.executeListblocktrans(node, lastBlock, 0));
-              log.debug(
-                  "found {} transactions in block {}", txs.size(), lastBlock.getShortBlockSeqno());
-
-              List<TxGuiUpdateInfo> updates = new ArrayList<>();
-
-              for (ResultListBlockTransactions tx : txs) {
-                Transaction txDetails =
-                    LiteClientParser.parseDumpTrans(
-                        liteClient.executeDumptrans(node, lastBlock, tx),
-                        settings.getUiSettings().isShowBodyInMessage());
-
-                if (txDetails != null) {
-                  List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, tx, txDetails);
-                  txEntities.forEach(App.dbPool::insertTx);
-                  detectNewAccount(lastBlock, tx, txDetails);
-
-                  if (updateGuiNow) {
-                    updates.add(new TxGuiUpdateInfo(lastBlock, tx, txDetails, txEntities));
-                  }
-                }
-              }
-
-              return updates;
-            },
-            ForkJoinPool.commonPool())
-        .thenAccept(
-            updates -> {
-              if (updateGuiNow && !updates.isEmpty()) {
-                Platform.runLater(
-                    () -> {
-                      for (TxGuiUpdateInfo info : updates) {
-                        updateTxTabGui(info.lastBlock, info.tx, info.txDetails, info.txEntities);
-                      }
-                    });
-              }
-            })
-        .exceptionally(
-            ex -> {
-              log.error("Error dumping block transactions", ex);
-              Platform.runLater(
-                  () -> App.mainController.showErrorMsg("Error dumping block transactions", 3));
-              return null;
-            });
   }
 
   private void detectNewAccount(
@@ -1367,57 +1271,36 @@ public class MyLocalTon {
     }
   }
 
-  private void updateTxTabGui(
-      ResultLastBlock lastBlock,
-      ResultListBlockTransactions tx,
-      Transaction txDetails,
-      List<TxEntity> txEntities) {
-    if (!Boolean.TRUE.equals(autoScroll)) {
-      return;
+  private void updateTxTabGui(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction
+          txDetails, List<TxEntity> txEntities) {
+
+    if (Boolean.TRUE.equals(autoScroll)) {
+
+      MainController c = fxmlLoader.getController();
+
+      Platform.runLater(() -> {
+
+        applyTxGuiFilters(txEntities);
+
+        for (TxEntity txE : txEntities) {
+
+          FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("txrow.fxml"));
+          javafx.scene.Node txRow;
+          try {
+            txRow = fxmlLoader.load();
+          } catch (IOException e) {
+            log.error("error loading txrow.fxml file, {}", e.getMessage());
+            return;
+          }
+
+          if (txE.getTypeTx().equals("Message")) {
+            (txRow.lookup("#txRowBorderPane")).getStyleClass().add("row-pane-gray");
+          }
+
+          showInGuiOnlyUniqueTxs(lastBlock, tx, txDetails, c, txE, txRow);  //show in gui only unique values. some might come from scroll event
+        }
+      });
     }
-
-    MainController c = fxmlLoader.getController();
-
-    CompletableFuture.supplyAsync(
-            () -> {
-              applyTxGuiFilters(txEntities);
-
-              List<Pair<TxEntity, javafx.scene.Node>> txRows = new ArrayList<>();
-
-              for (TxEntity txE : txEntities) {
-                try {
-                  FXMLLoader rowLoader = new FXMLLoader(App.class.getResource("txrow.fxml"));
-                  javafx.scene.Node txRow = rowLoader.load();
-
-                  if ("Message".equals(txE.getTypeTx())) {
-                    txRow.lookup("#txRowBorderPane").getStyleClass().add("row-pane-gray");
-                  }
-
-                  txRows.add(new Pair<>(txE, txRow));
-                } catch (IOException e) {
-                  log.error("Error loading txrow.fxml file, {}", e.getMessage(), e);
-                }
-              }
-
-              return txRows;
-            },
-            ForkJoinPool.commonPool())
-        .thenAccept(
-            txRows -> {
-              Platform.runLater(
-                  () -> {
-                    for (Pair<TxEntity, javafx.scene.Node> rowData : txRows) {
-                      showInGuiOnlyUniqueTxs(
-                          lastBlock, tx, txDetails, c, rowData.getKey(), rowData.getValue());
-                    }
-                  });
-            })
-        .exceptionally(
-            ex -> {
-              log.error("Error updating TX tab GUI", ex);
-              Platform.runLater(() -> App.mainController.showErrorMsg("Error updating TX tab", 3));
-              return null;
-            });
   }
 
   private void showInGuiOnlyUniqueTxs(
