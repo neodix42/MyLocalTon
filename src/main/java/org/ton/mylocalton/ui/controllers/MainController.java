@@ -2307,10 +2307,10 @@ public class MainController implements Initializable {
               liteClient.executeGetAccount(
                   settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
 
-      List<ResultListParticipants> participants =
-          LiteClientParser.parseRunMethodParticipantList(
-              liteClient.executeGetParticipantList(
-                  settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
+      //      List<ResultListParticipants> participants =
+      //          LiteClientParser.parseRunMethodParticipantList(
+      //              liteClient.executeGetParticipantList(
+      //                  settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
 
       // totalParticipants.setText(String.valueOf(participants.size()));
       String participantsTooltip =
@@ -2729,18 +2729,9 @@ public class MainController implements Initializable {
   }
 
   public void drawElections() {
-    //    Platform.runLater(
-    //        () -> {
-    //          try {
     mainController.drawBarsAndLabels(); // once in elections enough (bars and labels)
     mainController.updateValidationTabInfo();
     mainController.drawTimeLine();
-    //            mainController.electionsChartPane.setVisible(true);
-    //          } catch (Exception e) {
-    //            e.printStackTrace();
-    //            log.error(ExceptionUtils.getStackTrace(e));
-    //          }
-    //        });
   }
 
   public void drawBarsAndLabels() {
@@ -2759,8 +2750,7 @@ public class MainController implements Initializable {
       saveSettings();
 
     } catch (Exception e) {
-      e.printStackTrace();
-      log.error(ExceptionUtils.getStackTrace(e));
+      log.error("drawBarsAndLabels Error {}", ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -2890,6 +2880,8 @@ public class MainController implements Initializable {
 
     Platform.runLater(
         () -> {
+          electionsChartPane.setVisible(true);
+
           electionsRange1.setMinWidth(electionsWidth);
           electionsRange2.setMinWidth(electionsWidth);
           electionsRange3.setMinWidth(electionsWidth);
@@ -4011,17 +4003,6 @@ public class MainController implements Initializable {
   public void openTelegramLink() {
     hostServices.showDocument(TELEGRAM_NEODIX);
   }
-
-  //    public void copyDonationTonAddress(MouseEvent mouseEvent) {
-  //        String addr = tonDonationAddress.getText();
-  //        final Clipboard clipboard = Clipboard.getSystemClipboard();
-  //        final ClipboardContent content = new ClipboardContent();
-  //        content.putString(addr);
-  //        clipboard.setContent(content);
-  //
-  //        App.mainController.showInfoMsg(addr + " copied to clipboard", 1);
-  //        mouseEvent.consume();
-  //    }
 
   public void BlockChainExplorerCheckBoxClick(MouseEvent mouseEvent) {
     if (enableBlockchainExplorer.isSelected()) {
