@@ -920,6 +920,10 @@ public class MyLocalTon {
         LiteClient.getInstance(LiteClientEnum.GLOBAL)
             .getShardsFromBlock(node, lastBlock); // txs from basechain shards
 
+    if (isNull(shardsInBlock)) {
+      return new ArrayList<>();
+    }
+
     for (ResultLastBlock shard : shardsInBlock) {
       log.info(shard.getShortBlockSeqno());
       if (shard.getSeqno().compareTo(BigInteger.ZERO) != 0) {
@@ -1515,7 +1519,7 @@ public class MyLocalTon {
                 .equals("FFFFFFFF")) {
 
           msg =
-              txEntity.getTx().getOutMsgs().get(0).getBody().getCells().stream()
+              txEntity.getTx().getOutMsgs().getFirst().getBody().getCells().stream()
                   .map(
                       c -> {
                         try {
@@ -1602,9 +1606,9 @@ public class MyLocalTon {
         status = txDetails.getEndStatus();
 
         if ((StringUtils.isEmpty(from.getAddr())) && txDetails.getOutMsgsCount() > 0) {
-          from = txDetails.getOutMsgs().get(0).getSrcAddr();
-          to = txDetails.getOutMsgs().get(0).getDestAddr();
-          amount = txDetails.getOutMsgs().get(0).getValue().getToncoins();
+          from = txDetails.getOutMsgs().getFirst().getSrcAddr();
+          to = txDetails.getOutMsgs().getFirst().getDestAddr();
+          amount = txDetails.getOutMsgs().getFirst().getValue().getToncoins();
         }
 
         if (Strings.isEmpty(from.getAddr()) && !Strings.isEmpty(to.getAddr())) {
@@ -1851,7 +1855,7 @@ public class MyLocalTon {
       ObservableList<javafx.scene.Node> items = c.blockslistviewid.getItems();
 
       if (items.size() > blocksScrollBarHighWaterMark.get()) {
-        items.remove(items.size() - 1);
+        items.removeLast();
       }
 
       items.add(0, blockRow);

@@ -29,11 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 import javafx.application.HostServices;
@@ -834,23 +830,27 @@ public class MainController implements Initializable {
 
   @FXML
   void blocksOnScroll(ScrollEvent event) {
-    try {
-      Node n1 = blockslistviewid.lookup(".scroll-bar");
 
-      if (n1 instanceof ScrollBar) {
-        ScrollBar bar = (ScrollBar) n1;
+    ExecutorService blocksOnScrollExecutorService = Executors.newSingleThreadExecutor();
 
-        if (event.getDeltaY() < 0 && bar.getValue() > 0) { // bottom reached
-          Platform.runLater(
-              () -> {
-                BorderPane bp =
-                    (BorderPane)
-                        blockslistviewid.getItems().get(blockslistviewid.getItems().size() - 1);
-                long lastSeqno = Long.parseLong(((Label) ((Node) bp).lookup("#seqno")).getText());
-                long wc = Long.parseLong(((Label) ((Node) bp).lookup("#wc")).getText());
+    blocksOnScrollExecutorService.execute(
+        () -> {
+          try {
+            Thread.currentThread().setName("MyLocalTon - blocksOnScroll");
 
-                String createdatDate = ((Label) ((Node) bp).lookup("#createdatDate")).getText();
-                String createdatTime = ((Label) ((Node) bp).lookup("#createdatTime")).getText();
+            Node n1 = blockslistviewid.lookup(".scroll-bar");
+
+            if (n1 instanceof ScrollBar) {
+              ScrollBar bar = (ScrollBar) n1;
+
+              if (event.getDeltaY() < 0 && bar.getValue() > 0) { // bottom reached
+
+                BorderPane bp = (BorderPane) blockslistviewid.getItems().getLast();
+                long lastSeqno = Long.parseLong(((Label) bp.lookup("#seqno")).getText());
+                long wc = Long.parseLong(((Label) bp.lookup("#wc")).getText());
+
+                String createdatDate = ((Label) bp.lookup("#createdatDate")).getText();
+                String createdatTime = ((Label) bp.lookup("#createdatTime")).getText();
 
                 long createdAt =
                     MyLocalTonUtils.datetimeToTimestamp(createdatDate + " " + createdatTime);
@@ -936,20 +936,22 @@ public class MainController implements Initializable {
                                       false);
                             } catch (Exception e) {
                               log.error("cannot load missing blocks {}", e.getMessage());
-                              e.printStackTrace();
                             }
                           });
                 }
-                blockslistviewid.getItems().addAll(blockRows);
-              });
-        }
-        if (event.getDeltaY() > 0) { // top reached
-          log.debug("top reached");
-        }
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+                Platform.runLater(
+                    () -> {
+                      blockslistviewid.getItems().addAll(blockRows);
+                    });
+              }
+              if (event.getDeltaY() > 0) { // top reached
+                log.debug("top reached");
+              }
+            }
+          } catch (Exception e) {
+            log.error("Error loading blocksOnScroll, {}", e.getMessage());
+          }
+        });
   }
 
   @FXML
@@ -1804,7 +1806,6 @@ public class MainController implements Initializable {
     try {
       parent = loader.load();
     } catch (IOException e) {
-      e.printStackTrace();
       throw new RuntimeException(e);
     }
 
@@ -2774,8 +2775,8 @@ public class MainController implements Initializable {
         endHoldStake3,
         holdStakeWidth);
 
-    long fullWidthInPixels = 0;
-    long fullDurationSeconds = 0;
+    long fullWidthInPixels;
+    long fullDurationSeconds;
 
     if (settings.elections.size() > 1) {
       fullDurationSeconds = endHoldStake3 - v.getStartElections() + v.getValidationDuration();
@@ -3947,7 +3948,7 @@ public class MainController implements Initializable {
   }
 
   public void valLogDirBtnAction2() throws IOException {
-    log.info("open validator log dir {}", validatorLogDir2.getFieldText().trim());
+    log.info("open validator2 log dir {}", validatorLogDir2.getFieldText().trim());
     if (SystemUtils.IS_OS_WINDOWS) {
       Runtime.getRuntime().exec("cmd /c start " + validatorLogDir2.getFieldText());
     } else {
@@ -3956,7 +3957,7 @@ public class MainController implements Initializable {
   }
 
   public void valLogDirBtnAction3() throws IOException {
-    log.debug("open validator log dir {}", validatorLogDir3.getFieldText().trim());
+    log.debug("open validator3 log dir {}", validatorLogDir3.getFieldText().trim());
     if (SystemUtils.IS_OS_WINDOWS) {
       Runtime.getRuntime().exec("cmd /c start " + validatorLogDir3.getFieldText());
     } else {
@@ -3965,7 +3966,7 @@ public class MainController implements Initializable {
   }
 
   public void valLogDirBtnAction4() throws IOException {
-    log.debug("open validator log dir {}", validatorLogDir4.getFieldText().trim());
+    log.debug("open validator4 log dir {}", validatorLogDir4.getFieldText().trim());
     if (SystemUtils.IS_OS_WINDOWS) {
       Runtime.getRuntime().exec("cmd /c start " + validatorLogDir4.getFieldText());
     } else {
@@ -3974,7 +3975,7 @@ public class MainController implements Initializable {
   }
 
   public void valLogDirBtnAction5() throws IOException {
-    log.debug("open validator log dir {}", validatorLogDir5.getFieldText().trim());
+    log.debug("open validator5 log dir {}", validatorLogDir5.getFieldText().trim());
     if (SystemUtils.IS_OS_WINDOWS) {
       Runtime.getRuntime().exec("cmd /c start " + validatorLogDir5.getFieldText());
     } else {
@@ -3983,7 +3984,7 @@ public class MainController implements Initializable {
   }
 
   public void valLogDirBtnAction6() throws IOException {
-    log.debug("open validator log dir {}", validatorLogDir6.getFieldText().trim());
+    log.debug("open validator6 log dir {}", validatorLogDir6.getFieldText().trim());
     if (SystemUtils.IS_OS_WINDOWS) {
       Runtime.getRuntime().exec("cmd /c start " + validatorLogDir6.getFieldText());
     } else {
@@ -3992,7 +3993,7 @@ public class MainController implements Initializable {
   }
 
   public void valLogDirBtnAction7() throws IOException {
-    log.debug("open validator log dir {}", validatorLogDir7.getFieldText().trim());
+    log.debug("open validator7 log dir {}", validatorLogDir7.getFieldText().trim());
     if (SystemUtils.IS_OS_WINDOWS) {
       Runtime.getRuntime().exec("cmd /c start " + validatorLogDir7.getFieldText());
     } else {
@@ -4106,7 +4107,6 @@ public class MainController implements Initializable {
     try {
       parent = loader.load();
     } catch (IOException e) {
-      e.printStackTrace();
       throw new RuntimeException(e);
     }
     CustomLoadingPaneController controller = loader.getController();
@@ -4141,7 +4141,6 @@ public class MainController implements Initializable {
         try {
           createNewAccountBtn();
         } catch (IOException e) {
-          e.printStackTrace();
           throw new RuntimeException(e);
         }
         break;
