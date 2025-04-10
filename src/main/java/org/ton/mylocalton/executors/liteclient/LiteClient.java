@@ -1,5 +1,11 @@
 package org.ton.mylocalton.executors.liteclient;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
+import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -8,13 +14,6 @@ import org.ton.mylocalton.enums.LiteClientEnum;
 import org.ton.mylocalton.executors.liteclient.api.ResultLastBlock;
 import org.ton.mylocalton.executors.liteclient.api.ResultListBlockTransactions;
 import org.ton.mylocalton.settings.Node;
-
-import java.math.BigInteger;
-import java.util.List;
-import java.util.concurrent.Future;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 @Slf4j
 public class LiteClient {
@@ -248,7 +247,13 @@ public class LiteClient {
   public String executeRunMethod(Node node, String address, String methodId, String params)
       throws Exception {
     final String command = String.format("runmethod %s %s %s", address, methodId, params);
-    return LiteClientExecutor.getInstance(config).execute(node, command).getRight().get();
+    Pair<Process, Future<String>> result = LiteClientExecutor.getInstance(config).execute(node, command);
+    if (nonNull(result)) {
+      return result.getRight().get();
+    }
+    else {
+      return "";
+    }
   }
 
   public String executeSendfile(Node node, String absolutePathFile) throws Exception {

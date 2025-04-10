@@ -138,7 +138,7 @@
 
     </AnchorPane>
 
-    <AnchorPane fx:id="contentPane" prefHeight="660" prefWidth="1125" style="-fx-background-color: #EEEEEE"
+    <AnchorPane fx:id="contentPane" prefHeight="660" prefWidth="1125" style="-fx-background-color: ##E5EAFF;"
                 AnchorPane.leftAnchor="210.0" AnchorPane.topAnchor="60.0" AnchorPane.rightAnchor="0.0"
                 AnchorPane.bottomAnchor="0.0">
 
