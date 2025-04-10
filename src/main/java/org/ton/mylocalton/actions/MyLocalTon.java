@@ -2243,12 +2243,7 @@ public class MyLocalTon {
   }
 
   public void runAccountsMonitor() {
-    //        Tonlib tonlib = Tonlib.builder()
-    //
-    // .pathToGlobalConfig(MyLocalTon.getInstance().getSettings().getGenesisNode().getNodeGlobalConfigLocation())
-    //
-    // .keystorePath(MyLocalTon.getInstance().getSettings().getGenesisNode().getTonlibKeystore().replace("\\", "/"))
-    //                .build();
+
     Executors.newSingleThreadScheduledExecutor()
         .scheduleWithFixedDelay(
             () -> {

@@ -17,12 +17,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.ton.java.smartcontract.types.WalletVersion;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.DbPool;
 import org.ton.mylocalton.executors.dhtserver.DhtServer;
@@ -147,15 +147,7 @@ public class App extends Application {
                         log.error(e.getMessage(), e);
                       }
                       settings.getActiveNodes().add(node.getNodeName());
-                      MyLocalTon.getInstance()
-                          .createWalletEntity( // later todo createcontrollingvalidator
-                              node,
-                              null,
-                              WalletVersion.V3R2,
-                              -1L,
-                              settings.getWalletSettings().getDefaultSubWalletId(),
-                              node.getInitialValidatorWalletAmount(),
-                              true);
+                      MyLocalTon.getInstance().createValidatorControllingSmartContract(node);
                     }
                   }
                 } else {
@@ -171,33 +163,25 @@ public class App extends Application {
   }
 
   @Override
-  public void start(Stage stage) {
+  public void start(Stage stage) throws IOException {
     primaryStage = stage;
     log.debug("Starting UI");
 
     fxmlLoader =
         new FXMLLoader(App.class.getClassLoader().getResource("org/ton/mylocalton/main/main.fxml"));
-    try {
-      root = fxmlLoader.load();
-    } catch (IOException e) {
-      log.error(e.getMessage(), e);
-      throw new RuntimeException(e);
-    }
+    root = fxmlLoader.load();
+
     scene = new Scene(root);
     mainController = fxmlLoader.getController();
     mainController.setHostServices(getHostServices());
 
-    try {
-      Image icon =
-          new Image(
-              Objects.requireNonNull(
-                  getClass()
-                      .getClassLoader()
-                      .getResourceAsStream("org/ton/mylocalton/images/logo.png")));
-      primaryStage.getIcons().add(icon);
-    } catch (NullPointerException e) {
-      log.error("Icon not found. Exception thrown {}", e.getMessage(), e);
-    }
+    Image icon =
+        new Image(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("org/ton/mylocalton/images/logo.png")));
+    primaryStage.getIcons().add(icon);
 
     primaryStage.setScene(scene);
     primaryStage.setResizable(false);

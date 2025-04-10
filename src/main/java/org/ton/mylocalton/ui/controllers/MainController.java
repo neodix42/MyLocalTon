@@ -2307,12 +2307,12 @@ public class MainController implements Initializable {
               liteClient.executeGetAccount(
                   settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
 
-      //      List<ResultListParticipants> participants =
-      //          LiteClientParser.parseRunMethodParticipantList(
-      //              liteClient.executeGetParticipantList(
-      //                  settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
+      List<ResultListParticipants> participants =
+          LiteClientParser.parseRunMethodParticipantList(
+              liteClient.executeGetParticipantList(
+                  settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
 
-      // totalParticipants.setText(String.valueOf(participants.size()));
+      totalParticipants.setText(String.valueOf(participants.size()));
       String participantsTooltip =
           "Participants (Public key, weight): "
               + System.lineSeparator()
@@ -3893,7 +3893,8 @@ public class MainController implements Initializable {
                   // node.getInitialValidatorWalletAmount(), true);
 
                   MyLocalTon.getInstance().createValidatorControllingSmartContract(node);
-                  // node.setWalletAddress(walletEntity.getWallet()); // double check
+                  //                   node.setWalletAddress(walletEntity.getWallet()); // double
+                  // check
 
                   mainController.addValidatorBtn.setDisable(false);
                   App.mainController.showInfoMsg(
@@ -4114,7 +4115,8 @@ public class MainController implements Initializable {
     JFXDialogLayout content = new JFXDialogLayout();
     content.setBody(parent);
 
-    loadingDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
+    loadingDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER, true);
+    loadingDialog.setOverlayClose(false);
     loadingDialog.setOnKeyPressed(
         keyEvent -> {
           if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
