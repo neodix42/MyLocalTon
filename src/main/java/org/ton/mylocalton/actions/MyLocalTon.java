@@ -22,18 +22,11 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -905,169 +898,96 @@ public class MyLocalTon {
       log.error("Cannot initialize tonlib!");
       System.exit(14);
     }
-
-    //    tonlibBlockMonitor =
-    //        Tonlib.builder()
-    //            .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
-    //            .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
-    //            .pathToTonlibSharedLib(tonlibName)
-    //            .build();
-    //
-    //    tonlibDataGenerator =
-    //        Tonlib.builder()
-    //            .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
-    //            .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
-    //            .pathToTonlibSharedLib(tonlibName)
-    //            .build();
-  }
-
-  public void testInitTonlib(Node node) {
-
-    String tonlibName = settings.getGenesisNode().getTonBinDir() + getTonlibName();
-    try {
-
-      tonlib =
-          Tonlib.builder()
-              .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
-              .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
-              .pathToTonlibSharedLib(tonlibName)
-              .build();
-
-    } catch (Throwable e) {
-      System.out.println(ExceptionUtils.getStackTrace(e));
-      System.out.println("Simple tonlib test failed.");
-      System.exit(13);
-    }
-
-    System.out.println("Simple tonlib test passed.");
-    System.exit(0);
   }
 
   public void runBlockchainMonitor(Node node) {
     log.info("Starting node monitor");
 
-    fetchTask =
+    ExecutorService blockchainMonitorExecutorService = Executors.newSingleThreadExecutor();
+
+    blockchainMonitorExecutorService.execute(
         () -> {
-          if (!Main.appActive.get()) {
-            log.info("Blockchain Monitor has stopped working");
-            return;
-          }
+          Thread.currentThread().setName("MyLocalTon - Blockchain Monitor");
+          ExecutorService executorService;
+          while (Main.appActive.get()) {
+            try {
+              executorService = Executors.newSingleThreadExecutor();
+              LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
-          LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
-
-          CompletableFuture.supplyAsync(
-                  () -> LiteClientParser.parseLast(liteClient.executeLast(node)),
-                  ForkJoinPool.commonPool())
-              .thenCompose(
-                  lastBlock -> {
-                    if (lastBlock != null
-                        && !Objects.equals(prevBlockSeqno.get(), lastBlock.getSeqno())
-                        && lastBlock.getSeqno().compareTo(BigInteger.ZERO) != 0) {
-
-                      prevBlockSeqno.set(lastBlock.getSeqno());
-                      log.info(lastBlock.getShortBlockSeqno());
-
-                      if (!GraphicsEnvironment.isHeadless()) {
-                        return insertBlocksAndTransactions(node, lastBlock, true)
-                            .thenAccept(
-                                shardsInBlock -> {
-                                  Platform.runLater(
-                                      () -> updateTopInfoBarGui(shardsInBlock.size()));
-                                });
-                      }
-                    }
-
-                    return CompletableFuture.completedFuture(null);
-                  })
-              .thenCompose(
-                  lastBlockM -> {
-                    //                  MasterChainInfo lastBlockM = tonlib.getLast(); // todo next
-                    // release
-                    return CompletableFuture.completedFuture(null);
-                  })
-              .exceptionally(
-                  ex -> {
-                    log.error("Error in blockchain monitor task", ex);
-                    Platform.runLater(
-                        () -> App.mainController.showErrorMsg("Blockchain monitor error", 3));
-                    return null;
-                  })
-              .thenRun(
+              executorService.execute(
                   () -> {
-                    if (Main.appActive.get()) {
-                      try {
-                        Thread.sleep(1000);
-                      } catch (InterruptedException ignored) {
-                      }
-                      fetchTask.run();
-                    } else {
-                      log.info("Blockchain Monitor has stopped working");
-                    }
-                  });
-        };
+                    Thread.currentThread()
+                        .setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
+                    log.debug("Get last block");
+                    ResultLastBlock lastBlock =
+                        LiteClientParser.parseLast(liteClient.executeLast(node));
+                    //                        MasterChainInfo lastBlockM = tonlib.getLast(); // todo
+                    // next release
 
-    fetchTask.run();
+                    if (nonNull(lastBlock)) {
+
+                      if ((!Objects.equals(prevBlockSeqno.get(), lastBlock.getSeqno()))
+                          && (lastBlock.getSeqno().compareTo(BigInteger.ZERO) != 0)) {
+
+                        prevBlockSeqno.set(lastBlock.getSeqno());
+                        log.info(lastBlock.getShortBlockSeqno());
+
+                        if (!GraphicsEnvironment.isHeadless()) {
+                          List<ResultLastBlock> shardsInBlock =
+                              insertBlocksAndTransactions(node, lastBlock, true);
+                          updateTopInfoBarGui(shardsInBlock.size());
+                        }
+                      }
+                    } else {
+                      log.debug("last block is null");
+                    }
+                    log.debug("Thread is done {}", Thread.currentThread().getName());
+                  });
+
+              executorService.shutdown();
+
+              Thread.sleep(1000);
+
+            } catch (Exception e) {
+              e.printStackTrace();
+              log.error(e.getMessage());
+            }
+          }
+          blockchainMonitorExecutorService.shutdown();
+          log.info("Blockchain Monitor has stopped working");
+        });
   }
 
-  public CompletableFuture<List<ResultLastBlock>> insertBlocksAndTransactions(
+  public List<ResultLastBlock> insertBlocksAndTransactions(
       Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
-    LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
-    return CompletableFuture.supplyAsync(
-            () -> {
-              insertBlockEntity(lastBlock);
-              return lastBlock;
-            },
-            ForkJoinPool.commonPool())
-        .thenCompose(
-            lb -> {
-              if (updateGuiNow) {
-                Platform.runLater(() -> updateBlocksTabGui(lb));
-              }
+    insertBlockEntity(lastBlock);
 
-              return CompletableFuture.supplyAsync(
-                  () -> liteClient.getShardsFromBlock(node, lb), ForkJoinPool.commonPool());
-            })
-        .thenCompose(
-            shardsInBlock -> {
-              List<CompletableFuture<Void>> futures = new ArrayList<>();
+    if (updateGuiNow) {
+      updateBlocksTabGui(lastBlock);
+    }
 
-              futures.add(
-                  CompletableFuture.runAsync(
-                      () -> dumpBlockTransactions(node, lastBlock, updateGuiNow),
-                      ForkJoinPool.commonPool()));
+    List<ResultLastBlock> shardsInBlock =
+        LiteClient.getInstance(LiteClientEnum.GLOBAL)
+            .getShardsFromBlock(node, lastBlock); // txs from basechain shards
 
-              for (ResultLastBlock shard : shardsInBlock) {
-                if (shard.getSeqno().compareTo(BigInteger.ZERO) != 0) {
-                  futures.add(
-                      CompletableFuture.runAsync(
-                              () -> {
-                                insertBlockEntity(shard);
-                                if (updateGuiNow) {
-                                  Platform.runLater(() -> updateBlocksTabGui(shard));
-                                }
-                              },
-                              ForkJoinPool.commonPool())
-                          .thenRunAsync(
-                              () -> {
-                                dumpBlockTransactions(node, shard, updateGuiNow);
-                              },
-                              ForkJoinPool.commonPool()));
-                }
-              }
+    for (ResultLastBlock shard : shardsInBlock) {
+      log.info(shard.getShortBlockSeqno());
+      if (shard.getSeqno().compareTo(BigInteger.ZERO) != 0) {
+        insertBlockEntity(shard);
+        if (updateGuiNow) {
+          updateBlocksTabGui(shard);
+        }
+      }
+    }
 
-              return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-                  .thenApply(v -> shardsInBlock);
-            })
-        .exceptionally(
-            ex -> {
-              log.error("Error inserting blocks and transactions", ex);
-              Platform.runLater(
-                  () ->
-                      App.mainController.showErrorMsg(
-                          "Error inserting blocks and transactions", 3));
-              return Collections.emptyList();
-            });
+    dumpBlockTransactions(node, lastBlock, updateGuiNow); // txs from master-chain
+
+    shardsInBlock.stream()
+        .filter(b -> (b.getSeqno().compareTo(BigInteger.ZERO) != 0))
+        .forEach(shard -> dumpBlockTransactions(node, shard, updateGuiNow)); // txs from shards
+
+    return shardsInBlock;
   }
 
   public void dumpBlockTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
@@ -1269,30 +1189,27 @@ public class MyLocalTon {
     if (nonNull(walletEntity)) {
       if (WalletVersion.V1R1.equals(walletEntity.getWalletVersion())) {
         Platform.runLater(
-            () -> {
-              emit(
-                  new CustomNotificationEvent(
-                      CustomEvent.Type.SUCCESS,
-                      "Wallet " + walletEntity.getFullAddress() + " created",
-                      3));
-            });
+            () ->
+                emit(
+                    new CustomNotificationEvent(
+                        CustomEvent.Type.SUCCESS,
+                        "Wallet " + walletEntity.getFullAddress() + " created",
+                        3)));
       } else if (walletEntity.getSeqno() != -1L) {
         Platform.runLater(
-            () -> {
-              emit(
-                  new CustomNotificationEvent(
-                      CustomEvent.Type.SUCCESS,
-                      "Wallet " + walletEntity.getFullAddress() + " created",
-                      3));
-            });
+            () ->
+                emit(
+                    new CustomNotificationEvent(
+                        CustomEvent.Type.SUCCESS,
+                        "Wallet " + walletEntity.getFullAddress() + " created",
+                        3)));
       }
     } else {
       Platform.runLater(
-          () -> {
-            emit(
-                new CustomNotificationEvent(
-                    CustomEvent.Type.ERROR, "Error creating wallet. See logs for details.", 4));
-          });
+          () ->
+              emit(
+                  new CustomNotificationEvent(
+                      CustomEvent.Type.ERROR, "Error creating wallet. See logs for details.", 4)));
     }
   }
 
@@ -1691,16 +1608,22 @@ public class MyLocalTon {
                 .collect(Collectors.joining());
 
       } else if ((!txEntity.getTx().getOutMsgs().isEmpty()
-          && !txEntity.getTx().getOutMsgs().get(0).getBody().getCells().isEmpty())) {
-        if (txEntity.getTx().getOutMsgs().get(0).getValue().getToncoins().compareTo(BigDecimal.ZERO)
+          && !txEntity.getTx().getOutMsgs().getFirst().getBody().getCells().isEmpty())) {
+        if (txEntity
+                    .getTx()
+                    .getOutMsgs()
+                    .getFirst()
+                    .getValue()
+                    .getToncoins()
+                    .compareTo(BigDecimal.ZERO)
                 > 0
             && !txEntity
                 .getTx()
                 .getOutMsgs()
-                .get(0)
+                .getFirst()
                 .getBody()
                 .getCells()
-                .get(0)
+                .getFirst()
                 .equals("FFFFFFFF")) {
 
           msg =
@@ -1722,7 +1645,7 @@ public class MyLocalTon {
       msg = msg.substring(4);
 
       if (StringUtils.isAlphanumericSpace(msg) || StringUtils.isAsciiPrintable(msg)) {
-        javafx.scene.Node txMsgBtn = (javafx.scene.Node) txRow.lookup("#txMsgBtn");
+        javafx.scene.Node txMsgBtn = txRow.lookup("#txMsgBtn");
         if (nonNull(txMsgBtn)) {
           txMsgBtn.setVisible(true);
           txMsgBtn.setUserData(msg);
@@ -2267,7 +2190,7 @@ public class MyLocalTon {
                         RunResult resultSubWalletId = tonlib.runMethod(address, "get_subwallet_id");
                         if (resultSubWalletId.getExit_code() == 0) {
                           TvmStackEntryNumber resultSubWalletIdNum =
-                              (TvmStackEntryNumber) resultSubWalletId.getStack().get(0);
+                              (TvmStackEntryNumber) resultSubWalletId.getStack().getFirst();
                           subWalletId = resultSubWalletIdNum.getNumber().longValue();
                         } else {
                           subWalletId = -1;
@@ -2601,7 +2524,7 @@ public class MyLocalTon {
           throw new Error("Unknown node name");
       }
     } catch (Throwable te) {
-      log.error("Error updating validation rewards: " + te.getMessage());
+      log.error("Error updating validation rewards: {}", te.getMessage());
     }
   }
 
