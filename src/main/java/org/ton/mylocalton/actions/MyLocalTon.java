@@ -1271,35 +1271,40 @@ public class MyLocalTon {
     }
   }
 
-  private void updateTxTabGui(ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction
-          txDetails, List<TxEntity> txEntities) {
+  private void updateTxTabGui(
+      ResultLastBlock lastBlock,
+      ResultListBlockTransactions tx,
+      Transaction txDetails,
+      List<TxEntity> txEntities) {
 
     if (Boolean.TRUE.equals(autoScroll)) {
 
       MainController c = fxmlLoader.getController();
 
-      Platform.runLater(() -> {
+      Platform.runLater(
+          () -> {
+            applyTxGuiFilters(txEntities);
 
-        applyTxGuiFilters(txEntities);
+            for (TxEntity txE : txEntities) {
 
-        for (TxEntity txE : txEntities) {
+              FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("txrow.fxml"));
+              javafx.scene.Node txRow;
+              try {
+                txRow = fxmlLoader.load();
+              } catch (IOException e) {
+                log.error("error loading txrow.fxml file, {}", e.getMessage());
+                return;
+              }
 
-          FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("txrow.fxml"));
-          javafx.scene.Node txRow;
-          try {
-            txRow = fxmlLoader.load();
-          } catch (IOException e) {
-            log.error("error loading txrow.fxml file, {}", e.getMessage());
-            return;
-          }
+              if (txE.getTypeTx().equals("Message")) {
+                (txRow.lookup("#txRowBorderPane")).getStyleClass().add("row-pane-gray");
+              }
 
-          if (txE.getTypeTx().equals("Message")) {
-            (txRow.lookup("#txRowBorderPane")).getStyleClass().add("row-pane-gray");
-          }
-
-          showInGuiOnlyUniqueTxs(lastBlock, tx, txDetails, c, txE, txRow);  //show in gui only unique values. some might come from scroll event
-        }
-      });
+              showInGuiOnlyUniqueTxs(
+                  lastBlock, tx, txDetails, c, txE,
+                  txRow); // show in gui only unique values. some might come from scroll event
+            }
+          });
     }
   }
 
