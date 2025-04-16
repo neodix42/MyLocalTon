@@ -1,15 +1,14 @@
 package org.ton.mylocalton.parameters;
 
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.ton.mylocalton.executors.liteclient.api.ResultListParticipants;
-import org.ton.mylocalton.executors.liteclient.api.config.Validator;
-
-import java.io.Serializable;
-import java.math.BigInteger;
-import java.util.List;
+import org.ton.java.tlb.ValidatorAddr;
+import org.ton.java.tonlib.types.Participant;
 
 @Builder
 @Getter
@@ -33,8 +32,8 @@ public class ValidationParam implements Serializable {
   Long holdPeriod;
   BigInteger minStake;
   BigInteger maxStake;
-  List<ResultListParticipants> participants;
-  List<Validator> previousValidators;
-  List<Validator> currentValidators;
-  List<Validator> nextValidators;
+  List<Participant> participants;
+  List<ValidatorAddr> previousValidators;
+  List<ValidatorAddr> currentValidators;
+  List<ValidatorAddr> nextValidators;
 }

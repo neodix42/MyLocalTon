@@ -9,6 +9,7 @@ import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javafx.scene.Scene;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -105,11 +106,17 @@ public class Main {
           });
 
       log.info("Starting application at path {}", MyLocalTonUtils.getMyPath());
-      App.main(settings, myLocalTon, args);
+      //      App.main(settings, myLocalTon, args);
+      javafx.application.Application.launch(App.class, args);
+
     } else {
       log.error("Instance already running.");
       System.exit(1);
     }
+  }
+
+  private static Scene getScene() {
+    return App.scene;
   }
 
   private static boolean lockInstance(String[] args) {

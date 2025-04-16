@@ -4,7 +4,6 @@ import static java.util.Objects.nonNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
@@ -289,25 +288,25 @@ public interface Node {
 
   void setWalletAddress(WalletAddress walletAddress);
 
-  BigDecimal getTotalRewardsCollected();
+  BigInteger getTotalRewardsCollected();
 
-  void setTotalRewardsCollected(BigDecimal totalRewardsCollected);
+  void setTotalRewardsCollected(BigInteger totalRewardsCollected);
 
-  BigDecimal getLastRewardCollected();
+  BigInteger getLastRewardCollected();
 
-  void setLastRewardCollected(BigDecimal lastRewardCollected);
+  void setLastRewardCollected(BigInteger lastRewardCollected);
 
-  BigDecimal getTotalPureRewardsCollected();
+  BigInteger getTotalPureRewardsCollected();
 
-  void setTotalPureRewardsCollected(BigDecimal totalPureRewardsCollected);
+  void setTotalPureRewardsCollected(BigInteger totalPureRewardsCollected);
 
-  BigDecimal getLastPureRewardCollected();
+  BigInteger getLastPureRewardCollected();
 
-  void setLastPureRewardCollected(BigDecimal lastPureRewardCollected);
+  void setLastPureRewardCollected(BigInteger lastPureRewardCollected);
 
-  BigDecimal getAvgPureRewardCollected();
+  BigInteger getAvgPureRewardCollected();
 
-  void setAvgPureRewardCollected(BigDecimal avgPureRewardCollected);
+  void setAvgPureRewardCollected(BigInteger avgPureRewardCollected);
 
   String getValidatorAdnlAddrHex();
 
@@ -341,9 +340,9 @@ public interface Node {
 
   void setValidationSigningPubKey(String validationSigningPubKey);
 
-  BigDecimal getElectionsRipped();
+  BigInteger getElectionsRipped();
 
-  void setElectionsRipped(BigDecimal number);
+  void setElectionsRipped(BigInteger number);
 
   Map<Long, Long> getElectionsCounter();
 

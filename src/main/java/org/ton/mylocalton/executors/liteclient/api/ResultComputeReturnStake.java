@@ -1,15 +1,14 @@
 package org.ton.mylocalton.executors.liteclient.api;
 
+import java.io.Serializable;
+import java.math.BigInteger;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
 
 @Builder
 @Getter
 @ToString
 public class ResultComputeReturnStake implements Serializable {
-  private BigDecimal stake;
+  private BigInteger stake;
 }

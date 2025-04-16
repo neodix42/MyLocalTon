@@ -1,5 +1,6 @@
 package org.ton.mylocalton.ui.controllers;
 
+import static org.ton.mylocalton.actions.MyLocalTon.tonlib;
 import static org.ton.mylocalton.utils.MyLocalTonUtils.PATTERN;
 
 import com.google.gson.Gson;
@@ -38,6 +39,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.ton.java.tonlib.types.BlockIdExt;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.BlockEntity;
 import org.ton.mylocalton.db.entities.BlockPk;
@@ -113,20 +115,25 @@ public class BlockController {
   }
 
   private Block getBlockFromServerAndUpdateDb(Node node, BlockPk blockPk) throws Exception {
-    LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
-    ResultLastBlock lightBlock =
-        LiteClientParser.parseBySeqno(
-            liteClient.executeBySeqno(
-                node,
-                Long.parseLong(wc.getText()),
-                shard.getText(),
-                new BigInteger(seqno.getText())));
+    // remove
+    BlockIdExt blockIdExt =
+        tonlib.lookupBlock(
+            Long.parseLong(seqno.getText()),
+            Long.parseLong(wc.getText()),
+            Long.parseLong(shard.getText()),
+            0,
+            0);
+    ResultLastBlock lightBlock = MyLocalTonUtils.getLast(blockIdExt);
 
-    //        Block block = LiteClientParser.parseDumpblock(liteClient.executeDumpblock(node,
-    // lightBlock),
-    // MyLocalTon.getInstance().getSettings().getUiSettings().isShowShardStateInBlockDump(),
-    // MyLocalTon.getInstance().getSettings().getUiSettings().isShowBodyInMessage());
-    // DB.updateBlockDump(blockPk, bloc
+    LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
+    //    ResultLastBlock lightBlock =
+    //        LiteClientParser.parseBySeqno(
+    //            liteClient.executeBySeqno(
+    //                node,
+    //                Long.parseLong(wc.getText()),
+    //                shard.getText(),
+    //                new BigInteger(seqno.getText())));
+
     return LiteClientParser.parseDumpblock(
         liteClient.executeDumpblock(node, lightBlock),
         MyLocalTon.getInstance().getSettings().getUiSettings().isShowShardStateInBlockDump(),

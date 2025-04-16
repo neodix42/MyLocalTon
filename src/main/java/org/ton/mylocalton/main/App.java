@@ -17,12 +17,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.ton.java.tonlib.types.MasterChainInfo;
+import org.ton.java.utils.Utils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.DbPool;
 import org.ton.mylocalton.executors.dhtserver.DhtServer;
@@ -81,7 +82,7 @@ public class App extends Application {
           dbPool = new DbPool(settings);
 
           DhtServer dhtServer = new DhtServer();
-          List<String> dhtNodes = null;
+          List<String> dhtNodes;
           try {
             dhtNodes = dhtServer.initDhtServer(genesisNode);
             myLocalTon.initGenesis(genesisNode);
@@ -104,18 +105,40 @@ public class App extends Application {
             }
           }
 
+          myLocalTon.initTonlib(genesisNode);
+          long syncDelay = 100;
+          while (syncDelay > 10) {
+            try {
+              MasterChainInfo masterChainInfo = MyLocalTon.tonlib.getLast();
+              log.info("masterChainInfo {}", masterChainInfo);
+              if (nonNull(masterChainInfo) && (masterChainInfo.getLast().getSeqno() > 0)) {
+                log.info("masterChainInfo {}", masterChainInfo.getLast().getShortBlockSeqno());
+                syncDelay = MyLocalTonUtils.getSyncDelay();
+                log.info("out of sync seconds {}", syncDelay);
+              }
+              Utils.sleep(1);
+            } catch (Throwable e) {
+              log.error("Error in launching TON blockchain: {}", e.getMessage());
+              if (MyLocalTonUtils.doShutdown()) {
+                log.info("system exit 44");
+                System.exit(44);
+              }
+            }
+          }
+
           myLocalTon.runNodesStatusMonitor();
 
-          try {
-            MyLocalTonUtils.waitForBlockchainReady(genesisNode);
-            MyLocalTonUtils.waitForNodeSynchronized(genesisNode);
-          } catch (Exception e) {
-            log.error(e.getMessage(), e);
-          }
+          //          try {
+          //
+          //            MyLocalTonUtils.waitForBlockchainReady(genesisNode);
+          //            MyLocalTonUtils.waitForNodeSynchronized(genesisNode);
+          //          } catch (Exception e) {
+          //            log.error(e.getMessage(), e);
+          //          }
 
           myLocalTon.runBlockchainMonitor(genesisNode);
 
-          myLocalTon.initTonlib(genesisNode);
+          //          myLocalTon.initTonlib(genesisNode);
 
           myLocalTon.runBlockchainSizeMonitor();
 
@@ -217,8 +240,6 @@ public class App extends Application {
                           mainController.removeLoadingPane();
                           mainController.showSuccessMsg("TON blockchain is ready!", 2);
                           emit(new CustomActionEvent(CustomEvent.Type.BLOCKCHAIN_READY));
-                          //                          mainController.showSuccessMsg("Wallets are
-                          // ready. You are all set!", 5);
                         });
                   });
         });

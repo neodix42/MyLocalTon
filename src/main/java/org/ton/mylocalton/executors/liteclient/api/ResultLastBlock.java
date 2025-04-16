@@ -1,16 +1,17 @@
 package org.ton.mylocalton.executors.liteclient.api;
 
+import java.io.Serializable;
+import java.math.BigInteger;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-
-import java.io.Serializable;
-import java.math.BigInteger;
+import org.ton.java.tonlib.types.BlockIdExt;
 
 @Builder
 @Getter
 @ToString
 public class ResultLastBlock implements Serializable {
+  BlockIdExt blockIdExt; // temporary
   // private String fullBlockSeqno;
   // //(-1,8000000000000000,1432551):8128C13B9E81D86A261AD4ECA74F7C831822697A6EFE442C5491539A412AF295:8DD4D47161D9A7296BB3906BE8F1D6F0B827EE8C9CD5EB10F697853A23893376
   private String rootHash; // 8128C13B9E81D86A261AD4ECA74F7C831822697A6EFE442C5491539A412AF295

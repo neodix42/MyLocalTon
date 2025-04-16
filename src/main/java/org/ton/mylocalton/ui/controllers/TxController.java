@@ -28,7 +28,6 @@ import org.ton.mylocalton.actions.DynamicTreeLayout;
 import org.ton.mylocalton.db.entities.TxEntity;
 import org.ton.mylocalton.db.entities.TxPk;
 import org.ton.mylocalton.executors.liteclient.api.BlockShortSeqno;
-import org.ton.mylocalton.executors.liteclient.api.block.Transaction;
 import org.ton.mylocalton.main.App;
 import org.ton.mylocalton.utils.MyLocalTonUtils;
 
@@ -94,7 +93,7 @@ public class TxController {
               Platform.runLater(
                   () -> {
                     try {
-                      new DynamicTreeLayout().showTree(txEntity, txEntity.getTx());
+                      new DynamicTreeLayout().showTree(txEntity);
                     } catch (Exception e) {
                       log.error("Error showing tx dump", e);
                       App.mainController.showErrorMsg("Error showing transaction dump", 3);
@@ -191,7 +190,7 @@ public class TxController {
 
     String msgJson = new GsonBuilder().setPrettyPrinting().create().toJson(txEntity.getMessage());
 
-    controller.initData(msgJson, getRawDumpContent(txEntity, txEntity.getTx()));
+    controller.initData(msgJson, getRawDumpContent(txEntity));
 
     generateStage(root, txEntity, 700, 850);
   }
@@ -205,12 +204,12 @@ public class TxController {
 
     String txJson = new GsonBuilder().setPrettyPrinting().create().toJson(txEntity.getTx());
 
-    controller.initData(txJson, getRawDumpContent(txEntity, txEntity.getTx()));
+    controller.initData(txJson, getRawDumpContent(txEntity));
 
     generateStage(root, txEntity, 800, 850);
   }
 
-  private Parent getRawDumpContent(TxEntity txEntity, Transaction tx) throws IOException {
+  private Parent getRawDumpContent(TxEntity txEntity) throws IOException {
     FXMLLoader fxmlLoader =
         new FXMLLoader(
             TxController.class
@@ -225,9 +224,9 @@ public class TxController {
             + " "
             + txEntity.getWc()
             + ":"
-            + tx.getAccountAddr()
+            + txEntity.getAccountAddress()
             + " "
-            + tx.getLt());
+            + txEntity.getTxLt());
 
     return root;
   }

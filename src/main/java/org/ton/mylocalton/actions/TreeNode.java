@@ -1,12 +1,10 @@
 package org.ton.mylocalton.actions;
 
-import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
-import org.ton.mylocalton.executors.liteclient.api.block.Message;
-import org.ton.mylocalton.executors.liteclient.api.block.Transaction;
 
 class TreeNode {
   String name;
@@ -15,10 +13,10 @@ class TreeNode {
   double subtreeHeight;
   double centerX;
   double centerY;
-  BigDecimal amount;
+  BigInteger amount;
   String opCode;
-  Message message;
-  Transaction transaction;
+  org.ton.java.tlb.Message message;
+  org.ton.java.tlb.Transaction transaction;
 
   Circle circle;
   Text text;

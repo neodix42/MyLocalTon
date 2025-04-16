@@ -27,10 +27,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.extern.slf4j.Slf4j;
+import org.ton.java.tlb.Message;
 import org.ton.java.utils.Utils;
 import org.ton.mylocalton.db.entities.TxEntity;
-import org.ton.mylocalton.executors.liteclient.api.block.Message;
-import org.ton.mylocalton.executors.liteclient.api.block.Transaction;
 import org.ton.mylocalton.ui.controllers.TxController;
 
 @Slf4j
@@ -53,7 +52,7 @@ public class DynamicTreeLayout {
   private VBox detailsBox;
   private TreeNode selectedNode;
 
-  public void showTree(TxEntity txEntity, Transaction tx) {
+  public void showTree(TxEntity txEntity) {
     TreeNode root = buildTree(txEntity);
 
     pane = new Pane();
@@ -107,15 +106,14 @@ public class DynamicTreeLayout {
     contentBox.setPadding(new Insets(5, 5, 5, 5));
 
     Label nameLabel = new Label("Name: \n" + node.name);
-    Label amountLabel =
-        new Label("Amount: \n" + (nonNull(node.amount) ? Utils.formatCoins(node.amount) : "N/A"));
+    Label amountLabel = new Label("Amount: \n" + (nonNull(node.amount) ? node.amount : "N/A"));
     Label opCodeLabel = new Label("opCode: \n" + (node.opCode != null ? node.opCode : "N/A"));
     Label detailsLabel =
         new Label(
             "Details: \n\n\n"
-                + (nonNull(node.transaction) ? node.transaction.toJson() : "N/A")
+                + (nonNull(node.transaction) ? "tx json" : "N/A") // node.transaction.toJson()
                 + "\n\n\n"
-                + (nonNull(node.message) ? node.message.toJson() : "N/A"));
+                + (nonNull(node.message) ? "msg json" : "N/A")); // node.message.toJson()
     detailsLabel.setWrapText(true);
 
     contentBox.getChildren().addAll(nameLabel, amountLabel, opCodeLabel, detailsLabel);
@@ -300,7 +298,7 @@ public class DynamicTreeLayout {
           pane,
           midX - 40,
           midY,
-          Utils.formatNanoValue(child.amount.toBigInteger(), 2) + " TON",
+          Utils.formatNanoValue(child.amount, 2) + " TON",
           child.opCode,
           json);
     }
@@ -333,9 +331,9 @@ public class DynamicTreeLayout {
     //    }
 
     var root = new TreeNode(ALPHABET[index++] + "");
-    for (Message msg : txEntity.getTx().getOutMsgs()) {
+    for (Message msg : txEntity.getTx().getInOut().getOutMessages()) {
       TreeNode child = new TreeNode(ALPHABET[index++] + "");
-      child.amount = msg.getValue().getToncoins();
+      child.amount = msg.getInfo().getValueCoins();
       child.opCode = "transfer";
       child.text = new Text("text");
       child.transaction = txEntity.getTx();

@@ -4,8 +4,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.SVGPath?>
-<fx:root type="javafx.scene.layout.AnchorPane" prefHeight="40.0" prefWidth="600.0"
-         xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.AnchorPane" prefHeight="40.0"
+         prefWidth="800.0" xmlns="http://javafx.com/javafx"
          stylesheets="@../../../css/custom/search-bar.css" styleClass="search-background">
 
     <children>
@@ -16,10 +16,10 @@
             </graphic>
         </Label>
         <JFXTextField fx:id="textField" layoutX="40.0"
-                      prefHeight="40.0" prefWidth="610.0" promptText="Search for blocks, transactions, accounts..."/>
+                      prefHeight="40.0" prefWidth="800.0" promptText="Search for blocks, transactions, accounts..."/>
         <Label fx:id="clearButton" graphicTextGap="0.0" minHeight="10.0" minWidth="13.0"
                mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" contentDisplay="GRAPHIC_ONLY"
-               layoutX="625.0" layoutY="10.0" onMouseClicked="#clearText" styleClass="label-clear-button">
+               layoutX="825.0" layoutY="10.0" onMouseClicked="#clearText" styleClass="label-clear-button">
 
             <graphic>
                 <SVGPath styleClass="clear-button"

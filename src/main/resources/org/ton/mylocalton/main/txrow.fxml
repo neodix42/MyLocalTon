@@ -5,71 +5,56 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.SVGPath?>
 <?import java.net.URL?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="txRowBorderPane" prefHeight="46.0" prefWidth="1010.0"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:id="txRowBorderPane" prefHeight="46.0" prefWidth="1070.0"
             styleClass="row-pane" xmlns="http://javafx.com/javafx/17.0.2"
             fx:controller="org.ton.mylocalton.ui.controllers.TxController">
 
     <center>
-        <HBox prefHeight="46.0" prefWidth="1001.0" BorderPane.alignment="CENTER">
-            <VBox prefHeight="46.0" prefWidth="195.0">
-                <Label fx:id="block" onMouseClicked="#txRowSeqnoClick" prefHeight="20.0" prefWidth="195.0"
+        <HBox prefHeight="46.0" prefWidth="1070.0" BorderPane.alignment="CENTER">
+            <VBox prefHeight="46.0" prefWidth="240.0">
+                <Label fx:id="block" onMouseClicked="#txRowSeqnoClick" prefHeight="20.0" prefWidth="240.0"
                        styleClass="row-label-small"
                        text="(-1,8000000000000000,21321)"/>
-                <Label fx:id="status" prefHeight="20.0" prefWidth="195.0"
+                <Label fx:id="status" prefHeight="20.0" prefWidth="240.0"
                        styleClass="row-label-small" text="successful" style="-fx-alignment: center;"/>
             </VBox>
-            <VBox prefHeight="0.0" prefWidth="153.0">
-                <Label fx:id="txid" onMouseClicked="#txRowHashClick" prefHeight="20.0" prefWidth="153.0"
+            <VBox prefHeight="0.0" prefWidth="180.0">
+                <Label fx:id="txid" onMouseClicked="#txRowHashClick" prefHeight="20.0" prefWidth="180.0"
                        styleClass="row-label-small" text="12345678...12345678">
                 </Label>
-                <Label fx:id="txidHidden" minHeight="0.0" prefHeight="0.0" prefWidth="153.0"
+                <Label fx:id="txidHidden" minHeight="0.0" prefHeight="0.0" prefWidth="180.0"
                        styleClass="row-label-small" visible="false"/>
-                <Label fx:id="txAccAddrHidden" minHeight="0.0" prefHeight="0.0" prefWidth="153.0"
+                <Label fx:id="txAccAddrHidden" minHeight="0.0" prefHeight="0.0" prefWidth="180.0"
                        styleClass="row-label-small" visible="false"/>
-                <Label fx:id="txLt" minHeight="0.0" prefHeight="0.0" prefWidth="153.0" styleClass="row-label-small"
+                <Label fx:id="txLt" minHeight="0.0" prefHeight="0.0" prefWidth="180.0" styleClass="row-label-small"
                        visible="false"/>
-
-                <Label fx:id="time" prefHeight="25.0" prefWidth="153.0" styleClass="row-label-small"
+                <Label fx:id="time" prefHeight="25.0" prefWidth="180.0" styleClass="row-label-small"
                        text="2021.03.26 15:55:32"/>
             </VBox>
-            <VBox prefHeight="46.0" prefWidth="85.0">
-                <Label fx:id="typeTx" prefHeight="20.0" prefWidth="85.0" styleClass="row-label-small" text="Tx"
+            <VBox prefHeight="46.0" prefWidth="150.0">
+                <Label fx:id="typeTx" prefHeight="20.0" prefWidth="150.0" styleClass="row-label-small" text="Tx"
                        style="-fx-alignment: center;"/>
-                <Label fx:id="typeMsg" prefHeight="20.0" prefWidth="85.0" styleClass="row-label-small" text="Ordinary"
+                <Label fx:id="typeMsg" prefHeight="20.0" prefWidth="150.0" styleClass="row-label-small" text="Ordinary"
                        style="-fx-alignment: center;"/>
             </VBox>
 
-            <VBox prefHeight="46.0" prefWidth="445.0">
-                <Label fx:id="from" onMouseClicked="#txRowSrcAddrClick" prefHeight="20.0" prefWidth="445.0"
+            <VBox prefHeight="46.0" prefWidth="480.0">
+                <Label fx:id="from" onMouseClicked="#txRowSrcAddrClick" prefHeight="20.0" prefWidth="480.0"
                        styleClass="row-label-small"
-                       text="B34238F49A4EDB9559A5F44E7D567D133C6A0A1BD3555041079F24C2EF67E8D8"
                        style="-fx-font-size: 11px;"/>
-                <Label fx:id="to" onMouseClicked="#txRowDestAddrClick" prefHeight="20.0" prefWidth="445.0"
+                <Label fx:id="to" onMouseClicked="#txRowDestAddrClick" prefHeight="20.0" prefWidth="480.0"
                        styleClass="row-label-small"
-                       text="E247EA02117AC3024B78D834EF7CAD424F0F9D9C3052810863E08FA6020BB34C"
                        style="-fx-font-size: 11px;"/>
             </VBox>
-            <VBox minWidth="140.0" prefHeight="46.0" prefWidth="150.0">
-                <Label fx:id="amount" onMouseClicked="#txRowAmountClick" prefHeight="20.0" prefWidth="150.0"
-                       styleClass="row-label-small" text="10099965.23165"/>
-                <Label fx:id="fees" prefHeight="20.0" prefWidth="150.0" styleClass="row-label-small" text="0.23032561">
+            <VBox prefHeight="46.0" prefWidth="140.0">
+                <Label fx:id="amount" onMouseClicked="#txRowAmountClick" prefHeight="20.0" prefWidth="140.0"
+                       styleClass="row-label-small"/>
+                <Label fx:id="fees" prefHeight="20.0" prefWidth="140.0" styleClass="row-label-small" text="0.23032561">
                 </Label>
             </VBox>
         </HBox>
     </center>
     <right>
-        <HBox alignment="CENTER">
-            <children>
-                <JFXButton onAction="#txInfoBtn" prefHeight="30" prefWidth="30" contentDisplay="CENTER"
-                           styleClass="info-button">
-                    <graphic>
-                        <SVGPath
-                                content="M23.4835 15C23.4835 10.3222 19.678 6.51666 15.0002 6.51666C10.3224 6.51666 6.51685 10.3222 6.51685 15C6.51685 19.6778 10.3224 23.4833 15.0002 23.4833C19.678 23.4833 23.4835 19.6778 23.4835 15ZM8.06685 15C8.06685 11.1634 11.1636 8.06666 15.0002 8.06666C18.8368 8.06666 21.9335 11.1634 21.9335 15C21.9335 18.8366 18.8368 21.9333 15.0002 21.9333C11.1636 21.9333 8.06685 18.8366 8.06685 15ZM14.9881 13.5911C15.1976 13.5878 15.3996 13.6695 15.5479 13.8176C15.6665 13.9361 15.7427 14.089 15.7669 14.2516L15.7752 14.375L15.7752 18.9562C15.7791 19.2357 15.6323 19.4957 15.3909 19.6366C15.1495 19.7775 14.8509 19.7775 14.6095 19.6366C14.3983 19.5133 14.2594 19.2988 14.2307 19.0613L14.2252 18.9583L14.2252 14.3771C14.2196 13.9852 14.506 13.6569 14.8831 13.5998L14.9881 13.5911ZM15.9835 11.6667C15.9835 11.1236 15.5433 10.6833 15.0002 10.6833C14.4571 10.6833 14.0168 11.1236 14.0168 11.6667C14.0168 12.2097 14.4571 12.65 15.0002 12.65C15.5433 12.65 15.9835 12.2097 15.9835 11.6667Z"
-                                styleClass="info-svg"/>
-                    </graphic>
-                </JFXButton>
-            </children>
-        </HBox>
         <HBox alignment="CENTER">
             <JFXButton onAction="#txInfoBtn" prefHeight="30" prefWidth="30" contentDisplay="CENTER"
                        styleClass="info-button" HBox.hgrow="NEVER">

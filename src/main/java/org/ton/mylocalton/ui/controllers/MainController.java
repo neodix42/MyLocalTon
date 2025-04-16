@@ -3,6 +3,7 @@ package org.ton.mylocalton.ui.controllers;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.mylocalton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
+import static org.ton.mylocalton.actions.MyLocalTon.tonlib;
 import static org.ton.mylocalton.main.App.mainController;
 import static org.ton.mylocalton.ui.custom.events.CustomEventBus.emit;
 import static org.ton.mylocalton.ui.custom.events.CustomEventBus.listenFor;
@@ -18,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -79,6 +79,11 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.maven.artifact.versioning.ComparableVersion;
+import org.ton.java.address.Address;
+import org.ton.java.tlb.*;
+import org.ton.java.tonlib.types.BlockIdExt;
+import org.ton.java.tonlib.types.Participant;
+import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.java.utils.Utils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.BlockEntity;
@@ -87,10 +92,7 @@ import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.enums.LiteClientEnum;
 import org.ton.mylocalton.executors.blockchainexplorer.BlockchainExplorer;
 import org.ton.mylocalton.executors.liteclient.LiteClient;
-import org.ton.mylocalton.executors.liteclient.LiteClientParser;
 import org.ton.mylocalton.executors.liteclient.api.*;
-import org.ton.mylocalton.executors.liteclient.api.block.Transaction;
-import org.ton.mylocalton.executors.liteclient.api.config.Validator;
 import org.ton.mylocalton.executors.tonhttpapi.TonHttpApi;
 import org.ton.mylocalton.main.App;
 import org.ton.mylocalton.parameters.ValidationParam;
@@ -123,6 +125,9 @@ public class MainController implements Initializable {
 
   public static final long ONE_BLN = 1000000000L;
   public static final String TELEGRAM_NEODIX = "https://telegram.me/neodix";
+
+  public long globalBlockLastSeqno;
+  public long globalTxLastSeqno;
   @FXML public StackPane superWindow;
 
   @FXML public CustomMainLayout mainLayout;
@@ -840,14 +845,28 @@ public class MainController implements Initializable {
 
             Node n1 = blockslistviewid.lookup(".scroll-bar");
 
-            if (n1 instanceof ScrollBar) {
-              ScrollBar bar = (ScrollBar) n1;
+            if (n1 instanceof ScrollBar bar) {
 
               if (event.getDeltaY() < 0 && bar.getValue() > 0) { // bottom reached
 
-                BorderPane bp = (BorderPane) blockslistviewid.getItems().getLast();
+                BorderPane bp =
+                    (BorderPane)
+                        blockslistviewid.getItems().get(blockslistviewid.getItems().size() - 1);
                 long lastSeqno = Long.parseLong(((Label) bp.lookup("#seqno")).getText());
                 long wc = Long.parseLong(((Label) bp.lookup("#wc")).getText());
+
+                if (globalBlockLastSeqno == lastSeqno) {
+                  log.debug(
+                      "lastSeqno {} == globalLastSeqno {} already scroll-loading",
+                      lastSeqno,
+                      globalBlockLastSeqno);
+                  return;
+                }
+
+                globalBlockLastSeqno = lastSeqno;
+                if (lastSeqno <= 1) {
+                  return;
+                }
 
                 String createdatDate = ((Label) bp.lookup("#createdatDate")).getText();
                 String createdatTime = ((Label) bp.lookup("#createdatTime")).getText();
@@ -871,6 +890,7 @@ public class MainController implements Initializable {
                 }
 
                 List<BlockEntity> blocks = App.dbPool.loadBlocksBefore(createdAt);
+                log.debug("blocks.size() {}", blocks.size());
                 MyLocalTon.getInstance().getBlocksScrollBarHighWaterMark().addAndGet(blocks.size());
 
                 ObservableList<Node> blockRows = FXCollections.observableArrayList();
@@ -894,6 +914,7 @@ public class MainController implements Initializable {
                         .populateBlockRowWithData(resultLastBlock, blockRow, null);
 
                     if (resultLastBlock.getWc() == -1L) {
+
                       (blockRow.lookup("#blockRowBorderPane")).getStyleClass().add("row-pane-gray");
                     }
 
@@ -911,23 +932,16 @@ public class MainController implements Initializable {
 
                 if ((blockRows.isEmpty()) && (lastSeqno < 10)) {
                   log.debug(
-                      "On start some blocks were skipped, load them now from 1 to {}",
+                      "On start some blocks were skipped, load them now from 1 to                 {}",
                       lastSeqno - 1);
 
-                  LongStream.range(1, 10)
+                  LongStream.range(lastSeqno - 10, lastSeqno)
                       .forEach(
                           i -> {
                             try {
-                              ResultLastBlock block =
-                                  LiteClientParser.parseBySeqno(
-                                      LiteClient.getInstance(LiteClientEnum.GLOBAL)
-                                          .executeBySeqno(
-                                              MyLocalTon.getInstance()
-                                                  .getSettings()
-                                                  .getGenesisNode(),
-                                              -1L,
-                                              "8000000000000000",
-                                              new BigInteger(String.valueOf(i))));
+                              BlockIdExt blockIdExt =
+                                  tonlib.lookupBlock(i, -1L, -9223372036854775808L, 0, 0);
+                              ResultLastBlock block = MyLocalTonUtils.getLast(blockIdExt);
                               log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
                               MyLocalTon.getInstance()
                                   .insertBlocksAndTransactions(
@@ -957,12 +971,11 @@ public class MainController implements Initializable {
   @FXML
   void txsOnScroll(ScrollEvent event) {
 
-    log.debug("txsOnScroll: {}", event);
+    //    log.debug("txsOnScroll: {}", event);
 
     Node n1 = transactionsvboxid.lookup(".scroll-bar");
 
-    if (n1 instanceof ScrollBar) {
-      ScrollBar bar = (ScrollBar) n1;
+    if (n1 instanceof ScrollBar bar) {
 
       if (event.getDeltaY() < 0 && bar.getValue() > 0) { // bottom reached
 
@@ -970,12 +983,11 @@ public class MainController implements Initializable {
             () -> {
               BorderPane bp =
                   (BorderPane)
-                      transactionsvboxid.getItems().get(transactionsvboxid.getItems().size() - 1);
-              String shortseqno = ((Label) ((Node) bp).lookup("#block")).getText();
+                      transactionsvboxid.getItems().get(blockslistviewid.getItems().size() - 1);
+              String shortseqno = ((Label) bp.lookup("#block")).getText();
 
               long createdAt =
-                  MyLocalTonUtils.datetimeToTimestamp(
-                      ((Label) ((Node) bp).lookup("#time")).getText());
+                  MyLocalTonUtils.datetimeToTimestamp(((Label) bp.lookup("#time")).getText());
 
               BlockShortSeqno blockShortSeqno =
                   BlockShortSeqno.builder()
@@ -988,11 +1000,21 @@ public class MainController implements Initializable {
                       .build();
 
               log.debug(
-                  "bottom reached, seqno {}, hwm {}, createdAt {}, utc {}",
+                  "bottom tx reached, seqno {}, hwm {}, createdAt {}, utc {}",
                   blockShortSeqno.getSeqno(),
                   MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get(),
                   createdAt,
                   MyLocalTonUtils.toUtcNoSpace(createdAt));
+
+              if (globalTxLastSeqno == blockShortSeqno.getSeqno().longValue()) {
+                log.debug(
+                    "lastSeqno {} == globalBlockLastSeqno {} already scroll-loading",
+                    blockShortSeqno.getSeqno().longValue(),
+                    globalTxLastSeqno);
+                return;
+              }
+
+              globalTxLastSeqno = blockShortSeqno.getSeqno().longValue();
 
               if (blockShortSeqno.getSeqno().compareTo(BigInteger.ONE) == 0) {
                 return;
@@ -1008,6 +1030,7 @@ public class MainController implements Initializable {
               }
 
               List<TxEntity> txs = App.dbPool.loadTxsBefore(createdAt);
+              log.info("txs.size {}", txs.size());
 
               MyLocalTon.getInstance().applyTxGuiFilters(txs);
 
@@ -1024,28 +1047,7 @@ public class MainController implements Initializable {
                       String.format(
                           "(%d,%s,%d)", txEntity.getWc(), txEntity.getShard(), txEntity.getSeqno());
 
-                  ResultListBlockTransactions resultListBlockTransactions =
-                      ResultListBlockTransactions.builder()
-                          .txSeqno(new BigInteger(txEntity.getSeqno().toString()))
-                          .hash(txEntity.getTxHash())
-                          .accountAddress(txEntity.getTx().getAccountAddr())
-                          .lt(txEntity.getTx().getLt())
-                          .build();
-
-                  Transaction txDetails =
-                      Transaction.builder()
-                          .accountAddr(txEntity.getTx().getAccountAddr())
-                          .description(txEntity.getTx().getDescription())
-                          .inMsg(txEntity.getTx().getInMsg())
-                          .endStatus(txEntity.getTx().getEndStatus())
-                          .now(txEntity.getTx().getNow())
-                          .totalFees(txEntity.getTx().getTotalFees())
-                          .lt(new BigInteger(txEntity.getTxLt().toString()))
-                          .build();
-
-                  MyLocalTon.getInstance()
-                      .populateTxRowWithData(
-                          shortBlock, resultListBlockTransactions, txDetails, txRow, txEntity);
+                  MyLocalTon.getInstance().populateTxRowWithData(shortBlock, txRow, txEntity);
 
                   if (txEntity.getTypeTx().equals("Message")) {
                     txRow.setStyle("-fx-background-color: e9f4ff;");
@@ -1074,14 +1076,21 @@ public class MainController implements Initializable {
                     .forEach(
                         i -> {
                           try {
-                            ResultLastBlock block =
-                                LiteClientParser.parseBySeqno(
-                                    LiteClient.getInstance(LiteClientEnum.GLOBAL)
-                                        .executeBySeqno(
-                                            MyLocalTon.getInstance().getSettings().getGenesisNode(),
-                                            -1L,
-                                            "8000000000000000",
-                                            new BigInteger(String.valueOf(i))));
+                            BlockIdExt blockIdExt =
+                                tonlib.lookupBlock(i, -1L, -9223372036854775808L, 0, 0);
+                            ResultLastBlock block = MyLocalTonUtils.getLast(blockIdExt);
+                            log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
+                            //                            ResultLastBlock block =
+                            //                                LiteClientParser.parseBySeqno(
+                            //
+                            // LiteClient.getInstance(LiteClientEnum.GLOBAL)
+                            //                                        .executeBySeqno(
+                            //
+                            // MyLocalTon.getInstance().getSettings().getGenesisNode(),
+                            //                                            -1L,
+                            //                                            "8000000000000000",
+                            //                                            new
+                            // BigInteger(String.valueOf(i))));
                             log.debug("load missing block {}: {}", i, block.getFullBlockSeqno());
                             MyLocalTon.getInstance()
                                 .insertBlocksAndTransactions(
@@ -1089,7 +1098,7 @@ public class MainController implements Initializable {
                                     block,
                                     false);
                           } catch (Exception e) {
-                            e.printStackTrace();
+                            log.error("cannot load missing blocks {}", e.getMessage());
                           }
                         });
               }
@@ -1791,7 +1800,7 @@ public class MainController implements Initializable {
     final ClipboardContent content = new ClipboardContent();
     content.putString(lastCommand);
     clipboard.setContent(content);
-    log.debug(lastCommand + " copied");
+    log.debug("{} copied", lastCommand);
     App.mainController.showInfoMsg("lite-client last command copied to clipboard", 2);
   }
 
@@ -1909,7 +1918,6 @@ public class MainController implements Initializable {
             yesNoDialog.show();
           } catch (IOException e) {
             log.error("Cannot load resource org/ton/ui/custom/layout/confirm-pane.fxml");
-            e.printStackTrace();
           }
         });
   }
@@ -2114,52 +2122,62 @@ public class MainController implements Initializable {
           settings.elections.keySet().toArray()[settings.elections.size() - 1]; // get last element
       v = settings.elections.get(lastKey);
 
-      LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
-      ResultConfig34 config34 =
-          LiteClientParser.parseConfig34(
-              liteClient.executeGetCurrentValidators(settings.getGenesisNode()));
-      ResultConfig32 config32 =
-          LiteClientParser.parseConfig32(
-              liteClient.executeGetPreviousValidators(settings.getGenesisNode()));
-      ResultConfig36 config36 =
-          LiteClientParser.parseConfig36(
-              liteClient.executeGetNextValidators(settings.getGenesisNode()));
+      //      LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
+      ConfigParams34 config34 = tonlib.getConfigParam34();
+      Validators currentValidators = (Validators) config34.getCurrValidatorSet();
+
+      ConfigParams32 config32 = tonlib.getConfigParam32();
+      Validators prevValidators = (Validators) config32.getPrevValidatorSet();
+      ConfigParams36 config36 = tonlib.getConfigParam36();
+      Validators nextValidators = (Validators) config36.getNextValidatorSet();
 
       Platform.runLater(
           () -> {
             totalValidators.setText(
-                config32.getValidators().getValidators().size()
+                prevValidators.getValidatorsAddrAsList().size()
                     + " / "
-                    + config34.getValidators().getValidators().size()
+                    + currentValidators.getValidatorsAddrAsList().size()
                     + " / "
-                    + config36.getValidators().getValidators().size());
+                    + nextValidators.getValidatorsAddrAsList().size());
             String previous =
                 "Previous validators (Public key, ADNL address, weight): "
                     + System.lineSeparator()
-                    + config32.getValidators().getValidators().stream()
+                    + prevValidators.getValidatorsAddrAsList().stream()
                         .map(
                             i ->
-                                i.getPublicKey() + "  " + i.getAdnlAddress() + "  " + i.getWeight())
+                                i.getAdnlAddressHex()
+                                    + "  "
+                                    + i.getAdnlAddressHex()
+                                    + "  "
+                                    + i.getWeight())
                         .collect(Collectors.joining(System.lineSeparator()))
                     + System.lineSeparator()
                     + System.lineSeparator();
             String current =
                 "Current validators: "
                     + System.lineSeparator()
-                    + config34.getValidators().getValidators().stream()
+                    + currentValidators.getValidatorsAddrAsList().stream()
                         .map(
                             i ->
-                                i.getPublicKey() + "  " + i.getAdnlAddress() + "  " + i.getWeight())
+                                i.getPublicKeyHex()
+                                    + "  "
+                                    + i.getAdnlAddressHex()
+                                    + "  "
+                                    + i.getWeight())
                         .collect(Collectors.joining(System.lineSeparator()))
                     + System.lineSeparator()
                     + System.lineSeparator();
             String next =
                 "Next validators (available only within a Break time): "
                     + System.lineSeparator()
-                    + config36.getValidators().getValidators().stream()
+                    + nextValidators.getValidatorsAddrAsList().stream()
                         .map(
                             i ->
-                                i.getPublicKey() + "  " + i.getAdnlAddress() + "  " + i.getWeight())
+                                i.getPublicKeyHex()
+                                    + "  "
+                                    + i.getAdnlAddressHex()
+                                    + "  "
+                                    + i.getWeight())
                         .collect(Collectors.joining(System.lineSeparator()))
                     + System.lineSeparator();
             log.debug("previous {}", previous);
@@ -2281,76 +2299,38 @@ public class MainController implements Initializable {
                     + DurationFormatUtils.formatDuration(
                         Duration.ofSeconds(v.getHoldPeriod()).toMillis(), "HH:mm:ss", true)
                     + ")");
-            minimumStake.setText(
-                String.format(
-                    "%,.9f", new BigDecimal(v.getMinStake().divide(BigInteger.valueOf(ONE_BLN)))));
-            maximumStake.setText(
-                String.format(
-                    "%,.9f", new BigDecimal(v.getMaxStake().divide(BigInteger.valueOf(ONE_BLN)))));
+            minimumStake.setText(Utils.formatNanoValue(v.getMinStake(), 2));
+            maximumStake.setText(Utils.formatNanoValue(v.getMaxStake(), 2));
           });
       // every 30 sec
       // MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
-      log.info("asdfasdfasdfasdf");
+      RawAccountState accountStateMain =
+          tonlib.getRawAccountState(Address.of(settings.getMainWalletAddrFull()));
 
-      LiteClientAccountState accountStateMain =
-          LiteClientParser.parseGetAccount(
-              liteClient.executeGetAccount(
-                  settings.getGenesisNode(), settings.getMainWalletAddrFull()));
+      RawAccountState accountStateConfig =
+          tonlib.getRawAccountState(Address.of(settings.getConfigSmcAddrHex()));
 
-      LiteClientAccountState accountStateConfig =
-          LiteClientParser.parseGetAccount(
-              liteClient.executeGetAccount(
-                  settings.getGenesisNode(), settings.getConfigSmcAddrHex()));
+      RawAccountState accountStateElector =
+          tonlib.getRawAccountState(Address.of(settings.getElectorSmcAddrHex()));
 
-      LiteClientAccountState accountStateElector =
-          LiteClientParser.parseGetAccount(
-              liteClient.executeGetAccount(
-                  settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
+      List<Participant> participants = tonlib.getElectionParticipants();
+      log.info("participants {}", participants);
 
-      List<ResultListParticipants> participants =
-          LiteClientParser.parseRunMethodParticipantList(
-              liteClient.executeGetParticipantList(
-                  settings.getGenesisNode(), settings.getElectorSmcAddrHex()));
-
-      totalParticipants.setText(String.valueOf(participants.size()));
       String participantsTooltip =
           "Participants (Public key, weight): "
               + System.lineSeparator()
-              + LiteClientParser.parseRunMethodParticipantList(
-                      liteClient.executeGetParticipantList(
-                          settings.getGenesisNode(), settings.getElectorSmcAddrHex()))
-                  .stream()
-                  .map(i -> i.getPubkey() + "  " + i.getWeight())
+              + participants.stream()
+                  .map(i -> i.getAddress() + "  " + i.getStake())
                   .collect(Collectors.joining(System.lineSeparator()))
               + System.lineSeparator();
 
       Platform.runLater(
           () -> {
-            minterBalance.setText(
-                String.format(
-                    "%,.9f",
-                    accountStateMain
-                        .getBalance()
-                        .getToncoins()
-                        .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-
-            configBalance.setText(
-                String.format(
-                    "%,.9f",
-                    accountStateConfig
-                        .getBalance()
-                        .getToncoins()
-                        .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-
-            electorBalance.setText(
-                String.format(
-                    "%,.9f",
-                    accountStateElector
-                        .getBalance()
-                        .getToncoins()
-                        .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
-
+            minterBalance.setText(Utils.formatNanoValue(accountStateMain.getBalance(), 2));
+            configBalance.setText(Utils.formatNanoValue(accountStateConfig.getBalance(), 2));
+            electorBalance.setText(Utils.formatNanoValue(accountStateElector.getBalance(), 2));
+            totalParticipants.setText(String.valueOf(participants.size()));
             totalParticipants.setTooltip(new Tooltip(participantsTooltip));
           });
       // validator pages
@@ -2371,30 +2351,30 @@ public class MainController implements Initializable {
   private void updateValidator1TabPage(ValidationParam v) {
     GenesisNode node1 = settings.getGenesisNode();
     if (nonNull(node1.getWalletAddress())) {
-      LiteClientAccountState accountState =
-          LiteClientParser.parseGetAccount(
-              LiteClient.getInstance(LiteClientEnum.GLOBAL)
-                  .executeGetAccount(
-                      settings.getGenesisNode(), node1.getWalletAddress().getFullWalletAddress()));
+      RawAccountState accountState =
+          tonlib.getRawAccountState(Address.of(node1.getWalletAddress().getFullWalletAddress()));
+
       Platform.runLater(
           () -> {
-            if (isNull(
-                node1.getPrevValidationAndlKey())) { // very first elections, no previous validators
-              // yet
-              validator1AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddress());
-              validator1PubKeyHex.setText(v.getCurrentValidators().get(0).getPublicKey());
+            if (isNull(node1.getPrevValidationAndlKey())) {
+              // very first elections, no previous validators yet
+              String pubKey = v.getCurrentValidators().get(0).getPublicKeyHex();
+              validator1AdnlAddress.setText(v.getCurrentValidators().get(0).getAdnlAddressHex());
+              validator1PubKeyHex.setText(pubKey);
               validator1PubKeyInteger.setText(
-                  new BigInteger(v.getCurrentValidators().get(0).getPublicKey().toUpperCase(), 16)
-                      + " (used in participants list)");
-            } else { // in a list of current validators we must find an entry from previous next
-              // validators
-              for (Validator validator : v.getCurrentValidators()) {
-                if (nonNull(validator.getAdnlAddress())) {
-                  if (validator.getAdnlAddress().equals(node1.getPrevValidationAndlKey())) {
-                    validator1AdnlAddress.setText(validator.getAdnlAddress());
-                    validator1PubKeyHex.setText(validator.getPublicKey());
+                  new BigInteger(pubKey, 16) + " (used in participants list)");
+            } else {
+              // in a list of current validators we must find an entry from previous next validators
+              for (ValidatorAddr validator : v.getCurrentValidators()) {
+                if (nonNull(validator.getAdnlAddr())) {
+                  if (validator
+                      .getAdnlAddr()
+                      .toString(16)
+                      .equals(node1.getPrevValidationAndlKey())) {
+                    validator1AdnlAddress.setText(validator.getAdnlAddressHex());
+                    validator1PubKeyHex.setText(validator.getPublicKeyHex());
                     validator1PubKeyInteger.setText(
-                        new BigInteger(validator.getPublicKey().toUpperCase(), 16)
+                        new BigInteger(validator.getPublicKeyHex(), 16)
                             + " (used in participants list)");
                   }
                 }
@@ -2405,13 +2385,7 @@ public class MainController implements Initializable {
             validator1PubKeyHexNext.setText(node1.getValidationPubKeyHex());
             validator1PubKeyIntegerNext.setText(node1.getValidationPubKeyInteger());
             validator1WalletAddress.setText(node1.getWalletAddress().getFullWalletAddress());
-            validator1WalletBalance.setText(
-                String.format(
-                    "%,.9f",
-                    accountState
-                        .getBalance()
-                        .getToncoins()
-                        .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            validator1WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance(), 2));
             nodePublicPort1.setText(node1.getPublicPort().toString());
             nodeConsolePort1.setText(node1.getConsolePort().toString());
             liteServerPort1.setText(node1.getLiteServerPort().toString());
@@ -2422,24 +2396,21 @@ public class MainController implements Initializable {
   private void updateValidator2TabPage(ValidationParam v) {
     Node2 node2 = settings.getNode2();
     if (nonNull(node2.getWalletAddress())) {
-      LiteClientAccountState accountState =
-          LiteClientParser.parseGetAccount(
-              LiteClient.getInstance(LiteClientEnum.GLOBAL)
-                  .executeGetAccount(
-                      settings.getGenesisNode(), node2.getWalletAddress().getFullWalletAddress()));
+      RawAccountState accountState =
+          tonlib.getRawAccountState(Address.of(node2.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node2.getPrevValidationAndlKey())) {
-              for (Validator validator :
-                  v.getCurrentValidators()) { // in a list of current validators we must find an
-                // entry
-                // from previous next validators
-                if (nonNull(validator.getAdnlAddress())) {
-                  if (validator.getAdnlAddress().equals(node2.getPrevValidationAndlKey())) {
-                    validator2AdnlAddress.setText(validator.getAdnlAddress());
-                    validator2PubKeyHex.setText(validator.getPublicKey());
+              for (ValidatorAddr validator : v.getCurrentValidators()) {
+                if (nonNull(validator.getAdnlAddr())) {
+                  if (validator
+                      .getAdnlAddr()
+                      .toString(16)
+                      .equals(node2.getPrevValidationAndlKey())) {
+                    validator2AdnlAddress.setText(validator.getAdnlAddressHex());
+                    validator2PubKeyHex.setText(validator.getPublicKeyHex());
                     validator2PubKeyInteger.setText(
-                        new BigInteger(validator.getPublicKey().toUpperCase(), 16)
+                        new BigInteger(validator.getPublicKeyHex(), 16)
                             + " (used in participants list)");
                   }
                 }
@@ -2450,13 +2421,7 @@ public class MainController implements Initializable {
             validator2PubKeyHexNext.setText(node2.getValidationPubKeyHex());
             validator2PubKeyIntegerNext.setText(node2.getValidationPubKeyInteger());
             validator2WalletAddress.setText(node2.getWalletAddress().getFullWalletAddress());
-            validator2WalletBalance.setText(
-                String.format(
-                    "%,.9f",
-                    accountState
-                        .getBalance()
-                        .getToncoins()
-                        .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            validator2WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance(), 2));
             nodePublicPort2.setText(node2.getPublicPort().toString());
             nodeConsolePort2.setText(node2.getConsolePort().toString());
             liteServerPort2.setText(node2.getLiteServerPort().toString());
@@ -2469,21 +2434,21 @@ public class MainController implements Initializable {
   private void updateValidator3TabPage(ValidationParam v) {
     Node3 node3 = settings.getNode3();
     if (nonNull(node3.getWalletAddress())) {
-      LiteClientAccountState accountState =
-          LiteClientParser.parseGetAccount(
-              LiteClient.getInstance(LiteClientEnum.GLOBAL)
-                  .executeGetAccount(
-                      settings.getGenesisNode(), node3.getWalletAddress().getFullWalletAddress()));
+      RawAccountState accountState =
+          tonlib.getRawAccountState(Address.of(node3.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node3.getPrevValidationAndlKey())) {
-              for (Validator validator : v.getCurrentValidators()) {
-                if (nonNull(validator.getAdnlAddress())) {
-                  if (validator.getAdnlAddress().equals(node3.getPrevValidationAndlKey())) {
-                    validator3AdnlAddress.setText(validator.getAdnlAddress());
-                    validator3PubKeyHex.setText(validator.getPublicKey());
+              for (ValidatorAddr validator : v.getCurrentValidators()) {
+                if (nonNull(validator.getAdnlAddr())) {
+                  if (validator
+                      .getAdnlAddr()
+                      .toString(16)
+                      .equals(node3.getPrevValidationAndlKey())) {
+                    validator3AdnlAddress.setText(validator.getAdnlAddressHex());
+                    validator3PubKeyHex.setText(validator.getPublicKeyHex());
                     validator3PubKeyInteger.setText(
-                        new BigInteger(validator.getPublicKey().toUpperCase(), 16)
+                        new BigInteger(validator.getPublicKeyHex(), 16)
                             + " (used in participants list)");
                   }
                 }
@@ -2494,13 +2459,7 @@ public class MainController implements Initializable {
             validator3PubKeyHexNext.setText(node3.getValidationPubKeyHex());
             validator3PubKeyIntegerNext.setText(node3.getValidationPubKeyInteger());
             validator3WalletAddress.setText(node3.getWalletAddress().getFullWalletAddress());
-            validator3WalletBalance.setText(
-                String.format(
-                    "%,.9f",
-                    accountState
-                        .getBalance()
-                        .getToncoins()
-                        .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            validator3WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance(), 2));
             nodePublicPort3.setText(node3.getPublicPort().toString());
             nodeConsolePort3.setText(node3.getConsolePort().toString());
             liteServerPort3.setText(node3.getLiteServerPort().toString());
@@ -2513,21 +2472,21 @@ public class MainController implements Initializable {
   private void updateValidator4TabPage(ValidationParam v) {
     Node4 node4 = settings.getNode4();
     if (nonNull(node4.getWalletAddress())) {
-      LiteClientAccountState accountState =
-          LiteClientParser.parseGetAccount(
-              LiteClient.getInstance(LiteClientEnum.GLOBAL)
-                  .executeGetAccount(
-                      settings.getGenesisNode(), node4.getWalletAddress().getFullWalletAddress()));
+      RawAccountState accountState =
+          tonlib.getRawAccountState(Address.of(node4.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node4.getPrevValidationAndlKey())) {
-              for (Validator validator : v.getCurrentValidators()) {
-                if (nonNull(validator.getAdnlAddress())) {
-                  if (validator.getAdnlAddress().equals(node4.getPrevValidationAndlKey())) {
-                    validator4AdnlAddress.setText(validator.getAdnlAddress());
-                    validator4PubKeyHex.setText(validator.getPublicKey());
+              for (ValidatorAddr validator : v.getCurrentValidators()) {
+                if (nonNull(validator.getAdnlAddr())) {
+                  if (validator
+                      .getAdnlAddr()
+                      .toString(16)
+                      .equals(node4.getPrevValidationAndlKey())) {
+                    validator4AdnlAddress.setText(validator.getAdnlAddressHex());
+                    validator4PubKeyHex.setText(validator.getPublicKeyHex());
                     validator4PubKeyInteger.setText(
-                        new BigInteger(validator.getPublicKey().toUpperCase(), 16)
+                        new BigInteger(validator.getPublicKeyHex(), 16)
                             + " (used in participants list)");
                   }
                 }
@@ -2538,13 +2497,7 @@ public class MainController implements Initializable {
             validator4PubKeyHexNext.setText(node4.getValidationPubKeyHex());
             validator4PubKeyIntegerNext.setText(node4.getValidationPubKeyInteger());
             validator4WalletAddress.setText(node4.getWalletAddress().getFullWalletAddress());
-            validator4WalletBalance.setText(
-                String.format(
-                    "%,.9f",
-                    accountState
-                        .getBalance()
-                        .getToncoins()
-                        .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            validator4WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance(), 2));
             nodePublicPort4.setText(node4.getPublicPort().toString());
             nodeConsolePort4.setText(node4.getConsolePort().toString());
             liteServerPort4.setText(node4.getLiteServerPort().toString());
@@ -2557,24 +2510,22 @@ public class MainController implements Initializable {
   private void updateValidator5TabPage(ValidationParam v) {
     Node5 node5 = settings.getNode5();
     if (nonNull(node5.getWalletAddress())) {
-      LiteClientAccountState accountState =
-          LiteClientParser.parseGetAccount(
-              LiteClient.getInstance(LiteClientEnum.GLOBAL)
-                  .executeGetAccount(
-                      settings.getGenesisNode(), node5.getWalletAddress().getFullWalletAddress()));
+      RawAccountState accountState =
+          tonlib.getRawAccountState(Address.of(node5.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node5.getPrevValidationAndlKey())) {
-              for (Validator validator : v.getCurrentValidators()) {
-                if (nonNull(validator.getAdnlAddress())) {
-                  if (nonNull(validator.getAdnlAddress())) {
-                    if (validator.getAdnlAddress().equals(node5.getPrevValidationAndlKey())) {
-                      validator5AdnlAddress.setText(validator.getAdnlAddress());
-                      validator5PubKeyHex.setText(validator.getPublicKey());
-                      validator5PubKeyInteger.setText(
-                          new BigInteger(validator.getPublicKey().toUpperCase(), 16)
-                              + " (used in participants list)");
-                    }
+              for (ValidatorAddr validator : v.getCurrentValidators()) {
+                if (nonNull(validator.getAdnlAddr())) {
+                  if (validator
+                      .getAdnlAddr()
+                      .toString(16)
+                      .equals(node5.getPrevValidationAndlKey())) {
+                    validator5AdnlAddress.setText(validator.getAdnlAddressHex());
+                    validator5PubKeyHex.setText(validator.getPublicKeyHex());
+                    validator5PubKeyInteger.setText(
+                        new BigInteger(validator.getPublicKeyHex(), 16)
+                            + " (used in participants list)");
                   }
                 }
               }
@@ -2584,13 +2535,7 @@ public class MainController implements Initializable {
             validator5PubKeyHexNext.setText(node5.getValidationPubKeyHex());
             validator5PubKeyIntegerNext.setText(node5.getValidationPubKeyInteger());
             validator5WalletAddress.setText(node5.getWalletAddress().getFullWalletAddress());
-            validator5WalletBalance.setText(
-                String.format(
-                    "%,.9f",
-                    accountState
-                        .getBalance()
-                        .getToncoins()
-                        .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            validator5WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance()));
             nodePublicPort5.setText(node5.getPublicPort().toString());
             nodeConsolePort5.setText(node5.getConsolePort().toString());
             liteServerPort5.setText(node5.getLiteServerPort().toString());
@@ -2603,21 +2548,21 @@ public class MainController implements Initializable {
   private void updateValidator6TabPage(ValidationParam v) {
     Node6 node6 = settings.getNode6();
     if (nonNull(node6.getWalletAddress())) {
-      LiteClientAccountState accountState =
-          LiteClientParser.parseGetAccount(
-              LiteClient.getInstance(LiteClientEnum.GLOBAL)
-                  .executeGetAccount(
-                      settings.getGenesisNode(), node6.getWalletAddress().getFullWalletAddress()));
+      RawAccountState accountState =
+          tonlib.getRawAccountState(Address.of(node6.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node6.getPrevValidationAndlKey())) {
-              for (Validator validator : v.getCurrentValidators()) {
-                if (nonNull(validator.getAdnlAddress())) {
-                  if (validator.getAdnlAddress().equals(node6.getPrevValidationAndlKey())) {
-                    validator6AdnlAddress.setText(validator.getAdnlAddress());
-                    validator6PubKeyHex.setText(validator.getPublicKey());
+              for (ValidatorAddr validator : v.getCurrentValidators()) {
+                if (nonNull(validator.getAdnlAddr())) {
+                  if (validator
+                      .getAdnlAddr()
+                      .toString(16)
+                      .equals(node6.getPrevValidationAndlKey())) {
+                    validator6AdnlAddress.setText(validator.getAdnlAddressHex());
+                    validator6PubKeyHex.setText(validator.getPublicKeyHex());
                     validator6PubKeyInteger.setText(
-                        new BigInteger(validator.getPublicKey().toUpperCase(), 16)
+                        new BigInteger(validator.getPublicKeyHex(), 16)
                             + " (used in participants list)");
                   }
                 }
@@ -2628,22 +2573,12 @@ public class MainController implements Initializable {
             validator6PubKeyHexNext.setText(node6.getValidationPubKeyHex());
             validator6PubKeyIntegerNext.setText(node6.getValidationPubKeyInteger());
             validator6WalletAddress.setText(node6.getWalletAddress().getFullWalletAddress());
-            validator6WalletBalance.setText(
-                String.format(
-                    "%,.9f",
-                    accountState
-                        .getBalance()
-                        .getToncoins()
-                        .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            validator6WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance()));
             nodePublicPort6.setText(node6.getPublicPort().toString());
             nodeConsolePort6.setText(node6.getConsolePort().toString());
             liteServerPort6.setText(node6.getLiteServerPort().toString());
 
-            if (isNull(node6.getWalletAddress())) {
-              deleteValidatorBtn6.setDisable(true);
-            } else {
-              deleteValidatorBtn6.setDisable(false);
-            }
+            deleteValidatorBtn6.setDisable(isNull(node6.getWalletAddress()));
           });
     }
   }
@@ -2651,21 +2586,21 @@ public class MainController implements Initializable {
   private void updateValidator7TabPage(ValidationParam v) {
     Node7 node7 = settings.getNode7();
     if (nonNull(node7.getWalletAddress())) {
-      LiteClientAccountState accountState =
-          LiteClientParser.parseGetAccount(
-              LiteClient.getInstance(LiteClientEnum.GLOBAL)
-                  .executeGetAccount(
-                      settings.getGenesisNode(), node7.getWalletAddress().getFullWalletAddress()));
+      RawAccountState accountState =
+          tonlib.getRawAccountState(Address.of(node7.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node7.getPrevValidationAndlKey())) {
-              for (Validator validator : v.getCurrentValidators()) {
-                if (nonNull(validator.getAdnlAddress())) {
-                  if (validator.getAdnlAddress().equals(node7.getPrevValidationAndlKey())) {
-                    validator7AdnlAddress.setText(validator.getAdnlAddress());
-                    validator7PubKeyHex.setText(validator.getPublicKey());
+              for (ValidatorAddr validator : v.getCurrentValidators()) {
+                if (nonNull(validator.getAdnlAddr())) {
+                  if (validator
+                      .getAdnlAddr()
+                      .toString(16)
+                      .equals(node7.getPrevValidationAndlKey())) {
+                    validator7AdnlAddress.setText(validator.getAdnlAddressHex());
+                    validator7PubKeyHex.setText(validator.getPublicKeyHex());
                     validator7PubKeyInteger.setText(
-                        new BigInteger(validator.getPublicKey().toUpperCase(), 16)
+                        new BigInteger(validator.getPublicKeyHex(), 16)
                             + " (used in participants list)");
                   }
                 }
@@ -2677,13 +2612,7 @@ public class MainController implements Initializable {
             validator7PubKeyIntegerNext.setText(
                 node7.getValidationPubKeyInteger() + " (used in participants list)");
             validator7WalletAddress.setText(node7.getWalletAddress().getFullWalletAddress());
-            validator7WalletBalance.setText(
-                String.format(
-                    "%,.9f",
-                    accountState
-                        .getBalance()
-                        .getToncoins()
-                        .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+            validator7WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance(), 2));
             nodePublicPort7.setText(node7.getPublicPort().toString());
             nodeConsolePort7.setText(node7.getConsolePort().toString());
             liteServerPort7.setText(node7.getLiteServerPort().toString());
@@ -4115,8 +4044,13 @@ public class MainController implements Initializable {
     JFXDialogLayout content = new JFXDialogLayout();
     content.setBody(parent);
 
-    loadingDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER, true);
-    loadingDialog.setOverlayClose(false);
+    loadingDialog =
+        new JFXDialog(
+            superWindow, content, JFXDialog.DialogTransition.CENTER
+            //        , true
+            );
+    // loadingDialog.setOverlayClose(false); // set modality
+
     loadingDialog.setOnKeyPressed(
         keyEvent -> {
           if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {

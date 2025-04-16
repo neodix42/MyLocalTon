@@ -4,7 +4,6 @@ import static org.ton.mylocalton.actions.MyLocalTon.ZEROSTATE;
 
 import java.io.File;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,12 +64,12 @@ public class Node7 implements Serializable, Node {
   String prevValidationPubKeyHex;
   String prevValidationPubKeyInteger;
   Boolean validationPubKeyAndAdnlCreated = Boolean.FALSE;
-  BigDecimal electionsRipped = BigDecimal.ZERO;
-  BigDecimal totalRewardsCollected = BigDecimal.ZERO;
-  BigDecimal lastRewardCollected = BigDecimal.ZERO;
-  BigDecimal totalPureRewardsCollected = BigDecimal.ZERO;
-  BigDecimal lastPureRewardCollected = BigDecimal.ZERO;
-  BigDecimal avgPureRewardCollected = BigDecimal.ZERO;
+  BigInteger electionsRipped = BigInteger.ZERO;
+  BigInteger totalRewardsCollected = BigInteger.ZERO;
+  BigInteger lastRewardCollected = BigInteger.ZERO;
+  BigInteger totalPureRewardsCollected = BigInteger.ZERO;
+  BigInteger lastPureRewardCollected = BigInteger.ZERO;
+  BigInteger avgPureRewardCollected = BigInteger.ZERO;
 
   WalletAddress walletAddress;
   transient Process nodeProcess;

@@ -1,23 +1,22 @@
 package org.ton.mylocalton.executors.liteclient;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
-import org.ton.mylocalton.executors.liteclient.api.*;
-import org.ton.mylocalton.executors.liteclient.api.block.Currency;
-import org.ton.mylocalton.executors.liteclient.api.block.*;
-import org.ton.mylocalton.executors.liteclient.api.config.Validator;
-import org.ton.mylocalton.executors.liteclient.api.config.Validators;
-import org.ton.mylocalton.executors.liteclient.exception.IncompleteDump;
-import org.ton.mylocalton.executors.liteclient.exception.ParsingError;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
+import org.ton.mylocalton.executors.liteclient.api.*;
+import org.ton.mylocalton.executors.liteclient.api.block.*;
+import org.ton.mylocalton.executors.liteclient.api.block.Currency;
+import org.ton.mylocalton.executors.liteclient.api.config.Validator;
+import org.ton.mylocalton.executors.liteclient.api.config.Validators;
+import org.ton.mylocalton.executors.liteclient.exception.IncompleteDump;
+import org.ton.mylocalton.executors.liteclient.exception.ParsingError;
 
 @Slf4j
 public class LiteClientParser {
@@ -1624,14 +1623,14 @@ public class LiteClientParser {
     log.debug("parseRunMethodComputeReturnStake {}", stdout);
 
     if (StringUtils.isEmpty(stdout) || !stdout.contains("compute_returned_stake"))
-      return ResultComputeReturnStake.builder().stake(new BigDecimal("-1")).build();
+      return ResultComputeReturnStake.builder().stake(new BigInteger("-1")).build();
 
     if (stdout.contains("cannot parse answer")) {
-      return ResultComputeReturnStake.builder().stake(new BigDecimal("-1")).build();
+      return ResultComputeReturnStake.builder().stake(new BigInteger("-1")).build();
     }
 
     String result = StringUtils.substringBetween(stdout, "result:  [", "]");
 
-    return ResultComputeReturnStake.builder().stake(new BigDecimal(result.trim())).build();
+    return ResultComputeReturnStake.builder().stake(new BigInteger(result.trim())).build();
   }
 }

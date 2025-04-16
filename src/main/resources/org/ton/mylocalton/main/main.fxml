@@ -13,7 +13,7 @@
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="superWindow" xmlns="http://javafx.com/javafx/11.0.1"
            fx:controller="org.ton.mylocalton.ui.controllers.MainController">
 
-    <CustomMainLayout fx:id="mainLayout" prefHeight="720.0" prefWidth="1335.0">
+    <CustomMainLayout fx:id="mainLayout" prefHeight="720.0" maxWidth="1400.0" prefWidth="1000.0">
 
         <scrollButton>
             <Label fx:id="scrollBtn" contentDisplay="CENTER" graphicTextGap="0.0" onMouseClicked="#scrollBtnAction">
@@ -102,19 +102,20 @@
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
                   AnchorPane.topAnchor="10.0">
                 <HBox prefHeight="44.0">
-                    <VBox prefHeight="55.0" prefWidth="195.0">
-                        <Label prefHeight="48.0" prefWidth="195.0" styleClass="content-header-label"
+                    <VBox prefHeight="55.0" minWidth="220.0">
+                        <Label prefHeight="48.0" minWidth="220.0" styleClass="content-header-label"
                                text="BLOCK/STATUS"/>
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="153.0">
-                        <Label prefHeight="48.0" prefWidth="153.0" styleClass="content-header-label" text="HASH/TIME"/>
+                    <VBox prefHeight="55.0" minWidth="150.0">
+                        <Label prefHeight="48.0" minWidth="150.0" styleClass="content-header-label"
+                               text="PREVIOUS HASH"/>
                     </VBox>
-                    <VBox prefHeight="44.0" prefWidth="85.0">
-                        <Label prefHeight="44.0" prefWidth="85.0"
+                    <VBox prefHeight="44.0" minWidth="140.0">
+                        <Label prefHeight="44.0" minWidth="140.0"
                                styleClass="content-header-label" text="TYPE" style="-fx-alignment: center;"/>
                     </VBox>
-                    <VBox prefHeight="55.0" prefWidth="445.0">
-                        <Label prefHeight="44.0" prefWidth="445.0" styleClass="content-header-label" text="FROM/TO"/>
+                    <VBox prefHeight="55.0" minWidth="450.0">
+                        <Label prefHeight="44.0" minWidth="450.0" styleClass="content-header-label" text="FROM/TO"/>
                     </VBox>
                     <VBox prefHeight="43.0" prefWidth="140.0">
                         <Label prefHeight="43.0" prefWidth="140.0"
@@ -122,7 +123,7 @@
                     </VBox>
                 </HBox>
                 <JFXListView fx:id="transactionsvboxid" focusTraversable="false" maxHeight="-Infinity"
-                             onScroll="#txsOnScroll" prefHeight="582.0" prefWidth="1001.0"
+                             onScroll="#txsOnScroll" prefHeight="582.0" prefWidth="1000.0"
                              styleClass="content-list-view" BorderPane.alignment="CENTER">
                     <!-- add dynamic content here -->
                 </JFXListView>
@@ -168,7 +169,8 @@
                         AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                 <Tab text="Info" style="-fx-text-base-color: #1F1F1F;">
                     <Pane>
-                        <GridPane xmlns:fx="http://javafx.com/fxml" fx:id="infoValidator" hgap="10" prefHeight="601.0" prefWidth="1110.0"
+                        <GridPane xmlns:fx="http://javafx.com/fxml" fx:id="infoValidator" hgap="10" prefHeight="601.0"
+                                  prefWidth="1110.0"
                                   vgap="10">
                             <padding>
                                 <Insets bottom="25.0" left="25.0" right="25.0" top="20.0"/>
@@ -286,26 +288,26 @@
                                 <Label fx:id="stakeHoldRange3" layoutX="740" layoutY="80" minWidth="50"
                                        style="-fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
 
-                                <Label fx:id="legendElections" layoutX="910" layoutY="20" minWidth="145.0"
+                                <Label fx:id="legendElections" layoutX="960" layoutY="20" minWidth="145.0"
                                        style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                        text="Elections"/>
-                                <Label fx:id="legendPause" layoutX="910" layoutY="50" minWidth="145.0"
+                                <Label fx:id="legendPause" layoutX="960" layoutY="50" minWidth="145.0"
                                        style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, orange, derive(orange, -30%), derive(orange, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                        text="Break"/>
-                                <Label fx:id="legendValidation" layoutX="910" layoutY="80" minWidth="145.0"
+                                <Label fx:id="legendValidation" layoutX="960" layoutY="80" minWidth="145.0"
                                        style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #F08080, derive(#F08080, -30%), derive(#F08080, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                        text="Validation cycle"/>
-                                <Label fx:id="legendHoldStake" layoutX="910" layoutY="110" minWidth="145.0"
+                                <Label fx:id="legendHoldStake" layoutX="960" layoutY="110" minWidth="145.0"
                                        style="-fx-text-alignment: center; -fx-background-color: radial-gradient(radius 180%, #98FB98, derive(#98FB98, -30%), derive(#98FB98, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"
                                        text="Stake Hold"/>
                                 <Separator fx:id="timeLine" layoutX="67.0" layoutY="10.0" orientation="VERTICAL"
                                            prefHeight="97.0" prefWidth="0.0"/>
                             </Pane>
                             <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0"
-                                         prefWidth="2035.0" GridPane.columnSpan="11"
+                                         minWidth="1105.0" GridPane.columnSpan="11"
                                          GridPane.rowIndex="17"/>
                         </GridPane>
-                        <JFXButton fx:id="addValidatorBtn" disable="true" layoutX="1010.0" layoutY="20.0"
+                        <JFXButton fx:id="addValidatorBtn" disable="true" layoutX="1080.0" layoutY="20.0"
                                    onAction="#createNewNodeBtn" prefHeight="48.0" prefWidth="73.0"
                                    visible="false">
                             <graphic>

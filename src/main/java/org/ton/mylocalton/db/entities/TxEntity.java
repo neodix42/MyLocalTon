@@ -1,17 +1,12 @@
 package org.ton.mylocalton.db.entities;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
-import org.ton.mylocalton.executors.liteclient.api.block.LiteClientAddress;
-import org.ton.mylocalton.executors.liteclient.api.block.Message;
-import org.ton.mylocalton.executors.liteclient.api.block.Transaction;
-
+import java.math.BigInteger;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 @Entity
 @Builder
@@ -30,16 +25,16 @@ public class TxEntity {
   @Id BigInteger txLt;
 
   String status;
-  LiteClientAddress from;
-  LiteClientAddress to;
+  String from;
+  String to;
   String blockRootHash;
   String blockFileHash;
   String fromForSearch;
   String toForSearch;
-  BigDecimal amount;
-  BigDecimal fees;
-  Transaction tx;
-  Message message;
+  BigInteger amount;
+  BigInteger fees;
+  org.ton.java.tlb.Transaction tx;
+  org.ton.java.tlb.Message message;
 
   public TxPk getPrimaryKey() {
     return TxPk.builder()

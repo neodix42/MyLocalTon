@@ -3,6 +3,7 @@ package org.ton.mylocalton.utils;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.mylocalton.actions.MyLocalTon.getInstance;
+import static org.ton.mylocalton.actions.MyLocalTon.tonlib;
 import static org.ton.mylocalton.executors.liteclient.LiteClientParser.CLOSE;
 import static org.ton.mylocalton.executors.liteclient.LiteClientParser.OPEN;
 import static org.ton.mylocalton.executors.liteclient.LiteClientParser.sb;
@@ -40,11 +41,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -71,26 +68,19 @@ import org.slf4j.LoggerFactory;
 import org.ton.java.address.Address;
 import org.ton.java.smartcontract.types.WalletCodes;
 import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tlb.*;
 import org.ton.java.tonlib.Tonlib;
-import org.ton.java.tonlib.types.RunResult;
-import org.ton.java.tonlib.types.TvmStackEntryNumber;
+import org.ton.java.tonlib.types.*;
+import org.ton.java.tonlib.types.BlockIdExt;
+import org.ton.java.utils.Utils;
+import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
 import org.ton.mylocalton.enums.LiteClientEnum;
 import org.ton.mylocalton.executors.fift.Fift;
 import org.ton.mylocalton.executors.liteclient.LiteClient;
 import org.ton.mylocalton.executors.liteclient.LiteClientParser;
-import org.ton.mylocalton.executors.liteclient.api.ResultConfig0;
-import org.ton.mylocalton.executors.liteclient.api.ResultConfig1;
-import org.ton.mylocalton.executors.liteclient.api.ResultConfig12;
-import org.ton.mylocalton.executors.liteclient.api.ResultConfig15;
-import org.ton.mylocalton.executors.liteclient.api.ResultConfig17;
-import org.ton.mylocalton.executors.liteclient.api.ResultConfig2;
-import org.ton.mylocalton.executors.liteclient.api.ResultConfig32;
-import org.ton.mylocalton.executors.liteclient.api.ResultConfig34;
-import org.ton.mylocalton.executors.liteclient.api.ResultConfig36;
 import org.ton.mylocalton.executors.liteclient.api.ResultLastBlock;
-import org.ton.mylocalton.executors.liteclient.api.ResultListParticipants;
 import org.ton.mylocalton.main.App;
 import org.ton.mylocalton.main.Main;
 import org.ton.mylocalton.parameters.SendToncoinsParam;
@@ -612,10 +602,6 @@ public class MyLocalTonUtils {
     return ByteBuffer.wrap(addr.getAddress()).getInt();
   }
 
-  //    public static String getExtraLightAddress(String addr) {
-  //        return StringUtils.substring(addr, 0, 6) + "...";
-  //    }
-
   public static void waitForBlockchainReady(Node node) throws Exception {
     ResultLastBlock lastBlock;
     do {
@@ -662,71 +648,82 @@ public class MyLocalTonUtils {
 
   public static ValidationParam getConfig(Node node) throws Exception {
 
-    LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
+    //    LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
-    ResultConfig12 config12 = null;
-    try {
-      config12 = LiteClientParser.parseConfig12(liteClient.executeBlockchainInfo(node));
-      log.debug(
-          "blockchain was launched at {}", MyLocalTonUtils.toLocal(config12.getEnabledSince()));
-    } catch (Exception e) {
-      log.error("cannot get result from config12");
-    }
+    ConfigParams12 config12 = tonlib.getConfigParam12();
+    log.info("configParam12 {}", config12);
 
-    long activeElectionId =
-        liteClient.executeGetActiveElectionId(
-            node, getInstance().getSettings().getElectorSmcAddrHex());
+    // log.debug(        "blockchain was launched at {}",
+    // MyLocalTonUtils.toLocal(configParam12.getWorkchains()));
+    //    ResultConfig12 config12 = null;
+    //    try {
+    //      config12 = LiteClientParser.parseConfig12(liteClient.executeBlockchainInfo(node));
+    //
+    //    } catch (Exception e) {
+    //      log.error("cannot get result from config12");
+    //    }
+
+    long activeElectionId = tonlib.getElectionId().longValue();
+    //        liteClient.executeGetActiveElectionId(
+    //            node, getInstance().getSettings().getElectorSmcAddrHex());
     log.info(
         "active election id {}, {}, current time {}",
         activeElectionId,
         MyLocalTonUtils.toLocal(activeElectionId),
         MyLocalTonUtils.toLocal(getCurrentTimeSeconds()));
 
-    ResultConfig15 config15 = LiteClientParser.parseConfig15(liteClient.executeGetElections(node));
+    ConfigParams15 config15 = tonlib.getConfigParam15();
+
+    //    ResultConfig15 config15 =
+    // LiteClientParser.parseConfig15(liteClient.executeGetElections(node));
     log.debug("current elections params {}", config15);
 
-    ResultConfig17 config17 =
-        LiteClientParser.parseConfig17(liteClient.executeGetMinMaxStake(node));
+    //    ResultConfig17 config17 =
+    // LiteClientParser.parseConfig17(liteClient.executeGetMinMaxStake(node));
+    ConfigParams17 config17 = tonlib.getConfigParam17();
     log.debug("min/max stake {}", config17);
 
-    ResultConfig34 config34 =
-        LiteClientParser.parseConfig34(liteClient.executeGetCurrentValidators(node));
+    ConfigParams34 config34 = tonlib.getConfigParam34();
+    //    ResultConfig34 config34 =
+    // LiteClientParser.parseConfig34(liteClient.executeGetCurrentValidators(node));
     log.debug("current validators {}", config34);
+    Validators validators = (Validators) config34.getCurrValidatorSet();
 
     log.debug(
         "start work time since {}, until {}",
-        MyLocalTonUtils.toLocal(config34.getValidators().getSince()),
-        MyLocalTonUtils.toLocal(config34.getValidators().getUntil()));
+        MyLocalTonUtils.toLocal(validators.getUTimeSince()),
+        MyLocalTonUtils.toLocal(validators.getUTimeUntil()));
 
-    ResultConfig32 config32 =
-        LiteClientParser.parseConfig32(liteClient.executeGetPreviousValidators(node));
-    log.debug("previous validators {}", config32);
+    ConfigParams32 config32 = tonlib.getConfigParam32();
+    Validators prevValidators = (Validators) config32.getPrevValidatorSet();
+    //    ResultConfig32 config32 =
+    // LiteClientParser.parseConfig32(liteClient.executeGetPreviousValidators(node));
+    log.debug("previous validators {}", prevValidators);
 
-    ResultConfig36 config36 =
-        LiteClientParser.parseConfig36(liteClient.executeGetNextValidators(node));
+    ConfigParams36 config36 = tonlib.getConfigParam36();
+    Validators nextValidators = (Validators) config36.getNextValidatorSet();
+    //    ResultConfig36 config36 =
+    // LiteClientParser.parseConfig36(liteClient.executeGetNextValidators(node));
     log.debug("next validators {}", config36);
 
-    ResultConfig0 config0 =
-        LiteClientParser.parseConfig0(liteClient.executeGetConfigSmcAddress(node));
-    log.debug("config address {}", config0.getConfigSmcAddr());
+    ConfigParams0 config0 = tonlib.getConfigParam0();
+    log.debug("config address {}", config0.getConfigAddr());
 
-    ResultConfig1 config1 =
-        LiteClientParser.parseConfig1(liteClient.executeGetElectorSmcAddress(node));
-    log.debug("elector address {}", config1.getElectorSmcAddress());
+    ConfigParams1 config1 = tonlib.getConfigParam1();
+    log.debug("elector address {}", config1.getElectorAddr());
 
-    ResultConfig2 config2 =
-        LiteClientParser.parseConfig2(liteClient.executeGetMinterSmcAddress(node));
-    log.debug("minter address {}", config2.getMinterSmcAddress());
+    ConfigParams2 config2 = tonlib.getConfigParam2();
+    log.debug("minter address {}", config2.getMinterAddr());
 
-    List<ResultListParticipants> participants =
-        LiteClientParser.parseRunMethodParticipantList(
-            liteClient.executeGetParticipantList(node, config1.getElectorSmcAddress()));
+    List<Participant> participants = tonlib.getElectionParticipants();
     log.info("participants {}", participants);
 
     return ValidationParam.builder()
         .totalNodes(1L) // not used
-        //                .validatorNodes(config34.getValidators().getTotal())
-        .blockchainLaunchTime(nonNull(config12) ? config12.getEnabledSince() : null)
+        .blockchainLaunchTime(
+            nonNull(config12)
+                ? ((WorkchainDescrV1) config12.getWorkchains().getValueByIndex(0)).getEnabledSince()
+                : null)
         .startValidationCycle(activeElectionId) // same as config34.getValidators().getSince()
         .endValidationCycle(activeElectionId + config15.getValidatorsElectedFor())
         .startElections(activeElectionId - config15.getElectionsStartBefore())
@@ -742,13 +739,15 @@ public class MyLocalTonUtils {
         .holdPeriod(config15.getStakeHeldFor())
         .minStake(config17.getMinStake())
         .maxStake(config17.getMaxStake())
-        .configAddr(config0.getConfigSmcAddr())
-        .electorAddr(config1.getElectorSmcAddress())
-        .minterAddr(config2.getMinterSmcAddress())
+        .configAddr("-1:" + config0.getConfigAddr().toString(16).toUpperCase())
+        .electorAddr("-1:" + config1.getElectorAddr().toString(16).toUpperCase())
+        .minterAddr(
+            "-1:"
+                + StringUtils.leftPad(config2.getMinterAddr().toString(16), 64, "0").toUpperCase())
         .participants(participants)
-        .previousValidators(config32.getValidators().getValidators())
-        .currentValidators(config34.getValidators().getValidators())
-        .nextValidators(config36.getValidators().getValidators())
+        .previousValidators(((Validators) config32.getPrevValidatorSet()).getValidatorsAddrAsList())
+        .currentValidators(((Validators) config34.getCurrValidatorSet()).getValidatorsAddrAsList())
+        .nextValidators(((Validators) config36.getNextValidatorSet()).getValidatorsAddrAsList())
         .build();
   }
 
@@ -849,8 +848,7 @@ public class MyLocalTonUtils {
   public static MyLocalTonSettings loadSettings() {
     try {
       if (Files.exists(Paths.get(SETTINGS_FILE), LinkOption.NOFOLLOW_LINKS)) {
-        return new Gson()
-            .fromJson(new FileReader(new File(SETTINGS_FILE)), MyLocalTonSettings.class);
+        return new Gson().fromJson(new FileReader(SETTINGS_FILE), MyLocalTonSettings.class);
       } else {
         log.debug("No settings.json found. Very first launch with default settings.");
         return new MyLocalTonSettings();
@@ -1343,6 +1341,62 @@ public class MyLocalTonUtils {
 
   public static BigDecimal amountFromNano(String amount) {
     return new BigDecimal(amount).divide(new BigDecimal(1_000_000_000));
+  }
+
+  public static long getSyncDelay() {
+    MasterChainInfo masterChainInfo = MyLocalTon.tonlib.getLast();
+    BlockHeader blockHeader = MyLocalTon.tonlib.getBlockHeader(masterChainInfo.getLast());
+    return Utils.now() - blockHeader.getGen_utime();
+  }
+
+  public static ResultLastBlock getLast() {
+    MasterChainInfo masterChainInfo = tonlib.getLast();
+    if (nonNull(masterChainInfo)) {
+      BlockIdExt blockIdExt = masterChainInfo.getLast();
+      return getLast(blockIdExt);
+    } else {
+      return null;
+    }
+  }
+
+  public static ResultLastBlock getLast(BlockIdExt blockIdExt) {
+
+    BlockHeader blockHeader = tonlib.getBlockHeader(blockIdExt);
+
+    log.info(
+        "getLast blockHeader: {} {}",
+        blockHeader.getId().getShortBlockSeqno(),
+        Utils.toUTC(blockHeader.getGen_utime()));
+
+    return ResultLastBlock.builder()
+        .seqno(BigInteger.valueOf(blockIdExt.getSeqno()))
+        .shard(Utils.longToUnsignedBigInteger(blockIdExt.getShard()).toString(16))
+        .wc(blockIdExt.getWorkchain())
+        .fileHash(Utils.base64ToHexString(blockIdExt.getFile_hash()))
+        .rootHash(Utils.base64ToHexString(blockIdExt.getRoot_hash()))
+        .createdAt(blockHeader.getGen_utime())
+        .blockIdExt(blockIdExt)
+        .build();
+  }
+
+  public static List<ResultLastBlock> getShardsInBlock(ResultLastBlock lastBlock) {
+    List<ResultLastBlock> result = new ArrayList<>();
+
+    Shards shards = tonlib.getShards(lastBlock.getBlockIdExt());
+    for (BlockIdExt block : shards.getShards()) {
+      BlockHeader blockHeader = tonlib.getBlockHeader(block);
+      result.add(
+          ResultLastBlock.builder()
+              .seqno(BigInteger.valueOf(block.getSeqno()))
+              .shard(Utils.longToUnsignedBigInteger(block.getShard()).toString(16))
+              .wc(block.getWorkchain())
+              .fileHash(Utils.base64ToHexString(block.getFile_hash()))
+              .rootHash(Utils.base64ToHexString(block.getRoot_hash()))
+              .createdAt(blockHeader.getGen_utime())
+              .blockIdExt(block)
+              .build());
+    }
+    return result;
   }
 
   public void showThreads() {

@@ -2,7 +2,6 @@ package org.ton.mylocalton.actions;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.ton.mylocalton.main.App.*;
 import static org.ton.mylocalton.ui.custom.events.CustomEventBus.emit;
 
@@ -11,9 +10,7 @@ import com.jfoenix.controls.JFXListView;
 import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
@@ -25,12 +22,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -44,19 +39,17 @@ import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.ton.java.address.Address;
+import org.ton.java.cell.Cell;
+import org.ton.java.cell.CellSlice;
 import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tlb.*;
 import org.ton.java.tonlib.Tonlib;
-import org.ton.java.tonlib.types.RawAccountState;
-import org.ton.java.tonlib.types.RunResult;
-import org.ton.java.tonlib.types.TvmStackEntryNumber;
+import org.ton.java.tonlib.types.*;
 import org.ton.java.utils.Utils;
 import org.ton.mylocalton.data.Runner;
 import org.ton.mylocalton.db.entities.BlockEntity;
@@ -70,10 +63,6 @@ import org.ton.mylocalton.executors.liteclient.LiteClient;
 import org.ton.mylocalton.executors.liteclient.LiteClientParser;
 import org.ton.mylocalton.executors.liteclient.api.ResultComputeReturnStake;
 import org.ton.mylocalton.executors.liteclient.api.ResultLastBlock;
-import org.ton.mylocalton.executors.liteclient.api.ResultListBlockTransactions;
-import org.ton.mylocalton.executors.liteclient.api.block.LiteClientAddress;
-import org.ton.mylocalton.executors.liteclient.api.block.Message;
-import org.ton.mylocalton.executors.liteclient.api.block.Transaction;
 import org.ton.mylocalton.executors.tonhttpapi.TonHttpApi;
 import org.ton.mylocalton.executors.validatorengine.ValidatorEngine;
 import org.ton.mylocalton.executors.validatorengineconsole.ValidatorEngineConsole;
@@ -121,7 +110,8 @@ public class MyLocalTon {
   //  public static Tonlib tonlibBlockMonitor;
   //  public static Tonlib tonlibDataGenerator;
   private static MyLocalTon singleInstance = null;
-  AtomicBigInteger prevBlockSeqno;
+  public AtomicLong prevBlockSeqno = new AtomicLong(0);
+  //  public AtomicLong nextBlockSeqno = new AtomicLong(0);
   ConcurrentHashMap<String, Long> concurrentBlocksHashMap = new ConcurrentHashMap<>();
   ConcurrentHashMap<String, Long> concurrentTxsHashMap = new ConcurrentHashMap<>();
   ConcurrentHashMap<String, Long> concurrentAccountsHashMap = new ConcurrentHashMap<>();
@@ -132,10 +122,10 @@ public class MyLocalTon {
   AtomicLong accountsScrollBarHighWaterMark = new AtomicLong(30);
   ScheduledExecutorService monitorExecutorService;
   private Runnable fetchTask;
-  private MyLocalTonSettings settings;
+  @Setter @Getter private MyLocalTonSettings settings;
 
   private MyLocalTon() {
-    prevBlockSeqno = new AtomicBigInteger(new BigInteger("0"));
+    //    prevBlockSeqno = new AtomicBigInteger(BigInteger.ZERO);
     autoScroll = true;
   }
 
@@ -143,14 +133,6 @@ public class MyLocalTon {
     if (singleInstance == null) singleInstance = new MyLocalTon();
 
     return singleInstance;
-  }
-
-  public MyLocalTonSettings getSettings() {
-    return settings;
-  }
-
-  public void setSettings(MyLocalTonSettings settings) {
-    this.settings = settings;
   }
 
   public void runBlockchainExplorer() {
@@ -211,20 +193,24 @@ public class MyLocalTon {
                             }
 
                             Node node = settings.getNodeByName(nodeName);
-                            ResultLastBlock lastBlock =
-                                LiteClientParser.parseLast(
-                                    LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
+                            MasterChainInfo lastBlock = tonlib.getLast();
+                            //                                LiteClientParser.parseLast(
+                            //
+                            // LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
                             if (isNull(lastBlock)) {
                               node.setStatus("not ready");
                               log.info("{} is not ready", nodeName);
 
-                            } else if (lastBlock.getSyncedSecondsAgo() > 15) {
-                              node.setStatus(
-                                  "out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
-                              log.info(
-                                  "{} out of sync by {} seconds",
-                                  nodeName,
-                                  lastBlock.getSyncedSecondsAgo());
+                              //                            }
+                              //                            else if (lastBlock.getSyncedSecondsAgo()
+                              // > 15) {
+                              //                              node.setStatus(
+                              //                                  "out of sync by " +
+                              // lastBlock.getSyncedSecondsAgo() + " seconds");
+                              //                              log.info(
+                              //                                  "{} out of sync by {} seconds",
+                              //                                  nodeName,
+                              //                                  lastBlock.getSyncedSecondsAgo());
                             } else {
                               node.setStatus("ready");
                               node.setFlag("cloned");
@@ -253,7 +239,7 @@ public class MyLocalTon {
                         });
               }
             },
-            0L,
+            30L,
             10L,
             TimeUnit.SECONDS);
   }
@@ -370,76 +356,7 @@ public class MyLocalTon {
             .createdAt(Instant.now().getEpochSecond())
             .build();
 
-    App.dbPool.insertWallet(walletEntity);
-
-    // TOP UP NEW WALLET
-
-    WalletAddress fromMasterWalletAddress =
-        WalletAddress.builder()
-            .fullWalletAddress(settings.getMainWalletAddrFull())
-            .privateKeyHex(settings.getMainWalletPrvKey())
-            .bounceableAddressBase64url(settings.getMainWalletAddrBase64())
-            .filenameBase("main-wallet")
-            .filenameBaseLocation(settings.getMainWalletFilenameBaseLocation())
-            .build();
-
-    SendToncoinsParam sendToncoinsParam =
-        SendToncoinsParam.builder()
-            .executionNode(settings.getGenesisNode())
-            .workchain(-1L)
-            .fromWallet(fromMasterWalletAddress)
-            .fromWalletVersion(WalletVersion.master) // master
-            .fromSubWalletId(-1L)
-            .destAddr(walletAddress.getNonBounceableAddressBase64Url())
-            .amount(amount)
-            .build();
-
-    boolean sentOK = myWallet.sendTonCoins(sendToncoinsParam);
-
-    if (sentOK) {
-      Thread.sleep(2000);
-      myWallet.installWalletSmartContract(fromNode, walletAddress);
-    } else {
-      if (!GraphicsEnvironment.isHeadless()) {
-        mainController.showErrorMsg(
-            String.format(
-                "Failed to send %s Toncoins to %s",
-                amount, walletAddress.getNonBounceableAddressBase64Url()),
-            5);
-      } else {
-        log.error(
-            String.format(
-                "Failed to send %s Toncoins to %s",
-                amount, walletAddress.getNonBounceableAddressBase64Url()));
-      }
-    }
-
-    return walletEntity;
-  }
-
-  public WalletEntity createFaucetWalletWithFundsAndSmartContract(
-      Node fromNode,
-      WalletVersion walletVersion,
-      long workchain,
-      long subWalletId,
-      BigInteger amount,
-      String privateKey)
-      throws Exception {
-    MyWallet myWallet = new MyWallet();
-
-    WalletAddress walletAddress =
-        myWallet.createFaucetWalletByVersion(walletVersion, workchain, subWalletId, privateKey);
-
-    WalletEntity walletEntity =
-        WalletEntity.builder()
-            .wc(walletAddress.getWc())
-            .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
-            .walletVersion(walletVersion)
-            .wallet(walletAddress)
-            .accountState(RawAccountState.builder().build())
-            .createdAt(Instant.now().getEpochSecond())
-            .build();
-
+    log.debug("inserted walletEntity into DB {}", walletEntity);
     App.dbPool.insertWallet(walletEntity);
 
     // TOP UP NEW WALLET
@@ -692,7 +609,12 @@ public class MyLocalTon {
                   long electionsDelta = v.getNextElections() - v.getStartElections();
 
                   if (!GraphicsEnvironment.isHeadless()) {
-                    mainController.drawElections();
+                    try {
+                      mainController.drawElections();
+                    } catch (Throwable t) {
+                      log.error("Error drawing elections {}", t.getMessage());
+                      log.error(ExceptionUtils.getStackTrace(t));
+                    }
                   }
 
                   log.debug(
@@ -841,6 +763,8 @@ public class MyLocalTon {
               .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
               .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
               .pathToTonlibSharedLib(tonlibName)
+              .receiveTimeout(5)
+              .receiveRetryTimes(24)
               .build();
     } catch (Throwable e) {
       System.out.println(ExceptionUtils.getStackTrace(e));
@@ -861,24 +785,23 @@ public class MyLocalTon {
           while (Main.appActive.get()) {
             try {
               executorService = Executors.newSingleThreadExecutor();
-              LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
               executorService.execute(
                   () -> {
                     Thread.currentThread()
                         .setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
-                    log.debug("Get last block");
-                    ResultLastBlock lastBlock =
-                        LiteClientParser.parseLast(liteClient.executeLast(node));
-                    //                        MasterChainInfo lastBlockM = tonlib.getLast(); // todo
-                    // next release
+                    log.debug("Getting last block");
+
+                    //                    BlockIdExt blockIdExt =
+                    // tonlib.lookupBlock(nextBlockSeqno.get(),-1,-9223372036854775808L,0,0)
+                    ResultLastBlock lastBlock = MyLocalTonUtils.getLast();
+                    log.debug("got last block {}", lastBlock);
 
                     if (nonNull(lastBlock)) {
-
-                      if ((!Objects.equals(prevBlockSeqno.get(), lastBlock.getSeqno()))
+                      if ((prevBlockSeqno.get() != lastBlock.getSeqno().longValue())
                           && (lastBlock.getSeqno().compareTo(BigInteger.ZERO) != 0)) {
 
-                        prevBlockSeqno.set(lastBlock.getSeqno());
+                        prevBlockSeqno.set(lastBlock.getSeqno().longValue());
                         log.info(lastBlock.getShortBlockSeqno());
 
                         if (!GraphicsEnvironment.isHeadless()) {
@@ -895,10 +818,9 @@ public class MyLocalTon {
 
               executorService.shutdown();
 
-              Thread.sleep(1000);
+              Utils.sleep(1);
 
-            } catch (Exception e) {
-              e.printStackTrace();
+            } catch (Throwable e) {
               log.error(e.getMessage());
             }
           }
@@ -916,13 +838,7 @@ public class MyLocalTon {
       updateBlocksTabGui(lastBlock);
     }
 
-    List<ResultLastBlock> shardsInBlock =
-        LiteClient.getInstance(LiteClientEnum.GLOBAL)
-            .getShardsFromBlock(node, lastBlock); // txs from basechain shards
-
-    if (isNull(shardsInBlock)) {
-      return new ArrayList<>();
-    }
+    List<ResultLastBlock> shardsInBlock = MyLocalTonUtils.getShardsInBlock(lastBlock);
 
     for (ResultLastBlock shard : shardsInBlock) {
       log.info(shard.getShortBlockSeqno());
@@ -945,49 +861,63 @@ public class MyLocalTon {
 
   public void dumpBlockTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
 
-    LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
-    List<ResultListBlockTransactions> txs =
-        LiteClientParser.parseListBlockTrans(liteClient.executeListblocktrans(node, lastBlock, 0));
-    log.debug("found {} transactions in block {}", txs.size(), lastBlock.getShortBlockSeqno());
+    BlockTransactionsExt blockTransactions =
+        tonlib.getBlockTransactionsExt(lastBlock.getBlockIdExt(), 1000, null);
 
-    for (ResultListBlockTransactions tx : txs) {
-      Transaction txDetails =
-          LiteClientParser.parseDumpTrans(
-              liteClient.executeDumptrans(node, lastBlock, tx),
-              settings.getUiSettings().isShowBodyInMessage());
+    log.debug(
+        "found {} transactions in block {}",
+        blockTransactions.getTransactions().size(),
+        lastBlock.getShortBlockSeqno());
+
+    for (RawTransaction rawTx : blockTransactions.getTransactions()) {
+      org.ton.java.tlb.Transaction txDetails =
+          org.ton.java.tlb.Transaction.deserialize(
+              CellSlice.beginParse(Cell.fromBocBase64(rawTx.getData())));
+
       if (nonNull(txDetails)) {
-
-        List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, tx, txDetails);
-
+        List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, txDetails); // todo
         txEntities.forEach(App.dbPool::insertTx);
-
-        detectNewAccount(lastBlock, tx, txDetails);
-
+        detectNewAccount(lastBlock, txDetails); // seems ok
         if (updateGuiNow) {
-          updateTxTabGui(lastBlock, tx, txDetails, txEntities);
+          updateTxTabGui(lastBlock, txDetails, txEntities);
         }
       }
     }
+
+    //    for (ResultListBlockTransactions tx : txs) {
+    //      Transaction txDetails =
+    //          LiteClientParser.parseDumpTrans(
+    //              liteClient.executeDumptrans(node, lastBlock, tx),
+    //              settings.getUiSettings().isShowBodyInMessage());
+    //      if (nonNull(txDetails)) {
+    //
+    //        List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, tx, txDetails);
+    //
+    //        txEntities.forEach(App.dbPool::insertTx);
+    //
+    //        detectNewAccount(lastBlock, tx, txDetails);
+    //
+    //        if (updateGuiNow) {
+    //          updateTxTabGui(lastBlock, tx, txDetails, txEntities);
+    //        }
+    //      }
+    //    }
   }
 
-  private void detectNewAccount(
-      ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails) {
-    if ((txDetails.getOrigStatus().equals(NONEXISTENT)
-            && txDetails.getEndStatus().equals(UNINITIALIZED))
-        || (txDetails.getOrigStatus().equals(UNINITIALIZED)
-            && txDetails.getEndStatus().equals(UNINITIALIZED))
-        || (txDetails.getOrigStatus().equals(UNINITIALIZED)
-            && txDetails.getEndStatus().equals(ACTIVE))) {
-      log.info(
-          "New account detected! origStatus {}, endStatus {}, address {}, txSeqno {}, txLt {}, block {}",
-          txDetails.getOrigStatus(),
-          txDetails.getEndStatus(),
-          txDetails.getAccountAddr(),
-          tx.getTxSeqno(),
-          tx.getLt(),
-          lastBlock.getShortBlockSeqno());
-
-      try {
+  private void detectNewAccount(ResultLastBlock lastBlock, org.ton.java.tlb.Transaction txDetails) {
+    try {
+      if ((txDetails.getOrigStatus().equals(AccountStates.NON_EXIST)
+              && txDetails.getEndStatus().equals(AccountStates.UNINIT))
+          || (txDetails.getOrigStatus().equals(AccountStates.UNINIT)
+              && txDetails.getEndStatus().equals(AccountStates.UNINIT))
+          || (txDetails.getOrigStatus().equals(AccountStates.UNINIT)
+              && txDetails.getEndStatus().equals(AccountStates.ACTIVE))) {
+        log.info(
+            "New account detected! origStatus {}, endStatus {}, address {}," + " block {}",
+            txDetails.getOrigStatus(),
+            txDetails.getEndStatus(),
+            txDetails.getAccountAddr(),
+            lastBlock.getShortBlockSeqno());
 
         WalletEntity foundWallet =
             App.dbPool.findWallet(
@@ -1027,10 +957,10 @@ public class MyLocalTon {
           log.info(
               "insertNewAccountEntity new inserted {}", txDetails.getAccountAddr().toUpperCase());
         }
-      } catch (Throwable e) {
-        log.error("Error executing insertNewAccountEntity: {}", e.getMessage());
-        log.error(ExceptionUtils.getStackTrace(e));
       }
+    } catch (Throwable e) {
+      log.error("Error executing insertNewAccountEntity: {}", e.getMessage());
+      log.error(ExceptionUtils.getStackTrace(e));
     }
   }
 
@@ -1039,10 +969,10 @@ public class MyLocalTon {
       return;
     }
 
-    //    log.debug(
-    //        "updateAccountsTabGui, wallet account addr {}, state {}",
-    //        walletEntity.getHexAddress(),
-    //        walletEntity.getAccountState());
+    log.debug(
+        "updateAccountsTabGui, wallet account addr {}, state {}",
+        walletEntity.getHexAddress(),
+        walletEntity.getAccountState());
 
     if (!Boolean.TRUE.equals(autoScroll)) {
       return;
@@ -1080,7 +1010,9 @@ public class MyLocalTon {
                           .getStyleClass()
                           .add("background-acc-send-button-gray");
                     }
-
+                    log.debug(
+                        "updateAccountsTabGui,showInGuiOnlyUniqueAccounts,  account row {}",
+                        walletEntity);
                     showInGuiOnlyUniqueAccounts(walletEntity, c, accountRow);
                   });
             })
@@ -1216,9 +1148,7 @@ public class MyLocalTon {
         ((Label) accountRow.lookup("#type")).setText(walletEntity.getWalletVersion().getValue());
       }
 
-      if (nonNull(walletEntity.getWalletVersion())
-          && (walletEntity.getWalletVersion().getValue().contains("V3")
-              || walletEntity.getWalletVersion().getValue().contains("V4"))) {
+      if (walletEntity.getWallet().getSubWalletId() != -1) {
         accountRow.lookup("#walledId").setVisible(true);
         ((Label) accountRow.lookup("#walledId"))
             .setText("Wallet ID " + walletEntity.getWallet().getSubWalletId());
@@ -1239,10 +1169,8 @@ public class MyLocalTon {
 
       //            String value = walletEntity.getAccountState().getBalance();
       //            String formattedBalance2 = String.format("%,.9f", value);
-      BigDecimal balance = new BigDecimal(walletEntity.getAccountState().getBalance());
-      String formattedBalance =
-          String.format(
-              "%,.9f", balance.divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING));
+      //      BigDecimal balance = new BigDecimal(walletEntity.getAccountState().getBalance());
+      String formattedBalance = Utils.formatNanoValue(walletEntity.getAccountState().getBalance());
 
       ((Label) accountRow.lookup("#balance")).setText(formattedBalance);
 
@@ -1277,8 +1205,7 @@ public class MyLocalTon {
 
   private void updateTxTabGui(
       ResultLastBlock lastBlock,
-      ResultListBlockTransactions tx,
-      Transaction txDetails,
+      org.ton.java.tlb.Transaction txDetails,
       List<TxEntity> txEntities) {
 
     if (Boolean.TRUE.equals(autoScroll)) {
@@ -1304,21 +1231,15 @@ public class MyLocalTon {
                 (txRow.lookup("#txRowBorderPane")).getStyleClass().add("row-pane-gray");
               }
 
-              showInGuiOnlyUniqueTxs(
-                  lastBlock, tx, txDetails, c, txE,
-                  txRow); // show in gui only unique values. some might come from scroll event
+              showInGuiOnlyUniqueTxs(lastBlock, c, txE, txRow);
+              // show in gui only unique values. some might come from scroll event
             }
           });
     }
   }
 
   private void showInGuiOnlyUniqueTxs(
-      ResultLastBlock lastBlock,
-      ResultListBlockTransactions tx,
-      Transaction txDetails,
-      MainController c,
-      TxEntity txE,
-      javafx.scene.Node txRow) {
+      ResultLastBlock lastBlock, MainController c, TxEntity txE, javafx.scene.Node txRow) {
     String uniqueKey =
         lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg() + txE.getTxHash();
     log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
@@ -1338,7 +1259,7 @@ public class MyLocalTon {
 
       concurrentTxsHashMap.put(uniqueKey, lastBlock.getCreatedAt());
 
-      populateTxRowWithData(lastBlock.getShortBlockSeqno(), tx, txDetails, txRow, txE);
+      populateTxRowWithData(lastBlock.getShortBlockSeqno(), txRow, txE);
 
       ObservableList<javafx.scene.Node> items = c.transactionsvboxid.getItems();
       int size = items.size();
@@ -1355,8 +1276,8 @@ public class MyLocalTon {
     if (!settings.getUiSettings().isShowMainConfigTransactions()) {
       txEntity.removeIf(
           t ->
-              (settings.getMainWalletAddrFull().contains(t.getFrom().getAddr())
-                  && settings.getElectorSmcAddrHex().contains(t.getTo().getAddr())));
+              (settings.getMainWalletAddrFull().contains(t.getFrom())
+                  && settings.getElectorSmcAddrHex().contains(t.getTo())));
     }
 
     if (!settings.getUiSettings().isShowTickTockTransactions()) {
@@ -1389,7 +1310,7 @@ public class MyLocalTon {
     if (((Label) txRow.lookup("#txidHidden")).getText().equals(searchFor)) {
       txRow.lookup("#txid").setStyle(txRow.lookup("#txid").getStyle() + FOUND_COLOR_HIHGLIGHT);
     }
-    ((Label) txRow.lookup("#from")).setText(txEntity.getFrom().getAddr());
+    ((Label) txRow.lookup("#from")).setText(txEntity.getFrom());
     if (searchFor.length() >= 64) {
       if (((Label) txRow.lookup("#from"))
           .getText()
@@ -1401,7 +1322,7 @@ public class MyLocalTon {
       txRow.lookup("#from").setStyle(txRow.lookup("#from").getStyle() + FOUND_COLOR_HIHGLIGHT);
     }
 
-    ((Label) txRow.lookup("#to")).setText(txEntity.getTo().getAddr());
+    ((Label) txRow.lookup("#to")).setText(txEntity.getTo());
     if (searchFor.length() >= 64) {
       if (((Label) txRow.lookup("#to"))
           .getText()
@@ -1412,21 +1333,10 @@ public class MyLocalTon {
     if (((Label) txRow.lookup("#to")).getText().equals(searchFor)) {
       txRow.lookup("#to").setStyle(txRow.lookup("#to").getStyle() + FOUND_COLOR_HIHGLIGHT);
     }
-    ((Label) txRow.lookup("#amount"))
-        .setText(
-            txEntity
-                .getAmount()
-                .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)
-                .toPlainString());
+    ((Label) txRow.lookup("#amount")).setText(Utils.formatNanoValue(txEntity.getAmount()));
 
     ((Label) txRow.lookup("#fees"))
-        .setText(
-            txEntity
-                .getTx()
-                .getTotalFees()
-                .getToncoins()
-                .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)
-                .toPlainString());
+        .setText(Utils.formatNanoValue(txEntity.getTx().getTotalFees().getCoins()));
     ((Label) txRow.lookup("#time"))
         .setText(
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -1436,49 +1346,36 @@ public class MyLocalTon {
   }
 
   public void populateTxRowWithData(
-      String shortBlockSeqno,
-      ResultListBlockTransactions tx,
-      Transaction txDetails,
-      javafx.scene.Node txRow,
-      TxEntity txEntity) {
+      String shortBlockSeqno, javafx.scene.Node txRow, TxEntity txEntity) {
 
     ((Label) txRow.lookup("#block")).setText(shortBlockSeqno);
     ((Label) txRow.lookup("#typeTx")).setText(txEntity.getTypeTx());
     ((Label) txRow.lookup("#typeMsg")).setText(txEntity.getTypeMsg());
 
     ((Label) txRow.lookup("#status")).setText(txEntity.getStatus());
-    ((Label) txRow.lookup("#txidHidden")).setText(tx.getHash());
-    ((Label) txRow.lookup("#txAccAddrHidden")).setText(tx.getAccountAddress());
-    ((Label) txRow.lookup("#txLt")).setText(txDetails.getLt().toString());
+    ((Label) txRow.lookup("#txidHidden")).setText(txEntity.getTxHash());
+    ((Label) txRow.lookup("#txAccAddrHidden")).setText(txEntity.getAccountAddress());
+    ((Label) txRow.lookup("#txLt")).setText(txEntity.getTxLt().toString());
     ((Label) txRow.lookup("#txid"))
-        .setText(tx.getHash().substring(0, 8) + "..." + tx.getHash().substring(56, 64));
-
-    ((Label) txRow.lookup("#from")).setText(txEntity.getFrom().getAddr());
-    ((Label) txRow.lookup("#to")).setText(txEntity.getTo().getAddr());
-    ((Label) txRow.lookup("#amount"))
         .setText(
-            txEntity
-                .getAmount()
-                .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)
-                .toPlainString());
+            txEntity.getTxHash().substring(0, 8) + "..." + txEntity.getTxHash().substring(56, 64));
+
+    ((Label) txRow.lookup("#from")).setText(txEntity.getFrom());
+    ((Label) txRow.lookup("#to")).setText(txEntity.getTo());
+    ((Label) txRow.lookup("#amount")).setText(Utils.formatNanoValue(txEntity.getAmount()));
 
     ((Label) txRow.lookup("#fees"))
-        .setText(
-            txDetails
-                .getTotalFees()
-                .getToncoins()
-                .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)
-                .toPlainString());
+        .setText(Utils.formatNanoValue(txEntity.getTx().getTotalFees().getCoins()));
     ((Label) txRow.lookup("#time"))
         .setText(
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                .format(new Date(new Timestamp(txDetails.getNow() * 1000).getTime())));
+                .format(new Date(new Timestamp(txEntity.getCreatedAt() * 1000).getTime())));
 
     showButtonWithMessage(txRow, txEntity);
   }
 
   private void showButtonWithMessage(javafx.scene.Node txRow, TxEntity txEntity) {
-
+    /* todo
     String msg = null;
     if (txEntity.getTypeTx().contains("Message")
         && !txEntity.getTypeMsg().contains("External In")) {
@@ -1500,11 +1397,11 @@ public class MyLocalTon {
                 .collect(Collectors.joining());
 
       } else if ((!txEntity.getTx().getOutMsgs().isEmpty()
-          && !txEntity.getTx().getOutMsgs().getFirst().getBody().getCells().isEmpty())) {
+          && !txEntity.getTx().getOutMsgs().get(0).getBody().getCells().isEmpty())) {
         if (txEntity
                     .getTx()
                     .getOutMsgs()
-                    .getFirst()
+                    .get(0)
                     .getValue()
                     .getToncoins()
                     .compareTo(BigDecimal.ZERO)
@@ -1512,14 +1409,14 @@ public class MyLocalTon {
             && !txEntity
                 .getTx()
                 .getOutMsgs()
-                .getFirst()
+                .get(0)
                 .getBody()
                 .getCells()
-                .getFirst()
+                .get(0)
                 .equals("FFFFFFFF")) {
 
           msg =
-              txEntity.getTx().getOutMsgs().getFirst().getBody().getCells().stream()
+              txEntity.getTx().getOutMsgs().get(0).getBody().getCells().stream()
                   .map(
                       c -> {
                         try {
@@ -1555,180 +1452,63 @@ public class MyLocalTon {
         }
       }
     }
+    */
   }
 
   public List<TxEntity> extractTxsAndMsgs(
-      ResultLastBlock lastBlock, ResultListBlockTransactions tx, Transaction txDetails) {
+      ResultLastBlock lastBlock, org.ton.java.tlb.Transaction txDetails) {
     List<TxEntity> txEntity = new ArrayList<>();
-    LiteClientAddress to;
-    LiteClientAddress from;
-    BigDecimal amount = BigDecimal.ZERO;
+    String to;
+    String from;
+    BigInteger amount = BigInteger.ZERO;
     String txType;
     String msgType;
     String status;
+    //    AccountStates status;
 
     try {
-      log.debug(
-          "extractTxsAndMsgs tx into db, block {}, hash {}",
-          lastBlock.getShortBlockSeqno(),
-          tx.getHash());
+      TransactionDescription txDesc = txDetails.getDescription();
+      from = lastBlock.getWc() + ":" + txDetails.getAccountAddr().toUpperCase();
+      to = "";
+      txType = "Tx";
+      msgType = txDesc.getType();
+      status = txDetails.getEndStatus().toString();
 
-      String type = txDetails.getDescription().getType();
+      txEntity.add(
+          TxEntity.builder()
+              .wc(lastBlock.getWc())
+              .shard(lastBlock.getShard())
+              .seqno(lastBlock.getSeqno())
+              .blockRootHash(lastBlock.getRootHash())
+              .blockFileHash(lastBlock.getFileHash())
+              .txHash(txDetails.getPrevTxHash())
+              .status(status)
+              .createdAt(txDetails.getNow())
+              .accountAddress(txDetails.getAccountAddr())
+              .txLt(txDetails.getLt())
+              .typeTx(txType)
+              .typeMsg(msgType)
+              .from(from)
+              .to(to)
+              .fromForSearch(from)
+              .toForSearch(to)
+              .amount(amount)
+              .fees(txDetails.getTotalFees().getCoins())
+              .tx(txDetails)
+              .message(null)
+              .build());
 
-      // ordinary tx
-      if (type.equals("Tick") || type.equals("Tock")) { // add tick tock tx into db
-        log.debug("tick/tock tx, block {}", lastBlock.getShortBlockSeqno());
-        from =
-            LiteClientAddress.builder()
-                .wc(lastBlock.getWc())
-                .addr(txDetails.getAccountAddr())
-                .build();
-
-        to = LiteClientAddress.builder().addr("").build();
-        txType = "Tx";
-        msgType = type;
-        status = txDetails.getEndStatus();
-      } else {
-        log.debug("block {}, tx {}", lastBlock.getShortBlockSeqno(), txDetails);
-        log.debug(
-            "Ordinary tx, block {}, inMsgSrc {}, inMsgDest {}, inMsgAmount {}, outMsgCount {}",
-            lastBlock.getShortBlockSeqno(),
-            txDetails.getInMsg().getSrcAddr().getAddr(),
-            txDetails.getInMsg().getDestAddr().getAddr(),
-            txDetails.getInMsg().getValue().getToncoins(),
-            txDetails.getOutMsgsCount());
-
-        from = txDetails.getInMsg().getSrcAddr();
-        to = txDetails.getInMsg().getDestAddr();
-        amount = txDetails.getInMsg().getValue().getToncoins();
-        txType = "Tx";
-        msgType = type;
-        status = txDetails.getEndStatus();
-
-        if ((StringUtils.isEmpty(from.getAddr())) && txDetails.getOutMsgsCount() > 0) {
-          from = txDetails.getOutMsgs().getFirst().getSrcAddr();
-          to = txDetails.getOutMsgs().getFirst().getDestAddr();
-          amount = txDetails.getOutMsgs().getFirst().getValue().getToncoins();
-        }
-
-        if (Strings.isEmpty(from.getAddr()) && !Strings.isEmpty(to.getAddr())) {
-          from = LiteClientAddress.builder().wc(from.getWc()).addr(EXTERNAL).build();
-        } else if (Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-          to = LiteClientAddress.builder().wc(to.getWc()).addr(EXTERNAL).build();
-        } else if (!Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-
-        } else {
-          log.error("DETECTED, TX where TO and FROM are empty");
-        }
-      } // end ordinary txs
-
-      if (isNotEmpty(txType)) {
-        txEntity.add(
-            TxEntity.builder()
-                .wc(lastBlock.getWc())
-                .shard(lastBlock.getShard())
-                .seqno(lastBlock.getSeqno())
-                .blockRootHash(lastBlock.getRootHash())
-                .blockFileHash(lastBlock.getFileHash())
-                .txHash(tx.getHash())
-                .status(status)
-                .createdAt(txDetails.getNow())
-                .accountAddress(txDetails.getAccountAddr())
-                .txLt(txDetails.getLt())
-                .typeTx(txType)
-                .typeMsg(msgType)
-                .from(from)
-                .to(to)
-                .fromForSearch(from.getAddr())
-                .toForSearch(to.getAddr())
-                .amount(amount)
-                .fees(txDetails.getTotalFees().getToncoins())
-                .tx(txDetails)
-                .message(null)
-                .build());
-      }
-
-      // add in_msg and out_msgs into db
-      // out msgs first
-      if (txDetails.getOutMsgsCount() != 0L) {
-        for (Message outMsg : txDetails.getOutMsgs()) {
-          log.debug("out msg {}", outMsg);
+      // insert out msgs first
+      if (txDetails.getOutMsgCount() != 0L) {
+        for (org.ton.java.tlb.Message outMsg : txDetails.getInOut().getOutMessages()) {
+          log.debug("adding out msg into txEntity {}", outMsg);
           txType = "Message";
-          msgType = outMsg.getType();
-          from = outMsg.getSrcAddr();
-          to = outMsg.getDestAddr();
-          amount = outMsg.getValue().getToncoins();
+          msgType = outMsg.getInfo().getType();
+          from = outMsg.getInfo().getSourceAddress();
+          to = outMsg.getInfo().getDestinationAddress();
+          amount = outMsg.getInfo().getValueCoins();
           status = "";
-          boolean ok = false;
-          if (Strings.isEmpty(from.getAddr()) && !Strings.isEmpty(to.getAddr())) {
-            from = LiteClientAddress.builder().wc(from.getWc()).addr(EXTERNAL).build();
-            ok = true;
-          } else if (Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-            to = LiteClientAddress.builder().wc(to.getWc()).addr(EXTERNAL).build();
-            ok = true;
-          } else if (!Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-            ok = true;
-          } else {
-            log.error("DETECTED, out msg with fields TO and FROM are empty");
-          }
-          if (ok) {
-            txEntity.add(
-                TxEntity.builder()
-                    .wc(lastBlock.getWc())
-                    .shard(lastBlock.getShard())
-                    .seqno(lastBlock.getSeqno())
-                    .blockRootHash(lastBlock.getRootHash())
-                    .blockFileHash(lastBlock.getFileHash())
-                    .txHash(tx.getHash())
-                    .status(status)
-                    .createdAt(txDetails.getNow())
-                    .accountAddress(txDetails.getAccountAddr())
-                    .txLt(txDetails.getLt())
-                    .typeTx(txType)
-                    .typeMsg(msgType)
-                    .from(from)
-                    .to(to)
-                    .fromForSearch(from.getAddr())
-                    .toForSearch(to.getAddr())
-                    .amount(amount)
-                    .fees(
-                        outMsg
-                            .getFwdFee()
-                            .add(
-                                outMsg
-                                    .getIhrFee()
-                                    .add(outMsg.getImportFee()))) // total fee in out msg =
-                    // fwd+ihr+import fee
-                    .tx(txDetails)
-                    .message(outMsg)
-                    .build());
-          }
-        }
-      } // end out msgs
 
-      // in msgs
-      if (nonNull(txDetails.getInMsg())) {
-        Message inMsg = txDetails.getInMsg();
-        log.debug("in msg {}", inMsg);
-        from = inMsg.getSrcAddr();
-        to = inMsg.getDestAddr();
-        amount = inMsg.getValue().getToncoins();
-        txType = "Message";
-        msgType = inMsg.getType();
-        status = "";
-        boolean ok = false;
-        if (Strings.isEmpty(from.getAddr()) && !Strings.isEmpty(to.getAddr())) {
-          from = LiteClientAddress.builder().wc(from.getWc()).addr(EXTERNAL).build();
-          ok = true;
-        } else if (Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-          to = LiteClientAddress.builder().wc(to.getWc()).addr(EXTERNAL).build();
-          ok = true;
-        } else if (!Strings.isEmpty(to.getAddr()) && !Strings.isEmpty(from.getAddr())) {
-          ok = true;
-        } else {
-          log.error("DETECTED, in msg where TO and FROM are empty");
-        }
-        if (ok) {
           txEntity.add(
               TxEntity.builder()
                   .wc(lastBlock.getWc())
@@ -1736,7 +1516,7 @@ public class MyLocalTon {
                   .seqno(lastBlock.getSeqno())
                   .blockRootHash(lastBlock.getRootHash())
                   .blockFileHash(lastBlock.getFileHash())
-                  .txHash(tx.getHash())
+                  .txHash(txDetails.getPrevTxHash())
                   .status(status)
                   .createdAt(txDetails.getNow())
                   .accountAddress(txDetails.getAccountAddr())
@@ -1745,21 +1525,56 @@ public class MyLocalTon {
                   .typeMsg(msgType)
                   .from(from)
                   .to(to)
-                  .fromForSearch(from.getAddr())
-                  .toForSearch(to.getAddr())
+                  .fromForSearch(from)
+                  .toForSearch(to)
                   .amount(amount)
                   .fees(
-                      inMsg
-                          .getFwdFee()
-                          .add(
-                              inMsg
-                                  .getIhrFee()
-                                  .add(inMsg.getImportFee()))) // total fee in out msg =
-                  // fwd+ihr+import fee
+                      (outMsg.getInfo() instanceof InternalMessageInfo)
+                          ? ((InternalMessageInfo) outMsg.getInfo()).getTotalFees()
+                          : BigInteger.ZERO) // total fee in out msg = fwd+ihr+import fee
                   .tx(txDetails)
-                  .message(inMsg)
+                  .message(outMsg)
                   .build());
         }
+      } // end out msgs
+
+      // in msgs
+      if (nonNull(txDetails.getInOut().getIn())) {
+        org.ton.java.tlb.Message inMsg = txDetails.getInOut().getIn();
+        log.debug("adding in msg into txEntity {}", inMsg);
+        from = inMsg.getInfo().getSourceAddress();
+        to = inMsg.getInfo().getDestinationAddress();
+        amount = inMsg.getInfo().getValueCoins();
+        txType = "Message";
+        msgType = inMsg.getInfo().getType();
+        status = "";
+
+        txEntity.add(
+            TxEntity.builder()
+                .wc(lastBlock.getWc())
+                .shard(lastBlock.getShard())
+                .seqno(lastBlock.getSeqno())
+                .blockRootHash(lastBlock.getRootHash())
+                .blockFileHash(lastBlock.getFileHash())
+                .txHash(txDetails.getPrevTxHash())
+                .status(status)
+                .createdAt(txDetails.getNow())
+                .accountAddress(txDetails.getAccountAddr())
+                .txLt(txDetails.getLt())
+                .typeTx(txType)
+                .typeMsg(msgType)
+                .from(from)
+                .to(to)
+                .fromForSearch(from)
+                .toForSearch(to)
+                .amount(amount)
+                .fees(
+                    (inMsg.getInfo() instanceof InternalMessageInfo)
+                        ? ((InternalMessageInfo) inMsg.getInfo()).getTotalFees()
+                        : BigInteger.ZERO) // total fee in out msg = fwd+ihr+import fee
+                .tx(txDetails)
+                .message(inMsg)
+                .build());
       }
       return txEntity;
     } catch (Exception e) {
@@ -1855,7 +1670,7 @@ public class MyLocalTon {
       ObservableList<javafx.scene.Node> items = c.blockslistviewid.getItems();
 
       if (items.size() > blocksScrollBarHighWaterMark.get()) {
-        items.removeLast();
+        items.remove(items.size() - 1);
       }
 
       items.add(0, blockRow);
@@ -2076,20 +1891,26 @@ public class MyLocalTon {
 
                     try {
                       seqno = tonlib.getSeqno(address);
-                      subWalletId =
-                          tonlib.getAccountState(address).getAccount_state().getWallet_id();
-                      if (subWalletId == 0) {
-                        RunResult resultSubWalletId = tonlib.runMethod(address, "get_subwallet_id");
-                        if (resultSubWalletId.getExit_code() == 0) {
-                          TvmStackEntryNumber resultSubWalletIdNum =
-                              (TvmStackEntryNumber) resultSubWalletId.getStack().getFirst();
-                          subWalletId = resultSubWalletIdNum.getNumber().longValue();
-                        } else {
-                          subWalletId = -1;
-                        }
+                    } catch (Throwable ignored) {
+                      log.debug("can't detect contract's seqno for address {}", address.toRaw());
+                    }
+
+                    try {
+                      //                      subWalletId =
+                      //
+                      // tonlib.getAccountState(address).getAccount_state().getWallet_id();
+                      //                      if (subWalletId == 0) {
+                      RunResult resultSubWalletId = tonlib.runMethod(address, "get_subwallet_id");
+                      if (resultSubWalletId.getExit_code() == 0) {
+                        TvmStackEntryNumber resultSubWalletIdNum =
+                            (TvmStackEntryNumber) resultSubWalletId.getStack().get(0);
+                        subWalletId = resultSubWalletIdNum.getNumber().longValue();
+                        //                        } else {
+                        //                          subWalletId = -1;
+                        //                        }
                       }
                     } catch (Throwable ignored) {
-                      subWalletId = -1;
+                      log.debug("can't detect contract's walletId for address {}", address.toRaw());
                     }
 
                     log.debug(
@@ -2137,7 +1958,7 @@ public class MyLocalTon {
                       settings.getElectorSmcAddrHex(),
                       node.getWalletAddress().getHexWalletAddress()));
 
-      if (result.getStake().compareTo(BigDecimal.ZERO) > 0) {
+      if (result.getStake().compareTo(BigInteger.ZERO) > 0) {
         log.info(
             "Reaping rewards. {} reward size is {}, send request for stake recovery",
             node.getNodeName(),
@@ -2172,18 +1993,18 @@ public class MyLocalTon {
         node.setLastPureRewardCollected(
             result
                 .getStake()
-                .multiply(BigDecimal.valueOf(ONE_BLN))
+                //                .multiply(BigInteger.valueOf(ONE_BLN))
                 .subtract(
-                    new BigDecimal(node.getDefaultValidatorStake())
-                        .subtract(BigDecimal.valueOf(ONE_BLN))
-                        .multiply(BigDecimal.valueOf(ONE_BLN))));
+                    node.getDefaultValidatorStake()
+                    //                        .subtract(BigInteger.valueOf(ONE_BLN))
+                    //                        .multiply(BigInteger.valueOf(ONE_BLN)))
+                    ));
 
         node.setTotalPureRewardsCollected(
             node.getTotalPureRewardsCollected().add(node.getLastPureRewardCollected()));
-        node.setElectionsRipped(node.getElectionsRipped().add(BigDecimal.ONE));
+        node.setElectionsRipped(node.getElectionsRipped().add(BigInteger.ONE));
         node.setAvgPureRewardCollected(
-            node.getTotalPureRewardsCollected()
-                .divide(node.getElectionsRipped(), 9, RoundingMode.CEILING));
+            node.getTotalPureRewardsCollected().divide(node.getElectionsRipped()));
 
         saveSettingsToGson();
       } else {
@@ -2203,212 +2024,104 @@ public class MyLocalTon {
       log.debug(
           "{} updating reaped values {}",
           node.getNodeName(),
-          String.format(
-              "%,.9f",
-              node.getLastRewardCollected()
-                  .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+          Utils.formatNanoValue(node.getLastRewardCollected()));
 
       switch (node.getNodeName()) {
         case "genesis":
           mainController.validator1totalCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalRewardsCollected(), 2));
           mainController.validator1LastCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastRewardCollected(), 2));
           mainController.validator1TotalRewardsPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalPureRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalPureRewardsCollected(), 2));
           mainController.validator1LastRewardPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastPureRewardCollected(), 2));
           mainController.validator1AvgPureReward.setText(
-              String.format(
-                  "%,.9f",
-                  node.getAvgPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getAvgPureRewardCollected(), 2));
           mainController.participatedInElections1.setText(
               node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
           break;
         case "node2":
           mainController.validator2totalCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalRewardsCollected(), 2));
           mainController.validator2LastCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastRewardCollected(), 2));
           mainController.validator2TotalRewardsPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalPureRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalPureRewardsCollected(), 2));
           mainController.validator2LastRewardPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastPureRewardCollected(), 2));
           mainController.validator2AvgPureReward.setText(
-              String.format(
-                  "%,.9f",
-                  node.getAvgPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getAvgPureRewardCollected(), 2));
           mainController.participatedInElections2.setText(
               node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
           break;
         case "node3":
           mainController.validator3totalCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalRewardsCollected(), 2));
           mainController.validator3LastCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastRewardCollected(), 2));
           mainController.validator3TotalRewardsPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalPureRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalPureRewardsCollected(), 2));
           mainController.validator3LastRewardPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastPureRewardCollected(), 2));
           mainController.validator3AvgPureReward.setText(
-              String.format(
-                  "%,.9f",
-                  node.getAvgPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getAvgPureRewardCollected(), 2));
           mainController.participatedInElections3.setText(
               node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
           break;
         case "node4":
           mainController.validator4totalCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalRewardsCollected(), 2));
           mainController.validator4LastCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastRewardCollected(), 2));
           mainController.validator4TotalRewardsPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalPureRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalPureRewardsCollected(), 2));
           mainController.validator4LastRewardPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getAvgPureRewardCollected(), 2));
           mainController.validator4AvgPureReward.setText(
-              String.format(
-                  "%,.9f",
-                  node.getAvgPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getAvgPureRewardCollected(), 2));
           mainController.participatedInElections4.setText(
               node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
           break;
         case "node5":
           mainController.validator5totalCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalRewardsCollected(), 2));
           mainController.validator5LastCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastRewardCollected(), 2));
           mainController.validator5TotalRewardsPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalPureRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalPureRewardsCollected(), 2));
           mainController.validator5LastRewardPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastPureRewardCollected(), 2));
           mainController.validator5AvgPureReward.setText(
-              String.format(
-                  "%,.9f",
-                  node.getAvgPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getAvgPureRewardCollected(), 2));
           mainController.participatedInElections5.setText(
               node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
           break;
         case "node6":
           mainController.validator6totalCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalRewardsCollected(), 2));
           mainController.validator6LastCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastRewardCollected(), 2));
           mainController.validator6TotalRewardsPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalPureRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalPureRewardsCollected(), 2));
           mainController.validator6LastRewardPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastPureRewardCollected(), 2));
           mainController.validator6AvgPureReward.setText(
-              String.format(
-                  "%,.9f",
-                  node.getAvgPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getAvgPureRewardCollected(), 2));
           mainController.participatedInElections6.setText(
               node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
           break;
         case "node7":
           mainController.validator7totalCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalRewardsCollected(), 2));
           mainController.validator7LastCollected.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastRewardCollected(), 2));
           mainController.validator7TotalRewardsPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getTotalPureRewardsCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getTotalPureRewardsCollected(), 2));
           mainController.validator7LastRewardPure.setText(
-              String.format(
-                  "%,.9f",
-                  node.getLastPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getLastPureRewardCollected(), 2));
           mainController.validator7AvgPureReward.setText(
-              String.format(
-                  "%,.9f",
-                  node.getAvgPureRewardCollected()
-                      .divide(BigDecimal.valueOf(ONE_BLN), 9, RoundingMode.CEILING)));
+              Utils.formatNanoValue(node.getAvgPureRewardCollected(), 2));
           mainController.participatedInElections7.setText(
               node.getElectionsCounter().size() + " (" + node.getElectionsRipped() + ")");
           break;
@@ -2422,7 +2135,7 @@ public class MyLocalTon {
 
   public void createValidatorPubKeyAndAdnlAddress(Node node, long electionId) throws Exception {
     log.debug("{} creating validator PubKey and ADNL address", node.getNodeName());
-    long electionEnd = electionId + 600; // was YEAR
+    long electionEnd = electionId + 600;
 
     createSigningKeyForValidation(node, electionId, electionEnd);
     createAdnlKeyForValidation(node, node.getValidationSigningKey(), electionEnd);

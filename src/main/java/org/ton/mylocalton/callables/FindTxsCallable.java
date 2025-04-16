@@ -27,7 +27,7 @@ public class FindTxsCallable implements Callable<TxCallbackParam> {
   }
 
   public TxCallbackParam call() {
-    List<TxEntity> foundTxsResult;
+    List<TxEntity> foundTxsResult = List.of();
     EntityManager em = db.getEmf().createEntityManager();
     try {
       TypedQuery<TxEntity> query =
@@ -39,6 +39,10 @@ public class FindTxsCallable implements Callable<TxCallbackParam> {
               .setParameter("datetimefrom", datetimeFrom)
               .setMaxResults(SCROLL_BAR_DELTA)
               .getResultList();
+      log.debug("found txs {}", foundTxsResult.size());
+    } catch (Throwable e) {
+      log.info("Exception in FindTxsCallable", e);
+
     } finally {
       if (em.getTransaction().isActive()) em.getTransaction().rollback();
       if (em.isOpen()) em.close();

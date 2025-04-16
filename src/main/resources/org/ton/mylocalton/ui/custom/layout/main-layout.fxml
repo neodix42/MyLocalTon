@@ -9,15 +9,15 @@
 <fx:root xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.layout.AnchorPane"
          xmlns="http://javafx.com/javafx"
-         prefHeight="720.0" prefWidth="1335.0">
+         prefHeight="720.0" maxWidth="1400.0" prefWidth="1000.0">
 
-    <AnchorPane fx:id="logoPane" prefHeight="50" prefWidth="210" styleClass="background-pane"
+    <AnchorPane fx:id="logoPane" prefHeight="50" prefWidth="180" styleClass="background-pane"
                 AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
         <children>
 
             <HBox prefHeight="37.5" prefWidth="37.5"
                   style="-fx-background-color: #0088CC; -fx-background-radius: 1000000;"
-                  AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="10.0">
+                  AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                 <children>
                     <Label alignment="CENTER" contentDisplay="GRAPHIC_ONLY" prefHeight="37.5" prefWidth="37.5">
                         <graphic>
@@ -28,7 +28,7 @@
                     </Label>
                 </children>
             </HBox>
-            <HBox AnchorPane.leftAnchor="80.0" AnchorPane.topAnchor="20.0">
+            <HBox AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="22.0">
                 <children>
                     <Label alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" textFill="#303757">
                         <graphic>
@@ -42,8 +42,8 @@
         </children>
     </AnchorPane>
 
-    <AnchorPane fx:id="search" prefHeight="60" prefWidth="1125" styleClass="background-pane"
-                AnchorPane.leftAnchor="210.0" AnchorPane.topAnchor="0.0">
+    <AnchorPane fx:id="search" prefHeight="60" prefWidth="1240" styleClass="background-pane"
+                AnchorPane.leftAnchor="170.0" AnchorPane.topAnchor="0.0">
 
         <VBox AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" alignment="CENTER">
             <CustomSearchBar fx:id="searchBar" searchPromptText="Search for blocks, transactions, accounts..."
@@ -53,7 +53,7 @@
         <HBox fx:id="topButton" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
               alignment="CENTER"/>
 
-        <HBox fx:id="scrollButton" AnchorPane.rightAnchor="65.0" AnchorPane.topAnchor="0.0"
+        <HBox fx:id="scrollButton" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="0.0"
               AnchorPane.bottomAnchor="0.0" alignment="CENTER"/>
 
         <HBox fx:id="closeButton" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
@@ -138,7 +138,7 @@
 
     </AnchorPane>
 
-    <AnchorPane fx:id="contentPane" prefHeight="660" prefWidth="1125" style="-fx-background-color: ##E5EAFF;"
+    <AnchorPane fx:id="contentPane" prefHeight="660" prefWidth="1125" style="-fx-background-color: #EEEEEE;"
                 AnchorPane.leftAnchor="210.0" AnchorPane.topAnchor="60.0" AnchorPane.rightAnchor="0.0"
                 AnchorPane.bottomAnchor="0.0">
 
