@@ -19,7 +19,7 @@ jobs:
         run: |
           git fetch -a
           git checkout main
-          mkdir artifacts                    
+          mkdir artifacts
           mvn clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
           java -jar artifacts/MyLocalTon-x86-64.jar nogui debug test-binaries
