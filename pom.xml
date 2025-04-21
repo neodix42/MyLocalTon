@@ -12,13 +12,13 @@
 
         <ton_branch>master</ton_branch>
         <arch></arch> <!-- add when work or compile on/for arm64  -aarch64 -->
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
         <maven.assembly.plugin.version>3.6.0</maven.assembly.plugin.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <apache.commons.lang3.version>3.9</apache.commons.lang3.version>
-        <openjfx.version>21.0.7</openjfx.version>
+        <openjfx.version>23.0.2</openjfx.version>
         <jfoenix.version>9.0.4</jfoenix.version>
         <commons-io.version>2.7</commons-io.version>
         <commons-codec.version>1.14</commons-codec.version>
@@ -511,7 +511,7 @@
                             <appendAssemblyId>false</appendAssemblyId>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.ton.main.Main</mainClass>
+                                    <mainClass>org.ton.mylocalton.main.Main</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

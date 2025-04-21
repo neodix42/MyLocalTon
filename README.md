@@ -14,8 +14,7 @@
 ## What is it
 
 This is your personal local TON blockchain (www.ton.org) in a shape of cross-platform desktop application. It comes in a
-form of uber-jar with all dependencies and binaries. Please notice this an
-alpha version and cannot be treated as production ready.
+form of uber-jar with all dependencies and binaries.
 
 <img alt="MyLocalton gif demo" src='./screens/MyLocalTon-demo.gif'>
 
@@ -115,11 +114,11 @@ functionality is in the backlog, so it will be implemented in future releases.
 
 ### Common actions for all platforms
 
-* Install OpenJDK 11 or higher
+* Install OpenJDK 21 or higher
 * Install IntelliJ IDEA Community Edition 2019 or higher
 * Install SceneBuilder from https://gluonhq.com/products/scene-builder/
 * Clone this repository and open it in IntelliJ as Maven project.
-* Click Add configuration, select new "Application" type and specify main class "org.ton.main.Main".
+* Click Add configuration, select new "Application" type and specify main class "org.ton.mylocalton.main.Main".
 * In Settings - JavaFX specify path to SceneBuilder.
 * Now you can compile and run the application from IntelliJ.
 
