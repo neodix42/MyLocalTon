@@ -1,20 +1,7 @@
 package org.ton.mylocalton.executors.fift;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.ton.mylocalton.db.entities.WalletEntity;
-import org.ton.mylocalton.executors.validatorengineconsole.ValidatorEngineConsoleExecutor;
-import org.ton.java.smartcontract.types.WalletVersion;
-import org.ton.java.tonlib.types.RawAccountState;
-import org.ton.mylocalton.main.App;
-import org.ton.mylocalton.parameters.SendToncoinsParam;
-import org.ton.mylocalton.settings.Node;
-import org.ton.mylocalton.wallet.WalletAddress;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,9 +14,22 @@ import java.time.Instant;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.StringUtils.SPACE;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.java.tonlib.types.RawAccountState;
+import org.ton.mylocalton.actions.MyLocalTon;
+import org.ton.mylocalton.db.entities.WalletEntity;
+import org.ton.mylocalton.executors.validatorengineconsole.ValidatorEngineConsoleExecutor;
+import org.ton.mylocalton.main.App;
+import org.ton.mylocalton.parameters.SendToncoinsParam;
+import org.ton.mylocalton.settings.Node;
+import org.ton.mylocalton.wallet.WalletAddress;
 
 @Slf4j
 public class Fift {
@@ -156,7 +156,7 @@ public class Fift {
             .bounceableAddressBase64(bounceableBase64)
             .fullWalletAddress(fullAddress)
             .wc(Long.parseLong(fullAddress.substring(0, fullAddress.indexOf(":"))))
-            .subWalletId(-1L)
+            .subWalletId(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultSubWalletId())
             .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
             .publicKeyHex(publicKeyAddrs[1].trim())
             .publicKeyBase64(publicKeyAddrs[0].trim())

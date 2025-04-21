@@ -110,7 +110,7 @@ public class App extends Application {
           while (syncDelay > 10) {
             try {
               MasterChainInfo masterChainInfo = MyLocalTon.tonlib.getLast();
-              log.info("masterChainInfo {}", masterChainInfo);
+              log.info("masterChainInfo {}", masterChainInfo.getLast().getShortBlockSeqno());
               if (nonNull(masterChainInfo) && (masterChainInfo.getLast().getSeqno() > 0)) {
                 log.info("masterChainInfo {}", masterChainInfo.getLast().getShortBlockSeqno());
                 syncDelay = MyLocalTonUtils.getSyncDelay();
@@ -130,8 +130,8 @@ public class App extends Application {
 
           //          try {
           //
-          //            MyLocalTonUtils.waitForBlockchainReady(genesisNode);
-          //            MyLocalTonUtils.waitForNodeSynchronized(genesisNode);
+          //                      MyLocalTonUtils.waitForBlockchainReady(genesisNode);
+          //                      MyLocalTonUtils.waitForNodeSynchronized(genesisNode);
           //          } catch (Exception e) {
           //            log.error(e.getMessage(), e);
           //          }

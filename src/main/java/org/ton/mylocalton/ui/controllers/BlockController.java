@@ -77,6 +77,7 @@ public class BlockController {
             .createdAt(createdAt)
             .build();
 
+    log.debug("loading block info {}", blockPk);
     String msg = String.format("Loading block info with seqno %s", seqno.getText());
     App.mainController.showInfoMsg(msg, 5);
 
@@ -120,19 +121,12 @@ public class BlockController {
         tonlib.lookupBlock(
             Long.parseLong(seqno.getText()),
             Long.parseLong(wc.getText()),
-            Long.parseLong(shard.getText()),
+            new BigInteger(shard.getText(), 16).longValue(),
             0,
             0);
     ResultLastBlock lightBlock = MyLocalTonUtils.getLast(blockIdExt);
 
     LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
-    //    ResultLastBlock lightBlock =
-    //        LiteClientParser.parseBySeqno(
-    //            liteClient.executeBySeqno(
-    //                node,
-    //                Long.parseLong(wc.getText()),
-    //                shard.getText(),
-    //                new BigInteger(seqno.getText())));
 
     return LiteClientParser.parseDumpblock(
         liteClient.executeDumpblock(node, lightBlock),

@@ -76,10 +76,7 @@ import org.ton.java.utils.Utils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
-import org.ton.mylocalton.enums.LiteClientEnum;
 import org.ton.mylocalton.executors.fift.Fift;
-import org.ton.mylocalton.executors.liteclient.LiteClient;
-import org.ton.mylocalton.executors.liteclient.LiteClientParser;
 import org.ton.mylocalton.executors.liteclient.api.ResultLastBlock;
 import org.ton.mylocalton.main.App;
 import org.ton.mylocalton.main.Main;
@@ -282,9 +279,9 @@ public class MyLocalTonUtils {
       } else {
         log.warn("cannot identify wallet version by the code {}", accountCode);
       }
-      log.debug("identified wallet {} version {}", address, walletVersion);
+      log.debug("identified wallet {} version {}", address.toRaw(), walletVersion);
     } else {
-      log.debug("{} code is null, can't detect wallet version yet", address);
+      log.debug("{} code is null, can't detect wallet version yet", address.toRaw());
     }
     return walletVersion;
   }
@@ -602,45 +599,46 @@ public class MyLocalTonUtils {
     return ByteBuffer.wrap(addr.getAddress()).getInt();
   }
 
-  public static void waitForBlockchainReady(Node node) throws Exception {
-    ResultLastBlock lastBlock;
-    do {
-      Thread.sleep(5000);
-      lastBlock =
-          LiteClientParser.parseLast(
-              LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
-      //            log.error("{} is not ready", node.getNodeName());
-    } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
-    node.setFlag("cloned");
-  }
+  //  public static void waitForBlockchainReady(Node node) throws Exception {
+  //    ResultLastBlock lastBlock;
+  //    do {
+  //      Thread.sleep(5000);
+  //      lastBlock =
+  //          LiteClientParser.parseLast(
+  //              LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
+  //      //            log.error("{} is not ready", node.getNodeName());
+  //    } while (isNull(lastBlock) || (lastBlock.getSeqno().compareTo(BigInteger.ONE) < 0));
+  //    node.setFlag("cloned");
+  //  }
+  //
+  //  public static boolean waitForNodeExited(Node node) throws Exception {
+  //    if (SystemUtils.IS_OS_WINDOWS) {
+  //      log.info("check exit value {}", node.getNodeName());
+  //      return node.getNodeProcess().waitFor(90, TimeUnit.SECONDS);
+  //    }
+  //    return false;
+  //  }
 
-  public static boolean waitForNodeExited(Node node) throws Exception {
-    if (SystemUtils.IS_OS_WINDOWS) {
-      log.info("check exit value {}", node.getNodeName());
-      return node.getNodeProcess().waitFor(90, TimeUnit.SECONDS);
-    }
-    return false;
-  }
-
-  public static void waitForNodeSynchronized(Node node) throws Exception {
-    ResultLastBlock lastBlock;
-    do {
-      Thread.sleep(5000);
-      lastBlock =
-          LiteClientParser.parseLast(
-              LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
-      if (nonNull(lastBlock)) {
-        log.info(
-            "{} is out of sync by {} seconds", node.getNodeName(), lastBlock.getSyncedSecondsAgo());
-        node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
-      }
-    } while (isNull(lastBlock)
-        || (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0
-            && lastBlock.getSyncedSecondsAgo() > 10));
-
-    log.info("{} synchronized", node.getNodeName());
-    Thread.sleep(500);
-  }
+  //  public static void waitForNodeSynchronized(Node node) throws Exception {
+  //    ResultLastBlock lastBlock;
+  //    do {
+  //      Thread.sleep(5000);
+  //      lastBlock =
+  //          LiteClientParser.parseLast(
+  //              LiteClient.getInstance(LiteClientEnum.GLOBAL).executeLast(node));
+  //      if (nonNull(lastBlock)) {
+  //        log.info(
+  //            "{} is out of sync by {} seconds", node.getNodeName(),
+  // lastBlock.getSyncedSecondsAgo());
+  //        node.setStatus("out of sync by " + lastBlock.getSyncedSecondsAgo() + " seconds");
+  //      }
+  //    } while (isNull(lastBlock)
+  //        || (lastBlock.getSeqno().compareTo(BigInteger.ONE) > 0
+  //            && lastBlock.getSyncedSecondsAgo() > 10));
+  //
+  //    log.info("{} synchronized", node.getNodeName());
+  //    Thread.sleep(500);
+  //  }
 
   public static long getCurrentTimeSeconds() {
     return System.currentTimeMillis() / 1000;
@@ -1362,11 +1360,6 @@ public class MyLocalTonUtils {
   public static ResultLastBlock getLast(BlockIdExt blockIdExt) {
 
     BlockHeader blockHeader = tonlib.getBlockHeader(blockIdExt);
-
-    log.info(
-        "getLast blockHeader: {} {}",
-        blockHeader.getId().getShortBlockSeqno(),
-        Utils.toUTC(blockHeader.getGen_utime()));
 
     return ResultLastBlock.builder()
         .seqno(BigInteger.valueOf(blockIdExt.getSeqno()))

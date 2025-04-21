@@ -278,6 +278,10 @@ public class DbPool {
           spawnNewDb();
           insertTx(tx); // repeat failed insert into newly spawned db
         }
+        if (nonNull(e.getCause())) {
+          log.error(
+              "Error insertTx(), {}, {}", e.getMessage(), e.getCause().getCause().getMessage());
+        }
       } finally {
         if (em.getTransaction().isActive()) em.getTransaction().rollback();
         if (em.isOpen()) em.close();

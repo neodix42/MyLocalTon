@@ -1,15 +1,22 @@
 package org.ton.mylocalton.ui.controllers;
 
+import static org.ton.mylocalton.utils.MyLocalTonUtils.PATTERN;
+
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jfoenix.controls.JFXButton;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ForkJoinPool;
+import java.util.regex.Matcher;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -19,11 +26,21 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.model.StyleSpans;
+import org.fxmisc.richtext.model.StyleSpansBuilder;
+import org.ton.java.tlb.Transaction;
 import org.ton.mylocalton.actions.DynamicTreeLayout;
 import org.ton.mylocalton.db.entities.TxEntity;
 import org.ton.mylocalton.db.entities.TxPk;
@@ -103,7 +120,7 @@ public class TxController {
   }
 
   @FXML
-  void txInfoBtn() {
+  void txInfoBtn() throws IOException {
 
     String shortSeqno = block.getText();
     String inside = StringUtils.substringBetween(shortSeqno, "(", ")");
@@ -125,6 +142,16 @@ public class TxController {
         BlockShortSeqno.builder().wc(wcVal).shard(shardVal).seqno(seqnoVal).build();
 
     long createdAtSeconds = MyLocalTonUtils.datetimeToTimestamp(time.getText());
+
+    log.debug(
+        "search adding tx {} {} {} {} LT={} NOW={} seqno={}",
+        txAccAddrHidden.getText(),
+        typeTx.getText(),
+        typeMsg.getText(),
+        txidHidden.getText(),
+        new BigInteger(txLt.getText()),
+        createdAtSeconds,
+        blockShortSeqno.getSeqno());
 
     TxPk txPk =
         TxPk.builder()
@@ -149,36 +176,155 @@ public class TxController {
     String msg = String.format("Loading block info with seqno %s", seqnoVal);
     App.mainController.showInfoMsg(msg, 5);
 
-    CompletableFuture.supplyAsync(() -> App.dbPool.findTx(txPk), ForkJoinPool.commonPool())
-        .thenAccept(
-            txEntity -> {
-              if (txEntity == null) {
-                Platform.runLater(
-                    () -> App.mainController.showErrorMsg("Transaction not found", 3));
-                return;
-              }
+    TxEntity txEntity = App.dbPool.findTx(txPk);
+    Transaction tx = txEntity.getTx();
+    Platform.runLater(
+        () -> {
+          try {
+            showTxDump(txEntity, tx);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
 
-              //              Gson gson = new GsonBuilder().setPrettyPrinting().create();
-              //              try (FileWriter writer = new FileWriter("txEntity" +
-              // txEntity.getSeqno() + ".json")) {
-              //                gson.toJson(txEntity, writer);
-              //              } catch (IOException e) {
-              //                e.printStackTrace();
-              //              }
-              Platform.runLater(
-                  () -> {
-                    try {
-                      if (txEntity.getTypeTx().equals("Message")) {
-                        showMsgDetails(txEntity);
-                      } else {
-                        showTxDetailsView(txEntity);
-                      }
-                    } catch (IOException e) {
-                      log.error("Error showing tx dump", e);
-                      App.mainController.showErrorMsg("Error showing transaction dump", 3);
-                    }
-                  });
-            });
+  private void showTxDump(TxEntity txEntity, Transaction tx) throws IOException {
+    if (!SystemUtils.IS_OS_MAC) {
+      FXMLLoader fxmlLoader =
+          new FXMLLoader(
+              TxController.class
+                  .getClassLoader()
+                  .getResource("org/ton/mylocalton/main/rawdump.fxml"));
+      Parent root = fxmlLoader.load();
+      Stage stage = new Stage();
+      stage.initModality(Modality.NONE);
+      stage.initStyle(StageStyle.DECORATED);
+      stage.setTitle("Tx hash " + txEntity.getTxHash());
+
+      try {
+        Image icon =
+            new Image(
+                Objects.requireNonNull(
+                    getClass()
+                        .getClassLoader()
+                        .getResourceAsStream("org/ton/mylocalton/images/logo.png")));
+        stage.getIcons().add(icon);
+      } catch (NullPointerException e) {
+        log.error("Icon not found. Exception thrown {}", e.getMessage(), e);
+      }
+
+      Scene scene = new Scene(root, 1000, 700);
+
+      scene.setOnKeyPressed(
+          keyEvent -> {
+            if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
+              stage.close();
+            }
+          });
+      scene
+          .getStylesheets()
+          .add(
+              TxController.class
+                  .getClassLoader()
+                  .getResource("org/ton/mylocalton/css/java-keywords.css")
+                  .toExternalForm());
+      stage.setScene(scene);
+      stage.show();
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      String json = gson.toJson(tx);
+      CodeArea codeArea = new CodeArea();
+      codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea)); // нумерация строк
+      codeArea.setEditable(false);
+
+      codeArea
+          .getVisibleParagraphs()
+          .addModificationObserver(
+              new MyLocalTonUtils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting));
+
+      codeArea.replaceText(0, 0, json);
+
+      VirtualizedScrollPane<CodeArea> vsPane = new VirtualizedScrollPane<>(codeArea);
+
+      VBox vbox = (VBox) root.lookup("#vboxid");
+      vbox.getChildren().add(vsPane);
+      VBox.setVgrow(vsPane, Priority.ALWAYS);
+      vbox.setAlignment(Pos.CENTER);
+      vbox.setFillWidth(true);
+
+      JFXButton btn = (JFXButton) root.lookup("#showDumpBtn");
+      btn.setUserData(
+          "tx#"
+              + txEntity.getFullBlock()
+              + " "
+              + txEntity.getWc()
+              + ":"
+              + tx.getAccountAddr()
+              + " "
+              + tx.getLt());
+      //      sn.setContent(sp);
+    } else {
+
+      Gson gson = new GsonBuilder().setPrettyPrinting().create();
+      CodeArea codeArea = new CodeArea();
+      codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+      codeArea.setEditable(false);
+      codeArea
+          .getVisibleParagraphs()
+          .addModificationObserver(
+              new MyLocalTonUtils.VisibleParagraphStyler<>(codeArea, this::computeHighlighting));
+
+      if (txEntity.getTypeTx().equals("Message")) {
+        codeArea.replaceText(0, 0, gson.toJson(txEntity.getMessage()));
+      } else {
+        codeArea.replaceText(0, 0, gson.toJson(tx));
+      }
+
+      Stage stage = new Stage();
+      stage.initModality(Modality.NONE);
+      stage.initStyle(StageStyle.DECORATED);
+      stage.setTitle("Tx hash " + txEntity.getTxHash());
+      Scene scene = new Scene(new StackPane(new VirtualizedScrollPane<>(codeArea)), 1000, 700);
+      scene
+          .getStylesheets()
+          .add(
+              TxController.class
+                  .getClassLoader()
+                  .getResource("org/ton/mylocalton/css/java-keywords.css")
+                  .toExternalForm());
+
+      stage.setScene(scene);
+      stage.show();
+    }
+  }
+
+  public StyleSpans<Collection<String>> computeHighlighting(String text) {
+    Matcher matcher = PATTERN.matcher(text);
+    int lastKwEnd = 0;
+    StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
+    while (matcher.find()) {
+      String styleClass =
+          matcher.group("KEYWORD") != null
+              ? "keyword"
+              : matcher.group("PAREN") != null
+                  ? "paren"
+                  : matcher.group("BRACE") != null
+                      ? "brace"
+                      : matcher.group("BRACKET") != null
+                          ? "bracket"
+                          : matcher.group("SEMICOLON") != null
+                              ? "semicolon"
+                              : matcher.group("STRING") != null
+                                  ? "string"
+                                  : matcher.group("COMMENT") != null
+                                      ? "comment"
+                                      : null; /* never happens */
+      assert styleClass != null;
+      spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+      spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
+      lastKwEnd = matcher.end();
+    }
+    spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+    return spansBuilder.create();
   }
 
   private void showMsgDetails(TxEntity txEntity) throws IOException {

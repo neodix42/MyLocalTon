@@ -204,7 +204,7 @@ public class MyLocalTonSettings implements Serializable {
     String walletRawAddress = "-1:5ee77ced0b7ae6ef88ab3f4350d8872c64667ffbe76073455215d3cdfab3294b";
     String mnemonic =
         "twenty unfair stay entry during please water april fabric morning length lumber style tomorrow melody similar forum width ride render void rather custom coin";
-    WalletVersion walletVersion = WalletVersion.V3R2;
+    WalletVersion walletVersion = WalletVersion.highload;
     Long workChain = -1L;
     long subWalletId = 42L;
     boolean created = false;

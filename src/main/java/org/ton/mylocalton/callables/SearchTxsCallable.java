@@ -30,7 +30,7 @@ public class SearchTxsCallable implements Callable<TxCallbackParam> {
 
   public TxCallbackParam call() {
     EntityManager em = db.getEmf().createEntityManager();
-    String wcShardSeqnoHash = searchText;
+    String wcShardSeqnoHash = searchText.trim();
     try {
       Long seqno;
       String shard;
@@ -73,15 +73,15 @@ public class SearchTxsCallable implements Callable<TxCallbackParam> {
         String[] s = wcShardSeqnoHash.split(":");
 
         if (s.length == 2) {
-          wc = MyLocalTonUtils.parseLong(s[0]);
-          hexAddr = s[1];
+          //          wc = MyLocalTonUtils.parseLong(s[0]);
+          //          hexAddr = s[1];
           query =
               em.createQuery(
-                  "SELECT b FROM TxEntity b where (b.txHash = :hash) OR (b.fromForSearch = :hash) OR (b.toForSearch = :hash) ORDER BY b.createdAt DESC",
+                  "SELECT b FROM TxEntity b where (b.fromForSearch = :hash) OR (b.toForSearch = :hash) ORDER BY b.createdAt DESC",
                   TxEntity.class);
           results =
               query
-                  .setParameter(HASH, hexAddr)
+                  .setParameter(HASH, wcShardSeqnoHash)
                   // .setMaxResults(SCROLL_BAR_DELTA) // to many results
                   .getResultList();
         }

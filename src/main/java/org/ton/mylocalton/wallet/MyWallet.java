@@ -30,6 +30,7 @@ import org.ton.java.smartcontract.wallet.v2.WalletV2R2;
 import org.ton.java.smartcontract.wallet.v3.WalletV3R1;
 import org.ton.java.smartcontract.wallet.v3.WalletV3R2;
 import org.ton.java.smartcontract.wallet.v4.WalletV4R2;
+import org.ton.java.tonlib.types.ExtMessageInfo;
 import org.ton.java.tonlib.types.RawAccountState;
 import org.ton.java.utils.Utils;
 import org.ton.mylocalton.enums.LiteClientEnum;
@@ -119,18 +120,50 @@ public class MyWallet {
         toAddress = Address.of(toAddress.toString(true, false, true));
       }
 
-      long seqno = -1;
-      if (!sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1)) {
+      long seqno = 0;
+      if ((sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.highload))
+          || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.highloadV3))
+          || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1))) {
+        log.info("sendTonCoins, does not have seqno, use default seqno=0");
+      } else {
         seqno = tonlib.getSeqno(fromAddress);
       }
+
       log.debug("seqno {}", seqno);
 
-      if (seqno == -1L) {
-        log.error("Error retrieving seqno from contract {}", fromAddress.toRaw());
-        return false;
-      }
+      //      if (seqno == -1L) {
+      //        log.error("Error retrieving seqno from contract {}", fromAddress.toRaw());
+      //        return false;
+      //      }
 
-      if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1)) {
+      if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.highload)) {
+        HighloadWallet highloadWallet =
+            HighloadWallet.builder()
+                .keyPair(
+                    Utils.generateSignatureKeyPairFromSeed(
+                        Utils.hexToSignedBytes(
+                            sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
+                .wc(sendToncoinsParam.getFromWallet().getWc())
+                .tonlib(tonlib)
+                .walletId(sendToncoinsParam.getFromWallet().getSubWalletId())
+                .queryId(BigInteger.ZERO)
+                .build();
+        log.info("balance {}", tonlib.getAccountBalance(highloadWallet.getAddress()));
+        HighloadConfig config =
+            HighloadConfig.builder()
+                .walletId(sendToncoinsParam.getFromWallet().getSubWalletId())
+                .queryId(BigInteger.valueOf(Instant.now().getEpochSecond() + 10 * 60L << 32))
+                .destinations(
+                    List.of(
+                        Destination.builder()
+                            .mode(3)
+                            .address(toAddress.toRaw())
+                            .amount(sendToncoinsParam.getAmount())
+                            .build()))
+                .build();
+        ExtMessageInfo extMessageInfo = highloadWallet.send(config);
+        log.info("ExtMessageInfo {}", extMessageInfo);
+      } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1)) {
         WalletV1R1 walletV1R1 =
             WalletV1R1.builder()
                 .keyPair(
@@ -332,19 +365,19 @@ public class MyWallet {
           "Sent {} nano Toncoins by {} from {} to {}",
           sendToncoinsParam.getAmount(),
           sendToncoinsParam.getExecutionNode().getNodeName(),
-          fromAddress.toString(false),
-          toAddress.toString(false));
+          fromAddress.toRaw(),
+          toAddress.toRaw());
 
       int counter = 0;
 
-      if (!sendToncoinsParam
-          .getFromWalletVersion()
-          .equals(WalletVersion.V1R1)) { // better check if seqno method exist
+      if ((sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.highload))
+          || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.highloadV3))
+          || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1))) {
+        return true;
+      } else {
         while (true) {
-          Thread.sleep(3 * 1000);
-          long newSeqno =
-              liteClient.executeGetSeqno(
-                  sendToncoinsParam.getExecutionNode(), fromAddress.toString(false));
+          Utils.sleep(3);
+          long newSeqno = tonlib.getSeqno(fromAddress);
           if (newSeqno > seqno) {
             return true;
           }
@@ -365,8 +398,6 @@ public class MyWallet {
             return false;
           }
         }
-      } else {
-        return true;
       }
     } catch (Throwable te) {
       log.error(ExceptionUtils.getStackTrace(te));

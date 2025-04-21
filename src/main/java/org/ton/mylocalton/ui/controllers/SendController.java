@@ -111,6 +111,7 @@ public class SendController implements Initializable {
           App.mainController.showSuccessMsg(
               String.format("Sent %s Toncoins to %s", sendAmount.getText(), destAddress), 3);
         } else {
+          log.debug("Failed to send {} Toncoins to {}", sendAmount.getText(), destAddress);
           App.mainController.showErrorMsg(
               String.format("Failed to send %s Toncoins to %s", sendAmount.getText(), destAddress),
               3);

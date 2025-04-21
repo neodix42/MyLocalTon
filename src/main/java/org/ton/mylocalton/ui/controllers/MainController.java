@@ -1004,7 +1004,7 @@ public class MainController implements Initializable {
                   blockShortSeqno.getSeqno(),
                   MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get(),
                   createdAt,
-                  MyLocalTonUtils.toUtcNoSpace(createdAt));
+                  MyLocalTonUtils.toUTC(createdAt));
 
               if (globalTxLastSeqno == blockShortSeqno.getSeqno().longValue()) {
                 log.debug(
@@ -1080,18 +1080,6 @@ public class MainController implements Initializable {
                                 tonlib.lookupBlock(i, -1L, -9223372036854775808L, 0, 0);
                             ResultLastBlock block = MyLocalTonUtils.getLast(blockIdExt);
                             log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
-                            //                            ResultLastBlock block =
-                            //                                LiteClientParser.parseBySeqno(
-                            //
-                            // LiteClient.getInstance(LiteClientEnum.GLOBAL)
-                            //                                        .executeBySeqno(
-                            //
-                            // MyLocalTon.getInstance().getSettings().getGenesisNode(),
-                            //                                            -1L,
-                            //                                            "8000000000000000",
-                            //                                            new
-                            // BigInteger(String.valueOf(i))));
-                            log.debug("load missing block {}: {}", i, block.getFullBlockSeqno());
                             MyLocalTon.getInstance()
                                 .insertBlocksAndTransactions(
                                     MyLocalTon.getInstance().getSettings().getGenesisNode(),
@@ -4044,12 +4032,8 @@ public class MainController implements Initializable {
     JFXDialogLayout content = new JFXDialogLayout();
     content.setBody(parent);
 
-    loadingDialog =
-        new JFXDialog(
-            superWindow, content, JFXDialog.DialogTransition.CENTER
-            //        , true
-            );
-    // loadingDialog.setOverlayClose(false); // set modality
+    loadingDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER, true);
+    loadingDialog.setOverlayClose(false); // set modality
 
     loadingDialog.setOnKeyPressed(
         keyEvent -> {

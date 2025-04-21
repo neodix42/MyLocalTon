@@ -11,16 +11,17 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
-import org.ton.mylocalton.data.db.DataDB;
-import org.ton.mylocalton.data.db.DataWalletEntity;
-import org.ton.mylocalton.data.db.DataWalletPk;
-import org.ton.mylocalton.data.scenarios.Scenario;
 import org.ton.java.address.Address;
 import org.ton.java.smartcontract.highload.HighloadWallet;
 import org.ton.java.smartcontract.types.Destination;
 import org.ton.java.smartcontract.types.HighloadConfig;
 import org.ton.java.tonlib.Tonlib;
+import org.ton.java.tonlib.types.ExtMessageInfo;
 import org.ton.java.utils.Utils;
+import org.ton.mylocalton.data.db.DataDB;
+import org.ton.mylocalton.data.db.DataWalletEntity;
+import org.ton.mylocalton.data.db.DataWalletPk;
+import org.ton.mylocalton.data.scenarios.Scenario;
 
 @Slf4j
 @Builder
@@ -77,8 +78,6 @@ public class Runner {
       log.error("Error: " + e.getMessage());
     }
 
-    runTopUpQueueScheduler();
-
     scenarios.add("Scenario1");
     scenarios.add("Scenario2");
     scenarios.add("Scenario3");
@@ -99,8 +98,9 @@ public class Runner {
 
     scenarios.add("Scenario15");
     scenarios.add("Scenario16");
-    runScenariosScheduler();
 
+    runTopUpQueueScheduler();
+    runScenariosScheduler();
     runCleanQueueScheduler();
 
     log.info("data-app ready");
@@ -117,9 +117,10 @@ public class Runner {
 
                 List<DataWalletEntity> walletRequests = DataDB.getDataWalletsToSend();
                 log.info("triggered send to {} wallets", walletRequests.size());
-                if (walletRequests.size() == 0) {
-                  //                  log.info("queue is empty, nothing to do, was sent {}",
-                  // DB.getWalletsSent().size());
+                if (walletRequests.isEmpty()) {
+                  log.info(
+                      "queue is empty, nothing to do, was sent {}",
+                      DataDB.getDataWalletsSent().size());
                   return;
                 }
 
@@ -149,7 +150,8 @@ public class Runner {
                         .destinations(destinations250)
                         .build();
 
-                dataHighloadFaucet.send(config);
+                ExtMessageInfo extMessageInfo = dataHighloadFaucet.send(config);
+                log.info("extMessageInfo top up {}", extMessageInfo);
 
                 for (Destination destination : destinations250) {
                   DataDB.updateDataWalletStatus(
@@ -183,9 +185,7 @@ public class Runner {
                               log.error("dataHighloadFaucet has no funds");
                               return;
                             }
-                            clazz =
-                                Class.forName(
-                                    "org.ton.mylocalton.data.scenarios." + scenario); // todo
+                            clazz = Class.forName("org.ton.mylocalton.data.scenarios." + scenario);
                             Constructor<?> constructor = clazz.getConstructor(Tonlib.class);
                             Object instance = constructor.newInstance(tonlib);
                             ((Scenario) instance).run();

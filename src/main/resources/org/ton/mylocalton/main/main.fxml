@@ -102,20 +102,21 @@
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
                   AnchorPane.topAnchor="10.0">
                 <HBox prefHeight="44.0">
-                    <VBox prefHeight="55.0" minWidth="220.0">
-                        <Label prefHeight="48.0" minWidth="220.0" styleClass="content-header-label"
+                    <VBox prefHeight="55.0" minWidth="222.0">
+                        <Label prefHeight="48.0" minWidth="222.0" styleClass="content-header-label"
                                text="BLOCK/STATUS"/>
                     </VBox>
                     <VBox prefHeight="55.0" minWidth="150.0">
                         <Label prefHeight="48.0" minWidth="150.0" styleClass="content-header-label"
                                text="PREVIOUS HASH"/>
                     </VBox>
-                    <VBox prefHeight="44.0" minWidth="140.0">
-                        <Label prefHeight="44.0" minWidth="140.0"
+                    <VBox prefHeight="44.0" minWidth="120.0">
+                        <Label prefHeight="44.0" minWidth="120.0"
                                styleClass="content-header-label" text="TYPE" style="-fx-alignment: center;"/>
                     </VBox>
-                    <VBox prefHeight="55.0" minWidth="450.0">
-                        <Label prefHeight="44.0" minWidth="450.0" styleClass="content-header-label" text="FROM/TO"/>
+                    <VBox prefHeight="55.0" prefWidth="480.0">
+                        <Label prefHeight="44.0" prefWidth="480.0" styleClass="content-header-label"
+                               style="-fx-alignment: center;" text="FROM/TO"/>
                     </VBox>
                     <VBox prefHeight="43.0" prefWidth="140.0">
                         <Label prefHeight="43.0" prefWidth="140.0"
@@ -1528,7 +1529,7 @@
                 <JFXCheckBox fx:id="tickTockCheckBox" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
                              GridPane.rowIndex="0"/>
 
-                <Label text="Show activities between main and config contracts" GridPane.columnIndex="1"
+                <Label text="Show activities of main, elector and config contracts" GridPane.columnIndex="1"
                        GridPane.rowIndex="1" styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="mainConfigTxCheckBox" checkedColor="#0088CC" selected="true"
                              GridPane.columnIndex="0" GridPane.rowIndex="1"/>

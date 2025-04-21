@@ -765,6 +765,7 @@ public class MyLocalTon {
               .pathToTonlibSharedLib(tonlibName)
               .receiveTimeout(5)
               .receiveRetryTimes(24)
+              //              .verbosityLevel(VerbosityLevel.DEBUG)
               .build();
     } catch (Throwable e) {
       System.out.println(ExceptionUtils.getStackTrace(e));
@@ -792,8 +793,6 @@ public class MyLocalTon {
                         .setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
                     log.debug("Getting last block");
 
-                    //                    BlockIdExt blockIdExt =
-                    // tonlib.lookupBlock(nextBlockSeqno.get(),-1,-9223372036854775808L,0,0)
                     ResultLastBlock lastBlock = MyLocalTonUtils.getLast();
                     log.debug("got last block {}", lastBlock);
 
@@ -969,10 +968,10 @@ public class MyLocalTon {
       return;
     }
 
-    log.debug(
-        "updateAccountsTabGui, wallet account addr {}, state {}",
-        walletEntity.getHexAddress(),
-        walletEntity.getAccountState());
+    //    log.debug(
+    //        "updateAccountsTabGui, wallet account addr {}, state {}",
+    //        walletEntity.getHexAddress(),
+    //        walletEntity.getAccountState());
 
     if (!Boolean.TRUE.equals(autoScroll)) {
       return;
@@ -1010,9 +1009,10 @@ public class MyLocalTon {
                           .getStyleClass()
                           .add("background-acc-send-button-gray");
                     }
-                    log.debug(
-                        "updateAccountsTabGui,showInGuiOnlyUniqueAccounts,  account row {}",
-                        walletEntity);
+                    //                    log.debug(
+                    //                        "updateAccountsTabGui,showInGuiOnlyUniqueAccounts,
+                    // account row {}",
+                    //                        walletEntity);
                     showInGuiOnlyUniqueAccounts(walletEntity, c, accountRow);
                   });
             })
@@ -1277,12 +1277,13 @@ public class MyLocalTon {
       txEntity.removeIf(
           t ->
               (settings.getMainWalletAddrFull().contains(t.getFrom())
-                  && settings.getElectorSmcAddrHex().contains(t.getTo())));
+                  || settings.getElectorSmcAddrHex().contains(t.getFrom())
+                  || settings.getConfigSmcAddrHex().contains(t.getFrom())));
     }
 
     if (!settings.getUiSettings().isShowTickTockTransactions()) {
-      txEntity.removeIf(t -> t.getTx().getDescription().getType().equals("Tick"));
-      txEntity.removeIf(t -> t.getTx().getDescription().getType().equals("Tock"));
+      txEntity.removeIf(t -> t.getTx().getDescription().getType().equals("tick"));
+      txEntity.removeIf(t -> t.getTx().getDescription().getType().equals("tock"));
     }
 
     if (!settings.getUiSettings().isShowInOutMessages()) {
@@ -1474,6 +1475,15 @@ public class MyLocalTon {
       msgType = txDesc.getType();
       status = txDetails.getEndStatus().toString();
 
+      log.debug(
+          "adding tx {} {} {} {} LT={} NOW={} seqno={}",
+          txDetails.getAccountAddr(),
+          txType,
+          msgType,
+          txDetails.getPrevTxHash(),
+          txDetails.getLt(),
+          txDetails.getNow(),
+          lastBlock.getSeqno());
       txEntity.add(
           TxEntity.builder()
               .wc(lastBlock.getWc())
@@ -1501,13 +1511,22 @@ public class MyLocalTon {
       // insert out msgs first
       if (txDetails.getOutMsgCount() != 0L) {
         for (org.ton.java.tlb.Message outMsg : txDetails.getInOut().getOutMessages()) {
-          log.debug("adding out msg into txEntity {}", outMsg);
           txType = "Message";
           msgType = outMsg.getInfo().getType();
-          from = outMsg.getInfo().getSourceAddress();
-          to = outMsg.getInfo().getDestinationAddress();
+          from = outMsg.getInfo().getSourceAddress().toUpperCase();
+          to = outMsg.getInfo().getDestinationAddress().toUpperCase();
           amount = outMsg.getInfo().getValueCoins();
           status = "";
+
+          log.debug(
+              "adding out-msg {} {} {} {} LT={} NOW={} seqno={}",
+              txDetails.getAccountAddr(),
+              txType,
+              msgType,
+              txDetails.getPrevTxHash(),
+              txDetails.getLt(),
+              txDetails.getNow(),
+              lastBlock.getSeqno());
 
           txEntity.add(
               TxEntity.builder()
@@ -1541,13 +1560,22 @@ public class MyLocalTon {
       // in msgs
       if (nonNull(txDetails.getInOut().getIn())) {
         org.ton.java.tlb.Message inMsg = txDetails.getInOut().getIn();
-        log.debug("adding in msg into txEntity {}", inMsg);
-        from = inMsg.getInfo().getSourceAddress();
-        to = inMsg.getInfo().getDestinationAddress();
+        from = inMsg.getInfo().getSourceAddress().toUpperCase();
+        to = inMsg.getInfo().getDestinationAddress().toUpperCase();
         amount = inMsg.getInfo().getValueCoins();
         txType = "Message";
         msgType = inMsg.getInfo().getType();
         status = "";
+
+        log.debug(
+            "adding in-msg {} {} {} {} LT={} NOW={} seqno={}",
+            txDetails.getAccountAddr(),
+            txType,
+            msgType,
+            txDetails.getPrevTxHash(),
+            txDetails.getLt(),
+            txDetails.getNow(),
+            lastBlock.getSeqno());
 
         txEntity.add(
             TxEntity.builder()
@@ -1832,8 +1860,8 @@ public class MyLocalTon {
           .lookup("#seqno")
           .setStyle(blockRow.lookup("#seqno").getStyle() + FOUND_COLOR_HIHGLIGHT);
     }
-    ((Label) blockRow.lookup("#filehash")).setText(finalLastBlock.getFileHash());
-    ((Label) blockRow.lookup("#roothash")).setText(finalLastBlock.getRootHash());
+    ((Label) blockRow.lookup("#filehash")).setText(finalLastBlock.getFileHash().toUpperCase());
+    ((Label) blockRow.lookup("#roothash")).setText(finalLastBlock.getRootHash().toUpperCase());
     if (((Label) blockRow.lookup("#filehash")).getText().equals(searchFor)) {
       blockRow
           .lookup("#filehash")
@@ -1865,8 +1893,8 @@ public class MyLocalTon {
             .wc(lastBlock.getWc())
             .shard(lastBlock.getShard())
             .seqno(lastBlock.getSeqno())
-            .filehash(lastBlock.getFileHash())
-            .roothash(lastBlock.getRootHash())
+            .filehash(lastBlock.getFileHash().toUpperCase())
+            .roothash(lastBlock.getRootHash().toUpperCase())
             .build();
 
     App.dbPool.insertBlock(block);
@@ -1892,22 +1920,14 @@ public class MyLocalTon {
                     try {
                       seqno = tonlib.getSeqno(address);
                     } catch (Throwable ignored) {
-                      log.debug("can't detect contract's seqno for address {}", address.toRaw());
+                      // log.debug("can't detect contract's seqno for address {}", address.toRaw());
                     }
 
                     try {
-                      //                      subWalletId =
-                      //
-                      // tonlib.getAccountState(address).getAccount_state().getWallet_id();
-                      //                      if (subWalletId == 0) {
-                      RunResult resultSubWalletId = tonlib.runMethod(address, "get_subwallet_id");
-                      if (resultSubWalletId.getExit_code() == 0) {
-                        TvmStackEntryNumber resultSubWalletIdNum =
-                            (TvmStackEntryNumber) resultSubWalletId.getStack().get(0);
-                        subWalletId = resultSubWalletIdNum.getNumber().longValue();
-                        //                        } else {
-                        //                          subWalletId = -1;
-                        //                        }
+                      subWalletId =
+                          tonlib.getAccountState(address).getAccount_state().getWallet_id();
+                      if (subWalletId == 0) {
+                        subWalletId = -1L;
                       }
                     } catch (Throwable ignored) {
                       log.debug("can't detect contract's walletId for address {}", address.toRaw());

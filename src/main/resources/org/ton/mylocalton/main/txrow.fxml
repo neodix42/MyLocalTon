@@ -11,45 +11,46 @@
 
     <center>
         <HBox prefHeight="46.0" prefWidth="1070.0" BorderPane.alignment="CENTER">
-            <VBox prefHeight="46.0" prefWidth="240.0">
-                <Label fx:id="block" onMouseClicked="#txRowSeqnoClick" prefHeight="20.0" prefWidth="240.0"
+            <VBox prefHeight="46.0" prefWidth="220.0">
+                <Label fx:id="block" onMouseClicked="#txRowSeqnoClick" prefHeight="20.0" prefWidth="220.0"
                        styleClass="row-label-small"
                        text="(-1,8000000000000000,21321)"/>
-                <Label fx:id="status" prefHeight="20.0" prefWidth="240.0"
+                <Label fx:id="status" prefHeight="20.0" prefWidth="220.0"
                        styleClass="row-label-small" text="successful" style="-fx-alignment: center;"/>
             </VBox>
-            <VBox prefHeight="0.0" prefWidth="180.0">
-                <Label fx:id="txid" onMouseClicked="#txRowHashClick" prefHeight="20.0" prefWidth="180.0"
+            <VBox prefHeight="0.0" prefWidth="150.0">
+                <Label fx:id="txid" onMouseClicked="#txRowHashClick" prefHeight="20.0" prefWidth="150.0"
                        styleClass="row-label-small" text="12345678...12345678">
                 </Label>
-                <Label fx:id="txidHidden" minHeight="0.0" prefHeight="0.0" prefWidth="180.0"
+                <Label fx:id="txidHidden" minHeight="0.0" prefHeight="0.0" prefWidth="150.0"
                        styleClass="row-label-small" visible="false"/>
-                <Label fx:id="txAccAddrHidden" minHeight="0.0" prefHeight="0.0" prefWidth="180.0"
+                <Label fx:id="txAccAddrHidden" minHeight="0.0" prefHeight="0.0" prefWidth="150.0"
                        styleClass="row-label-small" visible="false"/>
-                <Label fx:id="txLt" minHeight="0.0" prefHeight="0.0" prefWidth="180.0" styleClass="row-label-small"
+                <Label fx:id="txLt" minHeight="0.0" prefHeight="0.0" prefWidth="150.0" styleClass="row-label-small"
                        visible="false"/>
-                <Label fx:id="time" prefHeight="25.0" prefWidth="180.0" styleClass="row-label-small"
+                <Label fx:id="time" prefHeight="25.0" prefWidth="150.0" styleClass="row-label-small"
                        text="2021.03.26 15:55:32"/>
             </VBox>
-            <VBox prefHeight="46.0" prefWidth="150.0">
+            <VBox prefHeight="46.0" prefWidth="120.0">
                 <Label fx:id="typeTx" prefHeight="20.0" prefWidth="150.0" styleClass="row-label-small" text="Tx"
                        style="-fx-alignment: center;"/>
                 <Label fx:id="typeMsg" prefHeight="20.0" prefWidth="150.0" styleClass="row-label-small" text="Ordinary"
                        style="-fx-alignment: center;"/>
             </VBox>
 
-            <VBox prefHeight="46.0" prefWidth="480.0">
-                <Label fx:id="from" onMouseClicked="#txRowSrcAddrClick" prefHeight="20.0" prefWidth="480.0"
-                       styleClass="row-label-small"
+            <VBox prefHeight="46.0">
+                <Label fx:id="from" onMouseClicked="#txRowSrcAddrClick" prefHeight="20.0" minWidth="450"
+                       styleClass="row-label-small-right"
                        style="-fx-font-size: 11px;"/>
-                <Label fx:id="to" onMouseClicked="#txRowDestAddrClick" prefHeight="20.0" prefWidth="480.0"
-                       styleClass="row-label-small"
+                <Label fx:id="to" onMouseClicked="#txRowDestAddrClick" prefHeight="20.0" minWidth="450"
+                       styleClass="row-label-small-right"
                        style="-fx-font-size: 11px;"/>
             </VBox>
             <VBox prefHeight="46.0" prefWidth="140.0">
                 <Label fx:id="amount" onMouseClicked="#txRowAmountClick" prefHeight="20.0" prefWidth="140.0"
-                       styleClass="row-label-small"/>
-                <Label fx:id="fees" prefHeight="20.0" prefWidth="140.0" styleClass="row-label-small" text="0.23032561">
+                       styleClass="row-label-small-right"/>
+                <Label fx:id="fees" prefHeight="20.0" prefWidth="140.0" styleClass="row-label-small-right"
+                       text="0.23032561">
                 </Label>
             </VBox>
         </HBox>
@@ -64,16 +65,16 @@
                             styleClass="info-svg"/>
                 </graphic>
             </JFXButton>
-            <JFXButton onAction="#txTraceBtn" prefHeight="30" prefWidth="30" contentDisplay="CENTER"
-                       styleClass="graph-button" HBox.hgrow="NEVER">
-                <graphic>
-                    <SVGPath
-                            styleClass="graph-icon"
-                            scaleX="0.5"
-                            scaleY="0.5"
-                            content="M6 24 A4 4 0 1 0 14 24 A4 4 0 1 0 6 24 Z M34 10 A4 4 0 1 0 42 10 A4 4 0 1 0 34 10 Z M34 24 A4 4 0 1 0 42 24 A4 4 0 1 0 34 24 Z M34 38 A4 4 0 1 0 42 38 A4 4 0 1 0 34 38 Z M34 38 L22 38 L22 10 L34 10 M14 24 L34 24"/>
-                </graphic>
-            </JFXButton>
+            <!--            <JFXButton onAction="#txTraceBtn" prefHeight="30" prefWidth="30" contentDisplay="CENTER"-->
+            <!--                       styleClass="graph-button" HBox.hgrow="NEVER">-->
+            <!--                <graphic>-->
+            <!--                    <SVGPath-->
+            <!--                            styleClass="graph-icon"-->
+            <!--                            scaleX="0.5"-->
+            <!--                            scaleY="0.5"-->
+            <!--                            content="M6 24 A4 4 0 1 0 14 24 A4 4 0 1 0 6 24 Z M34 10 A4 4 0 1 0 42 10 A4 4 0 1 0 34 10 Z M34 24 A4 4 0 1 0 42 24 A4 4 0 1 0 34 24 Z M34 38 A4 4 0 1 0 42 38 A4 4 0 1 0 34 38 Z M34 38 L22 38 L22 10 L34 10 M14 24 L34 24"/>-->
+            <!--                </graphic>-->
+            <!--            </JFXButton>-->
         </HBox>
 
     </right>

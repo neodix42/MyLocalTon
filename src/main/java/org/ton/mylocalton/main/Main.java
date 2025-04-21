@@ -106,8 +106,7 @@ public class Main {
           });
 
       log.info("Starting application at path {}", MyLocalTonUtils.getMyPath());
-      //      App.main(settings, myLocalTon, args);
-      javafx.application.Application.launch(App.class, args);
+      App.main(settings, myLocalTon, args);
 
     } else {
       log.error("Instance already running.");
