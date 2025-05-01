@@ -18,6 +18,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -170,6 +171,11 @@ public class App extends Application {
                               MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
                       try {
                         MyLocalTon.getInstance().createFullnode(node, true, true);
+                        if (!GraphicsEnvironment.isHeadless()) {
+                          Tab newTab = MyLocalTonUtils.getNewNodeTab();
+                          Platform.runLater(
+                              () -> mainController.validationTabs.getTabs().add(newTab));
+                        }
                       } catch (Exception e) {
                         log.error(e.getMessage(), e);
                       }
