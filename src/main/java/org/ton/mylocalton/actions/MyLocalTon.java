@@ -158,7 +158,9 @@ public class MyLocalTon {
       Platform.runLater(() -> mainController.startTonHttpApi());
     } else {
       if (settings.getUiSettings().isEnableTonHttpApi()) {
-        log.info("Starting ton-http-api on port {}", settings.getUiSettings().getTonHttpApiPort());
+        log.info(
+            "Starting ton-http-api on port headless {}",
+            settings.getUiSettings().getTonHttpApiPort());
         Utils.sleep(3);
         TonHttpApi tonHttpApi = new TonHttpApi();
         tonHttpApi.startTonHttpApi(

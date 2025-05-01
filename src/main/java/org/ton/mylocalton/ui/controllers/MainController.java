@@ -15,10 +15,12 @@ import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextField;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -192,7 +194,7 @@ public class MainController implements Initializable {
 
   @FXML public WebView webView;
 
-  @FXML public WebView webViewTonHttpApi;
+  @FXML public Label webViewTonHttpApi;
 
   @FXML public Label validator1WalletBalance;
 
@@ -1574,9 +1576,11 @@ public class MainController implements Initializable {
           settings.getGenesisNode().getNodeGlobalConfigLocation(),
           settings.getUiSettings().getTonHttpApiPort());
       Utils.sleep(5);
-      webViewTonHttpApi
-          .getEngine()
-          .load("http://127.0.0.1:" + settings.getUiSettings().getTonHttpApiPort());
+      Platform.runLater(
+          () -> {
+            webViewTonHttpApi.setText(
+                "http://localhost:" + settings.getUiSettings().getTonHttpApiPort());
+          });
     }
   }
 
@@ -4108,6 +4112,14 @@ public class MainController implements Initializable {
           emit(new CustomSearchEvent(CustomEvent.Type.SEARCH_REMOVE));
           emit(new CustomSearchEvent(CustomEvent.Type.ACCOUNTS_TXS_REMOVE));
         });
+  }
+
+  @FXML
+  public void webViewLinkOpen(Event e) throws IOException, URISyntaxException {
+    log.info("asdf");
+    Desktop.getDesktop()
+        .browse(
+            new URL("http://localhost:" + settings.getUiSettings().getTonHttpApiPort()).toURI());
   }
 
   @FXML

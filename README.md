@@ -150,6 +150,7 @@ pip3 install --user ton-http-api
 ```commandline
 wget https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
 python -m ensurepip --upgrade
+pip install uvicorn[standard]
 start pip3 install -U ton-http-api
 ```
 

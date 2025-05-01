@@ -2205,10 +2205,11 @@
         </explorerPane>
 
         <tonHttpApiPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
-                  AnchorPane.topAnchor="10.0">
-                <WebView fx:id="webViewTonHttpApi" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+            <VBox alignment="CENTER" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
+                  AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+
+                <Label fx:id="webViewTonHttpApi" onMouseClicked="#webViewLinkOpen"
+                       style="-fx-cursor: hand; -fx-text-fill: #0000FF; -fx-font-size: 24px;"/>
             </VBox>
         </tonHttpApiPane>
 
