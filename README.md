@@ -72,6 +72,7 @@ for ARM64 architecture use:
   tonlibjson, blockchain-explorer binaries and also **smartcont** and lib **folders** in its root folder.
 * `debug` - used to start MyLocalTon in debug mode, that produces lots of useful log files.
 * `data-generator` - enabling data-generator on start, more info here.
+* `version` - simply returns current version of MyLocalTon.
 
 ### Lite-client
 

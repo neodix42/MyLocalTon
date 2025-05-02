@@ -202,17 +202,6 @@ public class MyLocalTon {
                             if (isNull(lastBlock)) {
                               node.setStatus("not ready");
                               log.info("{} is not ready", nodeName);
-
-                              //                            }
-                              //                            else if (lastBlock.getSyncedSecondsAgo()
-                              // > 15) {
-                              //                              node.setStatus(
-                              //                                  "out of sync by " +
-                              // lastBlock.getSyncedSecondsAgo() + " seconds");
-                              //                              log.info(
-                              //                                  "{} out of sync by {} seconds",
-                              //                                  nodeName,
-                              //                                  lastBlock.getSyncedSecondsAgo());
                             } else {
                               node.setStatus("ready");
                               node.setFlag("cloned");

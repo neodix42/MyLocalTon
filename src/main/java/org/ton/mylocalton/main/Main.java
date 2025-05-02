@@ -29,6 +29,13 @@ public class Main {
 
   public static void main(String[] args) throws Throwable {
 
+    for (String arg : args) {
+      if (arg.equalsIgnoreCase("version")) {
+        System.out.println("v1.29");
+        System.exit(0);
+      }
+    }
+
     log.debug("myLocalTon lock file location: {}", MyLocalTonSettings.LOCK_FILE);
 
     if (Arrays.asList(args).contains("restart")) {
@@ -54,11 +61,14 @@ public class Main {
       if (arg.equalsIgnoreCase("debug")) {
         MyLocalTonUtils.setMyLocalTonLogLevel("DEBUG");
         settings.getGenesisNode().setTonLogLevel("DEBUG");
+        settings.getUiSettings().setEnableDebugMode(true);
         log.info("running in debug mode");
       }
 
       if (arg.equalsIgnoreCase("nogui")) {
+        settings.getUiSettings().setEnableNoGuiMode(true);
         System.setProperty("java.awt.headless", "true");
+        log.info("running in nogui mode");
       }
 
       if (arg.startsWith("custom-binaries")) {
@@ -86,6 +96,15 @@ public class Main {
         log.info("listening on public IP " + arg);
         settings.getGenesisNode().setPublicIp(arg);
       }
+    }
+
+    if (settings.getUiSettings().isEnableDebugMode()) {
+      MyLocalTonUtils.setMyLocalTonLogLevel("DEBUG");
+      settings.getGenesisNode().setTonLogLevel("DEBUG");
+    }
+
+    if (settings.getUiSettings().isEnableNoGuiMode()) {
+      System.setProperty("java.awt.headless", "true");
     }
 
     if (GraphicsEnvironment.isHeadless()) {

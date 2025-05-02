@@ -133,17 +133,7 @@ public class App extends Application {
 
           myLocalTon.runNodesStatusMonitor();
 
-          //          try {
-          //
-          //                      MyLocalTonUtils.waitForBlockchainReady(genesisNode);
-          //                      MyLocalTonUtils.waitForNodeSynchronized(genesisNode);
-          //          } catch (Exception e) {
-          //            log.error(e.getMessage(), e);
-          //          }
-
           myLocalTon.runBlockchainMonitor(genesisNode);
-
-          //          myLocalTon.initTonlib(genesisNode);
 
           myLocalTon.runBlockchainSizeMonitor();
 
@@ -162,6 +152,7 @@ public class App extends Application {
               if (arg.startsWith("with-validators-")) {
                 int i = Integer.parseInt(arg.replace("with-validators-", ""));
                 if (i > 0 && i <= 6) {
+                  settings.getUiSettings().setNumberOfValidators(i);
                   log.info("adding {} validators", i);
                   for (int j = 2; j <= i + 1; j++) {
                     Node node = settings.getNodeByName("node" + j);

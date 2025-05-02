@@ -4,7 +4,7 @@ on: [ workflow_dispatch ]
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v3
@@ -36,22 +36,31 @@ jobs:
           mvn clean compile package -DskipTests -Dton_branch=testnet -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}
-          release_name: MyLocalTon v${{ github.run_number }}
-          draft: false
-          prerelease: false
+      - name: Set version
+        run: |
+          export VERSION="$(java -jar artifacts/MyLocalTon-x86-64.jar version)"
+          echo %VERSION%
 
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: artifacts/*.jar
-          tag: v${{ github.run_number }}
-          overwrite: true
-          file_glob: true
+      - name: Read version
+        run: |
+          echo ${{ VERSION }}
+#
+#      - name: Create Release
+#        id: create_release
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: v${{ github.run_number }}
+#          release_name: MyLocalTon v${{ github.run_number }}
+#          draft: false
+#          prerelease: false
+#
+#      - name: Upload binaries to release
+#        uses: svenstaro/upload-release-action@v2
+#        with:
+#          repo_token: ${{ secrets.GITHUB_TOKEN }}
+#          file: artifacts/*.jar
+#          tag: v${{ github.run_number }}
+#          overwrite: true
+#          file_glob: true

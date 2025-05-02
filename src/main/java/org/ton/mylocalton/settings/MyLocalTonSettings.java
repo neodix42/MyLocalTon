@@ -236,6 +236,9 @@ public class MyLocalTonSettings implements Serializable {
     boolean enableBlockchainExplorer = false;
     boolean enableDataGenerator = false;
     boolean enableTonHttpApi = false;
+    boolean enableDebugMode = false;
+    boolean enableNoGuiMode = false;
+    int numberOfValidators = 0;
     int blockchainExplorerPort = 8000;
     int tonHttpApiPort = 8081;
   }
