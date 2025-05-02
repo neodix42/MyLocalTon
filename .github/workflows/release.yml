@@ -37,13 +37,14 @@ jobs:
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
 
       - name: Set version
+        id: tag
         run: |
-          export VERSION="$(java -jar artifacts/MyLocalTon-x86-64.jar version)"
-          echo %VERSION%
+          VERSION=$(java -jar artifacts/MyLocalTon-x86-64.jar version)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT          
 
       - name: Read version
         run: |
-          echo ${{ VERSION }}
+          echo ${{ steps.tag.outputs.TAG }}
 #
 #      - name: Create Release
 #        id: create_release
