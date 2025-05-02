@@ -44,7 +44,7 @@ jobs:
 
       - name: Read version
         run: |
-          echo ${{ steps.tag.outputs.TAG }}
+          echo ${{ steps.tag.outputs.VERSION }}
 #
 #      - name: Create Release
 #        id: create_release
