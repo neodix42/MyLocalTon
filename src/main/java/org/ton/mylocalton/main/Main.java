@@ -151,6 +151,16 @@ public class Main {
                   new Thread(
                       () -> {
                         log.debug("Shutdown hook triggered...");
+
+                        if (nonNull(MyLocalTon.getInstance().getMonitorExecutorService())) {
+                          MyLocalTon.getInstance().getMonitorExecutorService().shutdownNow();
+                        }
+
+                        if (!GraphicsEnvironment.isHeadless()) {
+                          App.mainController.saveSettings();
+                          App.mainController.showShutdownMsg("Shutting down TON blockchain...", 5);
+                        }
+
                         MyLocalTonUtils.doShutdown();
                       }));
         }

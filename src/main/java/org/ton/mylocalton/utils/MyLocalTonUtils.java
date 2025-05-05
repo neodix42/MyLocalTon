@@ -423,12 +423,12 @@ public class MyLocalTonUtils {
           rt.exec("taskkill /F /IM " + "dht-server.exe");
           rt.exec("taskkill /F /IM " + "python.exe");
         } else {
-          rt.exec("killall -9 " + "ton-http-api");
-          rt.exec("killall -9 " + "blockchain-explorer");
-          rt.exec("killall -9 " + "validator-engine-console");
-          rt.exec("killall -9 " + "lite-client");
-          rt.exec("killall -9 " + "dht-server");
-          rt.exec("killall -2 " + "validator-engine");
+          rt.exec("killall " + "ton-http-api");
+          rt.exec("killall " + "blockchain-explorer");
+          rt.exec("killall " + "validator-engine-console");
+          rt.exec("killall " + "lite-client");
+          rt.exec("killall " + "dht-server");
+          rt.exec("killall " + "validator-engine");
         }
 
         log.debug("Waiting for processes to be killed...");
