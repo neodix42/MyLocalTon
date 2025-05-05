@@ -262,10 +262,10 @@ public class MyLocalTonSettings implements Serializable {
 
     Long globalId = -239L;
     Long initialBalance = 4999990000L;
-    Long gasPrice = 1000L;
-    Long gasPriceMc = 10000L;
-    Long cellPrice = 100000L;
-    Long cellPriceMc = 1000000L;
+    Long gasPrice = 26214400L;
+    Long gasPriceMc = 655360000L;
+    Long cellPrice = 2621440000L;
+    Long cellPriceMc = 65536000000L;
 
     Long minValidatorStake = 10000L;
     Long maxValidatorStake = 10000000L;

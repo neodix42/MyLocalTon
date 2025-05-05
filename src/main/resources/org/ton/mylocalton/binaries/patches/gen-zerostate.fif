@@ -350,11 +350,11 @@ elector_addr config.elector_smc!
 config.special!
 
 // gas_price gas_limit special_gas_limit gas_credit block_gas_limit freeze_due_limit delete_due_limit flat_gas_limit flat_gas_price --
-GAS_PRICE sg* 1 *M dup 10000 10 *M GR$0.1 GR$1.0 1000 1000000 config.gas_prices!
-GAS_PRICE_MC sg* 1 *M 10 *M 10000 10 *M GR$0.1 GR$1.0 1000 10000000 config.mc_gas_prices!
+GAS_PRICE sg*  1 *M  1 *M 10000 10 *M GR$0.1 GR$1.0 100 40000 config.gas_prices!
+GAS_PRICE_MC sg* 1 *M 70 *M 10000 2.5 *M GR$0.1 GR$1.0 100 1000000 config.mc_gas_prices!
 // lump_price bit_price cell_price ihr_factor first_frac next_frac
-1000000 1000 sg* CELL_PRICE sg* 3/2 sg*/ 1/3 sg*/ 1/3 sg*/ config.fwd_prices!
-10000000 10000 sg* CELL_PRICE_MC sg* 3/2 sg*/ 1/3 sg*/ 1/3 sg*/ config.mc_fwd_prices!
+400000 26214400 sg* CELL_PRICE sg* 3/2 sg*/ 1/3 sg*/ 1/3 sg*/ config.fwd_prices!
+10000000 655360000 sg* CELL_PRICE_MC sg* 3/2 sg*/ 1/3 sg*/ 1/3 sg*/ config.mc_fwd_prices!
 // mc-cc-lifetime sh-cc-lifetime sh-val-lifetime sh-val-num mc-shuffle
 250 250 5500 7 true config.catchain_params!
 // round-candidates next-cand-delay-ms consensus-timeout-ms fast-attempts attempt-duration cc-max-deps max-block-size max-collated-size new-cc-ids
