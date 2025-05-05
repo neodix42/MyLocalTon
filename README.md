@@ -71,8 +71,14 @@ for ARM64 architecture use:
   validator-engine, validator-engine-console, lite-client, fift, func, generate-random-id, create-state, dht-server,
   tonlibjson, blockchain-explorer binaries and also **smartcont** and lib **folders** in its root folder.
 * `debug` - used to start MyLocalTon in debug mode, that produces lots of useful log files.
-* `data-generator` - enabling data-generator on start, more info here.
+* `data-generator` - enabling data-generator on start, more
+  info [here](https://github.com/neodix42/mylocalton-docker/wiki/Data-(traffic-generation)-container).
 * `version` - simply returns current version of MyLocalTon.
+
+###
+
+MyLocalTon uses wallets with predefined private keys. For the whole list refer
+to [this documentation](https://github.com/neodix42/mylocalton-docker?tab=readme-ov-file#pre-installed-wallets)
 
 ### Lite-client
 
