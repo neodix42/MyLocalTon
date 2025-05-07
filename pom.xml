@@ -13,6 +13,7 @@
         <ton_branch>master</ton_branch>
         <arch></arch> <!-- add when work or compile on/for arm64  -aarch64 -->
         <maven.compiler.release>21</maven.compiler.release>
+        <ton4j.version>0.9.8</ton4j.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
         <maven.assembly.plugin.version>3.6.0</maven.assembly.plugin.version>
@@ -33,7 +34,6 @@
         <jetty.version>11.0.14</jetty.version>
         <jprocesses.version>1.6.5</jprocesses.version>
         <richtextfx.version>0.10.7</richtextfx.version>
-        <ton4j.version>0.9.6</ton4j.version>
         <objectdb.version>2.8.6</objectdb.version>
         <javax.persistence.version>2.1.0</javax.persistence.version>
         <jta.version>1.1</jta.version>
