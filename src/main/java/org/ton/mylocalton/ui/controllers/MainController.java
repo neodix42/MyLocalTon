@@ -20,7 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.URISyntaxException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -2076,21 +2076,6 @@ public class MainController implements Initializable {
     Parent parent = loader.load();
     AccountsCreatePaneController controller = loader.getController();
 
-    //
-    // controller.setWalletVersionText(settings.getWalletSettings().getWalletVersion().getValue());
-
-    //        if (
-    //                (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3R1))
-    //                        ||
-    // (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V3R2))
-    //                        ||
-    // (settings.getWalletSettings().getWalletVersion().equals(WalletVersion.V4R2))
-    //        ) {
-    //            controller.showSubWalletID();
-    //        } else {
-    //            controller.hideSubWalletID();
-    //        }
-
     JFXDialogLayout content = new JFXDialogLayout();
     content.setBody(parent);
 
@@ -4115,11 +4100,21 @@ public class MainController implements Initializable {
   }
 
   @FXML
-  public void webViewLinkOpen(Event e) throws IOException, URISyntaxException {
-    log.info("asdf");
-    Desktop.getDesktop()
-        .browse(
-            new URL("http://localhost:" + settings.getUiSettings().getTonHttpApiPort()).toURI());
+  public void webViewLinkOpen(Event e) throws IOException {
+    if ((Utils.getOS() != Utils.OS.LINUX) || (Utils.getOS() == Utils.OS.LINUX_ARM)) {
+      URI uri = URI.create("http://localhost:" + settings.getUiSettings().getTonHttpApiPort());
+      Desktop.getDesktop()
+              .browse(uri);
+    }
+    else {
+      String text = "http://localhost:" + settings.getUiSettings().getTonHttpApiPort();
+      final Clipboard clipboard = Clipboard.getSystemClipboard();
+      final ClipboardContent content = new ClipboardContent();
+      content.putString(text);
+      clipboard.setContent(content);
+      log.info(text + " copied");
+      App.mainController.showInfoMsg(text + " copied to clipboard", 2);
+    }
   }
 
   @FXML

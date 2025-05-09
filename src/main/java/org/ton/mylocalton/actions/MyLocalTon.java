@@ -754,8 +754,8 @@ public class MyLocalTon {
               .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
               .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
               .pathToTonlibSharedLib(tonlibName)
-              .receiveTimeout(5)
-              .receiveRetryTimes(24)
+              .receiveTimeout(6)
+              .receiveRetryTimes(30)
               //              .verbosityLevel(VerbosityLevel.DEBUG)
               .build();
     } catch (Throwable e) {
