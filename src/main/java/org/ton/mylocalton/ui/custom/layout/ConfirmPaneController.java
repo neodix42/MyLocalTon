@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.mylocalton.ui.custom.control.CustomButton;
 import org.ton.mylocalton.ui.custom.events.CustomEvent;
@@ -26,9 +27,9 @@ public class ConfirmPaneController implements Initializable {
   @FXML private Label body;
   @FXML private Label header;
 
-  private Action action;
+  @Setter private Action action;
 
-  private String address;
+  @Setter private String address;
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -40,15 +41,6 @@ public class ConfirmPaneController implements Initializable {
     switch (action) {
       case DELETE_NODE:
         doDeleteNode();
-        break;
-      case INSTALL_PYTHON:
-        doInstallPython();
-        break;
-      case INSTALL_PIP:
-        doInstallPip();
-        break;
-      case INSTALL_TON_HTTP_API:
-        doInstallTonHttpApi();
         break;
       case CONFIRM:
         emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
@@ -65,62 +57,12 @@ public class ConfirmPaneController implements Initializable {
     MyLocalTonUtils.doDelete(address);
   }
 
-  private void doInstallPython() {
-    log.debug("do install python3");
-    Platform.runLater(
-        () -> {
-          emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
-        });
-    Executors.newSingleThreadExecutor()
-        .execute(
-            () -> {
-              Thread.currentThread().setName("MyLocalTon - installing python3");
-              MyLocalTonUtils.doInstallPython();
-            });
-  }
-
-  private void doInstallPip() {
-    log.debug("do install pip");
-    Platform.runLater(
-        () -> {
-          emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
-        });
-    Executors.newSingleThreadExecutor()
-        .execute(
-            () -> {
-              Thread.currentThread().setName("MyLocalTon - installing pip");
-              MyLocalTonUtils.doInstallPip();
-            });
-  }
-
-  private void doInstallTonHttpApi() {
-    log.debug("do install ton-http-api");
-    Platform.runLater(
-        () -> {
-          emit(new CustomActionEvent(CustomEvent.Type.DIALOG_YES_NO_CLOSE));
-        });
-    Executors.newSingleThreadExecutor()
-        .execute(
-            () -> {
-              Thread.currentThread().setName("MyLocalTon - installing ton-http-api");
-              MyLocalTonUtils.doInstallTonHttpApi();
-            });
-  }
-
   public void setBody(String body) {
     this.body.setText(body);
   }
 
   public void setHeader(String header) {
     this.header.setText(header);
-  }
-
-  public void setAction(Action action) {
-    this.action = action;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
   }
 
   public void setOkButtonText(String text) {

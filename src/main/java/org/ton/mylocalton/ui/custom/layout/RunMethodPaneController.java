@@ -1,20 +1,20 @@
 package org.ton.mylocalton.ui.custom.layout;
 
 import com.jfoenix.controls.JFXTextArea;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.enums.LiteClientEnum;
 import org.ton.mylocalton.executors.liteclient.LiteClient;
 import org.ton.mylocalton.ui.custom.control.CustomTextField;
-
-import java.net.URL;
-import java.util.ResourceBundle;
 
 @Slf4j
 public class RunMethodPaneController implements Initializable {
@@ -23,7 +23,7 @@ public class RunMethodPaneController implements Initializable {
   @FXML private CustomTextField methodIdField;
   @FXML private Label header;
 
-  private String address;
+  @Setter private String address;
 
   private void doRunMethod() {
     String methodId = methodIdField.getFieldText();
@@ -59,10 +59,6 @@ public class RunMethodPaneController implements Initializable {
 
   public void setHeader(String header) {
     this.header.setText(header);
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
   }
 
   @FXML

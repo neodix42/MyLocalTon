@@ -873,25 +873,6 @@ public class MyLocalTon {
         }
       }
     }
-
-    //    for (ResultListBlockTransactions tx : txs) {
-    //      Transaction txDetails =
-    //          LiteClientParser.parseDumpTrans(
-    //              liteClient.executeDumptrans(node, lastBlock, tx),
-    //              settings.getUiSettings().isShowBodyInMessage());
-    //      if (nonNull(txDetails)) {
-    //
-    //        List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, tx, txDetails);
-    //
-    //        txEntities.forEach(App.dbPool::insertTx);
-    //
-    //        detectNewAccount(lastBlock, tx, txDetails);
-    //
-    //        if (updateGuiNow) {
-    //          updateTxTabGui(lastBlock, tx, txDetails, txEntities);
-    //        }
-    //      }
-    //    }
   }
 
   private void detectNewAccount(ResultLastBlock lastBlock, org.ton.java.tlb.Transaction txDetails) {

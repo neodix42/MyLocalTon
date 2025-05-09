@@ -1556,11 +1556,12 @@
                              onMouseClicked="#BlockChainExplorerCheckBoxClick" GridPane.columnIndex="0"
                              GridPane.rowIndex="5"/>
 
-                <Label fx:id="enableTonHttpApiLabel" text="Enable ton-http-api service"
+                <Label fx:id="enableTonHttpApiLabel"
+                       text="Enable ton-http-api service  (requires manual installation, see https://github.com/neodiX42/MyLocalTon)"
                        GridPane.columnIndex="1"
                        GridPane.rowIndex="6" styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="enableTonHttpApi" checkedColor="#0088CC" selected="true"
-                             onMouseClicked="#TonHttpApiCheckBoxClick" GridPane.columnIndex="0"
+                             GridPane.columnIndex="0"
                              GridPane.rowIndex="6"/>
             </GridPane>
         </userInterfacePane>

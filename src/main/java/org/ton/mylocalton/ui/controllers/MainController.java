@@ -22,14 +22,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -75,12 +72,10 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.ton.java.address.Address;
 import org.ton.java.tlb.*;
 import org.ton.java.tonlib.types.BlockIdExt;
@@ -1910,125 +1905,6 @@ public class MainController implements Initializable {
             yesNoDialog.show();
           } catch (IOException e) {
             log.error("Cannot load resource org/ton/ui/custom/layout/confirm-pane.fxml");
-          }
-        });
-  }
-
-  public void showDialogInstallPython() {
-    Platform.runLater(
-        () -> {
-          try {
-
-            FXMLLoader loader =
-                new FXMLLoader(
-                    App.class
-                        .getClassLoader()
-                        .getResource("org/ton/mylocalton/ui/custom/layout/confirm-pane.fxml"));
-            Parent parent = loader.load();
-            ConfirmPaneController controller = loader.getController();
-            controller.setHeight(170.0);
-            controller.setAction(ConfirmPaneController.Action.INSTALL_PYTHON);
-            if (SystemUtils.IS_OS_MAC) {
-              controller.setHeader("python 3.11+ is not installed");
-              controller.setBody("Do you want to download and start the Python installation now?");
-
-            } else {
-              controller.setHeader("python3 is not installed");
-              controller.setBody("Do you want to download and start the Python installation now?");
-            }
-
-            controller.setOkButtonText("Install now");
-
-            JFXDialogLayout content = new JFXDialogLayout();
-            content.setBody(parent);
-
-            yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
-            yesNoDialog.setOnKeyPressed(
-                keyEvent -> {
-                  if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                    yesNoDialog.close();
-                  }
-                });
-            yesNoDialog.show();
-          } catch (IOException e) {
-            log.error("Cannot load resource org/ton/ui/custom/layout/confirm-pane.fxml");
-            e.printStackTrace();
-          }
-        });
-  }
-
-  public void showDialogInstallPip() {
-    Platform.runLater(
-        () -> {
-          try {
-
-            FXMLLoader loader =
-                new FXMLLoader(
-                    App.class
-                        .getClassLoader()
-                        .getResource("org/ton/mylocalton/ui/custom/layout/confirm-pane.fxml"));
-            Parent parent = loader.load();
-            ConfirmPaneController controller = loader.getController();
-            controller.setHeight(170.0);
-            controller.setAction(ConfirmPaneController.Action.INSTALL_PIP);
-            controller.setHeader("pip is not installed");
-
-            controller.setBody(
-                "Python is installed, but pip (package installer for Python) is missing. Do you want to install pip now?");
-            controller.setOkButtonText("Install now");
-
-            JFXDialogLayout content = new JFXDialogLayout();
-            content.setBody(parent);
-
-            yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
-            yesNoDialog.setOnKeyPressed(
-                keyEvent -> {
-                  if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                    yesNoDialog.close();
-                  }
-                });
-            yesNoDialog.show();
-          } catch (IOException e) {
-            log.error("Cannot load resource org/ton/ui/custom/layout/confirm-pane.fxml");
-            e.printStackTrace();
-          }
-        });
-  }
-
-  public void showDialogInstallTonHttpApi() {
-    Platform.runLater(
-        () -> {
-          try {
-
-            FXMLLoader loader =
-                new FXMLLoader(
-                    App.class
-                        .getClassLoader()
-                        .getResource("org/ton/mylocalton/ui/custom/layout/confirm-pane.fxml"));
-            Parent parent = loader.load();
-            ConfirmPaneController controller = loader.getController();
-            controller.setHeight(170.0);
-            controller.setAction(ConfirmPaneController.Action.INSTALL_TON_HTTP_API);
-            controller.setHeader("ton-http-api is not installed");
-
-            controller.setBody(
-                "Python and pip are installed, but ton-http-api is missing. Do you want to install ton-http-api now?");
-            controller.setOkButtonText("Install now");
-
-            JFXDialogLayout content = new JFXDialogLayout();
-            content.setBody(parent);
-
-            yesNoDialog = new JFXDialog(superWindow, content, JFXDialog.DialogTransition.CENTER);
-            yesNoDialog.setOnKeyPressed(
-                keyEvent -> {
-                  if (keyEvent.getCode().equals(KeyCode.ESCAPE)) {
-                    yesNoDialog.close();
-                  }
-                });
-            yesNoDialog.show();
-          } catch (IOException e) {
-            log.error("Cannot load resource org/ton/ui/custom/layout/confirm-pane.fxml");
-            e.printStackTrace();
           }
         });
   }
@@ -3930,90 +3806,6 @@ public class MainController implements Initializable {
   public void BlockChainExplorerCheckBoxClick(MouseEvent mouseEvent) {
     if (enableBlockchainExplorer.isSelected()) {
       App.mainController.showInfoMsg("Native blockchain-explorer will be available on start", 5);
-    }
-  }
-
-  public void TonHttpApiCheckBoxClick(MouseEvent mouseEvent) {
-    log.debug("TonHttpApiCheckBoxClick {}", enableTonHttpApi.isSelected());
-    if (enableTonHttpApi.isSelected()) {
-      if (!python3Installed()) {
-        log.info("python3 is not installed");
-        enableTonHttpApi.setSelected(false);
-        showDialogInstallPython();
-        return;
-      } else if (!pipInstalled()) {
-        log.info("pip is not installed");
-        enableTonHttpApi.setSelected(false);
-        showDialogInstallPip();
-        return;
-      } else if (!tonHttpApiInstalled()) {
-        log.info("ton-http-api is not installed");
-        enableTonHttpApi.setSelected(false);
-        showDialogInstallTonHttpApi();
-        return;
-      }
-      App.mainController.showInfoMsg("ton-http-api will be available on start", 6);
-    }
-  }
-
-  private boolean python3Installed() {
-    try {
-      Process p =
-          Runtime.getRuntime()
-              .exec((SystemUtils.IS_OS_WINDOWS ? "python" : "python3") + " --version");
-      p.waitFor(5, TimeUnit.SECONDS);
-      if (SystemUtils.IS_OS_MAC) {
-        String pythonVersion =
-            IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
-        ComparableVersion v = new ComparableVersion(StringUtils.split(pythonVersion, " ")[1]);
-        if (v.compareTo(new ComparableVersion("3.11")) < 0) {
-          return false;
-        }
-      }
-
-      return (p.exitValue() == 0);
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  private boolean pipInstalled() {
-    try {
-      Process p = Runtime.getRuntime().exec("pip3 --version");
-      p.waitFor(6, TimeUnit.SECONDS);
-      return (p.exitValue() == 0);
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
-  private boolean tonHttpApiInstalled() {
-    try {
-      String cmd;
-      if (SystemUtils.IS_OS_WINDOWS) {
-        cmd = "ton-http-api --version";
-      } else if (SystemUtils.IS_OS_LINUX) {
-        cmd = System.getenv("HOME") + "/.local/bin/ton-http-api --version";
-      } else if (SystemUtils.IS_OS_MAC) {
-        String locationCmd = "python3 -m site --user-base";
-        Process p = Runtime.getRuntime().exec(locationCmd);
-        String pythonLocation =
-            IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
-        Optional<Path> hit =
-            Files.walk(Path.of(pythonLocation).getParent())
-                .filter(file -> file.getFileName().endsWith("ton-http-api"))
-                .findAny();
-        cmd = hit.get() + " --version";
-      } else {
-        log.error("unsupported OS");
-        return false;
-      }
-      log.debug(cmd);
-      Process p = Runtime.getRuntime().exec(cmd);
-      p.waitFor(6, TimeUnit.SECONDS);
-      return (p.exitValue() == 0);
-    } catch (Exception e) {
-      return false;
     }
   }
 
