@@ -4,9 +4,6 @@ import static org.ton.mylocalton.main.App.mainController;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -31,15 +28,7 @@ public class TonHttpApiExecutor {
       } else if (SystemUtils.IS_OS_LINUX) {
         binaryPath = System.getenv("HOME") + "/.local/bin/ton-http-api";
       } else if (SystemUtils.IS_OS_MAC) {
-        String locationCmd = "python3 -m site --user-base";
-        Process p = Runtime.getRuntime().exec(locationCmd);
-        String pythonLocation =
-            IOUtils.toString(p.getInputStream(), Charset.defaultCharset()).strip();
-        Optional<Path> hit =
-            Files.walk(Path.of(pythonLocation).getParent())
-                .filter(file -> file.getFileName().endsWith("ton-http-api"))
-                .findAny();
-        binaryPath = hit.get().toString();
+        binaryPath = "ton-http-api";
       } else {
         log.error("unsupported OS");
       }
