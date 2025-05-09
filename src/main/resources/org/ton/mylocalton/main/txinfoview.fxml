@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fitToHeight="true"
+            fitToWidth="true"
+            fx:controller="org.ton.mylocalton.ui.controllers.TxInfoController" fx:id="rootScrollPane">
+
+    <TitledPane maxWidth="Infinity" styleClass="label-second-font-14" text="Transaction"
+                fx:id="transactionTitledPane">
+        <VBox style="-fx-padding: 10;" alignment="CENTER" spacing="10">
+
+            <GridPane style="-fx-padding: 5;" hgap="10" vgap="5">
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="origStatus:"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="origStatusLabel"/>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="endStatus:"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="endStatusLabel"/>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="accountAddr:"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="accountAddrLabel"/>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="3" text="outMsgsCount:"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="3" fx:id="outMsgsCountLabel"/>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="4" text="prevTxHash:"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="4" fx:id="prevTxHashLabel"/>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="5" text="lt:"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="5" fx:id="ltLabel"/>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="6" text="prevTxLt:"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="6" fx:id="prevTxLtLabel"/>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="7" text="now:"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="7" fx:id="nowLabel"/>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="8" text="oldHash:"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="8" fx:id="oldHashLabel"/>
+
+                <Label GridPane.columnIndex="0" GridPane.rowIndex="9" text="newHash:"/>
+                <Label GridPane.columnIndex="1" GridPane.rowIndex="9" fx:id="newHashLabel"/>
+            </GridPane>
+
+            <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+                        text="inMsgs">
+                <VBox style="-fx-padding: 10;" spacing="10" fx:id="inMsgsContainer"/>
+            </TitledPane>
+
+            <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+                        text="outMsgs">
+                <VBox style="-fx-padding: 10;" spacing="10" fx:id="outMsgsContainer"/>
+            </TitledPane>
+
+            <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+                        text="totalFees" fx:id="totalFeesTitledPane">
+                <GridPane style="-fx-padding: 10;" hgap="10" vgap="5">
+                    <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="toncoins:"/>
+                    <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="totalFeesToncoinsLabel"/>
+
+                    <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="otherCurrencies:"/>
+                    <Label GridPane.columnIndex="1" GridPane.rowIndex="1"
+                           fx:id="totalFeesOtherCurrenciesLabel"/>
+                </GridPane>
+            </TitledPane>
+
+            <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+                        text="description" fx:id="descriptionTitledPane">
+                <VBox style="-fx-padding: 10;" spacing="10">
+                    <GridPane hgap="10" vgap="5">
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="type:"/>
+                        <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="descTypeLabel"/>
+                    </GridPane>
+
+                    <GridPane hgap="10" vgap="5">
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="aborted:"/>
+                        <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="descAbortedLabel"/>
+
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="destroyed:"/>
+                        <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="descDestroyedLabel"/>
+
+                        <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="creditFirst:"/>
+                        <Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="descCreditFirstLabel"/>
+                    </GridPane>
+
+                    <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+                                text="credit" fx:id="creditTitledPane">
+                        <VBox style="-fx-padding: 5;" spacing="10">
+                            <GridPane hgap="10" vgap="5">
+                                <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="dueFeesCollected:"/>
+                                <Label GridPane.columnIndex="1" GridPane.rowIndex="0"
+                                       fx:id="descCreditDueFeesCollectedLabel"/>
+                            </GridPane>
+                            <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+                                        text="credit -> credit" fx:id="innerCreditTitledPane">
+                                <GridPane style="-fx-padding: 5;" hgap="10" vgap="5">
+                                    <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="toncoins:"/>
+                                    <Label GridPane.columnIndex="1" GridPane.rowIndex="0"
+                                           fx:id="descCreditCreditToncoinsLabel"/>
+
+                                    <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="otherCurrencies:"/>
+                                    <Label GridPane.columnIndex="1" GridPane.rowIndex="1"
+                                           fx:id="descCreditCreditOtherCurrenciesLabel"/>
+                                </GridPane>
+                            </TitledPane>
+                        </VBox>
+                    </TitledPane>
+
+                    <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+                                text="compute" fx:id="computeTitledPane">
+                        <GridPane style="-fx-padding: 5;" hgap="10" vgap="5">
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="gasFees:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="0"
+                                   fx:id="descComputeGasFeesLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="gasUsed:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="1"
+                                   fx:id="descComputeGasUsedLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="gasLimit:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="2"
+                                   fx:id="descComputeGasLimitLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="3" text="gasCredit:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="3"
+                                   fx:id="descComputeGasCreditLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="4" text="vmInitStateHash:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="4"
+                                   fx:id="descComputeVmInitStateHashLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="5" text="vmFinalStateHash:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="5"
+                                   fx:id="descComputeVmFinalStateHashLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="6" text="accountActivated:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="6"
+                                   fx:id="descComputeAccountActivatedLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="7" text="msgStateUsed:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="7"
+                                   fx:id="descComputeMsgStateUsedLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="8" text="success:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="8"
+                                   fx:id="descComputeSuccessLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="9" text="exitArg:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="9"
+                                   fx:id="descComputeExitArgLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="10" text="exitCode:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="10"
+                                   fx:id="descComputeExitCodeLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="11" text="vmSteps:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="11"
+                                   fx:id="descComputeVmStepsLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="12" text="mode:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="12" fx:id="descComputeModeLabel"/>
+                        </GridPane>
+                    </TitledPane>
+
+                    <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+                                text="action" fx:id="actionTitledPane">
+                        <GridPane style="-fx-padding: 5;" hgap="10" vgap="5">
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="success:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="descActionSuccessLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="valid:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="descActionValidLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="noFunds:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="2" fx:id="descActionNoFundsLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="3" text="statusChange:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="3"
+                                   fx:id="descActionStatusChangeLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="4" text="totalFwdFee:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="4"
+                                   fx:id="descActionTotalFwdFeeLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="5" text="totalActionFee:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="5"
+                                   fx:id="descActionTotalActionFeeLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="6" text="resultArg:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="6"
+                                   fx:id="descActionResultArgLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="7" text="resultCode:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="7"
+                                   fx:id="descActionResultCodeLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="8" text="totActions:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="8"
+                                   fx:id="descActionTotActionsLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="9" text="specActions:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="9"
+                                   fx:id="descActionSpecActionsLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="10" text="skippedActions:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="10"
+                                   fx:id="descActionSkippedActionsLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="11" text="msgsCreated:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="11"
+                                   fx:id="descActionMsgsCreatedLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="12" text="totalMsgSizeCells:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="12"
+                                   fx:id="descActionTotalMsgSizeCellsLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="13" text="totalMsgSizeBits:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="13"
+                                   fx:id="descActionTotalMsgSizeBitsLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="14" text="actionListHash:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="14"
+                                   fx:id="descActionListHashLabel"/>
+                        </GridPane>
+                    </TitledPane>
+
+                    <TitledPane expanded="false" maxWidth="Infinity" styleClass="label-second-font-14"
+                                text="storage" fx:id="storageTitledPane">
+                        <GridPane style="-fx-padding: 5;" hgap="10" vgap="5">
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="feesCollected:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="0"
+                                   fx:id="descStorageFeesCollectedLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="feesDue:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="1"
+                                   fx:id="descStorageFeesDueLabel"/>
+
+                            <Label GridPane.columnIndex="0" GridPane.rowIndex="2" text="statusChange:"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="2"
+                                   fx:id="descStorageStatusChangeLabel"/>
+                        </GridPane>
+                    </TitledPane>
+                </VBox>
+            </TitledPane>
+        </VBox>
+    </TitledPane>
+</ScrollPane>

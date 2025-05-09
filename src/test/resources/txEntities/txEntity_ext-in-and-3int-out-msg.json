@@ -1,0 +1,212 @@
+{
+  "createdAt": 1744094788,
+  "seqno": 1310,
+  "wc": -1,
+  "shard": "8000000000000000",
+  "txHash": "0E490CA40F0905530919CBE835EC80B44A1E6068338209BC6A5B05A66CB39DCE",
+  "typeTx": "Tx",
+  "typeMsg": "Ordinary",
+  "accountAddress": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA",
+  "txLt": 1563000001,
+  "status": "Active",
+  "from": {
+    "wc": -1,
+    "addr": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA"
+  },
+  "to": {
+    "wc": 0,
+    "addr": "A560DC2F757589A7152835573D23117910207DDEDEFA717DBC82D8CF932E31B2"
+  },
+  "blockRootHash": "81AB317C8799337A3C2A7A6ABE4512152989CA4F460DDACA2A6E62EAFAE7E4E9",
+  "blockFileHash": "14E1AF11B20D89763235570A9BA0929D157417D1FF0772D353D424D0E24660ED",
+  "fromForSearch": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA",
+  "toForSearch": "A560DC2F757589A7152835573D23117910207DDEDEFA717DBC82D8CF932E31B2",
+  "amount": 55000000000,
+  "fees": 49159417,
+  "tx": {
+    "origStatus": "Active",
+    "endStatus": "Active",
+    "accountAddr": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA",
+    "outMsgsCount": 1,
+    "inMsg": {
+      "srcAddr": {},
+      "destAddr": {
+        "wc": -1,
+        "addr": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA"
+      },
+      "type": "External In",
+      "value": {
+        "toncoins": 0
+      },
+      "body": {
+        "cells": [
+          "2394591343DB734D827D7EEC302F623B5A57F4EC17910E622197D68004C460C3442E0C08A5CA3798E820B45F207C8658A343B56D18B5108A56782E28BABB2A020000002A67F4C67F0000000503",
+          "420052B06E17BABAC4D38A941AAB9E9188BC88103EEF6F7D38BEDE416C67C99718D92866720B3000000000000000000000000000000000000061736466"
+        ]
+      },
+      "init": {
+        "code": [],
+        "data": [],
+        "library": []
+      },
+      "fwdFee": 0,
+      "importFee": 0,
+      "ihrFee": 0
+    },
+    "outMsgs": [
+      {
+        "srcAddr": {
+          "wc": -1,
+          "addr": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA"
+        },
+        "destAddr": {
+          "wc": 0,
+          "addr": "A560DC2F757589A7152835573D23117910207DDEDEFA717DBC82D8CF932E31B2"
+        },
+        "type": "Internal",
+        "value": {
+          "toncoins": 55000000000,
+          "otherCurrencies": []
+        },
+        "createdAt": 1744094788,
+        "createdLt": 1563000002,
+        "ihrDisabled": 1,
+        "bounce": 0,
+        "bounced": 0,
+        "body": {
+          "cells": [
+            "0000000061736466"
+          ]
+        },
+        "init": {
+          "code": [],
+          "data": [],
+          "library": []
+        },
+        "fwdFee": 6666718,
+        "importFee": 0,
+        "ihrFee": 0
+      },
+      {
+        "srcAddr": {
+          "wc": -1,
+          "addr": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA"
+        },
+        "destAddr": {
+          "wc": 0,
+          "addr": "A560DC2F757589A7152835573D23117910207DDEDEFA717DBC82D8CF932E31B2"
+        },
+        "type": "Internal",
+        "value": {
+          "toncoins": 55000000000,
+          "otherCurrencies": []
+        },
+        "createdAt": 1744094788,
+        "createdLt": 1563000002,
+        "ihrDisabled": 1,
+        "bounce": 0,
+        "bounced": 0,
+        "body": {
+          "cells": [
+            "0000000061736466"
+          ]
+        },
+        "init": {
+          "code": [],
+          "data": [],
+          "library": []
+        },
+        "fwdFee": 6666718,
+        "importFee": 0,
+        "ihrFee": 0
+      },
+      {
+        "srcAddr": {
+          "wc": -1,
+          "addr": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA"
+        },
+        "destAddr": {
+          "wc": 0,
+          "addr": "A560DC2F757589A7152835573D23117910207DDEDEFA717DBC82D8CF932E31B2"
+        },
+        "type": "Internal",
+        "value": {
+          "toncoins": 55000000000,
+          "otherCurrencies": []
+        },
+        "createdAt": 1744094788,
+        "createdLt": 1563000002,
+        "ihrDisabled": 1,
+        "bounce": 0,
+        "bounced": 0,
+        "body": {
+          "cells": [
+            "0000000061736466"
+          ]
+        },
+        "init": {
+          "code": [],
+          "data": [],
+          "library": []
+        },
+        "fwdFee": 6666718,
+        "importFee": 0,
+        "ihrFee": 0
+      }
+    ],
+    "prevTxHash": "216700528D0D78A6A4DF2F230AF5472253AA3E207C07F903810199D9F87712F2",
+    "lt": 1563000001,
+    "prevTxLt": 1431000001,
+    "now": 1744094788,
+    "totalFees": {
+      "toncoins": 49159417,
+      "otherCurrencies": []
+    },
+    "oldHash": "13FE82BE66255558E4F503AB04A0286091DE60B26E503271CC95484C50007EC7",
+    "newHash": "65D70646DAB987CEF4F634628511873B47930590D243B3663E8160D5A7BF4768",
+    "description": {
+      "type": "Ordinary",
+      "storage": {
+        "feesCollected": 6135,
+        "feesDue": 0,
+        "statusChange": "acst_unchanged"
+      },
+      "credit": {},
+      "compute": {
+        "gasFees": 29940000,
+        "gasUsed": 2994,
+        "gasLimit": 0,
+        "gasCredit": 0,
+        "vmInitStateHash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "vmFinalStateHash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "accountActivated": 0,
+        "msgStateUsed": 0,
+        "success": 1,
+        "exitArg": "nothing",
+        "exitCode": 0,
+        "vmSteps": 66,
+        "mode": 0
+      },
+      "action": {
+        "success": 1,
+        "valid": 1,
+        "noFunds": 0,
+        "statusChange": "acst_unchanged",
+        "totalFwdFee": 0,
+        "totalActionFee": 0,
+        "resultArg": 0,
+        "resultCode": 0,
+        "totActions": 1,
+        "specActions": 0,
+        "skippedActions": 0,
+        "msgsCreated": 1,
+        "totalMsgSizeCells": 1,
+        "totalMsgSizeBits": 777,
+        "actionListHash": "780733479913C3267557B6E3F5EF0412096D67E7DC739CD00B52106B906A1441"
+      },
+      "aborted": 0,
+      "destroyed": 0,
+      "creditFirst": 1
+    }
+  }
+}

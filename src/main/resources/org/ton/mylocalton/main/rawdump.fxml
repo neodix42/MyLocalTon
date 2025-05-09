@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx/17.0.2" fx:controller="org.ton.mylocalton.ui.controllers.RawDumpController">
+    <center>
+        <VBox fx:id="vboxid"/>
+    </center>
+    <top>
+        <HBox alignment="CENTER">
+            <JFXButton fx:id="showDumpBtn" onAction="#showRawDump"
+                       style="-fx-alignment: bottom-right; -fx-padding: 2 10 2 10; -fx-background-color: grey;"
+                       text="Show raw dump" textFill="WHITE"
+                       userData="block#data">
+                <ripplerFill>
+                    <LinearGradient>
+                        <stops>
+                            <Stop>
+                                <color>
+                                    <Color red="0.055921051651239395" green="0.3886513113975525"
+                                           blue="0.44736841320991516"/>
+                                </color>
+                            </Stop>
+                            <Stop offset="1.0">
+                                <color>
+                                    <Color red="1.0" green="1.0" blue="1.0"/>
+                                </color>
+                            </Stop>
+                        </stops>
+                    </LinearGradient>
+                </ripplerFill>
+            </JFXButton>
+        </HBox>
+    </top>
+</BorderPane>

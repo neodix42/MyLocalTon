@@ -14,34 +14,31 @@
 ## What is it
 
 This is your personal local TON blockchain (www.ton.org) in a shape of cross-platform desktop application. It comes in a
-form of uber-jar with all dependencies and binaries. Please notice this an
-alpha version and cannot be treated as production ready.
+form of uber-jar with all dependencies and binaries.
 
 <img alt="MyLocalton gif demo" src='./screens/MyLocalTon-demo.gif'>
 
-## Matrix of supported OS & Java
+## Supported OS & Java
 
-| OS \ Java           | 11                 | 13                 | 15                 | 17                 | 19                 |
-|---------------------|--------------------|--------------------|--------------------|--------------------|--------------------|
-| Linux x86_64        | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| Linux arm64/aarch64 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| MacOS x86_64 (12+)  | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| MacOS arm64/aarch64 | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
-| Windows x86_64      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+| OS \ Java           | 21 and higher      | 
+|---------------------|--------------------|
+| Linux x86_64        | :heavy_check_mark: | 
+| Linux arm64/aarch64 | :heavy_check_mark: |
+| MacOS x86_64 (12+)  | :heavy_check_mark: |
+| MacOS arm64/aarch64 | :heavy_check_mark: |
+| Windows x86_64      | :heavy_check_mark: |
 
-Please make sure you are not using headless (no GUI) Java and OS/Java combination matches as per table above.
+## Quick Java 21 installation
+
+| Linux                                 | MacOS                         | Windows                                      |
+|---------------------------------------|-------------------------------|----------------------------------------------|
+| ```sudo apt install openjdk-21-jdk``` | ```brew install openjdk@21``` | ```choco install openjdk --version=21.0.2``` |
 
 ### For MacOS users
 
 In case you are using MacPorts instead of Homebrew on Mac please execute the following command:
 
 `mkdir -p /usr/local/opt/readline/lib; ln -s /opt/local/lib/libreadline.8.dylib /usr/local/opt/readline/lib/`
-
-## Java installation
-
-| Linux                                 | MacOS                         | Windows                                      |
-|---------------------------------------|-------------------------------|----------------------------------------------|
-| ```sudo apt install openjdk-17-jdk``` | ```brew install openjdk@17``` | ```choco install openjdk --version=17.0.2``` |
 
 ## Microsoft Visual C++ Redistributable installation (for Windows only)
 
@@ -57,8 +54,7 @@ https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msv
 
 ## MyLocalTon usage
 
-`java -jar MyLocalTon-x86-64.jar [nogui] [ton-http-api] [explorer] [ip.addr.xxx.xxx] [test-binaries] [test-tonlib
-] [with-validators-N] [custom-binaries=] [debug]`
+`java -jar MyLocalTon-x86-64.jar [nogui] [ton-http-api] [explorer] [ip.addr.xxx.xxx] [test-binaries] [with-validators-N] [custom-binaries=] [debug]`
 
 for ARM64 architecture use:
 
@@ -71,8 +67,18 @@ for ARM64 architecture use:
 * `explorer` - enables native ton blockchain explorer on start. Runs on port `8000`.
 * `ip.addr.xxx.xxx` - used to bind specific IP to MyLocalTon instead of 127.0.0.1.
 * `with-validators-N` - used to start MyLocalTon with N additional validators.
-* `custom-binaries=absolute-path` - used to start MyLocalTon with custom TON binaries. The folder should contain validator-engine, validator-engine-console, lite-client, fift, func, generate-random-id, create-state, dht-server, tonlibjson, blockchain-explorer binaries and also **smartcont** and lib **folders** in its root folder.
+* `custom-binaries=absolute-path` - used to start MyLocalTon with custom TON binaries. The folder should contain
+  validator-engine, validator-engine-console, lite-client, fift, func, generate-random-id, create-state, dht-server,
+  tonlibjson, blockchain-explorer binaries and also **smartcont** and lib **folders** in its root folder.
 * `debug` - used to start MyLocalTon in debug mode, that produces lots of useful log files.
+* `data-generator` - enabling data-generator on start, more
+  info [here](https://github.com/neodix42/mylocalton-docker/wiki/Data-(traffic-generation)-container).
+* `version` - simply returns current version of MyLocalTon.
+
+###
+
+MyLocalTon uses wallets with predefined private keys. For the whole list refer
+to [this documentation](https://github.com/neodix42/mylocalton-docker?tab=readme-ov-file#pre-installed-wallets)
 
 ### Lite-client
 
@@ -99,11 +105,11 @@ or validator-engine-console in this way:
 * then send zipped above log files to Telegram @neodix or attach to issue at GitHub.
 * Thanks for reporting. You are making MyLocalTon better.
 
- 
 ## MyLocalTon inside Docker
 
 It is not optimal to put this Java version of MyLocalTon to Docker container.
-Please refer to this project https://github.com/neodix42/mylocalton-docker in order to have more optimized and stable MyLocalTon inside Docker.
+Please refer to this project https://github.com/neodix42/mylocalton-docker in order to have more optimized and stable
+MyLocalTon inside Docker.
 
 ## Upgrade
 
@@ -115,11 +121,11 @@ functionality is in the backlog, so it will be implemented in future releases.
 
 ### Common actions for all platforms
 
-* Install OpenJDK 11 or higher
+* Install OpenJDK 21 or higher
 * Install IntelliJ IDEA Community Edition 2019 or higher
 * Install SceneBuilder from https://gluonhq.com/products/scene-builder/
 * Clone this repository and open it in IntelliJ as Maven project.
-* Click Add configuration, select new "Application" type and specify main class "org.ton.main.Main".
+* Click Add configuration, select new "Application" type and specify main class "org.ton.mylocalton.main.Main".
 * In Settings - JavaFX specify path to SceneBuilder.
 * Now you can compile and run the application from IntelliJ.
 
@@ -151,6 +157,7 @@ pip3 install --user ton-http-api
 ```commandline
 wget https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
 python -m ensurepip --upgrade
+pip install uvicorn[standard]
 start pip3 install -U ton-http-api
 ```
 

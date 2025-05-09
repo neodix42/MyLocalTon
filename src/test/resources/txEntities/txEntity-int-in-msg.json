@@ -1,0 +1,159 @@
+{
+  "createdAt": 1744094501,
+  "seqno": 1081,
+  "wc": -1,
+  "shard": "8000000000000000",
+  "txHash": "59B542F98F8D8B567B5DC91E70F21BDCAAE294ECC66C1347E2CA41D843369654",
+  "typeTx": "Message",
+  "typeMsg": "Internal",
+  "accountAddress": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA",
+  "txLt": 1292000001,
+  "status": "",
+  "from": {
+    "wc": 0,
+    "addr": "A560DC2F757589A7152835573D23117910207DDEDEFA717DBC82D8CF932E31B2"
+  },
+  "to": {
+    "wc": -1,
+    "addr": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA"
+  },
+  "blockRootHash": "78884DB1724B5A178D51E4483352E7C60DE6FC2905E2176B4E43A48000ED3A7E",
+  "blockFileHash": "FD9E43547B2C9B7590CE9AF6ABF2C4F4BA0E5B3A9919B0FAB9A32ACCCDC26166",
+  "fromForSearch": "A560DC2F757589A7152835573D23117910207DDEDEFA717DBC82D8CF932E31B2",
+  "toForSearch": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA",
+  "amount": 33000000000,
+  "fees": 6666718,
+  "tx": {
+    "origStatus": "Active",
+    "endStatus": "Active",
+    "accountAddr": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA",
+    "outMsgsCount": 0,
+    "inMsg": {
+      "srcAddr": {
+        "wc": 0,
+        "addr": "A560DC2F757589A7152835573D23117910207DDEDEFA717DBC82D8CF932E31B2"
+      },
+      "destAddr": {
+        "wc": -1,
+        "addr": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA"
+      },
+      "type": "Internal",
+      "value": {
+        "toncoins": 33000000000,
+        "otherCurrencies": []
+      },
+      "createdAt": 1744094498,
+      "createdLt": 1289000002,
+      "ihrDisabled": 1,
+      "bounce": 0,
+      "bounced": 0,
+      "body": {
+        "cells": [
+          "0000000061736466"
+        ]
+      },
+      "init": {
+        "code": [],
+        "data": [],
+        "library": []
+      },
+      "fwdFee": 6666718,
+      "importFee": 0,
+      "ihrFee": 0
+    },
+    "outMsgs": [],
+    "prevTxHash": "4DA2F1203E9A0F753DFC02A98EF87FC160B9719DCB2B331BCB0F5AF63D169BFC",
+    "lt": 1292000001,
+    "prevTxLt": 704000005,
+    "now": 1744094501,
+    "totalFees": {
+      "toncoins": 10029202,
+      "otherCurrencies": []
+    },
+    "oldHash": "5781D79D9C974FC51D762E9C1B6C03F8A7CA9EF2E134D84D68A6F6288B0D0B33",
+    "newHash": "9CA5B9AE86C89F370A29667694CE7C805ABAE8033C9CDC59706BA69979D8AB1E",
+    "description": {
+      "type": "Ordinary",
+      "storage": {
+        "feesCollected": 29202,
+        "feesDue": 0,
+        "statusChange": "acst_unchanged"
+      },
+      "credit": {
+        "dueFeesCollected": 0,
+        "credit": {
+          "toncoins": 33000000000,
+          "otherCurrencies": []
+        }
+      },
+      "compute": {
+        "gasFees": 10000000,
+        "gasUsed": 62,
+        "gasLimit": 1000000,
+        "gasCredit": 0,
+        "vmInitStateHash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "vmFinalStateHash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "accountActivated": 0,
+        "msgStateUsed": 0,
+        "success": 1,
+        "exitArg": "nothing",
+        "exitCode": 0,
+        "vmSteps": 3,
+        "mode": 0
+      },
+      "action": {
+        "success": 1,
+        "valid": 1,
+        "noFunds": 0,
+        "statusChange": "acst_unchanged",
+        "totalFwdFee": 0,
+        "totalActionFee": 0,
+        "resultArg": 0,
+        "resultCode": 0,
+        "totActions": 0,
+        "specActions": 0,
+        "skippedActions": 0,
+        "msgsCreated": 0,
+        "totalMsgSizeCells": 0,
+        "totalMsgSizeBits": 0,
+        "actionListHash": "96A296D224F285C67BEE93C30F8A309157F0DAA35DC5B87E410B78630A09CFC7"
+      },
+      "aborted": 0,
+      "destroyed": 0,
+      "creditFirst": 1
+    }
+  },
+  "message": {
+    "srcAddr": {
+      "wc": 0,
+      "addr": "A560DC2F757589A7152835573D23117910207DDEDEFA717DBC82D8CF932E31B2"
+    },
+    "destAddr": {
+      "wc": -1,
+      "addr": "886ED629FAB6CA1C2E7155CCACCF5FB12A497BE689E4ED0C79CE514738BFB1FA"
+    },
+    "type": "Internal",
+    "value": {
+      "toncoins": 33000000000,
+      "otherCurrencies": []
+    },
+    "createdAt": 1744094498,
+    "createdLt": 1289000002,
+    "ihrDisabled": 1,
+    "bounce": 0,
+    "bounced": 0,
+    "body": {
+      "cells": [
+        "0000000061736466"
+      ]
+    },
+    "init": {
+      "code": [],
+      "data": [],
+      "library": []
+    },
+    "fwdFee": 6666718,
+    "importFee": 0,
+    "ihrFee": 0
+  }
+}

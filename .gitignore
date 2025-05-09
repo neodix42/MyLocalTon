@@ -6,6 +6,9 @@ testDB/
 !/src/main/resources/org/ton/binaries/patches/readme.txt
 /src/main/resources/org/ton/binaries/windows/
 *.iml
+**/ton-linux-x86_64.zip
+**/ton-mac-x86_64.zip
+**/ton-win-x86_64.zip
 
 # User-specific stuff
 .idea/**/workspace.xml

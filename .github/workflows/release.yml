@@ -4,14 +4,14 @@ on: [ workflow_dispatch ]
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v2
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'adopt'
 
       - name: Build x86-64 mainnet
@@ -36,14 +36,24 @@ jobs:
           mvn clean compile package -DskipTests -Dton_branch=testnet -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
 
+      - name: Set version
+        id: tag
+        run: |
+          VERSION=$(java -jar artifacts/MyLocalTon-x86-64.jar version)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT          
+
+      - name: Read version
+        run: |
+          echo ${{ steps.tag.outputs.VERSION }}
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.run_number }}
-          release_name: MyLocalTon v${{ github.run_number }}
+          tag_name: ${{ steps.tag.outputs.VERSION }}
+          release_name: MyLocalTon ${{ steps.tag.outputs.VERSION }}
           draft: false
           prerelease: false
 
@@ -52,6 +62,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: artifacts/*.jar
-          tag: v${{ github.run_number }}
+          tag: ${{ steps.tag.outputs.VERSION }}
           overwrite: true
           file_glob: true

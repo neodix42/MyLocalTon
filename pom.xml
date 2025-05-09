@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ton</groupId>
@@ -8,17 +8,18 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <java.version>11</java.version>
+        <java.version>21</java.version>
 
         <ton_branch>master</ton_branch>
         <arch></arch> <!-- add when work or compile on/for arm64  -aarch64 -->
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
+        <ton4j.version>0.9.8</ton4j.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
         <maven.assembly.plugin.version>3.6.0</maven.assembly.plugin.version>
         <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
         <apache.commons.lang3.version>3.9</apache.commons.lang3.version>
-        <openjfx.version>21</openjfx.version>
+        <openjfx.version>23.0.2</openjfx.version>
         <jfoenix.version>9.0.4</jfoenix.version>
         <commons-io.version>2.7</commons-io.version>
         <commons-codec.version>1.14</commons-codec.version>
@@ -33,28 +34,44 @@
         <jetty.version>11.0.14</jetty.version>
         <jprocesses.version>1.6.5</jprocesses.version>
         <richtextfx.version>0.10.7</richtextfx.version>
-        <ton4j.version>0.7.0</ton4j.version>
         <objectdb.version>2.8.6</objectdb.version>
         <javax.persistence.version>2.1.0</javax.persistence.version>
         <jta.version>1.1</jta.version>
         <log4j.version>2.17.1</log4j.version>
 
         <linux.amd64.ton.binaries.uri>
-            https://github.com/neodix42/ton-actions/releases/latest/download/ton-linux-x86-64-${ton_branch}.zip
+            https://github.com/ton-blockchain/ton/releases/latest/download/ton-linux-x86_64.zip
         </linux.amd64.ton.binaries.uri>
         <mac.amd64.ton.binaries.uri>
-            https://github.com/neodix42/ton-actions/releases/latest/download/ton-mac-x86-64-${ton_branch}.zip
+            https://github.com/ton-blockchain/ton/releases/latest/download/ton-mac-x86-64.zip
         </mac.amd64.ton.binaries.uri>
         <win.amd64.ton.binaries.uri>
-            https://github.com/neodix42/ton-actions/releases/latest/download/ton-win-x86-64-${ton_branch}.zip
+            https://github.com/ton-blockchain/ton/releases/latest/download/ton-win-x86-64.zip
         </win.amd64.ton.binaries.uri>
 
         <linux.arm64.ton.binaries.uri>
-            https://github.com/neodix42/ton-actions/releases/latest/download/ton-linux-arm64-${ton_branch}.zip
+            https://github.com/ton-blockchain/ton/releases/latest/download/ton-linux-arm64.zip
         </linux.arm64.ton.binaries.uri>
         <mac.arm64.ton.binaries.uri>
-            https://github.com/neodix42/ton-actions/releases/latest/download/ton-mac-arm64-${ton_branch}.zip
+            https://github.com/ton-blockchain/ton/releases/latest/download/ton-mac-arm64.zip
         </mac.arm64.ton.binaries.uri>
+
+        <linux.amd64.ton.binaries.testnet.uri>
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-linux-x86-64-testnet.zip
+        </linux.amd64.ton.binaries.testnet.uri>
+        <mac.amd64.ton.binaries.testnet.uri>
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-mac-x86-64-testnet.zip
+        </mac.amd64.ton.binaries.testnet.uri>
+        <win.amd64.ton.binaries.testnet.uri>
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-win-x86-64-testnet.zip
+        </win.amd64.ton.binaries.testnet.uri>
+
+        <linux.arm64.ton.binaries.testnet.uri>
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-linux-arm64-testnet.zip
+        </linux.arm64.ton.binaries.testnet.uri>
+        <mac.arm64.ton.binaries.testnet.uri>
+            https://github.com/neodix42/ton-actions/releases/latest/download/ton-mac-arm64-testnet.zip
+        </mac.arm64.ton.binaries.testnet.uri>
     </properties>
 
     <dependencies>
@@ -307,14 +324,14 @@
                         <option>--add-exports</option>
                         <option>javafx.base/com.sun.javafx.scene=com.jfoenix</option>
                     </options>
-                    <mainClass>org.ton.main.App</mainClass>
+                    <mainClass>org.ton.mylocalton.main.App</mainClass>
                 </configuration>
                 <executions>
                     <execution>
                         <!-- Default configuration for running -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>org.ton.main.App</mainClass>
+                            <mainClass>org.ton.mylocalton.main.App</mainClass>
                         </configuration>
                     </execution>
                     <execution>
@@ -324,7 +341,7 @@
                             <options>
                                 <option>-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:8000</option>
                             </options>
-                            <mainClass>org.ton.main.App</mainClass>
+                            <mainClass>org.ton.mylocalton.main.App</mainClass>
                         </configuration>
                     </execution>
                 </executions>
@@ -349,7 +366,7 @@
                             </includes>
                         </fileset>
                         <fileset>
-                            <directory>${basedir}/src/main/resources/org/ton/binaries/</directory>
+                            <directory>${basedir}/src/main/resources/org/ton/mylocalton/binaries/</directory>
                             <includes>
                                 <include>*ton-linux*</include>
                                 <include>*ton-mac*</include>
@@ -404,35 +421,74 @@
                                 <if>
                                     <equals arg1="${arch}" arg2=""/>
                                     <then>
-                                        <echo>"Building MyLocalTon x86-64 ${ton_branch}"</echo>
-                                        <get retries="3" src="${linux.amd64.ton.binaries.uri}"
-                                             dest="${basedir}/src/main/resources/org/ton/binaries/ton-linux-x86_64.zip"
-                                             verbose="false"
-                                             usetimestamp="true"/>
+                                        <if>
+                                            <equals arg1="${ton_branch}" arg2="master"/>
+                                            <then>
 
-                                        <get retries="3" src="${mac.amd64.ton.binaries.uri}"
-                                             dest="${basedir}/src/main/resources/org/ton/binaries/ton-mac-x86_64.zip"
-                                             verbose="false"
-                                             usetimestamp="true"/>
+                                                <echo>"Building MyLocalTon x86-64 master"</echo>
+                                                <get retries="3" src="${linux.amd64.ton.binaries.uri}"
+                                                     dest="${basedir}/src/main/resources/org/ton/mylocalton/binaries/ton-linux-x86_64.zip"
+                                                     verbose="false"
+                                                     usetimestamp="true"/>
 
-                                        <get retries="3" src="${win.amd64.ton.binaries.uri}"
-                                             dest="${basedir}/src/main/resources/org/ton/binaries/ton-win-x86_64.zip"
-                                             verbose="false"
-                                             usetimestamp="true"/>
+                                                <get retries="3" src="${mac.amd64.ton.binaries.uri}"
+                                                     dest="${basedir}/src/main/resources/org/ton/mylocalton/binaries/ton-mac-x86_64.zip"
+                                                     verbose="false"
+                                                     usetimestamp="true"/>
 
+                                                <get retries="3" src="${win.amd64.ton.binaries.uri}"
+                                                     dest="${basedir}/src/main/resources/org/ton/mylocalton/binaries/ton-win-x86_64.zip"
+                                                     verbose="false"
+                                                     usetimestamp="true"/>
+                                            </then>
+                                            <else>
+                                                <echo>"Building MyLocalTon x86-64 testnet"</echo>
+                                                <get retries="3" src="${linux.amd64.ton.binaries.testnet.uri}"
+                                                     dest="${basedir}/src/main/resources/org/ton/mylocalton/binaries/ton-linux-x86_64.zip"
+                                                     verbose="false"
+                                                     usetimestamp="true"/>
+
+                                                <get retries="3" src="${mac.amd64.ton.binaries.testnet.uri}"
+                                                     dest="${basedir}/src/main/resources/org/ton/mylocalton/binaries/ton-mac-x86_64.zip"
+                                                     verbose="false"
+                                                     usetimestamp="true"/>
+
+                                                <get retries="3" src="${win.amd64.ton.binaries.testnet.uri}"
+                                                     dest="${basedir}/src/main/resources/org/ton/mylocalton/binaries/ton-win-x86_64.zip"
+                                                     verbose="false"
+                                                     usetimestamp="true"/>
+                                            </else>
+                                        </if>
                                     </then>
+
                                     <else>
-                                        <echo>"Building MyLocalTon arm64 ${ton_branch}"</echo>
-                                        <get retries="3" src="${linux.arm64.ton.binaries.uri}"
-                                             dest="${basedir}/src/main/resources/org/ton/binaries//ton-linux-arm64.zip"
-                                             verbose="false"
-                                             usetimestamp="true"/>
+                                        <if>
+                                            <equals arg1="${ton_branch}" arg2="master"/>
+                                            <then>
+                                                <echo>"Building MyLocalTon arm64 master"</echo>
+                                                <get retries="3" src="${linux.arm64.ton.binaries.uri}"
+                                                     dest="${basedir}/src/main/resources/org/ton/mylocalton/binaries/ton-linux-arm64.zip"
+                                                     verbose="false"
+                                                     usetimestamp="true"/>
 
-                                        <get retries="3" src="${mac.arm64.ton.binaries.uri}"
-                                             dest="${basedir}/src/main/resources/org/ton/binaries//ton-mac-arm64.zip"
-                                             verbose="false"
-                                             usetimestamp="true"/>
+                                                <get retries="3" src="${mac.arm64.ton.binaries.uri}"
+                                                     dest="${basedir}/src/main/resources/org/ton/mylocalton/binaries/ton-mac-arm64.zip"
+                                                     verbose="false"
+                                                     usetimestamp="true"/>
+                                            </then>
+                                            <else>
+                                                <echo>"Building MyLocalTon arm64 testnet"</echo>
+                                                <get retries="3" src="${linux.arm64.ton.binaries.testnet.uri}"
+                                                     dest="${basedir}/src/main/resources/org/ton/mylocalton/binaries/ton-linux-arm64.zip"
+                                                     verbose="false"
+                                                     usetimestamp="true"/>
 
+                                                <get retries="3" src="${mac.arm64.ton.binaries.testnet.uri}"
+                                                     dest="${basedir}/src/main/resources/org/ton/mylocalton/binaries/ton-mac-arm64.zip"
+                                                     verbose="false"
+                                                     usetimestamp="true"/>
+                                            </else>
+                                        </if>
                                     </else>
                                 </if>
                             </target>
@@ -456,7 +512,7 @@
                             <appendAssemblyId>false</appendAssemblyId>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.ton.main.Main</mainClass>
+                                    <mainClass>org.ton.mylocalton.main.Main</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
