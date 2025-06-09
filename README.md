@@ -64,7 +64,7 @@ for ARM64 architecture use:
 
 * `nogui` - used to run MyLocalTon without GUI interface. Can be used in Docker or server with headless Java.
 * `ton-http-api` - enables ton-http-api service on start. Runs on port `8081`.
-* `explorer` - enables native ton blockchain explorer on start. Runs on port `8000`.
+* `explorer` - enables native ton blockchain explorer on start. Runs on port `8001`.
 * `ip.addr.xxx.xxx` - used to bind specific IP to MyLocalTon instead of 127.0.0.1.
 * `with-validators-N` - used to start MyLocalTon with N additional validators.
 * `custom-binaries=absolute-path` - used to start MyLocalTon with custom TON binaries. The folder should contain
@@ -79,6 +79,10 @@ for ARM64 architecture use:
 
 MyLocalTon uses wallets with predefined private keys. For the whole list refer
 to [this documentation](https://github.com/neodix42/mylocalton-docker?tab=readme-ov-file#pre-installed-wallets)
+
+### Download global.config.json
+
+After successful launch `global.config.json` will be available at `http://127.0.0.1:8000/global.config.json`
 
 ### Lite-client
 

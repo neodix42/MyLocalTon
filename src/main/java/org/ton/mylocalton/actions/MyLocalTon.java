@@ -59,6 +59,7 @@ import org.ton.mylocalton.db.entities.WalletPk;
 import org.ton.mylocalton.enums.LiteClientEnum;
 import org.ton.mylocalton.executors.blockchainexplorer.BlockchainExplorer;
 import org.ton.mylocalton.executors.fift.Fift;
+import org.ton.mylocalton.executors.httpserver.ConfigHttpServerManager;
 import org.ton.mylocalton.executors.liteclient.LiteClient;
 import org.ton.mylocalton.executors.liteclient.LiteClientParser;
 import org.ton.mylocalton.executors.liteclient.api.ResultComputeReturnStake;
@@ -123,16 +124,25 @@ public class MyLocalTon {
   ScheduledExecutorService monitorExecutorService;
   private Runnable fetchTask;
   @Setter @Getter private MyLocalTonSettings settings;
+  private ConfigHttpServerManager configHttpServerManager;
 
   private MyLocalTon() {
     //    prevBlockSeqno = new AtomicBigInteger(BigInteger.ZERO);
     autoScroll = true;
+    configHttpServerManager = new ConfigHttpServerManager();
   }
 
   public static MyLocalTon getInstance() {
     if (singleInstance == null) singleInstance = new MyLocalTon();
 
     return singleInstance;
+  }
+
+  /** Starts the Config HTTP Server that serves the global config file. */
+  public void runConfigHttpServer() {
+    log.info("Starting HTTP Server on port " + settings.getUiSettings().getSimpleHttpServerPort());
+    configHttpServerManager.startConfigHttpServer(
+        settings.getGenesisNode(), settings.getUiSettings().getSimpleHttpServerPort());
   }
 
   public void runBlockchainExplorer() {
@@ -493,40 +503,6 @@ public class MyLocalTon {
       }
     }
   }
-
-  //  private void createValidator2ControllingSmartContract(Node node) {
-  //    if (isNull(node.getWalletAddress())) {
-  //      log.info("Creating validator controlling smart-contract for node {}", node.getNodeName());
-  //      createWalletSynchronously(
-  //          node,
-  //          getSettings().getGenesisNode().getTonBinDir()
-  //              + ZEROSTATE
-  //              + File.separator
-  //              + "validator-1",
-  //          WalletVersion.V3R2,
-  //          -1L,
-  //          settings.getWalletSettings().getDefaultSubWalletId(),
-  //          node.getInitialValidatorWalletAmount(),
-  //          true);
-  //    }
-  //  }
-  //
-  //  private void createValidator3ControllingSmartContract(Node node) {
-  //    if (isNull(node.getWalletAddress())) {
-  //      log.info("Creating validator controlling smart-contract for node {}", node.getNodeName());
-  //      createWalletSynchronously(
-  //          node,
-  //          getSettings().getGenesisNode().getTonBinDir()
-  //              + ZEROSTATE
-  //              + File.separator
-  //              + "validator-1",
-  //          WalletVersion.V3R2,
-  //          -1L,
-  //          settings.getWalletSettings().getDefaultSubWalletId(),
-  //          node.getInitialValidatorWalletAmount(),
-  //          true);
-  //    }
-  //  }
 
   public void createWalletEntity(
       Node node,

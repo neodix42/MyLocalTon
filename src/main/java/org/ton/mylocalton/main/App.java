@@ -146,6 +146,7 @@ public class App extends Application {
           myLocalTon.runBlockchainExplorer();
           myLocalTon.runTonHttpApi();
           myLocalTon.runDataGenerator();
+          myLocalTon.runConfigHttpServer();
 
           if (!Arrays.asList(appArgs).isEmpty()) {
             for (String arg : appArgs) {
