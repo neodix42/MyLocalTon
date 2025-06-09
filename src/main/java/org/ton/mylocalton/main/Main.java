@@ -31,7 +31,7 @@ public class Main {
 
     for (String arg : args) {
       if (arg.equalsIgnoreCase("version")) {
-        System.out.println("v1.30");
+        System.out.println("v1.31");
         System.exit(0);
       }
     }

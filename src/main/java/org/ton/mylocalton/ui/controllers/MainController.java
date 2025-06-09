@@ -137,6 +137,8 @@ public class MainController implements Initializable {
 
   @FXML public CustomInfoLabel dbSizeId;
 
+  @FXML public CustomInfoLabel globalConfigLinkId;
+
   @FXML public JFXListView<Node> blockslistviewid;
 
   @FXML public JFXListView<Node> transactionsvboxid;
@@ -3895,10 +3897,8 @@ public class MainController implements Initializable {
   public void webViewLinkOpen(Event e) throws IOException {
     if ((Utils.getOS() != Utils.OS.LINUX) || (Utils.getOS() == Utils.OS.LINUX_ARM)) {
       URI uri = URI.create("http://localhost:" + settings.getUiSettings().getTonHttpApiPort());
-      Desktop.getDesktop()
-              .browse(uri);
-    }
-    else {
+      Desktop.getDesktop().browse(uri);
+    } else {
       String text = "http://localhost:" + settings.getUiSettings().getTonHttpApiPort();
       final Clipboard clipboard = Clipboard.getSystemClipboard();
       final ClipboardContent content = new ClipboardContent();
@@ -3907,6 +3907,20 @@ public class MainController implements Initializable {
       log.info(text + " copied");
       App.mainController.showInfoMsg(text + " copied to clipboard", 2);
     }
+  }
+
+  @FXML
+  public void globalConfigLink(Event e) throws IOException {
+    String text =
+        "http://127.0.0.1:"
+            + settings.getUiSettings().getSimpleHttpServerPort()
+            + "/global.config.json";
+    final Clipboard clipboard = Clipboard.getSystemClipboard();
+    final ClipboardContent content = new ClipboardContent();
+    content.putString(text);
+    clipboard.setContent(content);
+    log.info(text + " copied");
+    App.mainController.showInfoMsg(text + " copied to clipboard", 2);
   }
 
   @FXML

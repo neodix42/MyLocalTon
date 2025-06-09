@@ -26,6 +26,8 @@
         </encoder>
     </appender>
 
+    <logger name="org.eclipse.jetty" level="WARN"/>
+
     <root level="info">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE-ROLLING"/>
