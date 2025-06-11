@@ -29,7 +29,7 @@ public class ConfigHttpServerManager {
     log.info(
         "http://127.0.0.1:"
             + MyLocalTon.getInstance().getSettings().getUiSettings().getSimpleHttpServerPort()
-            + "/global.config.json");
+            + "/localhost.global.config.json");
   }
 
   /** Stops the Config HTTP Server. */

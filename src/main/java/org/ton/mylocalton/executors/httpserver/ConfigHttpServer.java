@@ -42,7 +42,7 @@ public class ConfigHttpServer {
     server.setHandler(handler);
 
     ServletHolder holder = new ServletHolder(new ConfigServlet(configFilePath));
-    handler.addServletWithMapping(holder, "/global.config.json");
+    handler.addServletWithMapping(holder, "/localhost.global.config.json");
 
     try {
       server.start();

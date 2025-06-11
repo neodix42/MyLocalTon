@@ -636,7 +636,6 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
         try {
           refreshAccounts();
         } catch (IOException e) {
-          e.printStackTrace();
           throw new RuntimeException(e);
         }
         break;

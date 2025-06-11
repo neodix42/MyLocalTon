@@ -21,7 +21,7 @@
         <apache.commons.lang3.version>3.9</apache.commons.lang3.version>
         <openjfx.version>23.0.2</openjfx.version>
         <jfoenix.version>9.0.4</jfoenix.version>
-        <commons-io.version>2.7</commons-io.version>
+        <commons-io.version>2.14.0</commons-io.version>
         <commons-codec.version>1.14</commons-codec.version>
         <lombok.version>1.18.30</lombok.version>
         <jupiter.version>5.7.1</jupiter.version>

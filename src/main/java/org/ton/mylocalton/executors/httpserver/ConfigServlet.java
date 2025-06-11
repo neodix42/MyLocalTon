@@ -1,7 +1,5 @@
 package org.ton.mylocalton.executors.httpserver;
 
-import lombok.extern.slf4j.Slf4j;
-
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Servlet that serves the TON global config file.
@@ -29,7 +28,7 @@ public class ConfigServlet extends HttpServlet {
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        log.debug("Received request for global.config.json");
+        log.debug("Received request for localhost.global.config.json");
         
         File file = new File(configFilePath);
         if (file.exists()) {

@@ -3914,7 +3914,7 @@ public class MainController implements Initializable {
     String text =
         "http://127.0.0.1:"
             + settings.getUiSettings().getSimpleHttpServerPort()
-            + "/global.config.json";
+            + "/localhost.global.config.json";
     final Clipboard clipboard = Clipboard.getSystemClipboard();
     final ClipboardContent content = new ClipboardContent();
     content.putString(text);

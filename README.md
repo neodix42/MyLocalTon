@@ -82,7 +82,8 @@ to [this documentation](https://github.com/neodix42/mylocalton-docker?tab=readme
 
 ### Download global.config.json
 
-After successful launch `global.config.json` will be available at `http://127.0.0.1:8000/global.config.json`
+After successful launch `localhost.global.config.json` will be available at
+`http://127.0.0.1:8000/localhost.global.config.json`
 
 ### Lite-client
 
