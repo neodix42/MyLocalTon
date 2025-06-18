@@ -6,8 +6,8 @@ import org.ton.mylocalton.callables.parameters.WalletCallbackParam;
 import org.ton.mylocalton.db.DB2;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
-import org.ton.java.smartcontract.types.WalletVersion;
-import org.ton.java.tonlib.types.RawAccountState;
+import org.ton.ton4j.smartcontract.types.WalletVersion;
+import org.ton.ton4j.tonlib.types.RawAccountState;
 
 import javax.persistence.EntityManager;
 import java.util.concurrent.Callable;

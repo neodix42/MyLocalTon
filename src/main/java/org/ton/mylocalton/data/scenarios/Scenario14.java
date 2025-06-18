@@ -5,14 +5,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
-import org.ton.java.address.Address;
-import org.ton.java.cell.Cell;
-import org.ton.java.smartcontract.multisig.MultiSigWalletV2;
-import org.ton.java.smartcontract.types.*;
-import org.ton.java.smartcontract.utils.MsgUtils;
-import org.ton.java.smartcontract.wallet.v3.WalletV3R2;
-import org.ton.java.tonlib.Tonlib;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.cell.Cell;
+import org.ton.ton4j.smartcontract.multisig.MultiSigWalletV2;
+import org.ton.ton4j.smartcontract.types.*;
+import org.ton.ton4j.smartcontract.utils.MsgUtils;
+import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
+import org.ton.ton4j.tonlib.Tonlib;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.utils.MyUtils;
 
 /**
@@ -100,7 +100,7 @@ public class Scenario14 implements Scenario {
                 MultiSigWalletV2.createSendMessageAction(
                     1,
                     MsgUtils.createInternalMessageRelaxed(
-                            dummyRecipient2, Utils.toNano(0.026), null, null, null,false)
+                            dummyRecipient2, Utils.toNano(0.026), null, null, null, false)
                         .toCell())));
     config =
         WalletV3Config.builder()

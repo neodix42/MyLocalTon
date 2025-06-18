@@ -21,8 +21,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.ton.java.smartcontract.types.WalletVersion;
-import org.ton.java.tonlib.types.RawAccountState;
+import org.ton.ton4j.smartcontract.types.WalletVersion;
+import org.ton.ton4j.tonlib.types.RawAccountState;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.executors.validatorengineconsole.ValidatorEngineConsoleExecutor;
@@ -156,7 +156,8 @@ public class Fift {
             .bounceableAddressBase64(bounceableBase64)
             .fullWalletAddress(fullAddress)
             .wc(Long.parseLong(fullAddress.substring(0, fullAddress.indexOf(":"))))
-            .subWalletId(MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultSubWalletId())
+            .subWalletId(
+                MyLocalTon.getInstance().getSettings().getWalletSettings().getDefaultSubWalletId())
             .hexWalletAddress(fullAddress.substring(fullAddress.indexOf(":") + 1))
             .publicKeyHex(publicKeyAddrs[1].trim())
             .publicKeyBase64(publicKeyAddrs[0].trim())

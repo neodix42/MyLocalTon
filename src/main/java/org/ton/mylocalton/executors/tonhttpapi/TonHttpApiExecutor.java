@@ -12,7 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.settings.Node;
 
 @Slf4j

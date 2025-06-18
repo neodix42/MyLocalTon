@@ -65,14 +65,6 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.jutils.jprocesses.JProcesses;
 import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
-import org.ton.java.address.Address;
-import org.ton.java.smartcontract.types.WalletCodes;
-import org.ton.java.smartcontract.types.WalletVersion;
-import org.ton.java.tlb.*;
-import org.ton.java.tonlib.Tonlib;
-import org.ton.java.tonlib.types.*;
-import org.ton.java.tonlib.types.BlockIdExt;
-import org.ton.java.utils.Utils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
@@ -93,6 +85,15 @@ import org.ton.mylocalton.settings.Node6;
 import org.ton.mylocalton.settings.Node7;
 import org.ton.mylocalton.ui.controllers.MainController;
 import org.ton.mylocalton.wallet.MyWallet;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.smartcontract.types.WalletCodes;
+import org.ton.ton4j.smartcontract.types.WalletVersion;
+import org.ton.ton4j.tlb.*;
+import org.ton.ton4j.tonlib.Tonlib;
+import org.ton.ton4j.tonlib.types.*;
+import org.ton.ton4j.tonlib.types.BlockHeader;
+import org.ton.ton4j.tonlib.types.BlockIdExt;
+import org.ton.ton4j.utils.Utils;
 
 @Slf4j
 public class MyLocalTonUtils {
@@ -737,11 +738,11 @@ public class MyLocalTonUtils {
         .holdPeriod(config15.getStakeHeldFor())
         .minStake(config17.getMinStake())
         .maxStake(config17.getMaxStake())
-        .configAddr("-1:" + config0.getConfigAddr().toString(16).toUpperCase())
-        .electorAddr("-1:" + config1.getElectorAddr().toString(16).toUpperCase())
+        .configAddr("-1:" + config0.getConfigAddr().toUpperCase())
+        .electorAddr("-1:" + config1.getElectorAddr().toUpperCase())
         .minterAddr(
             "-1:"
-                + StringUtils.leftPad(config2.getMinterAddr().toString(16), 64, "0").toUpperCase())
+                + StringUtils.leftPad(config2.getMinterAddr(), 64, "0").toUpperCase())
         .participants(participants)
         .previousValidators(((Validators) config32.getPrevValidatorSet()).getValidatorsAddrAsList())
         .currentValidators(((Validators) config34.getCurrValidatorSet()).getValidatorsAddrAsList())

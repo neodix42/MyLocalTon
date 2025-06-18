@@ -33,8 +33,8 @@ public class TxEntity {
   String toForSearch;
   BigInteger amount;
   BigInteger fees;
-  org.ton.java.tlb.Transaction tx;
-  org.ton.java.tlb.Message message;
+  org.ton.ton4j.tlb.Transaction tx;
+  org.ton.ton4j.tlb.Message message;
 
   public TxPk getPrimaryKey() {
     return TxPk.builder()

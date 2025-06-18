@@ -39,7 +39,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.ton.java.tonlib.types.BlockIdExt;
+import org.ton.ton4j.tonlib.types.BlockIdExt;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.BlockEntity;
 import org.ton.mylocalton.db.entities.BlockPk;

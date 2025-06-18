@@ -3,7 +3,7 @@ package org.ton.mylocalton.wallet;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 import lombok.*;
-import org.ton.java.tlb.Message;
+import org.ton.ton4j.tlb.Message;
 
 @Builder
 @Data
