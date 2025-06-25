@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
-import org.ton.java.smartcontract.types.WalletVersion;
-import org.ton.java.tonlib.types.RawAccountState;
+import org.ton.ton4j.smartcontract.types.WalletVersion;
+import org.ton.ton4j.tonlib.types.RawAccountState;
 import org.ton.mylocalton.wallet.WalletAddress;
 
 import javax.persistence.Entity;

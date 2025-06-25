@@ -6,11 +6,11 @@ import com.iwebpp.crypto.TweetNaclFast;
 import java.math.BigInteger;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
-import org.ton.java.smartcontract.types.Destination;
-import org.ton.java.smartcontract.types.WalletV5Config;
-import org.ton.java.smartcontract.wallet.v5.WalletV5;
-import org.ton.java.tonlib.Tonlib;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.smartcontract.types.Destination;
+import org.ton.ton4j.smartcontract.types.WalletV5Config;
+import org.ton.ton4j.smartcontract.wallet.v5.WalletV5;
+import org.ton.ton4j.tonlib.Tonlib;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.db.DataDB;
 
 /** to up V5R1 wallet, upload state-init, send back to faucet */

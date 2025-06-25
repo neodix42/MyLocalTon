@@ -76,12 +76,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.ton.java.address.Address;
-import org.ton.java.tlb.*;
-import org.ton.java.tonlib.types.BlockIdExt;
-import org.ton.java.tonlib.types.Participant;
-import org.ton.java.tonlib.types.RawAccountState;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.tlb.*;
+import org.ton.ton4j.tonlib.types.BlockIdExt;
+import org.ton.ton4j.tonlib.types.Participant;
+import org.ton.ton4j.tonlib.types.RawAccountState;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.BlockEntity;
 import org.ton.mylocalton.db.entities.TxEntity;
@@ -3895,10 +3895,8 @@ public class MainController implements Initializable {
   public void webViewLinkOpen(Event e) throws IOException {
     if ((Utils.getOS() != Utils.OS.LINUX) || (Utils.getOS() == Utils.OS.LINUX_ARM)) {
       URI uri = URI.create("http://localhost:" + settings.getUiSettings().getTonHttpApiPort());
-      Desktop.getDesktop()
-              .browse(uri);
-    }
-    else {
+      Desktop.getDesktop().browse(uri);
+    } else {
       String text = "http://localhost:" + settings.getUiSettings().getTonHttpApiPort();
       final Clipboard clipboard = Clipboard.getSystemClipboard();
       final ClipboardContent content = new ClipboardContent();

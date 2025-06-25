@@ -43,14 +43,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.ton.java.address.Address;
-import org.ton.java.cell.Cell;
-import org.ton.java.cell.CellSlice;
-import org.ton.java.smartcontract.types.WalletVersion;
-import org.ton.java.tlb.*;
-import org.ton.java.tonlib.Tonlib;
-import org.ton.java.tonlib.types.*;
-import org.ton.java.utils.Utils;
 import org.ton.mylocalton.data.Runner;
 import org.ton.mylocalton.db.entities.BlockEntity;
 import org.ton.mylocalton.db.entities.TxEntity;
@@ -79,6 +71,14 @@ import org.ton.mylocalton.ui.custom.events.event.CustomSearchEvent;
 import org.ton.mylocalton.utils.MyLocalTonUtils;
 import org.ton.mylocalton.wallet.MyWallet;
 import org.ton.mylocalton.wallet.WalletAddress;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.cell.Cell;
+import org.ton.ton4j.cell.CellSlice;
+import org.ton.ton4j.smartcontract.types.WalletVersion;
+import org.ton.ton4j.tlb.*;
+import org.ton.ton4j.tonlib.Tonlib;
+import org.ton.ton4j.tonlib.types.*;
+import org.ton.ton4j.utils.Utils;
 
 @Slf4j
 @Getter
@@ -860,8 +860,8 @@ public class MyLocalTon {
         lastBlock.getShortBlockSeqno());
 
     for (RawTransaction rawTx : blockTransactions.getTransactions()) {
-      org.ton.java.tlb.Transaction txDetails =
-          org.ton.java.tlb.Transaction.deserialize(
+      org.ton.ton4j.tlb.Transaction txDetails =
+          org.ton.ton4j.tlb.Transaction.deserialize(
               CellSlice.beginParse(Cell.fromBocBase64(rawTx.getData())));
 
       if (nonNull(txDetails)) {
@@ -875,7 +875,7 @@ public class MyLocalTon {
     }
   }
 
-  private void detectNewAccount(ResultLastBlock lastBlock, org.ton.java.tlb.Transaction txDetails) {
+  private void detectNewAccount(ResultLastBlock lastBlock, org.ton.ton4j.tlb.Transaction txDetails) {
     try {
       if ((txDetails.getOrigStatus().equals(AccountStates.NON_EXIST)
               && txDetails.getEndStatus().equals(AccountStates.UNINIT))
@@ -1177,7 +1177,7 @@ public class MyLocalTon {
 
   private void updateTxTabGui(
       ResultLastBlock lastBlock,
-      org.ton.java.tlb.Transaction txDetails,
+      org.ton.ton4j.tlb.Transaction txDetails,
       List<TxEntity> txEntities) {
 
     if (Boolean.TRUE.equals(autoScroll)) {
@@ -1429,7 +1429,7 @@ public class MyLocalTon {
   }
 
   public List<TxEntity> extractTxsAndMsgs(
-      ResultLastBlock lastBlock, org.ton.java.tlb.Transaction txDetails) {
+      ResultLastBlock lastBlock, org.ton.ton4j.tlb.Transaction txDetails) {
     List<TxEntity> txEntity = new ArrayList<>();
     String to;
     String from;
@@ -1482,7 +1482,7 @@ public class MyLocalTon {
 
       // insert out msgs first
       if (txDetails.getOutMsgCount() != 0L) {
-        for (org.ton.java.tlb.Message outMsg : txDetails.getInOut().getOutMessages()) {
+        for (org.ton.ton4j.tlb.Message outMsg : txDetails.getInOut().getOutMessages()) {
           txType = "Message";
           msgType = outMsg.getInfo().getType();
           from = outMsg.getInfo().getSourceAddress().toUpperCase();
@@ -1531,7 +1531,7 @@ public class MyLocalTon {
 
       // in msgs
       if (nonNull(txDetails.getInOut().getIn())) {
-        org.ton.java.tlb.Message inMsg = txDetails.getInOut().getIn();
+        org.ton.ton4j.tlb.Message inMsg = txDetails.getInOut().getIn();
         from = inMsg.getInfo().getSourceAddress().toUpperCase();
         to = inMsg.getInfo().getDestinationAddress().toUpperCase();
         amount = inMsg.getInfo().getValueCoins();

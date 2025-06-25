@@ -18,7 +18,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.mylocalton.actions.MyLocalTon;
-import org.ton.java.smartcontract.types.WalletVersion;
+import org.ton.ton4j.smartcontract.types.WalletVersion;
 import org.ton.mylocalton.ui.custom.events.CustomEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomActionEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomNotificationEvent;

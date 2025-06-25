@@ -3,11 +3,11 @@ package org.ton.mylocalton.data.utils;
 import java.math.BigInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.mylocalton.data.db.DataDB;
-import org.ton.java.address.Address;
-import org.ton.java.smartcontract.wallet.Contract;
-import org.ton.java.smartcontract.wallet.v3.WalletV3R2;
-import org.ton.java.tonlib.Tonlib;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.smartcontract.wallet.Contract;
+import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
+import org.ton.ton4j.tonlib.Tonlib;
+import org.ton.ton4j.utils.Utils;
 
 @Slf4j
 public class MyUtils {

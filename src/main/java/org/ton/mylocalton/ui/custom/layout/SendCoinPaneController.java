@@ -14,7 +14,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.main.App;
 import org.ton.mylocalton.parameters.SendToncoinsParam;
 import org.ton.mylocalton.ui.custom.control.CustomTextField;

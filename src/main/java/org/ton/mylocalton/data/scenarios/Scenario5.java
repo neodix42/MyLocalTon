@@ -4,11 +4,11 @@ import static org.ton.mylocalton.data.Runner.dataHighloadFaucetAddress;
 
 import java.math.BigInteger;
 import lombok.extern.slf4j.Slf4j;
-import org.ton.java.address.Address;
-import org.ton.java.smartcontract.types.WalletV2R2Config;
-import org.ton.java.smartcontract.wallet.v2.WalletV2R2;
-import org.ton.java.tonlib.Tonlib;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.smartcontract.types.WalletV2R2Config;
+import org.ton.ton4j.smartcontract.wallet.v2.WalletV2R2;
+import org.ton.ton4j.tonlib.Tonlib;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.db.DataDB;
 
 /** to up V2R2 wallet, upload state-init, send back to faucet 0.08 and random address 0.01 */

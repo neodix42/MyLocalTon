@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.mylocalton.data.db.DataDB;
-import org.ton.java.smartcontract.highload.HighloadWalletV3;
-import org.ton.java.smartcontract.types.*;
-import org.ton.java.tonlib.Tonlib;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.smartcontract.highload.HighloadWalletV3;
+import org.ton.ton4j.smartcontract.types.*;
+import org.ton.ton4j.tonlib.Tonlib;
+import org.ton.ton4j.utils.Utils;
 
 /** deploy HighLoadWallet V3 and transfer to 1000 random recipients */
 @Slf4j

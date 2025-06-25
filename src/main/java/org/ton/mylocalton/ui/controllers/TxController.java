@@ -40,7 +40,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.ton.java.tlb.Transaction;
+import org.ton.ton4j.tlb.Transaction;
 import org.ton.mylocalton.actions.DynamicTreeLayout;
 import org.ton.mylocalton.db.entities.TxEntity;
 import org.ton.mylocalton.db.entities.TxPk;
