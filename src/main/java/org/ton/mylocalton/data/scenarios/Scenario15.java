@@ -4,15 +4,15 @@ import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.mylocalton.data.utils.MyUtils;
-import org.ton.java.address.Address;
-import org.ton.java.smartcontract.token.ft.JettonMinter;
-import org.ton.java.smartcontract.token.ft.JettonWallet;
-import org.ton.java.smartcontract.token.nft.NftUtils;
-import org.ton.java.smartcontract.types.*;
-import org.ton.java.smartcontract.utils.MsgUtils;
-import org.ton.java.smartcontract.wallet.v3.WalletV3R2;
-import org.ton.java.tonlib.Tonlib;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.smartcontract.token.ft.JettonMinter;
+import org.ton.ton4j.smartcontract.token.ft.JettonWallet;
+import org.ton.ton4j.smartcontract.token.nft.NftUtils;
+import org.ton.ton4j.smartcontract.types.*;
+import org.ton.ton4j.smartcontract.utils.MsgUtils;
+import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
+import org.ton.ton4j.tonlib.Tonlib;
+import org.ton.ton4j.utils.Utils;
 
 /**
  * deploy jetton minter, mint jettons, edit minter's jetton content, change minter admin, transfer
@@ -184,7 +184,7 @@ public class Scenario15 implements Scenario {
   }
 
   private void getMinterInfo(JettonMinter minter) {
-    JettonMinterData data = minter.getJettonData(tonlib);
+    JettonMinterData data = minter.getJettonData();
     log.info("minter adminAddress {}", data.getAdminAddress());
     log.info("minter totalSupply {}", data.getTotalSupply());
     log.info("minter jetton uri {}", data.getJettonContentUri());

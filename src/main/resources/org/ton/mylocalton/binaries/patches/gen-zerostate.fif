@@ -24,7 +24,7 @@ Bhashu dup =: basestate0_fhash
 hashu dup =: basestate0_rhash
 ."root hash=" dup 64x. space 256 u>B dup B>base64url type cr
 "basestate0" +suffix +".rhash" B>file
-basestate0_rhash basestate0_fhash now 0 1 32 0 add-std-workchain
+basestate0_rhash basestate0_fhash now 0 0 4 0 add-std-workchain
 config.workchains!
 
 // SmartContract #1 (Simple wallet)
@@ -331,7 +331,7 @@ Masterchain over
  *
  */
 // version capabilities
-7 capCreateStats capBounceMsgBody or capReportVersion or capShortDequeue or config.version!
+11 capCreateStats capBounceMsgBody or capReportVersion or capShortDequeue or config.version!
 // max-validators max-main-validators min-validators
 MAX_VALIDATORS MAX_MAIN_VALIDATORS MIN_VALIDATORS config.validator_num!
 // min-stake max-stake min-total-stake max-factor

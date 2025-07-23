@@ -15,8 +15,8 @@ class TreeNode {
   double centerY;
   BigInteger amount;
   String opCode;
-  org.ton.java.tlb.Message message;
-  org.ton.java.tlb.Transaction transaction;
+  org.ton.ton4j.tlb.Message message;
+  org.ton.ton4j.tlb.Transaction transaction;
 
   Circle circle;
   Text text;

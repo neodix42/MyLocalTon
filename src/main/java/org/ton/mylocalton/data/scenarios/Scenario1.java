@@ -4,10 +4,10 @@ import static org.ton.mylocalton.data.Runner.dataHighloadFaucetAddress;
 
 import com.iwebpp.crypto.TweetNaclFast;
 import lombok.extern.slf4j.Slf4j;
-import org.ton.java.smartcontract.types.WalletV1R1Config;
-import org.ton.java.smartcontract.wallet.v1.WalletV1R1;
-import org.ton.java.tonlib.Tonlib;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.smartcontract.types.WalletV1R1Config;
+import org.ton.ton4j.smartcontract.wallet.v1.WalletV1R1;
+import org.ton.ton4j.tonlib.Tonlib;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.db.DataDB;
 
 /** to up V1R1 wallet, upload state-init, send back to faucet 0.08 */

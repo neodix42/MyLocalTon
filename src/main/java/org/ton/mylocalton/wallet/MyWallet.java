@@ -15,24 +15,24 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.ton.java.address.Address;
-import org.ton.java.cell.Cell;
-import org.ton.java.mnemonic.Mnemonic;
-import org.ton.java.smartcontract.highload.HighloadWallet;
-import org.ton.java.smartcontract.highload.HighloadWalletV3;
-import org.ton.java.smartcontract.types.*;
-import org.ton.java.smartcontract.wallet.Contract;
-import org.ton.java.smartcontract.wallet.v1.WalletV1R1;
-import org.ton.java.smartcontract.wallet.v1.WalletV1R2;
-import org.ton.java.smartcontract.wallet.v1.WalletV1R3;
-import org.ton.java.smartcontract.wallet.v2.WalletV2R1;
-import org.ton.java.smartcontract.wallet.v2.WalletV2R2;
-import org.ton.java.smartcontract.wallet.v3.WalletV3R1;
-import org.ton.java.smartcontract.wallet.v3.WalletV3R2;
-import org.ton.java.smartcontract.wallet.v4.WalletV4R2;
-import org.ton.java.tonlib.types.ExtMessageInfo;
-import org.ton.java.tonlib.types.RawAccountState;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.cell.Cell;
+import org.ton.ton4j.mnemonic.Mnemonic;
+import org.ton.ton4j.smartcontract.highload.HighloadWallet;
+import org.ton.ton4j.smartcontract.highload.HighloadWalletV3;
+import org.ton.ton4j.smartcontract.types.*;
+import org.ton.ton4j.smartcontract.wallet.Contract;
+import org.ton.ton4j.smartcontract.wallet.v1.WalletV1R1;
+import org.ton.ton4j.smartcontract.wallet.v1.WalletV1R2;
+import org.ton.ton4j.smartcontract.wallet.v1.WalletV1R3;
+import org.ton.ton4j.smartcontract.wallet.v2.WalletV2R1;
+import org.ton.ton4j.smartcontract.wallet.v2.WalletV2R2;
+import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R1;
+import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
+import org.ton.ton4j.smartcontract.wallet.v4.WalletV4R2;
+import org.ton.ton4j.tonlib.types.ExtMessageInfo;
+import org.ton.ton4j.tonlib.types.RawAccountState;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.enums.LiteClientEnum;
 import org.ton.mylocalton.executors.fift.Fift;
 import org.ton.mylocalton.executors.liteclient.LiteClient;
@@ -483,7 +483,7 @@ public class MyWallet {
       WalletVersion walletVersion, long workchainId, long walletId) throws Exception {
 
     List<String> mnemonic = Mnemonic.generate(24, "");
-    org.ton.java.mnemonic.Pair keyPair = Mnemonic.toKeyPair(mnemonic, "");
+    org.ton.ton4j.mnemonic.Pair keyPair = Mnemonic.toKeyPair(mnemonic, "");
 
     TweetNaclFast.Signature.KeyPair keyPairSig =
         TweetNaclFast.Signature.keyPair_fromSeed(keyPair.getSecretKey());

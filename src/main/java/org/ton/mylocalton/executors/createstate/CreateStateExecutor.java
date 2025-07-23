@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.ton.java.utils.Utils;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.settings.Node;
 
 import java.io.File;
