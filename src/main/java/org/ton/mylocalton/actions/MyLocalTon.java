@@ -142,7 +142,7 @@ public class MyLocalTon {
   public void runConfigHttpServer() {
     log.info("Starting HTTP Server on port " + settings.getUiSettings().getSimpleHttpServerPort());
     configHttpServerManager.startConfigHttpServer(
-        settings.getGenesisNode(), settings.getUiSettings().getSimpleHttpServerPort());
+        settings.getGenesisNode(), settings.getUiSettings().getSimpleHttpServerPort(), mainController);
   }
 
   public void runBlockchainExplorer() {

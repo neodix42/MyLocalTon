@@ -6,6 +6,7 @@ import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
+import org.ton.mylocalton.ui.controllers.MainController;
 
 /** A simple HTTP server that serves the TON global config file. */
 @Slf4j
@@ -17,6 +18,7 @@ public class ConfigHttpServer {
 
   private final int port;
   private final String configFilePath;
+  private final MainController mainController;
   private Server server;
 
   /**
@@ -25,9 +27,10 @@ public class ConfigHttpServer {
    * @param port The port to run the server on
    * @param configFilePath The path to the config file to serve
    */
-  public ConfigHttpServer(int port, String configFilePath) {
+  public ConfigHttpServer(int port, String configFilePath, MainController mainController) {
     this.port = port;
     this.configFilePath = configFilePath;
+    this.mainController = mainController;
   }
 
   /** Starts the HTTP server. */
@@ -41,8 +44,14 @@ public class ConfigHttpServer {
     ServletHandler handler = new ServletHandler();
     server.setHandler(handler);
 
-    ServletHolder holder = new ServletHolder(new ConfigServlet(configFilePath));
-    handler.addServletWithMapping(holder, "/localhost.global.config.json");
+    ServletHolder configHolder = new ServletHolder(new ConfigServlet(configFilePath));
+    handler.addServletWithMapping(configHolder, "/localhost.global.config.json");
+
+    ServletHolder livenessHolder = new ServletHolder(new LivenessProbeServlet());
+    handler.addServletWithMapping(livenessHolder, "/live");
+
+    ServletHolder addValidatorHolder = new ServletHolder(new AddValidatorServlet(mainController));
+    handler.addServletWithMapping(addValidatorHolder, "/add-validator");
 
     try {
       server.start();
