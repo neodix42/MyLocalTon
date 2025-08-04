@@ -16,7 +16,6 @@ import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextField;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -71,7 +70,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -114,6 +112,7 @@ import org.ton.mylocalton.ui.custom.layout.CustomLoadingPaneController;
 import org.ton.mylocalton.ui.custom.layout.CustomMainLayout;
 import org.ton.mylocalton.ui.custom.layout.SendCoinPaneController;
 import org.ton.mylocalton.utils.MyLocalTonUtils;
+import org.ton.mylocalton.services.ValidatorCreationService;
 
 @Slf4j
 public class MainController implements Initializable {
@@ -3637,68 +3636,11 @@ public class MainController implements Initializable {
   }
 
   public void createNewNodeBtn() {
-
-    ForkJoinPool.commonPool()
-        .execute(
-            () -> {
-              Thread.currentThread().setName("MyLocalTon - Creating validator");
-
-              try {
-                mainController.addValidatorBtn.setDisable(true);
-                org.ton.mylocalton.settings.Node node = MyLocalTonUtils.getNewNode();
-
-                if (nonNull(node)) {
-                  log.info("creating validator {}", node.getNodeName());
-                  node.setTonLogLevel(settings.getGenesisNode().getTonLogLevel());
-
-                  // delete unfinished or failed node creation
-                  FileUtils.deleteQuietly(
-                      new File(
-                          MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
-
-                  MyLocalTon.getInstance().createFullnode(node, true, true);
-
-                  Tab newTab = MyLocalTonUtils.getNewNodeTab();
-                  Platform.runLater(() -> validationTabs.getTabs().add(newTab));
-
-                  settings.getActiveNodes().add(node.getNodeName());
-                  MyLocalTon.getInstance().saveSettingsToGson();
-
-                  showDialogMessage(
-                      "Completed",
-                      "Validator "
-                          + node.getNodeName()
-                          + " has been cloned from genesis, now synchronizing and creating main wallet.");
-
-                  log.info(
-                      "Creating new validator controlling smart-contract (wallet) for node {}",
-                      node.getNodeName());
-                  //                    MyLocalTon.getInstance().createWalletEntity(node, null,
-                  // WalletVersion.V3R2, -1L, settings.getWalletSettings().getDefaultSubWalletId(),
-                  // node.getInitialValidatorWalletAmount(), true);
-
-                  MyLocalTon.getInstance().createValidatorControllingSmartContract(node);
-                  //                   node.setWalletAddress(walletEntity.getWallet()); // double
-                  // check
-
-                  mainController.addValidatorBtn.setDisable(false);
-                  App.mainController.showInfoMsg(
-                      "Main wallet for validator "
-                          + node.getNodeName()
-                          + " has been successfully created.",
-                      5);
-                } else {
-                  showDialogMessage(
-                      "The limit has been reached",
-                      "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");
-                }
-              } catch (Exception e) {
-                log.error("Error creating validator: {}", e.getMessage());
-                App.mainController.showErrorMsg("Error creating validator", 3);
-              } finally {
-                mainController.addValidatorBtn.setDisable(false);
-              }
-            });
+    ValidatorCreationService validatorCreationService = new ValidatorCreationService(settings, this);
+    ForkJoinPool.commonPool().execute(() -> {
+      Thread.currentThread().setName("MyLocalTon - Creating validator");
+      validatorCreationService.createNewValidator();
+    });
   }
 
   public void deleteValidator2Btn() {
