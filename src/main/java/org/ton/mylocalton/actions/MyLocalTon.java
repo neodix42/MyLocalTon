@@ -100,7 +100,7 @@ public class MyLocalTon {
   public static final int SCROLL_BAR_DELTA = 30;
   public static final Long MAX_ROWS_IN_GUI = 1000L;
   public static final int YEAR_1971 = 34131600;
-  public static final int VALIDATION_GUI_REFRESH_SECONDS = 60;
+  public static int VALIDATION_GUI_REFRESH_SECONDS = 30;
   private static final String CURRENT_DIR = System.getProperty("user.dir");
 
   private static final String SETTINGS_JSON = "settings.json";
@@ -136,6 +136,11 @@ public class MyLocalTon {
     if (singleInstance == null) singleInstance = new MyLocalTon();
 
     return singleInstance;
+  }
+
+  public void setValidationGuiRefreshSeconds(int seconds) {
+    VALIDATION_GUI_REFRESH_SECONDS = seconds;
+    log.info("Validation GUI refresh and participate in elections interval updated to {} seconds", seconds);
   }
 
   /** Starts the Config HTTP Server that serves the global config file. */
@@ -596,7 +601,7 @@ public class MyLocalTon {
 
                   if (((v.getStartValidationCycle() > YEAR_1971)
                           && ((currentTime > v.getStartElections())
-                              && (currentTime < v.getEndElections() - 10))) // 10 sec to process
+                              && (currentTime < v.getEndElections()))) // 10 sec to process
                       || ((v.getStartValidationCycle() > YEAR_1971)
                           && ((currentTime - v.getStartElections()) > (electionsDelta * 2)))) {
 
