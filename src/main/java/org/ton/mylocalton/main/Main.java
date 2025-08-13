@@ -53,6 +53,7 @@ public class Main {
     myLocalTon.setSettings(MyLocalTonUtils.loadSettings());
     myLocalTon.saveSettingsToGson(); // create default config
     MyLocalTonSettings settings = myLocalTon.getSettings();
+    // UI parameters are read directly from settings where needed
     log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
 
     MyLocalTonUtils.setMyLocalTonLogLevel(settings.getGenesisNode().getMyLocalTonLogLevel());
@@ -108,7 +109,7 @@ public class Main {
             settings.getBlockchainSettings().setElectionEndBefore(electionEndBefore);
             settings.getBlockchainSettings().setElectionStakesFrozenFor(electionStakesFrozenFor);
             settings.getBlockchainSettings().setOriginalValidatorSetValidFor(electionStartBefore);
-            myLocalTon.setValidationGuiRefreshSeconds(validationGuiRefreshSeconds);
+            settings.getUiSettings().setValidationGuiRefreshSeconds(validationGuiRefreshSeconds);
             
             log.info("Elections settings updated: electedFor={}s, electionStartBefore={}s, electionEndBefore={}s, electionStakesFrozenFor={}s, validationGuiRefreshSeconds={}s",
                 electedFor, electionStartBefore, electionEndBefore, electionStakesFrozenFor, validationGuiRefreshSeconds);

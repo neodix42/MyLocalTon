@@ -82,6 +82,8 @@ public class Node2 implements Serializable, Node {
           + "my-ton-local.config.json"; // used when one wants to connect directly to the local
   // lite-server
   String nodeForkedGlobalConfigLocation = getTonDbDir() + "my-ton-forked.config.json";
+  // participates by default when created via UI
+  Boolean participateInElections = Boolean.TRUE;
 
   @Override
   public String getValidatorBaseFile() {
