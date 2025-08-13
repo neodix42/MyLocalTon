@@ -79,6 +79,8 @@ public class Node6 implements Serializable, Node {
   String nodeGlobalConfigLocation = getTonDbDir() + "my-ton-global.config.json";
   String nodeLocalConfigLocation = getTonDbDir() + "my-ton-local.config.json";
   String nodeForkedGlobalConfigLocation = getTonDbDir() + "my-ton-forked.config.json";
+  // participates by default when created via UI
+  Boolean participateInElections = Boolean.TRUE;
 
   @Override
   public String getValidatorBaseFile() {

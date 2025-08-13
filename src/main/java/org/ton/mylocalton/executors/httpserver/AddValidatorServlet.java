@@ -30,7 +30,9 @@ public class AddValidatorServlet extends HttpServlet {
         log.debug("Received request for add-validator");
 
         ValidatorCreationService validatorCreationService = new ValidatorCreationService(MyLocalTon.getInstance().getSettings(), mainController);
-        ValidatorCreationService.CreateNewNodeResult result = validatorCreationService.createNewValidator();
+        String participateParam = request.getParameter("participate");
+        Boolean participate = participateParam == null ? Boolean.TRUE : Boolean.parseBoolean(participateParam);
+        ValidatorCreationService.CreateNewNodeResult result = validatorCreationService.createNewValidator(participate);
         response.setContentType("application/json");
         if (result.nodeName != null) {
             response.setStatus(HttpServletResponse.SC_OK);

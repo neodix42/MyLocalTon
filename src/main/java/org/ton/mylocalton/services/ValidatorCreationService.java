@@ -30,6 +30,10 @@ public class ValidatorCreationService {
     }
     
     public CreateNewNodeResult createNewValidator() {
+        return createNewValidator(Boolean.TRUE);
+    }
+
+    public CreateNewNodeResult createNewValidator(Boolean participateInElections) {
         boolean inretactive = mainController != null;
         CreateNewNodeResult result = new CreateNewNodeResult();
         try {
@@ -42,6 +46,14 @@ public class ValidatorCreationService {
             log.info("creating validator {}", node.getNodeName());
             result.nodeName = node.getNodeName();
             node.setTonLogLevel(settings.getGenesisNode().getTonLogLevel());
+
+            node.setParticipateInElections(participateInElections != null ? participateInElections : Boolean.TRUE);
+            if (!Boolean.TRUE.equals(node.getParticipateInElections())) {
+              log.info("participation disabled for {}", node.getNodeName());
+            } else {
+              log.info("participation enabled for {}", node.getNodeName());
+            }
+            MyLocalTon.getInstance().saveSettingsToGson();
     
             // delete unfinished or failed node creation
             FileUtils.deleteQuietly(
