@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.mylocalton.data.db.DataDB;
+import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.cell.Cell;
 import org.ton.ton4j.cell.CellBuilder;
 import org.ton.ton4j.smartcontract.LibraryDeployer;
@@ -14,16 +15,15 @@ import org.ton.ton4j.smartcontract.types.Destination;
 import org.ton.ton4j.smartcontract.types.WalletCodes;
 import org.ton.ton4j.smartcontract.types.WalletV5Config;
 import org.ton.ton4j.smartcontract.wallet.v5.WalletV5;
-import org.ton.ton4j.tonlib.Tonlib;
 import org.ton.ton4j.utils.Utils;
 
 /** deploy V5R1 as library and do a transfer to 255 random recipients */
 @Slf4j
 public class Scenario12 implements Scenario {
-  Tonlib tonlib;
+  AdnlLiteClient adnlLiteClient;
 
-  public Scenario12(Tonlib tonlib) {
-    this.tonlib = tonlib;
+  public Scenario12(AdnlLiteClient adnlLiteClient) {
+    this.adnlLiteClient = adnlLiteClient;
   }
 
   public void run() throws NoSuchAlgorithmException {
@@ -32,9 +32,9 @@ public class Scenario12 implements Scenario {
     Cell walletV5Code = CellBuilder.beginCell().fromBoc(WalletCodes.V5R1.getValue()).endCell();
 
     LibraryDeployer libraryDeployer =
-        LibraryDeployer.builder().tonlib(tonlib).libraryCode(walletV5Code).build();
+        LibraryDeployer.builder().adnlLiteClient(adnlLiteClient).libraryCode(walletV5Code).build();
 
-    if (!tonlib.isDeployed(libraryDeployer.getAddress())) {
+    if (!adnlLiteClient.isDeployed(libraryDeployer.getAddress())) {
       String nonBounceableAddressLib = libraryDeployer.getAddress().toNonBounceable();
       log.info("nonBounceable addressLib {}", nonBounceableAddressLib);
       log.info("raw addressLib {}", libraryDeployer.getAddress().toRaw());
@@ -51,7 +51,7 @@ public class Scenario12 implements Scenario {
 
     WalletV5 contract =
         WalletV5.builder()
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .walletId(walletId)
             .keyPair(keyPair)
             .isSigAuthAllowed(true)
@@ -61,7 +61,7 @@ public class Scenario12 implements Scenario {
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     log.info("v5 address {}", nonBounceableAddress);
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(1.5));
-    tonlib.waitForBalanceChange(contract.getAddress(), 60);
+    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
 
     contract.deploy();
     contract.waitForDeployment();

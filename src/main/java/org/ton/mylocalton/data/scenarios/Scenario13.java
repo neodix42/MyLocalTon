@@ -7,18 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.mylocalton.data.db.DataDB;
+import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.smartcontract.highload.HighloadWalletV3;
 import org.ton.ton4j.smartcontract.types.*;
-import org.ton.ton4j.tonlib.Tonlib;
 import org.ton.ton4j.utils.Utils;
 
 /** deploy HighLoadWallet V3 and transfer to 1000 random recipients */
 @Slf4j
 public class Scenario13 implements Scenario {
-  Tonlib tonlib;
+  AdnlLiteClient adnlLiteClient;
 
-  public Scenario13(Tonlib tonlib) {
-    this.tonlib = tonlib;
+  public Scenario13(AdnlLiteClient adnlLiteClient) {
+    this.adnlLiteClient = adnlLiteClient;
   }
 
   public void run() throws NoSuchAlgorithmException {
@@ -27,12 +27,12 @@ public class Scenario13 implements Scenario {
 
     TweetNaclFast.Signature.KeyPair keyPair = Utils.generateSignatureKeyPair();
     HighloadWalletV3 contract =
-        HighloadWalletV3.builder().tonlib(tonlib).keyPair(keyPair).walletId(walletId).build();
+        HighloadWalletV3.builder().adnlLiteClient(adnlLiteClient).keyPair(keyPair).walletId(walletId).build();
 
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     log.info("non-bounceable address {}", nonBounceableAddress);
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(1));
-    tonlib.waitForBalanceChange(contract.getAddress(), 60);
+    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
 
     HighloadV3Config config =
         HighloadV3Config.builder()

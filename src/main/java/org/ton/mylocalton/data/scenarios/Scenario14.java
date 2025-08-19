@@ -6,12 +6,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.cell.Cell;
 import org.ton.ton4j.smartcontract.multisig.MultiSigWalletV2;
 import org.ton.ton4j.smartcontract.types.*;
 import org.ton.ton4j.smartcontract.utils.MsgUtils;
 import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
-import org.ton.ton4j.tonlib.Tonlib;
 import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.utils.MyUtils;
 
@@ -21,10 +21,10 @@ import org.ton.mylocalton.data.utils.MyUtils;
  */
 @Slf4j
 public class Scenario14 implements Scenario {
-  Tonlib tonlib;
+  AdnlLiteClient adnlLiteClient;
 
-  public Scenario14(Tonlib tonlib) {
-    this.tonlib = tonlib;
+  public Scenario14(AdnlLiteClient adnlLiteClient) {
+    this.adnlLiteClient = adnlLiteClient;
   }
 
   public void run() throws NoSuchAlgorithmException {
@@ -35,28 +35,19 @@ public class Scenario14 implements Scenario {
     Address dummyRecipient1 = Address.of(Utils.generateRandomAddress(0));
     Address dummyRecipient2 = Address.of(Utils.generateRandomAddress(0));
 
-    WalletV3R2 deployer = (WalletV3R2) new MyUtils().deploy(tonlib, Utils.toNano(0.3));
-    WalletV3R2 signer2 = (WalletV3R2) new MyUtils().deploy(tonlib, Utils.toNano(0.3));
+    WalletV3R2 deployer = (WalletV3R2) new MyUtils().deploy(adnlLiteClient, Utils.toNano(0.3));
+    WalletV3R2 signer2 = (WalletV3R2) new MyUtils().deploy(adnlLiteClient, Utils.toNano(0.3));
 
     WalletV3R2 signer3 =
         WalletV3R2.builder()
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .keyPair(Utils.generateSignatureKeyPair())
             .walletId(42)
             .build();
 
-    //    log.info("deployer {}", deployer.getAddress().toRaw());
-    //    log.info("signer2 {}", signer2.getAddress().toRaw());
-    //    log.info("signer3 {}", signer3.getAddress().toRaw());
-    //    log.info("recipient1 {}", dummyRecipient1.toRaw());
-    //    log.info("recipient2 {}", dummyRecipient2.toRaw());
-    //
-    //    log.info("deployer seqno {}", deployer.getSeqno());
-    //    log.info("signer2 seqno {}", signer2.getSeqno());
-
     MultiSigWalletV2 multiSigWalletV2 =
         MultiSigWalletV2.builder()
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .config(
                 MultiSigV2Config.builder()
                     .allowArbitraryOrderSeqno(false)
@@ -100,7 +91,7 @@ public class Scenario14 implements Scenario {
                 MultiSigWalletV2.createSendMessageAction(
                     1,
                     MsgUtils.createInternalMessageRelaxed(
-                            dummyRecipient2, Utils.toNano(0.026), null, null, null,false)
+                            dummyRecipient2, Utils.toNano(0.026), null, null, null, false)
                         .toCell())));
     config =
         WalletV3Config.builder()
@@ -144,8 +135,8 @@ public class Scenario14 implements Scenario {
     log.info(
         "orderData when twice approved {}", multiSigWalletV2.getOrderData(BigInteger.valueOf(0)));
 
-    BigInteger balanceRecipient1 = tonlib.getAccountBalance(dummyRecipient1);
-    BigInteger balanceRecipient2 = tonlib.getAccountBalance(dummyRecipient2);
+    BigInteger balanceRecipient1 = adnlLiteClient.getBalance(dummyRecipient1);
+    BigInteger balanceRecipient2 = adnlLiteClient.getBalance(dummyRecipient2);
 
     if (balanceRecipient1.longValue() <= 0) {
       log.info("gut");

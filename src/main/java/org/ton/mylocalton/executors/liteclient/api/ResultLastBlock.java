@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import org.ton.ton4j.tonlib.types.BlockIdExt;
+import org.ton.ton4j.tl.liteserver.responses.BlockIdExt;
 
 @Builder
 @Getter

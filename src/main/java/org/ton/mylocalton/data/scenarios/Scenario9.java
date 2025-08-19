@@ -6,6 +6,7 @@ import com.iwebpp.crypto.TweetNaclFast;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.cell.Cell;
 import org.ton.ton4j.smartcontract.types.DeployedPlugin;
 import org.ton.ton4j.smartcontract.types.NewPlugin;
@@ -14,7 +15,7 @@ import org.ton.ton4j.smartcontract.utils.MsgUtils;
 import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
 import org.ton.ton4j.smartcontract.wallet.v4.SubscriptionInfo;
 import org.ton.ton4j.smartcontract.wallet.v4.WalletV4R2;
-import org.ton.ton4j.tonlib.Tonlib;
+import org.ton.ton4j.tlb.Message;
 import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.db.DataDB;
 import org.ton.mylocalton.data.utils.MyUtils;
@@ -26,29 +27,33 @@ import org.ton.mylocalton.data.utils.MyUtils;
 @Slf4j
 public class Scenario9 implements Scenario {
 
-  Tonlib tonlib;
+  AdnlLiteClient adnlLiteClient;
 
-  public Scenario9(Tonlib tonlib) {
-    this.tonlib = tonlib;
+  public Scenario9(AdnlLiteClient adnlLiteClient) {
+    this.adnlLiteClient = adnlLiteClient;
   }
 
   public void run() {
     log.info("STARTED SCENARIO 9");
 
-    WalletV3R2 beneficiary = (WalletV3R2) new MyUtils().deploy(tonlib, Utils.toNano(0.3));
+    WalletV3R2 beneficiary = (WalletV3R2) new MyUtils().deploy(adnlLiteClient, Utils.toNano(0.3));
 
     long walletId = Math.abs(Utils.getRandomInt());
     TweetNaclFast.Signature.KeyPair keyPair = Utils.generateSignatureKeyPair();
 
     WalletV4R2 contract =
-        WalletV4R2.builder().tonlib(tonlib).keyPair(keyPair).walletId(walletId).build();
+        WalletV4R2.builder()
+            .adnlLiteClient(adnlLiteClient)
+            .keyPair(keyPair)
+            .walletId(walletId)
+            .build();
 
     Address walletAddress = contract.getAddress();
 
     String nonBounceableAddress = walletAddress.toNonBounceable();
 
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(1));
-    tonlib.waitForBalanceChange(contract.getAddress(), 60);
+    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
 
     contract.deploy();
 
@@ -106,12 +111,11 @@ public class Scenario9 implements Scenario {
 
     Address pluginAddress = Address.of(plugins.get(0));
 
-    Cell extMessage =
+    Message extMessage =
         MsgUtils.createExternalMessageWithSignedBody(
-                contract.getKeyPair(), pluginAddress, null, null)
-            .toCell();
+            contract.getKeyPair(), pluginAddress, null, null);
 
-    tonlib.sendRawMessage(extMessage.toBase64());
+    adnlLiteClient.sendMessage(extMessage);
 
     Utils.sleep(60, "collect fee - first time");
 
@@ -129,11 +133,10 @@ public class Scenario9 implements Scenario {
 
     extMessage =
         MsgUtils.createExternalMessageWithSignedBody(
-                contract.getKeyPair(), pluginAddress, null, null)
-            .toCell();
-    tonlib.sendRawMessage(extMessage.toBase64());
+            contract.getKeyPair(), pluginAddress, null, null);
+    adnlLiteClient.sendMessage(extMessage);
 
-    tonlib.waitForBalanceChangeWithTolerance(
+    adnlLiteClient.waitForBalanceChangeWithTolerance(
         subscriptionInfo.getBeneficiary(), 60, Utils.toNano(0.1));
 
     // uninstall/remove plugin from the wallet -- start

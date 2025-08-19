@@ -7,7 +7,7 @@ import org.ton.mylocalton.db.DB2;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
 import org.ton.ton4j.smartcontract.types.WalletVersion;
-import org.ton.ton4j.tonlib.types.RawAccountState;
+import org.ton.ton4j.tlb.Account;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class WalletCallbackParam {
   WalletPk walletPk;
   WalletEntity foundWallet;
   List<WalletEntity> foundWallets;
-  RawAccountState accountState;
+  Account accountState;
   Long seqno;
   String status;
   String searchText;

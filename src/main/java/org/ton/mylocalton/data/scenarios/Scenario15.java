@@ -5,13 +5,13 @@ import java.security.NoSuchAlgorithmException;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.mylocalton.data.utils.MyUtils;
 import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.smartcontract.token.ft.JettonMinter;
 import org.ton.ton4j.smartcontract.token.ft.JettonWallet;
 import org.ton.ton4j.smartcontract.token.nft.NftUtils;
 import org.ton.ton4j.smartcontract.types.*;
 import org.ton.ton4j.smartcontract.utils.MsgUtils;
 import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
-import org.ton.ton4j.tonlib.Tonlib;
 import org.ton.ton4j.utils.Utils;
 
 /**
@@ -20,10 +20,10 @@ import org.ton.ton4j.utils.Utils;
  */
 @Slf4j
 public class Scenario15 implements Scenario {
-  Tonlib tonlib;
+  AdnlLiteClient adnlLiteClient;
 
-  public Scenario15(Tonlib tonlib) {
-    this.tonlib = tonlib;
+  public Scenario15(AdnlLiteClient adnlLiteClient) {
+    this.adnlLiteClient = adnlLiteClient;
   }
 
   public void run() throws NoSuchAlgorithmException {
@@ -31,14 +31,14 @@ public class Scenario15 implements Scenario {
 
     String NEW_ADMIN2 = "EQB6-6po0yspb68p7RRetC-hONAz-JwxG9514IEOKw_llXd5";
 
-    WalletV3R2 adminWallet = (WalletV3R2) new MyUtils().deploy(tonlib, Utils.toNano(2));
-    WalletV3R2 wallet2 = (WalletV3R2) new MyUtils().deploy(tonlib, Utils.toNano(1));
+    WalletV3R2 adminWallet = (WalletV3R2) new MyUtils().deploy(adnlLiteClient, Utils.toNano(2));
+    WalletV3R2 wallet2 = (WalletV3R2) new MyUtils().deploy(adnlLiteClient, Utils.toNano(1));
     log.info("admin wallet address {}", adminWallet.getAddress());
     log.info("second wallet address {}", wallet2.getAddress());
 
     JettonMinter minter =
         JettonMinter.builder()
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .adminAddress(adminWallet.getAddress())
             .content(
                 NftUtils.createOffChainUriCell(
