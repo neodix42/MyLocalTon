@@ -99,7 +99,6 @@ public class MyLocalTon {
   public static final int SCROLL_BAR_DELTA = 30;
   public static final Long MAX_ROWS_IN_GUI = 1000L;
   public static final int YEAR_1971 = 34131600;
-  public static int VALIDATION_GUI_REFRESH_SECONDS = 30;
   private static final String CURRENT_DIR = System.getProperty("user.dir");
 
   private static final String SETTINGS_JSON = "settings.json";
@@ -633,8 +632,8 @@ public class MyLocalTon {
                             new Timeline(
                                 new KeyFrame(
                                     Duration.ZERO, new KeyValue(progress.progressProperty(), 0)),
-                                new KeyFrame(
-                                    Duration.seconds(VALIDATION_GUI_REFRESH_SECONDS),
+                        new KeyFrame(
+                                    Duration.seconds(settings.getUiSettings().getValidationGuiRefreshSeconds()),
                                     new KeyValue(progress.progressProperty(), 1)));
                         timeline.setCycleCount(1);
                         timeline.play();
@@ -643,7 +642,7 @@ public class MyLocalTon {
               }
             },
             0L,
-            VALIDATION_GUI_REFRESH_SECONDS,
+            settings.getUiSettings().getValidationGuiRefreshSeconds(),
             TimeUnit.SECONDS);
   }
 
@@ -664,7 +663,8 @@ public class MyLocalTon {
     for (String nodeName : settings.getActiveNodes()) {
       Node node = settings.getNodeByName(nodeName);
 
-      if (node.getStatus().equals("ready")) {
+      if (((node.getParticipateInElections() == null) || Boolean.TRUE.equals(node.getParticipateInElections()))
+          && node.getStatus().equals("ready")) {
         log.info("participates in elections {}", nodeName);
         ForkJoinPool.commonPool()
             .execute(
@@ -673,6 +673,8 @@ public class MyLocalTon {
                       .setName("MyLocalTon - Participation in elections by " + nodeName);
                   MyLocalTonUtils.participate(node, v);
                 });
+      } else if (!Boolean.TRUE.equals(node.getParticipateInElections())) {
+        log.info("participation disabled for {}", nodeName);
       }
     }
   }
@@ -681,7 +683,8 @@ public class MyLocalTon {
     for (String nodeName : settings.getActiveNodes()) {
       Node node = settings.getNodeByName(nodeName);
 
-      if (node.getStatus().equals("ready")) {
+      if (((node.getParticipateInElections() == null) || Boolean.TRUE.equals(node.getParticipateInElections()))
+          && node.getStatus().equals("ready")) {
 
         ForkJoinPool.commonPool()
             .execute(
@@ -692,6 +695,8 @@ public class MyLocalTon {
                     Platform.runLater(() -> updateReapedValuesTab(node));
                   }
                 });
+      } else if (!Boolean.TRUE.equals(node.getParticipateInElections())) {
+        log.info("reaping disabled for {}", nodeName);
       }
     }
   }
