@@ -26,7 +26,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.ton.ton4j.tonlib.types.MasterChainInfo;
+import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
 import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.DbPool;
@@ -110,19 +110,22 @@ public class App extends Application {
             }
           }
 
-          myLocalTon.initTonlib(genesisNode);
+          myLocalTon.initAdnlLiteClient(genesisNode);
           long syncDelay = 100;
           while (syncDelay > 10) {
             try {
-              MasterChainInfo masterChainInfo = MyLocalTon.tonlib.getLast();
-              log.info("masterChainInfo {}", masterChainInfo.getLast().getShortBlockSeqno());
+              MasterchainInfo masterChainInfo = MyLocalTon.adnlLiteClient.getMasterchainInfo();
+              log.info("masterChainInfo {}", masterChainInfo.getLast().getSeqno());
               if (nonNull(masterChainInfo) && (masterChainInfo.getLast().getSeqno() > 0)) {
-                log.info("masterChainInfo {}", masterChainInfo.getLast().getShortBlockSeqno());
+                log.info("masterChainInfo {}", masterChainInfo.getLast().getSeqno()); // short one
                 syncDelay = MyLocalTonUtils.getSyncDelay();
                 log.info("out of sync seconds {}", syncDelay);
               }
               Utils.sleep(1);
             } catch (Throwable e) {
+              if (e instanceof TimeoutException) {
+                continue;
+              }
               log.error("Error in launching TON blockchain: {}", e.getMessage());
               if (MyLocalTonUtils.doShutdown()) {
                 log.info("system exit 44");

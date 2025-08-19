@@ -7,19 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.mylocalton.data.db.DataDB;
+import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.smartcontract.types.Destination;
 import org.ton.ton4j.smartcontract.types.WalletV5Config;
 import org.ton.ton4j.smartcontract.wallet.v5.WalletV5;
-import org.ton.ton4j.tonlib.Tonlib;
 import org.ton.ton4j.utils.Utils;
 
 /** to up V5R1 wallet, upload state-init, transfer to 255 random recipients */
 @Slf4j
 public class Scenario11 implements Scenario {
-  Tonlib tonlib;
+  AdnlLiteClient adnlLiteClient;
 
-  public Scenario11(Tonlib tonlib) {
-    this.tonlib = tonlib;
+  public Scenario11(AdnlLiteClient adnlLiteClient) {
+    this.adnlLiteClient = adnlLiteClient;
   }
 
   public void run() throws NoSuchAlgorithmException {
@@ -29,7 +29,7 @@ public class Scenario11 implements Scenario {
 
     WalletV5 contract =
         WalletV5.builder()
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .walletId(walletId)
             .keyPair(keyPair)
             .isSigAuthAllowed(true)
@@ -37,7 +37,7 @@ public class Scenario11 implements Scenario {
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     log.info("v5 address {}", nonBounceableAddress);
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(1.5));
-    tonlib.waitForBalanceChange(contract.getAddress(), 60);
+    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
 
     contract.deploy();
 

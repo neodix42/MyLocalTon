@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ton.ton4j.smartcontract.types.WalletVersion;
-import org.ton.ton4j.tonlib.types.RawAccountState;
+import org.ton.ton4j.tlb.Account;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.executors.validatorengineconsole.ValidatorEngineConsoleExecutor;
@@ -183,7 +183,7 @@ public class Fift {
             .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
             .walletVersion(walletVersion)
             .wallet(walletAddress)
-            .accountState(RawAccountState.builder().build())
+            .accountState(Account.builder().build())
             .createdAt(Instant.now().getEpochSecond())
             .build();
 

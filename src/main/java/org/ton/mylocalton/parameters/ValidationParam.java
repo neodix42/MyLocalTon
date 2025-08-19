@@ -7,8 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.ton.ton4j.adnl.Participant;
 import org.ton.ton4j.tlb.ValidatorAddr;
-import org.ton.ton4j.tonlib.types.Participant;
 
 @Builder
 @Getter
