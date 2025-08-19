@@ -79,11 +79,11 @@ for ARM64 architecture use:
 ### HTTP server
 By default, MyLocalTon starts with a simple HTTP server, that serves the following endpoints:
 
-| Endpoint                                           | Description                                                                                         |
-|----------------------------------------------------|:----------------------------------------------------------------------------------------------------|
-| http://localhost:8000/localhost.global.config.json | Serves the TON configuration file, that can be used in various SDK libraries, like tonlib or ton4j. |
-| http://localhost:8000/live                         | Returns OK when blockchain is ready.                                                                |
-| http://localhost:8000/add-validator                | Add node that starts participating in elections. Can be added up to 5 validators.                 |
+| Endpoint                                           | Description                                                                                                                       |
+|----------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------|
+| http://localhost:8000/localhost.global.config.json | Serves the TON configuration file, that can be used in various SDK libraries, like tonlib or ton4j.                               |
+| http://localhost:8000/live                         | Returns OK when blockchain is ready.                                                                                              |
+| http://localhost:8000/add-validator                | Add node that starts participating in elections. Can be added up to 5 validators.  Supports GET parameter participate=true/false. |
 
 ###
 

@@ -137,13 +137,6 @@ public class MyLocalTon {
     return singleInstance;
   }
 
-  public void setValidationGuiRefreshSeconds(int seconds) {
-    VALIDATION_GUI_REFRESH_SECONDS = seconds;
-    log.info(
-        "Validation GUI refresh and participate in elections interval updated to {} seconds",
-        seconds);
-  }
-
   /** Starts the Config HTTP Server that serves the global config file. */
   public void runConfigHttpServer() {
     log.info("Starting HTTP Server on port " + settings.getUiSettings().getSimpleHttpServerPort());

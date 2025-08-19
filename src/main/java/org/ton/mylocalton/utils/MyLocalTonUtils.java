@@ -354,6 +354,7 @@ public class MyLocalTonUtils {
         log.debug("Do shutdown");
 
         Main.appActive.set(false);
+        adnlLiteClient.close();
 
         if (nonNull(App.dbPool)) {
           App.dbPool.closeDbs();
