@@ -43,9 +43,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.ton.mylocalton.utils.WalletVersion;
 import org.ton.ton4j.address.Address;
 import org.ton.ton4j.adnl.AdnlLiteClient;
-import org.ton.ton4j.smartcontract.types.WalletVersion;
 import org.ton.ton4j.tl.liteserver.responses.BlockTransactionsExt;
 import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
 import org.ton.ton4j.tlb.*;
@@ -703,9 +703,9 @@ public class MyLocalTon {
               .queryTimeout(2)
               .build();
     } catch (Throwable e) {
-      System.out.println(ExceptionUtils.getStackTrace(e));
-      log.error("Cannot initialize adnlLiteClient!");
-      System.exit(14);
+//      System.out.println(ExceptionUtils.getStackTrace(e));
+//      log.error("Cannot initialize adnlLiteClient!");
+//      System.exit(14);
     }
   }
 

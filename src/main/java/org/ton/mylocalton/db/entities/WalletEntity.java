@@ -2,7 +2,7 @@ package org.ton.mylocalton.db.entities;
 
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
-import org.ton.ton4j.smartcontract.types.WalletVersion;
+import org.ton.mylocalton.utils.WalletVersion;
 import org.ton.ton4j.tlb.Account;
 import org.ton.mylocalton.wallet.WalletAddress;
 
