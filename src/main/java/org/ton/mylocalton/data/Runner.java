@@ -6,9 +6,8 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.ton4j.address.Address;
@@ -36,6 +35,9 @@ public class Runner {
   private long period;
 
   private AdnlLiteClient adnlLiteClient;
+  ScheduledExecutorService topUpExecutor;
+  ArrayList<ScheduledExecutorService> runScenarioExecutor;
+  ScheduledExecutorService cleanQueueExecutor;
 
   private static Runnable errorHandlingWrapper(Runnable action) {
     return () -> {
@@ -47,10 +49,20 @@ public class Runner {
     };
   }
 
+  public void stop() {
+    log.info("Stopping runner ...");
+    topUpExecutor.shutdownNow();
+    for (ScheduledExecutorService executor : runScenarioExecutor) {
+      executor.shutdownNow();
+    }
+    cleanQueueExecutor.shutdownNow();
+    log.info("Stopped runner");
+  }
+
   public void run() {
     try {
       log.info("started data-generator runner");
-
+      runScenarioExecutor = new ArrayList<>();
       log.info(Utils.bytesToHex(dataFaucetHighLoadPrvKey));
       TweetNaclFast.Signature.KeyPair keyPair =
           Utils.generateSignatureKeyPairFromSeed(dataFaucetHighLoadPrvKey);
@@ -108,7 +120,7 @@ public class Runner {
 
   public void runTopUpQueueScheduler() {
 
-    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    topUpExecutor = Executors.newSingleThreadScheduledExecutor();
     Runnable topUpTask =
         errorHandlingWrapper(
             () -> {
@@ -164,53 +176,53 @@ public class Runner {
               }
             });
 
-    executor.scheduleAtFixedRate(topUpTask, 30, 15, TimeUnit.SECONDS);
+    topUpExecutor.scheduleAtFixedRate(topUpTask, 30, 15, TimeUnit.SECONDS);
   }
 
   public void runScenariosScheduler() {
 
     for (String scenario : scenarios) {
+      ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+      runScenarioExecutor.add(executor);
+      executor.scheduleAtFixedRate(
+          () -> {
+            Thread.currentThread().setName(scenario);
+            Executors.newSingleThreadExecutor()
+                .submit(
+                    () -> {
+                      Class<?> clazz;
+                      try {
 
-      Executors.newSingleThreadScheduledExecutor()
-          .scheduleAtFixedRate(
-              () -> {
-                Thread.currentThread().setName(scenario);
-                Executors.newSingleThreadExecutor()
-                    .submit(
-                        () -> {
-                          Class<?> clazz;
-                          try {
+                        if (dataHighloadFaucet.getBalance().longValue() <= 0) {
+                          log.error("dataHighloadFaucet has no funds");
+                          return;
+                        }
+                        clazz = Class.forName("org.ton.mylocalton.data.scenarios." + scenario);
+                        Constructor<?> constructor = clazz.getConstructor(AdnlLiteClient.class);
+                        Object instance = constructor.newInstance(adnlLiteClient);
+                        ((Scenario) instance).run();
 
-                            if (dataHighloadFaucet.getBalance().longValue() <= 0) {
-                              log.error("dataHighloadFaucet has no funds");
-                              return;
-                            }
-                            clazz = Class.forName("org.ton.mylocalton.data.scenarios." + scenario);
-                            Constructor<?> constructor = clazz.getConstructor(AdnlLiteClient.class);
-                            Object instance = constructor.newInstance(adnlLiteClient);
-                            ((Scenario) instance).run();
-
-                          } catch (Throwable e) {
-                            log.info("error running scenario {}", e.getMessage());
-                          }
-                        });
-              },
-              1,
-              period,
-              TimeUnit.MINUTES);
+                      } catch (Throwable e) {
+                        log.info("error running scenario {}", e.getMessage());
+                      }
+                    });
+          },
+          60,
+          period,
+          TimeUnit.SECONDS);
     }
   }
 
   public void runCleanQueueScheduler() {
 
-    Executors.newSingleThreadScheduledExecutor()
-        .scheduleAtFixedRate(
-            () -> {
-              Thread.currentThread().setName("CleanQueue");
-              DataDB.deleteExpiredDataWallets(60 * 10);
-            },
-            2,
-            5,
-            TimeUnit.MINUTES);
+    cleanQueueExecutor = Executors.newSingleThreadScheduledExecutor();
+    cleanQueueExecutor.scheduleAtFixedRate(
+        () -> {
+          Thread.currentThread().setName("CleanQueue");
+          DataDB.deleteExpiredDataWallets(60 * 10);
+        },
+        2,
+        5,
+        TimeUnit.MINUTES);
   }
 }

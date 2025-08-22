@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 
+import static java.util.Objects.nonNull;
+
 @Entity
 @Builder
 @Data
@@ -43,6 +45,11 @@ public class WalletEntity {
   }
 
   public String getAccountStatus() {
-    return accountState.getAccountState();
+    if (nonNull(accountState)) {
+      return accountState.getAccountState();
+    }
+    else {
+      return null;
+    }
   }
 }

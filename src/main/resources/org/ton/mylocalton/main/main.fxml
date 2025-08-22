@@ -13,7 +13,7 @@
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="superWindow" xmlns="http://javafx.com/javafx/11.0.1"
            fx:controller="org.ton.mylocalton.ui.controllers.MainController">
 
-    <CustomMainLayout fx:id="mainLayout" prefHeight="720.0" maxWidth="1400.0" prefWidth="1000.0">
+    <CustomMainLayout fx:id="mainLayout" prefHeight="820.0" maxWidth="1400.0" prefWidth="1000.0">
 
         <scrollButton>
             <Label fx:id="scrollBtn" contentDisplay="CENTER" graphicTextGap="0.0" onMouseClicked="#scrollBtnAction">
@@ -168,6 +168,195 @@
                 </VBox>
             </VBox>
         </accountsPane>
+
+        <dataPane>
+            <GridPane xmlns:fx="http://javafx.com/fxml" hgap="15" vgap="16">
+                <padding>
+                    <Insets bottom="0.0" left="50.0" right="30.0" top="0.0"/>
+                </padding>
+                <columnConstraints>
+                    <ColumnConstraints/>
+                    <ColumnConstraints/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                </rowConstraints>
+
+                <Label fx:id="dataToggleLabel" text="Start data generator" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                       styleClass="label-second-font-14"/>
+                <JFXToggleButton fx:id="toggleData" GridPane.columnIndex="0" maxWidth="40"
+                                 GridPane.rowIndex="0" onAction="#startData"/>
+
+                <Label text="Scenario 1 - uses V1R1 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
+                       GridPane.columnIndex="1" GridPane.rowIndex="1"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario1" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="1"/>
+
+                <Label text="Scenario 2 - uses V1R2 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
+                       GridPane.columnIndex="1" GridPane.rowIndex="2"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario2" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="2"/>
+
+                <Label text="Scenario 3 - uses V1R3 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
+                       GridPane.columnIndex="1" GridPane.rowIndex="3"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario3" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="3"/>
+
+                <Label text="Scenario 4 - uses V2R1 wallet, tops it up, uploads state-init and sends back to faucet 0.08 and to random address 0.01."
+                       GridPane.columnIndex="1" GridPane.rowIndex="4"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario4" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="4"/>
+
+                <Label text="Scenario 5 - uses V2R2 wallet, tops it up, uploads state-init and sends back to faucet 0.08 and to random address 0.01."
+                       GridPane.columnIndex="1" GridPane.rowIndex="5"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario5" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="5"/>
+
+                <Label text="Scenario 6 - uses V3R1 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
+                       GridPane.columnIndex="1" GridPane.rowIndex="6"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario6" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="6"/>
+
+                <Label text="Scenario 7 - uses V3R2 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
+                       GridPane.columnIndex="1" GridPane.rowIndex="7"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario7" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="7"/>
+
+                <Label text="Scenario 8 - uses V4R2 wallet, tops it up, uploads state-init and sends back to faucet 0.06."
+                       GridPane.columnIndex="1" GridPane.rowIndex="8"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario8" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="8"/>
+
+                <Label text="Scenario 9 - uses V4R2 wallet, installs plugin, collects fee, pauses and collects fee again, uninstalls plugin."
+                       GridPane.columnIndex="1" GridPane.rowIndex="9"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario9" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="9"/>
+
+                <Label text="Scenario 10 - uses V5R1 wallet, tops it up, uploads state-init and sends back to faucet 0.03."
+                       GridPane.columnIndex="1" GridPane.rowIndex="10"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario10" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="10"/>
+
+                <Label text="Scenario 11 - uses V5R1 wallet, tops it up, uploads state-init and transfer to 255 random recipients."
+                       GridPane.columnIndex="1" GridPane.rowIndex="11"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario11" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="11"/>
+
+                <Label text="Scenario 12 - uses V5R1 wallet as library and do a transfer to 255 random recipients."
+                       GridPane.columnIndex="1" GridPane.rowIndex="12"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario12" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="12"/>
+
+                <Label text="Scenario 13 - uses Highload Wallet V3 and do a transfer to 1000 random recipients."
+                       GridPane.columnIndex="1" GridPane.rowIndex="13"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario13" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="13"/>
+
+                <Label text="Scenario 14 - deploy MultiSig V2 with 2/3 consensus, deploy order, sign order from other wallet, execute order."
+                       GridPane.columnIndex="1" GridPane.rowIndex="14"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario14" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="14"/>
+
+                <Label text="Scenario 15 - deploy jetton minter, mint jettons, edit minter's jetton, change minter admin, transfer jettons, burn jettons."
+                       GridPane.columnIndex="1" GridPane.rowIndex="15"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario15" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="15"/>
+
+                <Label text="Scenario 16 - deploy nft collection, 2 nfts on it, nft marketplace, nft sale contract, cancel sale."
+                       GridPane.columnIndex="1" GridPane.rowIndex="16"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario16" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="16"/>
+
+                <Label text="Run selected scenarios every X seconds."
+                       GridPane.columnIndex="1" GridPane.rowIndex="17"
+                       styleClass="label-second-font-14"/>
+                <JFXTextField fx:id="scenarioPeriod" GridPane.columnIndex="0" maxWidth="40"
+                             GridPane.rowIndex="17"/>
+            </GridPane>
+        </dataPane>
+
+        <explorerPane>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+            <GridPane fx:id="explorerPaneGrid" xmlns:fx="http://javafx.com/fxml" hgap="15" vgap="16">
+            <padding>
+                <Insets bottom="0.0" left="0.0" right="0.0" top="0.0"/>
+            </padding>
+            <columnConstraints>
+                <ColumnConstraints/>
+                <ColumnConstraints/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints/>
+            </rowConstraints>
+
+            <Label fx:id="explorerToggleLabel" text="Start blockchain explorer" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   styleClass="label-second-font-14"/>
+            <JFXToggleButton fx:id="toggleExplorer" GridPane.columnIndex="0"
+                             GridPane.rowIndex="0" onAction="#startExplorer" />
+            </GridPane>
+
+                <WebView fx:id="webView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+            </VBox>
+        </explorerPane>
+
+        <tonHttpApiPane>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <GridPane fx:id="tonCenterPaneGrid" xmlns:fx="http://javafx.com/fxml" hgap="15" vgap="16">
+                    <padding>
+                        <Insets bottom="0.0" left="0.0" right="0.0" top="0.0"/>
+                    </padding>
+                    <columnConstraints>
+                        <ColumnConstraints/>
+                        <ColumnConstraints/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints/>
+                    </rowConstraints>
+
+                    <Label fx:id="tonHttpApiToggleLabel" text="Start TON Center" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                    styleClass="label-second-font-14"/>
+                    <JFXToggleButton fx:id="toggleTonCenter" selected="true" GridPane.columnIndex="0"
+                                     GridPane.rowIndex="0" onAction="#startTonCenter"/>
+                </GridPane>
+
+                <Label fx:id="webViewTonHttpApi" onMouseClicked="#webViewLinkOpen"
+                       style="-fx-cursor: hand; -fx-text-fill: #0000FF; -fx-font-size: 24px;"/>
+            </VBox>
+        </tonHttpApiPane>
 
         <validationPane>
             <JFXTabPane fx:id="validationTabs"
@@ -1527,6 +1716,7 @@
                     <RowConstraints/>
                     <RowConstraints/>
                     <RowConstraints/>
+                    <RowConstraints/>
                 </rowConstraints>
 
                 <Label text="Show Tick/Tock transactions" GridPane.columnIndex="1" GridPane.rowIndex="0"
@@ -1557,17 +1747,25 @@
                 <Label fx:id="enableBlockchainExplorerLabel" text="Enable native blockchain-explorer"
                        GridPane.columnIndex="1"
                        GridPane.rowIndex="5" styleClass="label-second-font-14"/>
-                <JFXCheckBox fx:id="enableBlockchainExplorer" checkedColor="#0088CC" selected="true"
+                <JFXCheckBox fx:id="enableBlockchainExplorer" checkedColor="#0088CC"
                              onMouseClicked="#BlockChainExplorerCheckBoxClick" GridPane.columnIndex="0"
                              GridPane.rowIndex="5"/>
 
                 <Label fx:id="enableTonHttpApiLabel"
-                       text="Enable ton-http-api service  (requires manual installation, see github.com/neodiX42/MyLocalTon)"
+                       text="Enable Ton Center V2 service  (requires manual installation, see github.com/neodiX42/MyLocalTon)"
                        GridPane.columnIndex="1"
                        GridPane.rowIndex="6" styleClass="label-second-font-14"/>
-                <JFXCheckBox fx:id="enableTonHttpApi" checkedColor="#0088CC" selected="true"
+                <JFXCheckBox fx:id="enableTonHttpApi" checkedColor="#0088CC"
                              GridPane.columnIndex="0"
                              GridPane.rowIndex="6"/>
+
+                <Label fx:id="enableDataLabel"
+                       text="Enable data generator service"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="7" styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="enableData" checkedColor="#0088CC"
+                             GridPane.columnIndex="0"
+                             GridPane.rowIndex="7"/>
             </GridPane>
         </userInterfacePane>
 
@@ -2201,23 +2399,6 @@
             </JFXTabPane>
 
         </settingsValidatorsPane>
-
-        <explorerPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
-                  AnchorPane.topAnchor="10.0">
-                <WebView fx:id="webView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-            </VBox>
-        </explorerPane>
-
-        <tonHttpApiPane>
-            <VBox alignment="CENTER" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
-                  AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-
-                <Label fx:id="webViewTonHttpApi" onMouseClicked="#webViewLinkOpen"
-                       style="-fx-cursor: hand; -fx-text-fill: #0000FF; -fx-font-size: 24px;"/>
-            </VBox>
-        </tonHttpApiPane>
 
         <foundBlocksPane>
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"

@@ -273,5 +273,6 @@ public class MyLocalTonSettings implements Serializable {
     Long maxValidatorStake = 10000000L;
     Long minTotalValidatorStake = 10000L;
     BigDecimal maxFactor = new BigDecimal(3);
+    Long dataGeneratorPeriod = 60L;
   }
 }

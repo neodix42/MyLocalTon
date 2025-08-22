@@ -49,8 +49,12 @@ public class App extends Application {
   public static FXMLLoader fxmlLoader;
   public static MainController mainController;
   public static DbPool dbPool;
+  public static Process tonHttpApiProcess;
+  public static Process dataProcess;
+  public static Process explorerProcess;
 
-  public static Boolean testBinaries = false;
+
+    public static Boolean testBinaries = false;
   public static AtomicInteger testBinariesCounter = new AtomicInteger(0);
 
   public static Stage primaryStage;

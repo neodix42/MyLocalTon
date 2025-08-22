@@ -4,17 +4,12 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.mylocalton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
 import static org.ton.mylocalton.actions.MyLocalTon.adnlLiteClient;
-import static org.ton.mylocalton.main.App.mainController;
+import static org.ton.mylocalton.main.App.*;
 import static org.ton.mylocalton.ui.custom.events.CustomEventBus.emit;
 import static org.ton.mylocalton.ui.custom.events.CustomEventBus.listenFor;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXCheckBox;
-import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXDialogLayout;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXTabPane;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
+
 import java.awt.*;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -74,6 +69,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.ton.mylocalton.ui.custom.layout.*;
 import org.ton.ton4j.address.Address;
 import org.ton.ton4j.adnl.Participant;
 import org.ton.ton4j.tl.liteserver.responses.BlockHeader;
@@ -106,11 +102,6 @@ import org.ton.mylocalton.ui.custom.events.CustomEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomActionEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomSearchEvent;
-import org.ton.mylocalton.ui.custom.layout.AccountsCreatePaneController;
-import org.ton.mylocalton.ui.custom.layout.ConfirmPaneController;
-import org.ton.mylocalton.ui.custom.layout.CustomLoadingPaneController;
-import org.ton.mylocalton.ui.custom.layout.CustomMainLayout;
-import org.ton.mylocalton.ui.custom.layout.SendCoinPaneController;
 import org.ton.mylocalton.utils.MyLocalTonUtils;
 import org.ton.mylocalton.services.ValidatorCreationService;
 
@@ -175,14 +166,22 @@ public class MainController implements Initializable {
   @FXML public Label nodeStatus1;
 
   @FXML public Label totalParticipants;
+  @FXML public Label explorerToggleLabel;
+  @FXML public Label tonHttpApiToggleLabel;
+  @FXML public Label dataToggleLabel;
 
   @FXML public Label totalValidators;
 
   @FXML public JFXCheckBox enableBlockchainExplorer;
 
   @FXML public JFXCheckBox enableTonHttpApi;
+  @FXML public JFXCheckBox enableData;
+  @FXML public JFXToggleButton toggleData;
+  @FXML public JFXToggleButton toggleExplorer;
+  @FXML public JFXToggleButton toggleTonCenter;
 
   @FXML public Label enableTonHttpApiLabel;
+  @FXML public Label enableDataLabel;
 
   @FXML public Label enableBlockchainExplorerLabel;
 
@@ -651,6 +650,7 @@ public class MainController implements Initializable {
   @FXML public JFXTextField validatorWalletDeposit7;
 
   @FXML public JFXTextField validatorDefaultStake7;
+  @FXML public JFXTextField scenarioPeriod;
 
   @FXML public JFXTextField nodeStateTtl7;
 
@@ -1172,8 +1172,6 @@ public class MainController implements Initializable {
 
     settings = MyLocalTon.getInstance().getSettings();
 
-    WebEngine browser = webView.getEngine();
-
     EventHandler<KeyEvent> onlyDigits =
         keyEvent -> {
           if (!((TextField) keyEvent.getSource()).getText().matches("[\\d\\.\\-]+")) {
@@ -1304,7 +1302,7 @@ public class MainController implements Initializable {
                       private List<WalletEntity> foundAccountsEntities;
 
                       @Override
-                      protected Void call() throws Exception {
+                      protected Void call() {
                         foundBlocksEntities = App.dbPool.searchBlocks(searchFor);
                         foundTxsEntities = App.dbPool.searchTxs(searchFor);
                         foundAccountsEntities = App.dbPool.searchAccounts(searchFor);
@@ -1341,7 +1339,11 @@ public class MainController implements Initializable {
     mainConfigTxCheckBox.setSelected(settings.getUiSettings().isShowMainConfigTransactions());
     inOutMsgsCheckBox.setSelected(settings.getUiSettings().isShowInOutMessages());
     enableBlockchainExplorer.setSelected(settings.getUiSettings().isEnableBlockchainExplorer());
+    toggleExplorer.setSelected(settings.getUiSettings().isEnableTonHttpApi());
+    enableData.setSelected(settings.getUiSettings().isEnableDataGenerator());
+    toggleData.setSelected(settings.getUiSettings().isEnableDataGenerator());
     enableTonHttpApi.setSelected(settings.getUiSettings().isEnableTonHttpApi());
+    toggleTonCenter.setSelected(settings.getUiSettings().isEnableTonHttpApi());
     showMsgBodyCheckBox.setSelected(settings.getUiSettings().isShowBodyInMessage());
     shardStateCheckbox.setSelected(settings.getUiSettings().isShowShardStateInBlockDump());
 
@@ -1469,6 +1471,8 @@ public class MainController implements Initializable {
         settings.getNode7().getInitialValidatorWalletAmount().toString());
     validatorDefaultStake7.setText(settings.getNode7().getDefaultValidatorStake().toString());
 
+    scenarioPeriod.setText(settings.getBlockchainSettings().getDataGeneratorPeriod().toString());
+
     tonLogLevel.addItem("DEBUG");
     tonLogLevel.addItem("WARNING");
     tonLogLevel.addItem("INFO");
@@ -1523,19 +1527,22 @@ public class MainController implements Initializable {
     myLogLevel.addItem("ERROR");
     myLogLevel.selectItem(settings.getGenesisNode().getMyLocalTonLogLevel());
 
-    enableBlockchainExplorer.setVisible(false);
-    enableBlockchainExplorerLabel.setVisible(false);
+    //    enableBlockchainExplorer.setVisible(false);
+    //    enableBlockchainExplorerLabel.setVisible(false);
 
     enableBlockchainExplorer.setVisible(true);
     enableBlockchainExplorerLabel.setVisible(true);
 
-    enableTonHttpApi.setVisible(false);
-    enableTonHttpApiLabel.setVisible(false);
+    //    enableTonHttpApi.setVisible(false);
+    //    enableTonHttpApiLabel.setVisible(false);
 
     enableTonHttpApi.setVisible(true);
     enableTonHttpApiLabel.setVisible(true);
 
-    addValidatorBtn.setVisible(true);
+    enableData.setVisible(true);
+    enableDataLabel.setVisible(true);
+
+    //    addValidatorBtn.setVisible(true);
     addValidatorBtn.setDisable(false);
 
     // validator-tabs
@@ -1551,8 +1558,8 @@ public class MainController implements Initializable {
         validationTabs.getTabs().add(getNodeTabByName(n));
       }
     }
-    mainLayout.setExplorer(enableBlockchainExplorer.isSelected());
-    mainLayout.setTonHttpApi(enableTonHttpApi.isSelected());
+    mainLayout.setExplorer(true);
+    mainLayout.setTonHttpApi(true);
   }
 
   public Tab getNodeTabByName(String nodeName) {
@@ -1581,35 +1588,96 @@ public class MainController implements Initializable {
       log.info(
           "Starting native blockchain-explorer on port {}",
           settings.getUiSettings().getBlockchainExplorerPort());
-      BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-      blockchainExplorer.startBlockchainExplorer(
-          settings.getGenesisNode(),
-          settings.getGenesisNode().getNodeGlobalConfigLocation(),
-          settings.getUiSettings().getBlockchainExplorerPort());
-      Utils.sleep(2);
-      webView
-          .getEngine()
-          .load(
-              "http://127.0.0.1:" + settings.getUiSettings().getBlockchainExplorerPort() + "/last");
+
+      Platform.runLater(
+          () -> {
+            toggleExplorer.setSelected(true);
+            explorerToggleLabel.setText("Stop blockchain explorer");
+            BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
+            App.explorerProcess =
+                blockchainExplorer.startBlockchainExplorer(
+                    settings.getGenesisNode(),
+                    settings.getGenesisNode().getNodeGlobalConfigLocation(),
+                    settings.getUiSettings().getBlockchainExplorerPort());
+            Utils.sleep(2);
+            webView
+                .getEngine()
+                .load(
+                    "http://127.0.0.1:"
+                        + settings.getUiSettings().getBlockchainExplorerPort()
+                        + "/last");
+          });
     }
   }
 
   public void startTonHttpApi() {
     if (settings.getUiSettings().isEnableTonHttpApi()) {
       log.info("Starting ton-http-api on port {}", settings.getUiSettings().getTonHttpApiPort());
-      Utils.sleep(3);
-      TonHttpApi tonHttpApi = new TonHttpApi();
-      tonHttpApi.startTonHttpApi(
-          settings.getGenesisNode(),
-          settings.getGenesisNode().getNodeGlobalConfigLocation(),
-          settings.getUiSettings().getTonHttpApiPort());
-      Utils.sleep(5);
       Platform.runLater(
           () -> {
+            toggleTonCenter.setSelected(true);
+            tonHttpApiToggleLabel.setText("Stop TON Center");
+            Utils.sleep(3);
+            TonHttpApi tonHttpApi = new TonHttpApi();
+            App.tonHttpApiProcess =
+                tonHttpApi.startTonHttpApi(
+                    settings.getGenesisNode(),
+                    settings.getGenesisNode().getNodeGlobalConfigLocation(),
+                    settings.getUiSettings().getTonHttpApiPort());
+            Utils.sleep(5);
+
             webViewTonHttpApi.setText(
                 "http://localhost:" + settings.getUiSettings().getTonHttpApiPort());
           });
     }
+  }
+
+  public void stopTonHttpApi() {
+    Platform.runLater(
+        () -> {
+          webViewTonHttpApi.setVisible(false);
+          toggleTonCenter.setSelected(false);
+          tonHttpApiToggleLabel.setText("Start TON Center");
+          enableTonHttpApi.setSelected(false);
+          settings.getUiSettings().setEnableTonHttpApi(false);
+          saveSettings();
+          if (nonNull(tonHttpApiProcess)) {
+            tonHttpApiProcess.destroy();
+          }
+        });
+  }
+
+  public void stopData() {
+    Platform.runLater(
+        () -> {
+          toggleData.setSelected(false);
+          dataToggleLabel.setText("Start data generator");
+          enableData.setSelected(false);
+          settings.getUiSettings().setEnableDataGenerator(false);
+          settings
+              .getBlockchainSettings()
+              .setDataGeneratorPeriod(Long.parseLong(scenarioPeriod.getText()));
+          saveSettings();
+          MyLocalTon.getInstance().getRunner().stop();
+          if (nonNull(dataProcess)) {
+            dataProcess.destroy();
+          }
+        });
+  }
+
+  public void stopExplorer() {
+    Platform.runLater(
+        () -> {
+          toggleExplorer.setSelected(false);
+          explorerToggleLabel.setText("Start blockchain explorer");
+          enableBlockchainExplorer.setSelected(false);
+          mainController.webView.setVisible(false);
+          settings.getUiSettings().setEnableBlockchainExplorer(false);
+          saveSettings();
+          if (nonNull(explorerProcess)) {
+            explorerProcess.destroy();
+          }
+        });
   }
 
   public void showAccTxs(String hexAddr) {
@@ -3675,6 +3743,72 @@ public class MainController implements Initializable {
               Thread.currentThread().setName("MyLocalTon - Creating validator");
               validatorCreationService.createNewValidator();
             });
+  }
+
+  public void startTonCenter() {
+    ExecutorService service = Executors.newSingleThreadExecutor();
+
+    service.execute(
+        () -> {
+          if (mainController.toggleTonCenter.isSelected()) {
+            log.info("on tc");
+            settings.getUiSettings().setEnableTonHttpApi(true);
+            enableTonHttpApi.setSelected(true);
+            saveSettings();
+            Platform.runLater(
+                () -> {
+                  tonHttpApiToggleLabel.setText("Stop TON Center");
+                  webViewTonHttpApi.setVisible(true);
+                  startTonHttpApi();
+                });
+          } else {
+            log.info("off tc");
+            stopTonHttpApi();
+          }
+        });
+  }
+
+  public void startExplorer() {
+    ExecutorService service = Executors.newSingleThreadExecutor();
+
+    service.execute(
+        () -> {
+          if (mainController.toggleExplorer.isSelected()) {
+            log.info("on explorer");
+            enableBlockchainExplorer.setSelected(true);
+            saveSettings();
+            Platform.runLater(
+                () -> {
+                  mainController.webView.setVisible(true);
+                  mainController.explorerToggleLabel.setText("Stop blockchain explorer");
+                  startNativeBlockchainExplorer();
+                });
+          } else {
+            log.info("off explorer");
+            stopExplorer();
+          }
+        });
+  }
+
+  public void startData() {
+    if (mainController.toggleData.isSelected()) {
+      log.info("on data");
+      settings.getUiSettings().setEnableDataGenerator(true);
+      enableData.setSelected(true);
+      settings
+          .getBlockchainSettings()
+          .setDataGeneratorPeriod(Long.parseLong(scenarioPeriod.getText()));
+      saveSettings();
+      Platform.runLater(
+          () -> {
+            mainController.dataToggleLabel.setText("Stop data generator");
+            MyLocalTon.getInstance().runDataGenerator();
+          });
+    } else {
+      log.info("off data");
+      mainController.dataToggleLabel.setText("Start data generator");
+      stopData();
+    }
   }
 
   public void deleteValidator2Btn() {

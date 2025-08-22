@@ -124,6 +124,7 @@ public class MyLocalTon {
   private Runnable fetchTask;
   @Setter @Getter private MyLocalTonSettings settings;
   private ConfigHttpServerManager configHttpServerManager;
+  Runner runner;
 
   private MyLocalTon() {
     //    prevBlockSeqno = new AtomicBigInteger(BigInteger.ZERO);
@@ -154,12 +155,19 @@ public class MyLocalTon {
         log.info(
             "Starting native blockchain-explorer on port {}",
             settings.getUiSettings().getBlockchainExplorerPort());
-        BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
-        blockchainExplorer.startBlockchainExplorer(
-            settings.getGenesisNode(),
-            settings.getGenesisNode().getNodeGlobalConfigLocation(),
-            settings.getUiSettings().getBlockchainExplorerPort());
-        Utils.sleep(2);
+        ExecutorService service = Executors.newSingleThreadExecutor();
+
+        service.execute(
+            () -> {
+              BlockchainExplorer blockchainExplorer = new BlockchainExplorer();
+              mainController.explorerToggleLabel.setText("Stop blockchain explorer");
+              App.explorerProcess =
+                  blockchainExplorer.startBlockchainExplorer(
+                      settings.getGenesisNode(),
+                      settings.getGenesisNode().getNodeGlobalConfigLocation(),
+                      settings.getUiSettings().getBlockchainExplorerPort());
+              Utils.sleep(2);
+            });
       }
     }
   }
@@ -172,12 +180,21 @@ public class MyLocalTon {
         log.info(
             "Starting ton-http-api on port headless {}",
             settings.getUiSettings().getTonHttpApiPort());
-        Utils.sleep(3);
-        TonHttpApi tonHttpApi = new TonHttpApi();
-        tonHttpApi.startTonHttpApi(
-            settings.getGenesisNode(),
-            settings.getGenesisNode().getNodeGlobalConfigLocation(),
-            settings.getUiSettings().getTonHttpApiPort());
+
+        ExecutorService service = Executors.newSingleThreadExecutor();
+
+        service.execute(
+            () -> {
+              Utils.sleep(3);
+              TonHttpApi tonHttpApi = new TonHttpApi();
+              mainController.tonHttpApiToggleLabel.setText("Stop TON Center");
+
+              App.tonHttpApiProcess =
+                  tonHttpApi.startTonHttpApi(
+                      settings.getGenesisNode(),
+                      settings.getGenesisNode().getNodeGlobalConfigLocation(),
+                      settings.getUiSettings().getTonHttpApiPort());
+            });
       }
     }
   }
@@ -625,8 +642,9 @@ public class MyLocalTon {
                             new Timeline(
                                 new KeyFrame(
                                     Duration.ZERO, new KeyValue(progress.progressProperty(), 0)),
-                        new KeyFrame(
-                                    Duration.seconds(settings.getUiSettings().getValidationGuiRefreshSeconds()),
+                                new KeyFrame(
+                                    Duration.seconds(
+                                        settings.getUiSettings().getValidationGuiRefreshSeconds()),
                                     new KeyValue(progress.progressProperty(), 1)));
                         timeline.setCycleCount(1);
                         timeline.play();
@@ -642,13 +660,20 @@ public class MyLocalTon {
   public void runDataGenerator() {
     if (settings.getUiSettings().isEnableDataGenerator()) {
       log.info("Starting data generator");
-      ForkJoinPool.commonPool()
-          .execute(
-              () -> {
-                Thread.currentThread().setName("MyLocalTon - data-generator");
-                Runner runner = Runner.builder().adnlLiteClient(adnlLiteClient).period(1).build();
-                runner.run();
-              });
+
+      ExecutorService dataGeneratorService = Executors.newSingleThreadExecutor();
+      mainController.dataToggleLabel.setText("Stop data generator");
+
+      dataGeneratorService.execute(
+          () -> {
+            Thread.currentThread().setName("MyLocalTon - data-generator");
+            runner =
+                Runner.builder()
+                    .adnlLiteClient(adnlLiteClient)
+                    .period(settings.getBlockchainSettings().getDataGeneratorPeriod())
+                    .build();
+            runner.run();
+          });
     }
   }
 
@@ -656,7 +681,8 @@ public class MyLocalTon {
     for (String nodeName : settings.getActiveNodes()) {
       Node node = settings.getNodeByName(nodeName);
 
-      if (((node.getParticipateInElections() == null) || Boolean.TRUE.equals(node.getParticipateInElections()))
+      if (((node.getParticipateInElections() == null)
+              || Boolean.TRUE.equals(node.getParticipateInElections()))
           && node.getStatus().equals("ready")) {
         log.info("participates in elections {}", nodeName);
         ForkJoinPool.commonPool()
@@ -676,7 +702,8 @@ public class MyLocalTon {
     for (String nodeName : settings.getActiveNodes()) {
       Node node = settings.getNodeByName(nodeName);
 
-      if (((node.getParticipateInElections() == null) || Boolean.TRUE.equals(node.getParticipateInElections()))
+      if (((node.getParticipateInElections() == null)
+              || Boolean.TRUE.equals(node.getParticipateInElections()))
           && node.getStatus().equals("ready")) {
 
         ForkJoinPool.commonPool()
@@ -703,9 +730,9 @@ public class MyLocalTon {
               .queryTimeout(2)
               .build();
     } catch (Throwable e) {
-//      System.out.println(ExceptionUtils.getStackTrace(e));
-//      log.error("Cannot initialize adnlLiteClient!");
-//      System.exit(14);
+      //      System.out.println(ExceptionUtils.getStackTrace(e));
+      //      log.error("Cannot initialize adnlLiteClient!");
+      //      System.exit(14);
     }
   }
 
@@ -1175,7 +1202,7 @@ public class MyLocalTon {
       ResultLastBlock lastBlock, MainController c, TxEntity txE, javafx.scene.Node txRow) {
     String uniqueKey =
         lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg() + txE.getTxHash();
-//    log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
+    //    log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
 
     if (!concurrentTxsHashMap.containsKey(uniqueKey)) {
 
@@ -1408,15 +1435,15 @@ public class MyLocalTon {
       msgType = txDesc.getType();
       status = txDetails.getEndStatus().toString();
 
-//      log.debug(
-//          "adding tx {} {} {} {} LT={} NOW={} seqno={}",
-//          txDetails.getAccountAddr(),
-//          txType,
-//          msgType,
-//          txDetails.getPrevTxHash(),
-//          txDetails.getLt(),
-//          txDetails.getNow(),
-//          lastBlock.getSeqno());
+      //      log.debug(
+      //          "adding tx {} {} {} {} LT={} NOW={} seqno={}",
+      //          txDetails.getAccountAddr(),
+      //          txType,
+      //          msgType,
+      //          txDetails.getPrevTxHash(),
+      //          txDetails.getLt(),
+      //          txDetails.getNow(),
+      //          lastBlock.getSeqno());
       txEntity.add(
           TxEntity.builder()
               .wc(lastBlock.getWc())
@@ -1451,15 +1478,15 @@ public class MyLocalTon {
           amount = outMsg.getInfo().getValueCoins();
           status = "";
 
-//          log.debug(
-//              "adding out-msg {} {} {} {} LT={} NOW={} seqno={}",
-//              txDetails.getAccountAddr(),
-//              txType,
-//              msgType,
-//              txDetails.getPrevTxHash(),
-//              txDetails.getLt(),
-//              txDetails.getNow(),
-//              lastBlock.getSeqno());
+          //          log.debug(
+          //              "adding out-msg {} {} {} {} LT={} NOW={} seqno={}",
+          //              txDetails.getAccountAddr(),
+          //              txType,
+          //              msgType,
+          //              txDetails.getPrevTxHash(),
+          //              txDetails.getLt(),
+          //              txDetails.getNow(),
+          //              lastBlock.getSeqno());
 
           txEntity.add(
               TxEntity.builder()
@@ -1500,15 +1527,15 @@ public class MyLocalTon {
         msgType = inMsg.getInfo().getType();
         status = "";
 
-//        log.debug(
-//            "adding in-msg {} {} {} {} LT={} NOW={} seqno={}",
-//            txDetails.getAccountAddr(),
-//            txType,
-//            msgType,
-//            txDetails.getPrevTxHash(),
-//            txDetails.getLt(),
-//            txDetails.getNow(),
-//            lastBlock.getSeqno());
+        //        log.debug(
+        //            "adding in-msg {} {} {} {} LT={} NOW={} seqno={}",
+        //            txDetails.getAccountAddr(),
+        //            txType,
+        //            msgType,
+        //            txDetails.getPrevTxHash(),
+        //            txDetails.getLt(),
+        //            txDetails.getNow(),
+        //            lastBlock.getSeqno());
 
         txEntity.add(
             TxEntity.builder()
@@ -1864,7 +1891,8 @@ public class MyLocalTon {
                         subWalletId = -1L;
                       }
                     } catch (Throwable ignored) {
-                      //log.debug("can't detect contract's walletId for address {}", address.toRaw());
+                      // log.debug("can't detect contract's walletId for address {}",
+                      // address.toRaw());
                     }
 
                     //                    log.debug(
