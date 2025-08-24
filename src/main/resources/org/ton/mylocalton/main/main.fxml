@@ -206,97 +206,97 @@
                        GridPane.columnIndex="1" GridPane.rowIndex="1"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario1" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="1"/>
+                             GridPane.rowIndex="1" onAction="#scenario1Action"/>
 
                 <Label text="Scenario 2 - uses V1R2 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
                        GridPane.columnIndex="1" GridPane.rowIndex="2"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario2" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="2"/>
+                             GridPane.rowIndex="2" onAction="#scenario2Action"/>
 
                 <Label text="Scenario 3 - uses V1R3 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
                        GridPane.columnIndex="1" GridPane.rowIndex="3"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario3" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="3"/>
+                             GridPane.rowIndex="3" onAction="#scenario3Action"/>
 
                 <Label text="Scenario 4 - uses V2R1 wallet, tops it up, uploads state-init and sends back to faucet 0.08 and to random address 0.01."
                        GridPane.columnIndex="1" GridPane.rowIndex="4"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario4" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="4"/>
+                             GridPane.rowIndex="4" onAction="#scenario4Action"/>
 
                 <Label text="Scenario 5 - uses V2R2 wallet, tops it up, uploads state-init and sends back to faucet 0.08 and to random address 0.01."
                        GridPane.columnIndex="1" GridPane.rowIndex="5"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario5" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="5"/>
+                             GridPane.rowIndex="5" onAction="#scenario5Action"/>
 
                 <Label text="Scenario 6 - uses V3R1 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
                        GridPane.columnIndex="1" GridPane.rowIndex="6"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario6" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="6"/>
+                             GridPane.rowIndex="6" onAction="#scenario6Action"/>
 
                 <Label text="Scenario 7 - uses V3R2 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
                        GridPane.columnIndex="1" GridPane.rowIndex="7"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario7" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="7"/>
+                             GridPane.rowIndex="7" onAction="#scenario7Action"/>
 
                 <Label text="Scenario 8 - uses V4R2 wallet, tops it up, uploads state-init and sends back to faucet 0.06."
                        GridPane.columnIndex="1" GridPane.rowIndex="8"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario8" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="8"/>
+                             GridPane.rowIndex="8" onAction="#scenario8Action"/>
 
                 <Label text="Scenario 9 - uses V4R2 wallet, installs plugin, collects fee, pauses and collects fee again, uninstalls plugin."
                        GridPane.columnIndex="1" GridPane.rowIndex="9"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario9" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="9"/>
+                             GridPane.rowIndex="9" onAction="#scenario9Action"/>
 
                 <Label text="Scenario 10 - uses V5R1 wallet, tops it up, uploads state-init and sends back to faucet 0.03."
                        GridPane.columnIndex="1" GridPane.rowIndex="10"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario10" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="10"/>
+                             GridPane.rowIndex="10" onAction="#scenario10Action"/>
 
                 <Label text="Scenario 11 - uses V5R1 wallet, tops it up, uploads state-init and transfer to 255 random recipients."
                        GridPane.columnIndex="1" GridPane.rowIndex="11"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario11" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="11"/>
+                             GridPane.rowIndex="11" onAction="#scenario11Action"/>
 
                 <Label text="Scenario 12 - uses V5R1 wallet as library and do a transfer to 255 random recipients."
                        GridPane.columnIndex="1" GridPane.rowIndex="12"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario12" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="12"/>
+                             GridPane.rowIndex="12" onAction="#scenario12Action"/>
 
                 <Label text="Scenario 13 - uses Highload Wallet V3 and do a transfer to 1000 random recipients."
                        GridPane.columnIndex="1" GridPane.rowIndex="13"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario13" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="13"/>
+                             GridPane.rowIndex="13" onAction="#scenario13Action"/>
 
                 <Label text="Scenario 14 - deploy MultiSig V2 with 2/3 consensus, deploy order, sign order from other wallet, execute order."
                        GridPane.columnIndex="1" GridPane.rowIndex="14"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario14" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="14"/>
+                             GridPane.rowIndex="14" onAction="#scenario14Action"/>
 
                 <Label text="Scenario 15 - deploy jetton minter, mint jettons, edit minter's jetton, change minter admin, transfer jettons, burn jettons."
                        GridPane.columnIndex="1" GridPane.rowIndex="15"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario15" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="15"/>
+                             GridPane.rowIndex="15" onAction="#scenario15Action"/>
 
                 <Label text="Scenario 16 - deploy nft collection, 2 nfts on it, nft marketplace, nft sale contract, cancel sale."
                        GridPane.columnIndex="1" GridPane.rowIndex="16"
                        styleClass="label-second-font-14"/>
                 <JFXCheckBox fx:id="scenario16" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
-                             GridPane.rowIndex="16"/>
+                             GridPane.rowIndex="16" onAction="#scenario16Action"/>
 
                 <Label text="Run selected scenarios every X seconds."
                        GridPane.columnIndex="1" GridPane.rowIndex="17"

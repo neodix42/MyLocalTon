@@ -670,7 +670,23 @@ public class MyLocalTon {
             runner =
                 Runner.builder()
                     .adnlLiteClient(adnlLiteClient)
-                    .period(settings.getBlockchainSettings().getDataGeneratorPeriod())
+                    .period(settings.getDataSettings().getDataGeneratorPeriod())
+                    .scenario1(settings.getDataSettings().getScenario1())
+                    .scenario2(settings.getDataSettings().getScenario2())
+                    .scenario3(settings.getDataSettings().getScenario3())
+                    .scenario4(settings.getDataSettings().getScenario4())
+                    .scenario5(settings.getDataSettings().getScenario5())
+                    .scenario6(settings.getDataSettings().getScenario6())
+                    .scenario7(settings.getDataSettings().getScenario7())
+                    .scenario8(settings.getDataSettings().getScenario8())
+                    .scenario9(settings.getDataSettings().getScenario9())
+                    .scenario10(settings.getDataSettings().getScenario10())
+                    .scenario11(settings.getDataSettings().getScenario11())
+                    .scenario12(settings.getDataSettings().getScenario12())
+                    .scenario13(settings.getDataSettings().getScenario13())
+                    .scenario14(settings.getDataSettings().getScenario14())
+                    .scenario15(settings.getDataSettings().getScenario15())
+                    .scenario16(settings.getDataSettings().getScenario16())
                     .build();
             runner.run();
           });

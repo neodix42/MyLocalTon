@@ -58,7 +58,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -176,6 +175,22 @@ public class MainController implements Initializable {
 
   @FXML public JFXCheckBox enableTonHttpApi;
   @FXML public JFXCheckBox enableData;
+  @FXML public JFXCheckBox scenario1;
+  @FXML public JFXCheckBox scenario2;
+  @FXML public JFXCheckBox scenario3;
+  @FXML public JFXCheckBox scenario4;
+  @FXML public JFXCheckBox scenario5;
+  @FXML public JFXCheckBox scenario6;
+  @FXML public JFXCheckBox scenario7;
+  @FXML public JFXCheckBox scenario8;
+  @FXML public JFXCheckBox scenario9;
+  @FXML public JFXCheckBox scenario10;
+  @FXML public JFXCheckBox scenario11;
+  @FXML public JFXCheckBox scenario12;
+  @FXML public JFXCheckBox scenario13;
+  @FXML public JFXCheckBox scenario14;
+  @FXML public JFXCheckBox scenario15;
+  @FXML public JFXCheckBox scenario16;
   @FXML public JFXToggleButton toggleData;
   @FXML public JFXToggleButton toggleExplorer;
   @FXML public JFXToggleButton toggleTonCenter;
@@ -1471,7 +1486,23 @@ public class MainController implements Initializable {
         settings.getNode7().getInitialValidatorWalletAmount().toString());
     validatorDefaultStake7.setText(settings.getNode7().getDefaultValidatorStake().toString());
 
-    scenarioPeriod.setText(settings.getBlockchainSettings().getDataGeneratorPeriod().toString());
+    scenarioPeriod.setText(settings.getDataSettings().getDataGeneratorPeriod().toString());
+    scenario1.setSelected(settings.getDataSettings().getScenario1());
+    scenario2.setSelected(settings.getDataSettings().getScenario2());
+    scenario3.setSelected(settings.getDataSettings().getScenario3());
+    scenario4.setSelected(settings.getDataSettings().getScenario4());
+    scenario5.setSelected(settings.getDataSettings().getScenario5());
+    scenario6.setSelected(settings.getDataSettings().getScenario6());
+    scenario7.setSelected(settings.getDataSettings().getScenario7());
+    scenario8.setSelected(settings.getDataSettings().getScenario8());
+    scenario9.setSelected(settings.getDataSettings().getScenario9());
+    scenario10.setSelected(settings.getDataSettings().getScenario10());
+    scenario11.setSelected(settings.getDataSettings().getScenario11());
+    scenario12.setSelected(settings.getDataSettings().getScenario12());
+    scenario13.setSelected(settings.getDataSettings().getScenario13());
+    scenario14.setSelected(settings.getDataSettings().getScenario14());
+    scenario15.setSelected(settings.getDataSettings().getScenario15());
+    scenario16.setSelected(settings.getDataSettings().getScenario16());
 
     tonLogLevel.addItem("DEBUG");
     tonLogLevel.addItem("WARNING");
@@ -1655,7 +1686,7 @@ public class MainController implements Initializable {
           enableData.setSelected(false);
           settings.getUiSettings().setEnableDataGenerator(false);
           settings
-              .getBlockchainSettings()
+              .getDataSettings()
               .setDataGeneratorPeriod(Long.parseLong(scenarioPeriod.getText()));
           saveSettings();
           MyLocalTon.getInstance().getRunner().stop();
@@ -1845,6 +1876,24 @@ public class MainController implements Initializable {
         .setInitialValidatorWalletAmount(new BigInteger(validatorWalletDeposit7.getText()));
     settings.getNode7().setDefaultValidatorStake(new BigInteger(validatorDefaultStake7.getText()));
     settings.getNode7().setTonLogLevel(tonLogLevel7.getValue());
+
+    settings.getDataSettings().setDataGeneratorPeriod(Long.parseLong(scenarioPeriod.getText()));
+    settings.getDataSettings().setScenario1(scenario1.isSelected());
+    settings.getDataSettings().setScenario2(scenario2.isSelected());
+    settings.getDataSettings().setScenario3(scenario3.isSelected());
+    settings.getDataSettings().setScenario4(scenario4.isSelected());
+    settings.getDataSettings().setScenario5(scenario5.isSelected());
+    settings.getDataSettings().setScenario6(scenario6.isSelected());
+    settings.getDataSettings().setScenario7(scenario7.isSelected());
+    settings.getDataSettings().setScenario8(scenario8.isSelected());
+    settings.getDataSettings().setScenario9(scenario9.isSelected());
+    settings.getDataSettings().setScenario10(scenario10.isSelected());
+    settings.getDataSettings().setScenario11(scenario11.isSelected());
+    settings.getDataSettings().setScenario12(scenario12.isSelected());
+    settings.getDataSettings().setScenario13(scenario13.isSelected());
+    settings.getDataSettings().setScenario14(scenario14.isSelected());
+    settings.getDataSettings().setScenario15(scenario15.isSelected());
+    settings.getDataSettings().setScenario16(scenario16.isSelected());
 
     MyLocalTonUtils.saveSettingsToGson(settings);
   }
@@ -3790,14 +3839,253 @@ public class MainController implements Initializable {
         });
   }
 
+  public void scenario1Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario1.isSelected()) {
+        log.debug("enabled scenario 1");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 1...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario1");
+      } else {
+        log.debug("disabled scenario 1");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 1...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario1");
+      }
+    }
+  }
+
+  public void scenario2Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario2.isSelected()) {
+        log.debug("enabled scenario 2");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 2...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario2");
+      } else {
+        log.debug("disabled scenario 2");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 2...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario2");
+      }
+    }
+  }
+
+  public void scenario3Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario3.isSelected()) {
+        log.debug("enabled scenario 3");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 3...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario3");
+      } else {
+        log.debug("disabled scenario 3");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 3...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario3");
+      }
+    }
+  }
+
+  public void scenario4Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario4.isSelected()) {
+        log.debug("enabled scenario 4");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 4...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario4");
+      } else {
+        log.debug("disabled scenario 4");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 4...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario4");
+      }
+    }
+  }
+
+  public void scenario5Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario5.isSelected()) {
+        log.debug("enabled scenario 5");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 5...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario5");
+      } else {
+        log.debug("disabled scenario 5");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 5...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario5");
+      }
+    }
+  }
+
+  public void scenario6Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario6.isSelected()) {
+        log.debug("enabled scenario 6");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 6...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario6");
+      } else {
+        log.debug("disabled scenario 6");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 6...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario6");
+      }
+    }
+  }
+
+  public void scenario7Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario7.isSelected()) {
+        log.debug("enabled scenario 7");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 7...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario7");
+      } else {
+        log.debug("disabled scenario 7");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 7...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario7");
+      }
+    }
+  }
+
+  public void scenario8Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario8.isSelected()) {
+        log.debug("enabled scenario 8");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 8...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario8");
+      } else {
+        log.debug("disabled scenario 8");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 8...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario8");
+      }
+    }
+  }
+
+  public void scenario9Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario9.isSelected()) {
+        log.debug("enabled scenario 9");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 9...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario9");
+      } else {
+        log.debug("disabled scenario 9");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 9...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario9");
+      }
+    }
+  }
+
+  public void scenario10Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario10.isSelected()) {
+        log.debug("enabled scenario 10");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 10...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario10");
+      } else {
+        log.debug("disabled scenario 10");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 10...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario10");
+      }
+    }
+  }
+
+  public void scenario11Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario11.isSelected()) {
+        log.debug("enabled scenario 11");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 11...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario11");
+      } else {
+        log.debug("disabled scenario 11");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 11...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario11");
+      }
+    }
+  }
+
+  public void scenario12Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario12.isSelected()) {
+        log.debug("enabled scenario 12");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 12...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario12");
+      } else {
+        log.debug("disabled scenario 12");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 12...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario12");
+      }
+    }
+  }
+
+  public void scenario13Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario13.isSelected()) {
+        log.debug("enabled scenario 13");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 13...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario13");
+      } else {
+        log.debug("disabled scenario 13");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 13...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario13");
+      }
+    }
+  }
+
+  public void scenario14Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario14.isSelected()) {
+        log.debug("enabled scenario 14");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 14...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario14");
+      } else {
+        log.debug("disabled scenario 14");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 14...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario14");
+      }
+    }
+  }
+
+  public void scenario15Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario15.isSelected()) {
+        log.debug("enabled scenario 15");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 15...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario15");
+      } else {
+        log.debug("disabled scenario 15");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 15...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario15");
+      }
+    }
+  }
+
+  public void scenario16Action() {
+    if (mainController.toggleData.isSelected()) {
+
+      if (mainController.scenario16.isSelected()) {
+        log.debug("enabled scenario 16");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 16...", 3));
+        MyLocalTon.getInstance().getRunner().runScenario("Scenario16");
+      } else {
+        log.debug("disabled scenario 16");
+        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 16...", 3));
+        MyLocalTon.getInstance().getRunner().stopScenario("Scenario16");
+      }
+    }
+  }
+
   public void startData() {
+    saveSettings();
     if (mainController.toggleData.isSelected()) {
       log.info("on data");
       settings.getUiSettings().setEnableDataGenerator(true);
       enableData.setSelected(true);
-      settings
-          .getBlockchainSettings()
-          .setDataGeneratorPeriod(Long.parseLong(scenarioPeriod.getText()));
+      settings.getDataSettings().setDataGeneratorPeriod(Long.parseLong(scenarioPeriod.getText()));
       saveSettings();
       Platform.runLater(
           () -> {

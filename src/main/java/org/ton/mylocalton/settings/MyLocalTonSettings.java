@@ -82,6 +82,7 @@ public class MyLocalTonSettings implements Serializable {
   FaucetDataWalletSettings faucetDataWalletSettings;
   UiSettings uiSettings;
   BlockchainSettings blockchainSettings;
+  DataSettings dataSettings;
 
   String mainWalletAddrBase64;
   String mainWalletAddrFull;
@@ -144,6 +145,7 @@ public class MyLocalTonSettings implements Serializable {
     faucetDataWalletSettings = new FaucetDataWalletSettings();
     uiSettings = new UiSettings();
     blockchainSettings = new BlockchainSettings();
+    dataSettings = new DataSettings();
 
     dbPool = new ConcurrentHashMap<>();
     activeNodes = new ConcurrentLinkedQueue<>();
@@ -273,6 +275,27 @@ public class MyLocalTonSettings implements Serializable {
     Long maxValidatorStake = 10000000L;
     Long minTotalValidatorStake = 10000L;
     BigDecimal maxFactor = new BigDecimal(3);
+  }
+
+  @Getter
+  @Setter
+  public static class DataSettings implements Serializable {
+    Boolean scenario1 = true;
+    Boolean scenario2 = true;
+    Boolean scenario3 = true;
+    Boolean scenario4 = true;
+    Boolean scenario5 = true;
+    Boolean scenario6 = true;
+    Boolean scenario7 = true;
+    Boolean scenario8 = true;
+    Boolean scenario9 = true;
+    Boolean scenario10 = true;
+    Boolean scenario11 = true;
+    Boolean scenario12 = true;
+    Boolean scenario13 = true;
+    Boolean scenario14 = true;
+    Boolean scenario15 = true;
+    Boolean scenario16 = true;
     Long dataGeneratorPeriod = 60L;
   }
 }
