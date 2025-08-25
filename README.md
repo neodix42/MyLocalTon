@@ -67,6 +67,7 @@ for ARM64 architecture use:
 * `explorer` - enables native ton blockchain explorer on start. Runs on port `8001`.
 * `ip.addr.xxx.xxx` - used to bind specific IP to MyLocalTon instead of 127.0.0.1.
 * `with-validators-N` - used to start MyLocalTon with N additional validators.
+* `elections=int,int,int,int,int` - used to start MyLocalTon with specific election timing. 5 integers represent these parameters in seconds: **electedFor**, **electionStartBefore**, **electionEndBefore**, **electionStakesFrozenFor** and the last one - **how often to participate in elections**.
 * `custom-binaries=absolute-path` - used to start MyLocalTon with custom TON binaries. The folder should contain
   validator-engine, validator-engine-console, lite-client, fift, func, generate-random-id, create-state, dht-server,
   tonlibjson, blockchain-explorer binaries and also **smartcont** and lib **folders** in its root folder.
@@ -74,6 +75,15 @@ for ARM64 architecture use:
 * `data-generator` - enabling data-generator on start, more
   info [here](https://github.com/neodix42/mylocalton-docker/wiki/Data-(traffic-generation)-container).
 * `version` - simply returns current version of MyLocalTon.
+
+### HTTP server
+By default, MyLocalTon starts with a simple HTTP server, that serves the following endpoints:
+
+| Endpoint                                           | Description                                                                                                                       |
+|----------------------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------|
+| http://localhost:8000/localhost.global.config.json | Serves the TON configuration file, that can be used in various SDK libraries, like tonlib or ton4j.                               |
+| http://localhost:8000/live                         | Returns OK when blockchain is ready.                                                                                              |
+| http://localhost:8000/add-validator                | Add node that starts participating in elections. Can be added up to 5 validators.  Supports GET parameter participate=true/false. |
 
 ###
 

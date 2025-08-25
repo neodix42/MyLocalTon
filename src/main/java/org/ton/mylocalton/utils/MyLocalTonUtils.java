@@ -2,8 +2,7 @@ package org.ton.mylocalton.utils;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.ton.mylocalton.actions.MyLocalTon.getInstance;
-import static org.ton.mylocalton.actions.MyLocalTon.tonlib;
+import static org.ton.mylocalton.actions.MyLocalTon.*;
 import static org.ton.mylocalton.executors.liteclient.LiteClientParser.CLOSE;
 import static org.ton.mylocalton.executors.liteclient.LiteClientParser.OPEN;
 import static org.ton.mylocalton.executors.liteclient.LiteClientParser.sb;
@@ -65,7 +64,14 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.jutils.jprocesses.JProcesses;
 import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
-import org.ton.mylocalton.actions.MyLocalTon;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.Participant;
+import org.ton.ton4j.smartcontract.types.WalletCodes;
+import org.ton.ton4j.smartcontract.types.WalletVersion;
+import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
+import org.ton.ton4j.tl.liteserver.responses.MasterchainInfoExt;
+import org.ton.ton4j.tlb.*;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
 import org.ton.mylocalton.executors.fift.Fift;
@@ -85,15 +91,6 @@ import org.ton.mylocalton.settings.Node6;
 import org.ton.mylocalton.settings.Node7;
 import org.ton.mylocalton.ui.controllers.MainController;
 import org.ton.mylocalton.wallet.MyWallet;
-import org.ton.ton4j.address.Address;
-import org.ton.ton4j.smartcontract.types.WalletCodes;
-import org.ton.ton4j.smartcontract.types.WalletVersion;
-import org.ton.ton4j.tlb.*;
-import org.ton.ton4j.tonlib.Tonlib;
-import org.ton.ton4j.tonlib.types.*;
-import org.ton.ton4j.tonlib.types.BlockHeader;
-import org.ton.ton4j.tonlib.types.BlockIdExt;
-import org.ton.ton4j.utils.Utils;
 
 @Slf4j
 public class MyLocalTonUtils {
@@ -230,9 +227,11 @@ public class MyLocalTonUtils {
 
   public static WalletVersion detectWalletVersion(String accountCode, Address address) {
 
-    accountCode = Hex.encodeHexString(Base64.decodeBase64(accountCode)).toUpperCase();
+    //    accountCode = Hex.encodeHexString(Base64.decodeBase64(accountCode)).toUpperCase(); // todo
+    // review
     //        log.debug("{} detected accountCode {}", address.toString(false), accountCode);
 
+    accountCode = accountCode.toUpperCase();
     WalletVersion walletVersion = null;
 
     if (StringUtils.isNoneEmpty(accountCode)) {
@@ -355,6 +354,7 @@ public class MyLocalTonUtils {
         log.debug("Do shutdown");
 
         Main.appActive.set(false);
+        adnlLiteClient.close();
 
         if (nonNull(App.dbPool)) {
           App.dbPool.closeDbs();
@@ -649,7 +649,7 @@ public class MyLocalTonUtils {
 
     //    LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
-    ConfigParams12 config12 = tonlib.getConfigParam12();
+    ConfigParams12 config12 = adnlLiteClient.getConfigParam12();
     log.info("configParam12 {}", config12);
 
     // log.debug(        "blockchain was launched at {}",
@@ -662,7 +662,7 @@ public class MyLocalTonUtils {
     //      log.error("cannot get result from config12");
     //    }
 
-    long activeElectionId = tonlib.getElectionId().longValue();
+    long activeElectionId = adnlLiteClient.getElectionId().longValue();
     //        liteClient.executeGetActiveElectionId(
     //            node, getInstance().getSettings().getElectorSmcAddrHex());
     log.info(
@@ -671,7 +671,7 @@ public class MyLocalTonUtils {
         MyLocalTonUtils.toLocal(activeElectionId),
         MyLocalTonUtils.toLocal(getCurrentTimeSeconds()));
 
-    ConfigParams15 config15 = tonlib.getConfigParam15();
+    ConfigParams15 config15 = adnlLiteClient.getConfigParam15();
 
     //    ResultConfig15 config15 =
     // LiteClientParser.parseConfig15(liteClient.executeGetElections(node));
@@ -679,10 +679,10 @@ public class MyLocalTonUtils {
 
     //    ResultConfig17 config17 =
     // LiteClientParser.parseConfig17(liteClient.executeGetMinMaxStake(node));
-    ConfigParams17 config17 = tonlib.getConfigParam17();
+    ConfigParams17 config17 = adnlLiteClient.getConfigParam17();
     log.debug("min/max stake {}", config17);
 
-    ConfigParams34 config34 = tonlib.getConfigParam34();
+    ConfigParams34 config34 = adnlLiteClient.getConfigParam34();
     //    ResultConfig34 config34 =
     // LiteClientParser.parseConfig34(liteClient.executeGetCurrentValidators(node));
     log.debug("current validators {}", config34);
@@ -693,28 +693,28 @@ public class MyLocalTonUtils {
         MyLocalTonUtils.toLocal(validators.getUTimeSince()),
         MyLocalTonUtils.toLocal(validators.getUTimeUntil()));
 
-    ConfigParams32 config32 = tonlib.getConfigParam32();
+    ConfigParams32 config32 = adnlLiteClient.getConfigParam32();
     Validators prevValidators = (Validators) config32.getPrevValidatorSet();
     //    ResultConfig32 config32 =
     // LiteClientParser.parseConfig32(liteClient.executeGetPreviousValidators(node));
     log.debug("previous validators {}", prevValidators);
 
-    ConfigParams36 config36 = tonlib.getConfigParam36();
+    ConfigParams36 config36 = adnlLiteClient.getConfigParam36();
     Validators nextValidators = (Validators) config36.getNextValidatorSet();
     //    ResultConfig36 config36 =
     // LiteClientParser.parseConfig36(liteClient.executeGetNextValidators(node));
-    log.debug("next validators {}", config36);
+    log.debug("next validators {}", nextValidators);
 
-    ConfigParams0 config0 = tonlib.getConfigParam0();
+    ConfigParams0 config0 = adnlLiteClient.getConfigParam0();
     log.debug("config address {}", config0.getConfigAddr());
 
-    ConfigParams1 config1 = tonlib.getConfigParam1();
+    ConfigParams1 config1 = adnlLiteClient.getConfigParam1();
     log.debug("elector address {}", config1.getElectorAddr());
 
-    ConfigParams2 config2 = tonlib.getConfigParam2();
+    ConfigParams2 config2 = adnlLiteClient.getConfigParam2();
     log.debug("minter address {}", config2.getMinterAddr());
 
-    List<Participant> participants = tonlib.getElectionParticipants();
+    List<Participant> participants = adnlLiteClient.getElectionParticipants();
     log.info("participants {}", participants);
 
     return ValidationParam.builder()
@@ -740,9 +740,7 @@ public class MyLocalTonUtils {
         .maxStake(config17.getMaxStake())
         .configAddr("-1:" + config0.getConfigAddr().toUpperCase())
         .electorAddr("-1:" + config1.getElectorAddr().toUpperCase())
-        .minterAddr(
-            "-1:"
-                + StringUtils.leftPad(config2.getMinterAddr(), 64, "0").toUpperCase())
+        .minterAddr("-1:" + StringUtils.leftPad(config2.getMinterAddr(), 64, "0").toUpperCase())
         .participants(participants)
         .previousValidators(((Validators) config32.getPrevValidatorSet()).getValidatorsAddrAsList())
         .currentValidators(((Validators) config34.getCurrValidatorSet()).getValidatorsAddrAsList())
@@ -789,11 +787,6 @@ public class MyLocalTonUtils {
           electionId,
           MyLocalTonUtils.toLocal(electionId));
 
-      //            WalletEntity foundWallet = App.dbPool.findWallet(WalletPk.builder()
-      //                    .wc(node.getWalletAddress().getWc())
-      //                    .hexAddress(node.getWalletAddress().getHexWalletAddress())
-      //                    .build());
-      //
       Fift fift = new Fift();
       String signature =
           fift.createValidatorElectionRequest(
@@ -1326,68 +1319,72 @@ public class MyLocalTonUtils {
     }
   }
 
-  public static long getSeqno(Tonlib tonlib, Address address) {
-
-    RunResult result = tonlib.runMethod(address, "seqno");
-    if (result.getExit_code() != 0) {
-      return -1;
-    }
-
-    TvmStackEntryNumber seqno = (TvmStackEntryNumber) result.getStack().get(0);
-
-    return seqno.getNumber().longValue();
-  }
+  //  public static long getSeqno(Tonlib tonlib, Address address) {
+  //
+  //    RunResult result = tonlib.runMethod(address, "seqno");
+  //    if (result.getExit_code() != 0) {
+  //      return -1;
+  //    }
+  //
+  //    TvmStackEntryNumber seqno = (TvmStackEntryNumber) result.getStack().get(0);
+  //
+  //    return seqno.getNumber().longValue();
+  //  }
 
   public static BigDecimal amountFromNano(String amount) {
     return new BigDecimal(amount).divide(new BigDecimal(1_000_000_000));
   }
 
-  public static long getSyncDelay() {
-    MasterChainInfo masterChainInfo = MyLocalTon.tonlib.getLast();
-    BlockHeader blockHeader = MyLocalTon.tonlib.getBlockHeader(masterChainInfo.getLast());
-    return Utils.now() - blockHeader.getGen_utime();
+  public static long getSyncDelay() throws Exception {
+    MasterchainInfoExt masterChainInfo = adnlLiteClient.getMasterchainInfoExt(0);
+    //    org.ton.ton4j.tl.liteserver.responses.BlockHeader blockHeader =
+    // adnlLiteClient.getBlockHeader(masterChainInfo.getLast(),0);
+    return Utils.now() - masterChainInfo.getNow(); // tood review get last?
   }
 
-  public static ResultLastBlock getLast() {
-    MasterChainInfo masterChainInfo = tonlib.getLast();
+  public static ResultLastBlock getLast() throws Exception {
+    MasterchainInfo masterChainInfo = adnlLiteClient.getMasterchainInfo();
     if (nonNull(masterChainInfo)) {
-      BlockIdExt blockIdExt = masterChainInfo.getLast();
+      org.ton.ton4j.tl.liteserver.responses.BlockIdExt blockIdExt = masterChainInfo.getLast();
       return getLast(blockIdExt);
     } else {
       return null;
     }
   }
 
-  public static ResultLastBlock getLast(BlockIdExt blockIdExt) {
+  public static ResultLastBlock getLast(org.ton.ton4j.tl.liteserver.responses.BlockIdExt blockIdExt)
+      throws Exception {
 
-    BlockHeader blockHeader = tonlib.getBlockHeader(blockIdExt);
+    MasterchainInfoExt masterchainInfoExt = adnlLiteClient.getMasterchainInfoExt(0);
 
     return ResultLastBlock.builder()
         .seqno(BigInteger.valueOf(blockIdExt.getSeqno()))
-        .shard(Utils.longToUnsignedBigInteger(blockIdExt.getShard()).toString(16))
-        .wc(blockIdExt.getWorkchain())
-        .fileHash(Utils.base64ToHexString(blockIdExt.getFile_hash()))
-        .rootHash(Utils.base64ToHexString(blockIdExt.getRoot_hash()))
-        .createdAt(blockHeader.getGen_utime())
+        .shard(blockIdExt.getShard())
+        .wc((long) blockIdExt.getWorkchain())
+        .fileHash(blockIdExt.getFileHash())
+        .rootHash(blockIdExt.getRootHash())
+        .createdAt((long) masterchainInfoExt.getNow())
         .blockIdExt(blockIdExt)
         .build();
   }
 
-  public static List<ResultLastBlock> getShardsInBlock(ResultLastBlock lastBlock) {
+  public static List<ResultLastBlock> getShardsInBlock(ResultLastBlock lastBlock) throws Exception {
     List<ResultLastBlock> result = new ArrayList<>();
 
-    Shards shards = tonlib.getShards(lastBlock.getBlockIdExt());
-    for (BlockIdExt block : shards.getShards()) {
-      BlockHeader blockHeader = tonlib.getBlockHeader(block);
+    org.ton.ton4j.tl.liteserver.responses.AllShardsInfo shards =
+        adnlLiteClient.getAllShardsInfo(lastBlock.getBlockIdExt());
+    for (ShardDescr shardDescr : shards.getShards()) {
+
+      //      BlockHeader blockHeader = adnlLiteClient.getBlockHeader(shardDescr);
       result.add(
           ResultLastBlock.builder()
-              .seqno(BigInteger.valueOf(block.getSeqno()))
-              .shard(Utils.longToUnsignedBigInteger(block.getShard()).toString(16))
-              .wc(block.getWorkchain())
-              .fileHash(Utils.base64ToHexString(block.getFile_hash()))
-              .rootHash(Utils.base64ToHexString(block.getRoot_hash()))
-              .createdAt(blockHeader.getGen_utime())
-              .blockIdExt(block)
+              .seqno(BigInteger.valueOf(shardDescr.getSeqNo()))
+              .shard(shardDescr.getNextValidatorShard())
+              .wc(0L)
+              .fileHash(Utils.base64ToHexString(shardDescr.getFileHash()))
+              .rootHash(Utils.base64ToHexString(shardDescr.getRootHash()))
+              .createdAt(shardDescr.getGenUTime())
+              .blockIdExt(lastBlock.getBlockIdExt())
               .build());
     }
     return result;

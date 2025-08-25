@@ -4,9 +4,9 @@ import static org.ton.mylocalton.data.Runner.dataHighloadFaucetAddress;
 
 import java.math.BigInteger;
 import lombok.extern.slf4j.Slf4j;
+import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.smartcontract.types.WalletV3Config;
 import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R1;
-import org.ton.ton4j.tonlib.Tonlib;
 import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.db.DataDB;
 
@@ -14,21 +14,21 @@ import org.ton.mylocalton.data.db.DataDB;
 @Slf4j
 public class Scenario7 implements Scenario {
 
-  Tonlib tonlib;
+  AdnlLiteClient adnlLiteClient;
 
-  public Scenario7(Tonlib tonlib) {
-    this.tonlib = tonlib;
+  public Scenario7(AdnlLiteClient adnlLiteClient) {
+    this.adnlLiteClient = adnlLiteClient;
   }
 
   public void run() {
     log.info("STARTED SCENARIO 7");
 
     long walletId = Math.abs(Utils.getRandomInt());
-    WalletV3R1 contract = WalletV3R1.builder().tonlib(tonlib).walletId(walletId).build();
+    WalletV3R1 contract = WalletV3R1.builder().adnlLiteClient(adnlLiteClient).walletId(walletId).build();
 
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(0.1));
-    tonlib.waitForBalanceChange(contract.getAddress(), 60);
+    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
     contract.deploy();
     contract.waitForDeployment();
 

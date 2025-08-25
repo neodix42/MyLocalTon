@@ -1,6 +1,6 @@
 package org.ton.mylocalton.ui.controllers;
 
-import static org.ton.mylocalton.actions.MyLocalTon.tonlib;
+import static org.ton.mylocalton.actions.MyLocalTon.adnlLiteClient;
 import static org.ton.mylocalton.utils.MyLocalTonUtils.PATTERN;
 
 import com.google.gson.Gson;
@@ -39,7 +39,7 @@ import org.fxmisc.richtext.CodeArea;
 import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
-import org.ton.ton4j.tonlib.types.BlockIdExt;
+import org.ton.ton4j.tl.liteserver.responses.BlockId;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.BlockEntity;
 import org.ton.mylocalton.db.entities.BlockPk;
@@ -51,6 +51,7 @@ import org.ton.mylocalton.executors.liteclient.api.block.Block;
 import org.ton.mylocalton.main.App;
 import org.ton.mylocalton.settings.Node;
 import org.ton.mylocalton.utils.MyLocalTonUtils;
+import org.ton.ton4j.tl.liteserver.responses.BlockIdExt;
 
 @Slf4j
 public class BlockController {
@@ -117,13 +118,13 @@ public class BlockController {
 
   private Block getBlockFromServerAndUpdateDb(Node node, BlockPk blockPk) throws Exception {
     // remove
-    BlockIdExt blockIdExt =
-        tonlib.lookupBlock(
-            Long.parseLong(seqno.getText()),
-            Long.parseLong(wc.getText()),
-            new BigInteger(shard.getText(), 16).longValue(),
-            0,
-            0);
+    BlockId blockId =
+        BlockId.builder()
+            .seqno(Integer.parseInt(seqno.getText()))
+            .workchain(Integer.parseInt(wc.getText()))
+            .shard(new BigInteger(shard.getText(), 16).longValue())
+            .build();
+    BlockIdExt blockIdExt = adnlLiteClient.lookupBlock(blockId, 1, 0, 0).getId();
     ResultLastBlock lightBlock = MyLocalTonUtils.getLast(blockIdExt);
 
     LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);

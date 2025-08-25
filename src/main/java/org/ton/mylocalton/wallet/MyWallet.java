@@ -2,7 +2,7 @@ package org.ton.mylocalton.wallet;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.ton.mylocalton.actions.MyLocalTon.tonlib;
+import static org.ton.mylocalton.actions.MyLocalTon.adnlLiteClient;
 
 import com.iwebpp.crypto.TweetNaclFast;
 import java.io.File;
@@ -15,14 +15,10 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.ton.mylocalton.enums.LiteClientEnum;
-import org.ton.mylocalton.executors.fift.Fift;
-import org.ton.mylocalton.executors.liteclient.LiteClient;
-import org.ton.mylocalton.parameters.SendToncoinsParam;
-import org.ton.mylocalton.settings.Node;
 import org.ton.ton4j.address.Address;
 import org.ton.ton4j.cell.Cell;
 import org.ton.ton4j.mnemonic.Mnemonic;
+import org.ton.ton4j.smartcontract.SendResponse;
 import org.ton.ton4j.smartcontract.highload.HighloadWallet;
 import org.ton.ton4j.smartcontract.highload.HighloadWalletV3;
 import org.ton.ton4j.smartcontract.types.*;
@@ -35,9 +31,13 @@ import org.ton.ton4j.smartcontract.wallet.v2.WalletV2R2;
 import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R1;
 import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
 import org.ton.ton4j.smartcontract.wallet.v4.WalletV4R2;
-import org.ton.ton4j.tonlib.types.ExtMessageInfo;
-import org.ton.ton4j.tonlib.types.RawAccountState;
+import org.ton.ton4j.tlb.Account;
 import org.ton.ton4j.utils.Utils;
+import org.ton.mylocalton.enums.LiteClientEnum;
+import org.ton.mylocalton.executors.fift.Fift;
+import org.ton.mylocalton.executors.liteclient.LiteClient;
+import org.ton.mylocalton.parameters.SendToncoinsParam;
+import org.ton.mylocalton.settings.Node;
 
 @Slf4j
 public class MyWallet {
@@ -57,12 +57,12 @@ public class MyWallet {
   public void walletHasContractInstalled(
       LiteClient liteClient, Node fromNode, Address walletAddress, String contractQueryBocFile)
       throws Exception {
-    RawAccountState accountState;
+    Account accountState;
     do {
-      Thread.sleep(2000);
-      accountState = tonlib.getRawAccountState(walletAddress);
+      Utils.sleep(2);
+      accountState = adnlLiteClient.getAccount(walletAddress);
       log.debug("waiting for smc to be installed on {}", walletAddress.toString(false));
-    } while (isNull(accountState) || StringUtils.isEmpty(accountState.getCode()));
+    } while (isNull(accountState) || isNull(accountState.getStateInit()) || isNull(accountState.getStateInit().getCode()));
 
     if (StringUtils.isNotEmpty(contractQueryBocFile)) {
       FileUtils.deleteQuietly(new File(fromNode.getTonDbDir() + contractQueryBocFile));
@@ -73,10 +73,10 @@ public class MyWallet {
   }
 
   public void walletHasEnoughFunds(Address walletAddress) throws Exception {
-    RawAccountState accountState;
+    Account accountState;
     do {
-      Thread.sleep(2000);
-      accountState = tonlib.getRawAccountState(walletAddress);
+      Utils.sleep(2);
+      accountState = adnlLiteClient.getAccount(walletAddress);
       log.debug("waiting for smc to be installed on {}", walletAddress.toString(false));
     } while (isNull(accountState)
         || (new BigDecimal(accountState.getBalance())
@@ -101,7 +101,7 @@ public class MyWallet {
           liteClient.executeSendfile(fromNode, walletAddress.getWalletQueryFileBocLocation());
       log.debug(resultSendBoc);
     } else {
-      tonlib.sendRawMessage(walletAddress.getMessage().toCell().toBase64(false));
+      adnlLiteClient.sendMessage(walletAddress.getMessage());
     }
 
     walletHasContractInstalled(
@@ -126,7 +126,7 @@ public class MyWallet {
           || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1))) {
         log.info("sendTonCoins, does not have seqno, use default seqno=0");
       } else {
-        seqno = tonlib.getSeqno(fromAddress);
+        seqno = adnlLiteClient.getSeqno(fromAddress);
       }
 
       log.debug("seqno {}", seqno);
@@ -144,11 +144,11 @@ public class MyWallet {
                         Utils.hexToSignedBytes(
                             sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
                 .wc(sendToncoinsParam.getFromWallet().getWc())
-                .tonlib(tonlib)
+                .adnlLiteClient(adnlLiteClient)
                 .walletId(sendToncoinsParam.getFromWallet().getSubWalletId())
                 .queryId(BigInteger.ZERO)
                 .build();
-        log.info("balance {}", tonlib.getAccountBalance(highloadWallet.getAddress()));
+        log.info("balance {}", adnlLiteClient.getBalance(highloadWallet.getAddress()));
         HighloadConfig config =
             HighloadConfig.builder()
                 .walletId(sendToncoinsParam.getFromWallet().getSubWalletId())
@@ -161,8 +161,8 @@ public class MyWallet {
                             .amount(sendToncoinsParam.getAmount())
                             .build()))
                 .build();
-        ExtMessageInfo extMessageInfo = highloadWallet.send(config);
-        log.info("ExtMessageInfo {}", extMessageInfo);
+        SendResponse sendResponse = highloadWallet.send(config);
+        log.info("ExtMessageInfo {}", sendResponse);
       } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1)) {
         WalletV1R1 walletV1R1 =
             WalletV1R1.builder()
@@ -171,7 +171,7 @@ public class MyWallet {
                         Utils.hexToSignedBytes(
                             sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
                 .wc(sendToncoinsParam.getWorkchain())
-                .tonlib(tonlib)
+                .adnlLiteClient(adnlLiteClient)
                 .build();
 
         WalletV1R1Config walletV1R1Config =
@@ -190,7 +190,7 @@ public class MyWallet {
                         Utils.hexToSignedBytes(
                             sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
                 .wc(sendToncoinsParam.getWorkchain())
-                .tonlib(tonlib)
+                .adnlLiteClient(adnlLiteClient)
                 .build();
 
         WalletV1R2Config walletV1R2Config =
@@ -209,7 +209,7 @@ public class MyWallet {
                         Utils.hexToSignedBytes(
                             sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
                 .wc(sendToncoinsParam.getWorkchain())
-                .tonlib(tonlib)
+                .adnlLiteClient(adnlLiteClient)
                 .build();
 
         WalletV1R3Config walletV1R3Config =
@@ -228,7 +228,7 @@ public class MyWallet {
                         Utils.hexToSignedBytes(
                             sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
                 .wc(sendToncoinsParam.getWorkchain())
-                .tonlib(tonlib)
+                .adnlLiteClient(adnlLiteClient)
                 .build();
 
         WalletV2R1Config walletV2R1Config =
@@ -247,7 +247,7 @@ public class MyWallet {
                         Utils.hexToSignedBytes(
                             sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
                 .wc(sendToncoinsParam.getWorkchain())
-                .tonlib(tonlib)
+                .adnlLiteClient(adnlLiteClient)
                 .build();
 
         WalletV2R2Config walletV2R2Config =
@@ -267,7 +267,7 @@ public class MyWallet {
                             sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
                 .wc(sendToncoinsParam.getWorkchain())
                 .walletId(sendToncoinsParam.getFromSubWalletId())
-                .tonlib(tonlib)
+                .adnlLiteClient(adnlLiteClient)
                 .build();
 
         WalletV3Config walletV3Config =
@@ -288,7 +288,7 @@ public class MyWallet {
                             sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
                 .wc(sendToncoinsParam.getWorkchain())
                 .walletId(sendToncoinsParam.getFromSubWalletId())
-                .tonlib(tonlib)
+                .adnlLiteClient(adnlLiteClient)
                 .build();
 
         if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
@@ -335,7 +335,7 @@ public class MyWallet {
                             sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
                 .wc(sendToncoinsParam.getWorkchain())
                 .walletId(sendToncoinsParam.getFromSubWalletId())
-                .tonlib(tonlib)
+                .adnlLiteClient(adnlLiteClient)
                 .build();
 
         WalletV4R2Config walletV4Config =
@@ -377,7 +377,7 @@ public class MyWallet {
       } else {
         while (true) {
           Utils.sleep(3);
-          long newSeqno = tonlib.getSeqno(fromAddress);
+          long newSeqno = adnlLiteClient.getSeqno(fromAddress);
           if (newSeqno > seqno) {
             return true;
           }
@@ -412,58 +412,58 @@ public class MyWallet {
         return WalletV1R1.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
             .wc(wc)
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .build();
       case V1R2:
         return WalletV1R2.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
             .wc(wc)
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .build();
       case V1R3:
         return WalletV1R3.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
             .wc(wc)
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .build();
       case V2R1:
         return WalletV2R1.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
             .wc(wc)
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .build();
       case V2R2:
         return WalletV2R2.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
             .wc(wc)
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .build();
       case V3R1:
         return WalletV3R1.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
             .wc(wc)
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .walletId(walletId)
             .build();
       case V3R2:
         return WalletV3R2.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
             .wc(wc)
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .walletId(walletId)
             .build();
       case V4R2:
         return WalletV4R2.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
             .wc(wc)
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .walletId(walletId)
             .build();
       case highload:
         return HighloadWallet.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
             .wc(wc)
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .walletId(walletId)
             .queryId(BigInteger.valueOf(Instant.now().getEpochSecond() + 5 * 60L << 32))
             .build();
@@ -471,7 +471,7 @@ public class MyWallet {
         return HighloadWalletV3.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
             .wc(wc)
-            .tonlib(tonlib)
+            .adnlLiteClient(adnlLiteClient)
             .walletId(walletId)
             .build();
       default:
