@@ -43,13 +43,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.ton.mylocalton.utils.WalletVersion;
-import org.ton.ton4j.address.Address;
-import org.ton.ton4j.adnl.AdnlLiteClient;
-import org.ton.ton4j.tl.liteserver.responses.BlockTransactionsExt;
-import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
-import org.ton.ton4j.tlb.*;
-import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.Runner;
 import org.ton.mylocalton.db.entities.BlockEntity;
 import org.ton.mylocalton.db.entities.TxEntity;
@@ -77,8 +70,15 @@ import org.ton.mylocalton.ui.custom.events.CustomEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomSearchEvent;
 import org.ton.mylocalton.utils.MyLocalTonUtils;
+import org.ton.mylocalton.utils.WalletVersion;
 import org.ton.mylocalton.wallet.MyWallet;
 import org.ton.mylocalton.wallet.WalletAddress;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.AdnlLiteClient;
+import org.ton.ton4j.tl.liteserver.responses.BlockTransactionsExt;
+import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
+import org.ton.ton4j.tlb.*;
+import org.ton.ton4j.utils.Utils;
 
 @Slf4j
 @Getter
@@ -121,10 +121,10 @@ public class MyLocalTon {
   AtomicLong txsScrollBarHighWaterMark = new AtomicLong(30);
   AtomicLong accountsScrollBarHighWaterMark = new AtomicLong(30);
   ScheduledExecutorService monitorExecutorService;
+  Runner runner;
   private Runnable fetchTask;
   @Setter @Getter private MyLocalTonSettings settings;
   private ConfigHttpServerManager configHttpServerManager;
-  Runner runner;
 
   private MyLocalTon() {
     //    prevBlockSeqno = new AtomicBigInteger(BigInteger.ZERO);
@@ -575,7 +575,7 @@ public class MyLocalTon {
         .scheduleWithFixedDelay(
             () -> {
               Thread.currentThread().setName("MyLocalTon - Validation Monitor");
-              log.info("haja");
+
               if (Main.appActive.get()) {
                 try {
                   long currentTime = MyLocalTonUtils.getCurrentTimeSeconds();

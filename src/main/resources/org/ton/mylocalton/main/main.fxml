@@ -197,7 +197,8 @@
                     <RowConstraints/>
                 </rowConstraints>
 
-                <Label fx:id="dataToggleLabel" text="Start data generator" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                <Label fx:id="dataToggleLabel" text="Start data generator" GridPane.columnIndex="1"
+                       GridPane.rowIndex="0"
                        styleClass="label-second-font-14"/>
                 <JFXToggleButton fx:id="toggleData" GridPane.columnIndex="0" maxWidth="40"
                                  GridPane.rowIndex="0" onAction="#startData"/>
@@ -302,40 +303,14 @@
                        GridPane.columnIndex="1" GridPane.rowIndex="17"
                        styleClass="label-second-font-14"/>
                 <JFXTextField fx:id="scenarioPeriod" GridPane.columnIndex="0" maxWidth="40"
-                             GridPane.rowIndex="17"/>
+                              GridPane.rowIndex="17"/>
             </GridPane>
         </dataPane>
 
         <explorerPane>
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
                   AnchorPane.topAnchor="10.0">
-            <GridPane fx:id="explorerPaneGrid" xmlns:fx="http://javafx.com/fxml" hgap="15" vgap="16">
-            <padding>
-                <Insets bottom="0.0" left="0.0" right="0.0" top="0.0"/>
-            </padding>
-            <columnConstraints>
-                <ColumnConstraints/>
-                <ColumnConstraints/>
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints/>
-            </rowConstraints>
-
-            <Label fx:id="explorerToggleLabel" text="Start blockchain explorer" GridPane.columnIndex="1" GridPane.rowIndex="0"
-                   styleClass="label-second-font-14"/>
-            <JFXToggleButton fx:id="toggleExplorer" GridPane.columnIndex="0"
-                             GridPane.rowIndex="0" onAction="#startExplorer" />
-            </GridPane>
-
-                <WebView fx:id="webView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-            </VBox>
-        </explorerPane>
-
-        <tonHttpApiPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
-                  AnchorPane.topAnchor="10.0">
-                <GridPane fx:id="tonCenterPaneGrid" xmlns:fx="http://javafx.com/fxml" hgap="15" vgap="16">
+                <GridPane xmlns:fx="http://javafx.com/fxml" fx:id="explorerPaneGrid" hgap="15" vgap="16">
                     <padding>
                         <Insets bottom="0.0" left="0.0" right="0.0" top="0.0"/>
                     </padding>
@@ -347,14 +322,48 @@
                         <RowConstraints/>
                     </rowConstraints>
 
-                    <Label fx:id="tonHttpApiToggleLabel" text="Start TON Center" GridPane.columnIndex="1" GridPane.rowIndex="0"
-                    styleClass="label-second-font-14"/>
+                    <Label fx:id="explorerToggleLabel" text="Start blockchain explorer" GridPane.columnIndex="1"
+                           GridPane.rowIndex="0"
+                           styleClass="label-second-font-14"/>
+                    <JFXToggleButton fx:id="toggleExplorer" GridPane.columnIndex="0"
+                                     GridPane.rowIndex="0" onAction="#startExplorer"/>
+                </GridPane>
+
+                <WebView fx:id="webView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+            </VBox>
+        </explorerPane>
+
+        <tonHttpApiPane>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <GridPane xmlns:fx="http://javafx.com/fxml" fx:id="tonCenterPaneGrid" hgap="15" vgap="16">
+                    <padding>
+                        <Insets bottom="0.0" left="0.0" right="0.0" top="0.0"/>
+                    </padding>
+                    <columnConstraints>
+                        <ColumnConstraints/>
+                        <ColumnConstraints/>
+                        <ColumnConstraints/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints/>
+                    </rowConstraints>
+
                     <JFXToggleButton fx:id="toggleTonCenter" selected="true" GridPane.columnIndex="0"
                                      GridPane.rowIndex="0" onAction="#startTonCenter"/>
+                    <Label fx:id="tonHttpApiToggleLabel" text="Start TON Center" GridPane.columnIndex="1"
+                           GridPane.rowIndex="0"
+                           styleClass="label-second-font-14"/>
+                    <Label text="Install manually first, see intructions here." GridPane.columnIndex="2"
+                           GridPane.rowIndex="0"
+                           styleClass="label-second-font-14"
+                           style="-fx-text-fill: #0088CC;" onMouseClicked="#openLink"/>
+
                 </GridPane>
 
                 <Label fx:id="webViewTonHttpApi" onMouseClicked="#webViewLinkOpen"
-                       style="-fx-cursor: hand; -fx-text-fill: #0000FF; -fx-font-size: 24px;"/>
+                       style="-fx-cursor: hand; -fx-text-fill: #0000FF; -fx-font-size: 20px;"/>
             </VBox>
         </tonHttpApiPane>
 
@@ -1579,123 +1588,220 @@
         </aboutPane>
 
         <blockchainPane>
+            <Pane>
+                <GridPane xmlns:fx="http://javafx.com/fxml" hgap="15" vgap="20">
+                    <padding>
+                        <Insets bottom="50.0" left="50.0" right="50.0" top="10.0"/>
+                    </padding>
+                    <columnConstraints>
+                        <ColumnConstraints/>
+                        <ColumnConstraints/>
+                        <ColumnConstraints/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                    </rowConstraints>
 
-            <BorderPane AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="10.0"
-                        AnchorPane.bottomAnchor="10.0" style="-fx-background-color: #FFFFFF;">
-                <center>
-                    <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #FFFFFF;">
-                        <VBox spacing="20.0" style="-fx-padding: 0 0 20 0; -fx-background-color: #FFFFFF;">
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Global ID" styleClass="label-second-font-14">
+                            <tooltip>
+                                <Tooltip text="Negative value means a test instance of the blockchain"/>
+                            </tooltip>
+                        </Label>
+                        <CustomTextField fx:id="globalId" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Initial balance" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="initialBalance" prefWidth="300.0"/>
+                    </VBox>
 
-                            <Label styleClass="label-second-font-16" style="-fx-text-fill: #F72B50;"
-                                   text="Change of these settings requires TON blockchain reset"/>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label text="max-validators" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="maxValidators" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Label text="max-main-validators" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="maxMainValidators" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                        <Label text="min-validators" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="minValidators" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="Global ID" styleClass="label-second-font-14">
-                                        <tooltip>
-                                            <Tooltip text="Negative value means a test instance of the blockchain"/>
-                                        </tooltip>
-                                    </Label>
-                                    <CustomTextField fx:id="globalId" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="Initial balance" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="initialBalance" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                        <Label text="elected-for" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="electedFor" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <Label text="elect-start-before" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="electionStartBefore" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                        <Label text="elect-end-before" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="electionEndBefore" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="max-validators" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="maxValidators" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="max-main-validators" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="maxMainValidators" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="min-validators" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="minValidators" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="elected-for" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="electedFor" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                        <Label text="min-stake" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="minStake" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <Label text="max-stake" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="maxStake" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                        <Label text="min-total-stake" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="minTotalStake" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="min-stake" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="minStake" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="elect-start-before" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="electionStartBefore" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="max-stake" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="maxStake" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="min-total-stake" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="minTotalStake" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                        <Label text="max-factor" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="maxFactor" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="stakes-frozen-for" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="stakesFrozenFor" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="max-factor" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="maxFactor" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                        <Label text="stakes-frozen-for" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="stakesFrozenFor" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="gas-price-wc" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="gasPrice" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="gas-price-mc" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="gasPriceMc" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="cell-price-wc" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="cellPrice" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="cell-price-mc" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="cellPriceMc" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="5">
+                        <Label text="gas-price-wc" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="gasPrice" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                        <Label text="gas-price-mc" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="gasPriceMc" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="elect-end-before" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="electionEndBefore" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
-                            <HBox style="-fx-padding: 40 0 0 0;">
-                                <CustomButton onAction="#resetAction" prefWidth="220.0" text="Reset TON Blockchain"
-                                              styleClass="custom-button-btn"/>
-                            </HBox>
 
-                        </VBox>
-                    </ScrollPane>
-                </center>
-            </BorderPane>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="6">
+                        <Label text="cell-price-wc" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="cellPrice" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                        <Label text="cell-price-mc" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="cellPriceMc" prefWidth="300.0"/>
+                    </VBox>
+
+
+                    <CustomButton GridPane.columnIndex="0" GridPane.rowIndex="7" onAction="#resetAction"
+                                  prefWidth="220.0" text="Reset TON Blockchain"
+                                  styleClass="custom-button-btn"/>
+
+                </GridPane>
+            </Pane>
+
+            <!--            <BorderPane AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="10.0"-->
+            <!--                        AnchorPane.bottomAnchor="10.0" style="-fx-background-color: #FFFFFF;">-->
+            <!--                <center>-->
+            <!--                    <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #FFFFFF;">-->
+            <!--                        <VBox spacing="20.0" style="-fx-padding: 0 0 20 0; -fx-background-color: #FFFFFF;">-->
+
+            <!--                            <Label styleClass="label-second-font-16" style="-fx-text-fill: #F72B50;"-->
+            <!--                                   text="Change of these settings requires TON blockchain reset"/>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                <VBox spacing="10.0">-->
+            <!--                                    <Label text="max-validators" styleClass="label-second-font-14"/>-->
+            <!--                                    <CustomTextField fx:id="maxValidators" prefWidth="300.0"/>-->
+            <!--                                </VBox>-->
+            <!--                                <VBox spacing="10.0">-->
+            <!--                                    <Label text="max-main-validators" styleClass="label-second-font-14"/>-->
+            <!--                                    <CustomTextField fx:id="maxMainValidators" prefWidth="300.0"/>-->
+            <!--                                </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                <VBox spacing="10.0">-->
+            <!--                                    <Label text="min-validators" styleClass="label-second-font-14"/>-->
+            <!--                                    <CustomTextField fx:id="minValidators" prefWidth="300.0"/>-->
+            <!--                                </VBox>-->
+            <!--                                <VBox spacing="10.0">-->
+            <!--                                    <Label text="elected-for" styleClass="label-second-font-14"/>-->
+            <!--                                    <CustomTextField fx:id="electedFor" prefWidth="300.0"/>-->
+            <!--                                </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="min-stake" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="minStake" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="elect-start-before" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="electionStartBefore" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="max-stake" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="maxStake" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="min-total-stake" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="minTotalStake" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="stakes-frozen-for" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="stakesFrozenFor" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="max-factor" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="maxFactor" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                                        <HBox spacing="40.0">-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="gas-price-wc" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="gasPrice" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="gas-price-mc" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="gasPriceMc" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="cell-price-wc" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="cellPrice" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="cell-price-mc" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="cellPriceMc" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                <VBox spacing="10.0">-->
+            <!--                                    <Label text="elect-end-before" styleClass="label-second-font-14"/>-->
+            <!--                                    <CustomTextField fx:id="electionEndBefore" prefWidth="300.0"/>-->
+            <!--                                </VBox>-->
+            <!--                            </HBox>-->
+            <!--                            <HBox style="-fx-padding: 40 0 0 0;">-->
+            <!--                                <CustomButton onAction="#resetAction" prefWidth="220.0" text="Reset TON Blockchain"-->
+            <!--                                              styleClass="custom-button-btn"/>-->
+            <!--                            </HBox>-->
+
+            <!--                        </VBox>-->
+            <!--                    </ScrollPane>-->
+            <!--                </center>-->
+            <!--            </BorderPane>-->
 
         </blockchainPane>
 

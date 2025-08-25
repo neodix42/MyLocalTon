@@ -6,9 +6,12 @@ import java.math.BigInteger;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
-
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
+import org.ton.mylocalton.data.db.DataDB;
+import org.ton.mylocalton.data.db.DataWalletEntity;
+import org.ton.mylocalton.data.db.DataWalletPk;
+import org.ton.mylocalton.data.scenarios.Scenario;
 import org.ton.ton4j.address.Address;
 import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.smartcontract.SendResponse;
@@ -16,10 +19,6 @@ import org.ton.ton4j.smartcontract.highload.HighloadWallet;
 import org.ton.ton4j.smartcontract.types.Destination;
 import org.ton.ton4j.smartcontract.types.HighloadConfig;
 import org.ton.ton4j.utils.Utils;
-import org.ton.mylocalton.data.db.DataDB;
-import org.ton.mylocalton.data.db.DataWalletEntity;
-import org.ton.mylocalton.data.db.DataWalletPk;
-import org.ton.mylocalton.data.scenarios.Scenario;
 
 @Slf4j
 @Builder
@@ -30,6 +29,9 @@ public class Runner {
   public static Address dataHighloadFaucetAddress;
   public static DataDB dataDB;
   public static Queue<String> scenarios = new ConcurrentLinkedQueue<>();
+  ScheduledExecutorService topUpExecutor;
+  Map<String, ScheduledExecutorService> runScenarioExecutor;
+  ScheduledExecutorService cleanQueueExecutor;
   private HighloadWallet dataHighloadFaucet;
   private long period;
   private boolean scenario1;
@@ -48,11 +50,7 @@ public class Runner {
   private boolean scenario14;
   private boolean scenario15;
   private boolean scenario16;
-
   private AdnlLiteClient adnlLiteClient;
-  ScheduledExecutorService topUpExecutor;
-  Map<String, ScheduledExecutorService> runScenarioExecutor;
-  ScheduledExecutorService cleanQueueExecutor;
 
   private static Runnable errorHandlingWrapper(Runnable action) {
     return () -> {
@@ -78,7 +76,7 @@ public class Runner {
     try {
       log.info("started data-generator runner");
       runScenarioExecutor = new HashMap<>();
-      log.info(Utils.bytesToHex(dataFaucetHighLoadPrvKey));
+      log.debug(Utils.bytesToHex(dataFaucetHighLoadPrvKey));
       TweetNaclFast.Signature.KeyPair keyPair =
           Utils.generateSignatureKeyPairFromSeed(dataFaucetHighLoadPrvKey);
 

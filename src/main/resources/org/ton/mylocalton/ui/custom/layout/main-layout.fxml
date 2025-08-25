@@ -61,7 +61,7 @@
 
     </AnchorPane>
 
-    <AnchorPane fx:id="buttons" prefHeight="530" prefWidth="210" styleClass="background-pane"
+    <AnchorPane fx:id="buttons" prefHeight="730" prefWidth="210" styleClass="background-pane"
                 AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0">
         <children>
 

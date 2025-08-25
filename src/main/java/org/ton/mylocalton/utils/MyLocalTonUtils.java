@@ -64,13 +64,6 @@ import org.fxmisc.richtext.model.StyleSpans;
 import org.jutils.jprocesses.JProcesses;
 import org.reactfx.collection.ListModification;
 import org.slf4j.LoggerFactory;
-import org.ton.ton4j.address.Address;
-import org.ton.ton4j.adnl.Participant;
-import org.ton.ton4j.smartcontract.types.WalletCodes;
-import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
-import org.ton.ton4j.tl.liteserver.responses.MasterchainInfoExt;
-import org.ton.ton4j.tlb.*;
-import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
 import org.ton.mylocalton.executors.fift.Fift;
@@ -90,6 +83,13 @@ import org.ton.mylocalton.settings.Node6;
 import org.ton.mylocalton.settings.Node7;
 import org.ton.mylocalton.ui.controllers.MainController;
 import org.ton.mylocalton.wallet.MyWallet;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.Participant;
+import org.ton.ton4j.smartcontract.types.WalletCodes;
+import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
+import org.ton.ton4j.tl.liteserver.responses.MasterchainInfoExt;
+import org.ton.ton4j.tlb.*;
+import org.ton.ton4j.utils.Utils;
 
 @Slf4j
 public class MyLocalTonUtils {
@@ -228,7 +228,7 @@ public class MyLocalTonUtils {
 
     //    accountCode = Hex.encodeHexString(Base64.decodeBase64(accountCode)).toUpperCase(); // todo
     // review
-    log.info("{} detected accountCode {}", address.toString(false), accountCode);
+    log.debug("{} detected accountCode {}", address.toString(false), accountCode);
 
     accountCode = accountCode.toUpperCase();
     WalletVersion walletVersion = null;
@@ -251,7 +251,9 @@ public class MyLocalTonUtils {
         walletVersion = WalletVersion.V3R2;
       } else if (WalletCodes.V4R2.getValue().contains(accountCode)) {
         walletVersion = WalletVersion.V4R2;
-      } else if (accountCode.contains("111213009601fa4001fa44f828fa443058baf2e091ed44d0810141d718f405049d7fc8ca0040048307f453f2e08b8e14038307f45bf2e08c22d70a00216e01b3b0f2d090e2c85003cf1612f400c9ed54007230d72c08248e2d21f2e092d200ed44d0d2005113baf2d08f54503091319c01810140d721d".toUpperCase())) {
+      } else if (accountCode.contains(
+          "111213009601fa4001fa44f828fa443058baf2e091ed44d0810141d718f405049d7fc8ca0040048307f453f2e08b8e14038307f45bf2e08c22d70a00216e01b3b0f2d090e2c85003cf1612f400c9ed54007230d72c08248e2d21f2e092d200ed44d0d2005113baf2d08f54503091319c01810140d721d"
+              .toUpperCase())) {
         walletVersion = WalletVersion.V5R1;
       } else if (WalletCodes.highload.getValue().contains(accountCode)) {
         walletVersion = WalletVersion.highload;
@@ -651,7 +653,7 @@ public class MyLocalTonUtils {
     //    LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
 
     ConfigParams12 config12 = adnlLiteClient.getConfigParam12();
-    log.info("configParam12 {}", config12);
+    log.debug("configParam12 {}", config12);
 
     // log.debug(        "blockchain was launched at {}",
     // MyLocalTonUtils.toLocal(configParam12.getWorkchains()));
@@ -716,7 +718,7 @@ public class MyLocalTonUtils {
     log.debug("minter address {}", config2.getMinterAddr());
 
     List<Participant> participants = adnlLiteClient.getElectionParticipants();
-    log.info("participants {}", participants);
+    log.debug("participants {}", participants);
 
     return ValidationParam.builder()
         .totalNodes(1L) // not used

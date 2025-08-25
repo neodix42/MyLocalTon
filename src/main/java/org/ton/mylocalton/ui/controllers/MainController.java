@@ -9,7 +9,6 @@ import static org.ton.mylocalton.ui.custom.events.CustomEventBus.emit;
 import static org.ton.mylocalton.ui.custom.events.CustomEventBus.listenFor;
 
 import com.jfoenix.controls.*;
-
 import java.awt.*;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -68,13 +67,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
-import org.ton.mylocalton.ui.custom.layout.*;
-import org.ton.ton4j.address.Address;
-import org.ton.ton4j.adnl.Participant;
-import org.ton.ton4j.tl.liteserver.responses.BlockHeader;
-import org.ton.ton4j.tl.liteserver.responses.BlockId;
-import org.ton.ton4j.tlb.*;
-import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.BlockEntity;
 import org.ton.mylocalton.db.entities.TxEntity;
@@ -86,6 +78,7 @@ import org.ton.mylocalton.executors.liteclient.api.*;
 import org.ton.mylocalton.executors.tonhttpapi.TonHttpApi;
 import org.ton.mylocalton.main.App;
 import org.ton.mylocalton.parameters.ValidationParam;
+import org.ton.mylocalton.services.ValidatorCreationService;
 import org.ton.mylocalton.settings.GenesisNode;
 import org.ton.mylocalton.settings.MyLocalTonSettings;
 import org.ton.mylocalton.settings.Node2;
@@ -101,8 +94,14 @@ import org.ton.mylocalton.ui.custom.events.CustomEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomActionEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomNotificationEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomSearchEvent;
+import org.ton.mylocalton.ui.custom.layout.*;
 import org.ton.mylocalton.utils.MyLocalTonUtils;
-import org.ton.mylocalton.services.ValidatorCreationService;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.Participant;
+import org.ton.ton4j.tl.liteserver.responses.BlockHeader;
+import org.ton.ton4j.tl.liteserver.responses.BlockId;
+import org.ton.ton4j.tlb.*;
+import org.ton.ton4j.utils.Utils;
 
 @Slf4j
 public class MainController implements Initializable {
@@ -111,6 +110,8 @@ public class MainController implements Initializable {
 
   public static final long ONE_BLN = 1000000000L;
   public static final String TELEGRAM_NEODIX = "https://telegram.me/neodix";
+  public static final String GITHUB_TON_HTTP_API_INFO =
+      "https://github.com/neodix42/mylocalton?tab=readme-ov-file#manual-ton-http-api-installation-optional";
 
   public long globalBlockLastSeqno;
   public long globalTxLastSeqno;
@@ -1354,7 +1355,7 @@ public class MainController implements Initializable {
     mainConfigTxCheckBox.setSelected(settings.getUiSettings().isShowMainConfigTransactions());
     inOutMsgsCheckBox.setSelected(settings.getUiSettings().isShowInOutMessages());
     enableBlockchainExplorer.setSelected(settings.getUiSettings().isEnableBlockchainExplorer());
-    toggleExplorer.setSelected(settings.getUiSettings().isEnableTonHttpApi());
+    toggleExplorer.setSelected(settings.getUiSettings().isEnableBlockchainExplorer());
     enableData.setSelected(settings.getUiSettings().isEnableDataGenerator());
     toggleData.setSelected(settings.getUiSettings().isEnableDataGenerator());
     enableTonHttpApi.setSelected(settings.getUiSettings().isEnableTonHttpApi());
@@ -1650,7 +1651,7 @@ public class MainController implements Initializable {
             tonHttpApiToggleLabel.setText("Stop TON Center");
             Utils.sleep(3);
             TonHttpApi tonHttpApi = new TonHttpApi();
-            App.tonHttpApiProcess =
+            tonHttpApiProcess =
                 tonHttpApi.startTonHttpApi(
                     settings.getGenesisNode(),
                     settings.getGenesisNode().getNodeGlobalConfigLocation(),
@@ -1672,8 +1673,9 @@ public class MainController implements Initializable {
           enableTonHttpApi.setSelected(false);
           settings.getUiSettings().setEnableTonHttpApi(false);
           saveSettings();
+          log.info("ton http api pid {}", tonHttpApiProcess.pid());
           if (nonNull(tonHttpApiProcess)) {
-            tonHttpApiProcess.destroy();
+            tonHttpApiProcess.destroyForcibly();
           }
         });
   }
@@ -3844,11 +3846,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario1.isSelected()) {
         log.debug("enabled scenario 1");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 1...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 1...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario1");
       } else {
         log.debug("disabled scenario 1");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 1...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 1...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario1");
       }
     }
@@ -3859,11 +3865,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario2.isSelected()) {
         log.debug("enabled scenario 2");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 2...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 2...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario2");
       } else {
         log.debug("disabled scenario 2");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 2...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 2...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario2");
       }
     }
@@ -3874,11 +3884,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario3.isSelected()) {
         log.debug("enabled scenario 3");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 3...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 3...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario3");
       } else {
         log.debug("disabled scenario 3");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 3...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 3...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario3");
       }
     }
@@ -3889,11 +3903,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario4.isSelected()) {
         log.debug("enabled scenario 4");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 4...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 4...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario4");
       } else {
         log.debug("disabled scenario 4");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 4...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 4...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario4");
       }
     }
@@ -3904,11 +3922,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario5.isSelected()) {
         log.debug("enabled scenario 5");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 5...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 5...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario5");
       } else {
         log.debug("disabled scenario 5");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 5...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 5...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario5");
       }
     }
@@ -3919,11 +3941,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario6.isSelected()) {
         log.debug("enabled scenario 6");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 6...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 6...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario6");
       } else {
         log.debug("disabled scenario 6");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 6...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 6...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario6");
       }
     }
@@ -3934,11 +3960,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario7.isSelected()) {
         log.debug("enabled scenario 7");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 7...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 7...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario7");
       } else {
         log.debug("disabled scenario 7");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 7...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 7...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario7");
       }
     }
@@ -3949,11 +3979,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario8.isSelected()) {
         log.debug("enabled scenario 8");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 8...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 8...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario8");
       } else {
         log.debug("disabled scenario 8");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 8...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 8...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario8");
       }
     }
@@ -3964,11 +3998,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario9.isSelected()) {
         log.debug("enabled scenario 9");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 9...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 9...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario9");
       } else {
         log.debug("disabled scenario 9");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 9...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 9...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario9");
       }
     }
@@ -3979,11 +4017,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario10.isSelected()) {
         log.debug("enabled scenario 10");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 10...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 10...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario10");
       } else {
         log.debug("disabled scenario 10");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 10...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 10...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario10");
       }
     }
@@ -3994,11 +4036,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario11.isSelected()) {
         log.debug("enabled scenario 11");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 11...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 11...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario11");
       } else {
         log.debug("disabled scenario 11");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 11...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 11...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario11");
       }
     }
@@ -4009,11 +4055,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario12.isSelected()) {
         log.debug("enabled scenario 12");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 12...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 12...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario12");
       } else {
         log.debug("disabled scenario 12");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 12...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 12...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario12");
       }
     }
@@ -4024,11 +4074,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario13.isSelected()) {
         log.debug("enabled scenario 13");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 13...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 13...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario13");
       } else {
         log.debug("disabled scenario 13");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 13...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 13...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario13");
       }
     }
@@ -4039,11 +4093,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario14.isSelected()) {
         log.debug("enabled scenario 14");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 14...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 14...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario14");
       } else {
         log.debug("disabled scenario 14");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 14...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 14...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario14");
       }
     }
@@ -4054,11 +4112,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario15.isSelected()) {
         log.debug("enabled scenario 15");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 15...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 15...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario15");
       } else {
         log.debug("disabled scenario 15");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 15...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 15...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario15");
       }
     }
@@ -4069,11 +4131,15 @@ public class MainController implements Initializable {
 
       if (mainController.scenario16.isSelected()) {
         log.debug("enabled scenario 16");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Started and enabled Scenario 16...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Started and enabled Scenario 16...", 3));
         MyLocalTon.getInstance().getRunner().runScenario("Scenario16");
       } else {
         log.debug("disabled scenario 16");
-        emit(new CustomNotificationEvent(CustomEvent.Type.INFO, "Stopped and disabled Scenario 16...", 3));
+        emit(
+            new CustomNotificationEvent(
+                CustomEvent.Type.INFO, "Stopped and disabled Scenario 16...", 3));
         MyLocalTon.getInstance().getRunner().stopScenario("Scenario16");
       }
     }
@@ -4188,6 +4254,11 @@ public class MainController implements Initializable {
     hostServices.showDocument(TELEGRAM_NEODIX);
   }
 
+  @FXML
+  public void openLink() {
+    hostServices.showDocument(GITHUB_TON_HTTP_API_INFO);
+  }
+
   public void BlockChainExplorerCheckBoxClick(MouseEvent mouseEvent) {
     if (enableBlockchainExplorer.isSelected()) {
       App.mainController.showInfoMsg("Native blockchain-explorer will be available on start", 5);
@@ -4298,6 +4369,7 @@ public class MainController implements Initializable {
       Desktop.getDesktop().browse(uri);
     } else {
       String text = "http://localhost:" + settings.getUiSettings().getTonHttpApiPort();
+      hostServices.showDocument(text);
       final Clipboard clipboard = Clipboard.getSystemClipboard();
       final ClipboardContent content = new ClipboardContent();
       content.putString(text);

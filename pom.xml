@@ -86,6 +86,16 @@
             <version>${ton4j.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.github.neodix42</groupId>
+            <artifactId>tlb</artifactId>
+            <version>${ton4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.neodix42</groupId>
+            <artifactId>adnl</artifactId>
+            <version>${ton4j.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${openjfx.version}</version>
