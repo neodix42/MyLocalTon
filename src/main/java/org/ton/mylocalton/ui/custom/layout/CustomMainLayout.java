@@ -41,6 +41,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
       transactionsBtn,
       validationBtn,
       accountsBtn,
+      dataBtn,
       explorerBtn,
       tonHttpApiBtn;
   @FXML private CustomExpandButton settingBtn, resultsBtn;
@@ -60,6 +61,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
       transactionsPane,
       validationPane,
       accountsPane,
+      dataPane,
       blankPane,
       logsPane,
       accountsKeysPane,
@@ -109,6 +111,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     contentPane.getChildren().remove(transactionsPane);
     contentPane.getChildren().remove(validationPane);
     contentPane.getChildren().remove(accountsPane);
+    contentPane.getChildren().remove(dataPane);
 
     contentPane.getChildren().remove(logsPane);
     contentPane.getChildren().remove(settingsValidatorsPane);
@@ -154,18 +157,18 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
                     tr.setToY(arg2.doubleValue() - settingBtn.getMainButtonHeight());
                     tr.play();
                   }
-                  if (hasExplorer()) {
-                    TranslateTransition tr2 =
-                        new TranslateTransition(Duration.seconds(0.001), explorerBtn);
-                    tr2.setToY(arg2.doubleValue() - explorerBtn.getPrefHeight());
-                    tr2.play();
-                  }
-                  if (hasTonHttpApi()) {
-                    TranslateTransition tr2 =
-                        new TranslateTransition(Duration.seconds(0.001), tonHttpApiBtn);
-                    tr2.setToY(arg2.doubleValue() - tonHttpApiBtn.getPrefHeight());
-                    tr2.play();
-                  }
+//                  if (hasExplorer()) {
+//                    TranslateTransition tr2 =
+//                        new TranslateTransition(Duration.seconds(0.001), explorerBtn);
+//                    tr2.setToY(arg2.doubleValue() - explorerBtn.getPrefHeight());
+//                    tr2.play();
+//                  }
+//                  if (hasTonHttpApi()) {
+//                    TranslateTransition tr2 =
+//                        new TranslateTransition(Duration.seconds(0.001), tonHttpApiBtn);
+//                    tr2.setToY(arg2.doubleValue() - tonHttpApiBtn.getPrefHeight());
+//                    tr2.play();
+//                  }
                 }
               }
             });
@@ -302,29 +305,47 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
   }
 
   private void refreshTransactions() {
-    if (((JFXListView) transactionsPane.lookup("#transactionsvboxid")).getItems().size() > 0) {
+    if (!((JFXListView) transactionsPane.lookup("#transactionsvboxid")).getItems().isEmpty()) {
       hasTransactions = true;
       changeContent(transactionsPane);
     }
   }
 
   private void refreshBlocks() {
-    if (((JFXListView) blocksPane.lookup("#blockslistviewid")).getItems().size() > 0) {
+    if (!((JFXListView) blocksPane.lookup("#blockslistviewid")).getItems().isEmpty()) {
       hasBlocks = true;
       changeContent(blocksPane);
     }
   }
 
   private void refreshAccounts() throws IOException {
-    if (((JFXListView) accountsPane.lookup("#accountsvboxid")).getItems().size() > 0) {
+    if (!((JFXListView) accountsPane.lookup("#accountsvboxid")).getItems().isEmpty()) {
       hasAccounts = true;
       addCreateButton();
       changeContent(accountsPane);
     }
   }
 
+  private void refreshData() {
+    if (!((JFXListView) dataPane.lookup("#accountsvboxid1")).getItems().isEmpty()) {
+      changeContent(dataPane);
+    }
+  }
+
+  private void refreshTonHttpApi() {
+    if (!((JFXListView) tonHttpApiPane.lookup("#webView")).getItems().isEmpty()) {
+      changeContent(tonHttpApiPane);
+    }
+  }
+
+  private void refreshExplorer() {
+    if (!((JFXListView) explorerPane.lookup("#webViewTonHttpApi")).getItems().isEmpty()) {
+      changeContent(explorerPane);
+    }
+  }
+
   private void checkBlocks() {
-    if (((JFXListView) blocksPane.lookup("#blockslistviewid")).getItems().size() == 0) {
+    if (((JFXListView) blocksPane.lookup("#blockslistviewid")).getItems().isEmpty()) {
       loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType.BLOCKS);
     } else {
       hasBlocks = true;
@@ -333,7 +354,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
   }
 
   private void checkTransactions() {
-    if (((JFXListView) transactionsPane.lookup("#transactionsvboxid")).getItems().size() == 0) {
+    if (((JFXListView) transactionsPane.lookup("#transactionsvboxid")).getItems().isEmpty()) {
       loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType.TRANSACTIONS);
     } else {
       hasTransactions = true;
@@ -342,7 +363,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
   }
 
   private void checkAccounts() throws IOException {
-    if (((JFXListView) accountsPane.lookup("#accountsvboxid")).getItems().size() == 0) {
+    if (((JFXListView) accountsPane.lookup("#accountsvboxid")).getItems().isEmpty()) {
       loadNoTransactionsNoBlocks(NoBlocksTransactionsController.ViewType.ACCOUNTS);
     } else {
       hasAccounts = true;
@@ -356,6 +377,13 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     resetButtons();
     validationBtn.activate();
     changeContent(validationPane);
+  }
+
+  @FXML
+  private void clickData(Event e) {
+    resetButtons();
+    dataBtn.activate();
+    changeContent(dataPane);
   }
 
   @FXML
@@ -405,6 +433,7 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
     transactionsBtn.deactivate();
     validationBtn.deactivate();
     accountsBtn.deactivate();
+    dataBtn.deactivate();
     settingBtn.deactivate();
     resultsBtn.deactivate();
     explorerBtn.deactivate();
@@ -632,6 +661,15 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
       case TRANSACTIONS:
         refreshTransactions();
         break;
+      case DATA:
+        refreshData();
+        break;
+      case TON_HTTP_API:
+        refreshTonHttpApi();
+        break;
+      case EXPLORER:
+        refreshExplorer();
+        break;
       case ACCOUNTS:
         try {
           refreshAccounts();
@@ -706,6 +744,10 @@ public class CustomMainLayout extends AnchorPane implements Initializable {
 
   public ObservableList<Node> getAccountsPane() {
     return accountsPane.getChildren();
+  }
+
+  public ObservableList<Node> getDataPane() {
+    return dataPane.getChildren();
   }
 
   public ObservableList<Node> getLogsPane() {

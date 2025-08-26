@@ -1,5 +1,6 @@
 package org.ton.mylocalton.main;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.mylocalton.ui.custom.events.CustomEventBus.emit;
 
@@ -26,6 +27,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
 import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.actions.MyLocalTon;
@@ -47,8 +49,12 @@ public class App extends Application {
   public static FXMLLoader fxmlLoader;
   public static MainController mainController;
   public static DbPool dbPool;
+  public static Process tonHttpApiProcess;
+  public static Process dataProcess;
+  public static Process explorerProcess;
 
-  public static Boolean testBinaries = false;
+
+    public static Boolean testBinaries = false;
   public static AtomicInteger testBinariesCounter = new AtomicInteger(0);
 
   public static Stage primaryStage;
@@ -116,16 +122,18 @@ public class App extends Application {
             try {
               MasterchainInfo masterChainInfo = MyLocalTon.adnlLiteClient.getMasterchainInfo();
               log.info("masterChainInfo {}", masterChainInfo.getLast().getSeqno());
-              if (nonNull(masterChainInfo) && (masterChainInfo.getLast().getSeqno() > 0)) {
+              if (masterChainInfo.getLast().getSeqno() > 0) {
                 log.info("masterChainInfo {}", masterChainInfo.getLast().getSeqno()); // short one
                 syncDelay = MyLocalTonUtils.getSyncDelay();
                 log.info("out of sync seconds {}", syncDelay);
               }
               Utils.sleep(1);
             } catch (Throwable e) {
+//                log.info("haja {}", ExceptionUtils.getStackTrace(e));
               if (e instanceof TimeoutException) {
                 continue;
               }
+
               log.error("Error in launching TON blockchain: {}", e.getMessage());
               if (MyLocalTonUtils.doShutdown()) {
                 log.info("system exit 44");

@@ -3,8 +3,8 @@ package org.ton.mylocalton.parameters;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.ton.ton4j.smartcontract.types.WalletVersion;
 import org.ton.mylocalton.settings.Node;
+import org.ton.mylocalton.utils.WalletVersion;
 import org.ton.mylocalton.wallet.WalletAddress;
 
 import java.math.BigDecimal;

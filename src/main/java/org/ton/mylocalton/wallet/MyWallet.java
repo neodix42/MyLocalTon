@@ -15,6 +15,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.ton.mylocalton.utils.WalletVersion;
 import org.ton.ton4j.address.Address;
 import org.ton.ton4j.cell.Cell;
 import org.ton.ton4j.mnemonic.Mnemonic;
@@ -31,6 +32,7 @@ import org.ton.ton4j.smartcontract.wallet.v2.WalletV2R2;
 import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R1;
 import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
 import org.ton.ton4j.smartcontract.wallet.v4.WalletV4R2;
+import org.ton.ton4j.smartcontract.wallet.v5.WalletV5;
 import org.ton.ton4j.tlb.Account;
 import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.enums.LiteClientEnum;
@@ -459,6 +461,14 @@ public class MyWallet {
             .adnlLiteClient(adnlLiteClient)
             .walletId(walletId)
             .build();
+      case V5R1:
+        return WalletV5.builder()
+                .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))
+                .wc(wc)
+                .adnlLiteClient(adnlLiteClient)
+                .walletId(walletId)
+                .isSigAuthAllowed(true)
+                .build();
       case highload:
         return HighloadWallet.builder()
             .keyPair(Utils.generateSignatureKeyPairFromSeed(privateKey))

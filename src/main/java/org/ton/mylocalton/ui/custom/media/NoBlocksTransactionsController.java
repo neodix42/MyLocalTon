@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.media.MediaView;
 import javafx.scene.shape.SVGPath;
+import lombok.Getter;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,7 +19,7 @@ public class NoBlocksTransactionsController implements Initializable {
 
   @FXML private SVGPath svg;
 
-  private ViewType viewType;
+  @Getter private ViewType viewType;
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -41,10 +42,6 @@ public class NoBlocksTransactionsController implements Initializable {
     //        emit(new CustomRefreshEvent(CustomEvent.Type.REFRESH, viewType));
   }
 
-  public ViewType getViewType() {
-    return viewType;
-  }
-
   public void setViewType(ViewType viewType) {
     this.viewType = viewType;
     switch (viewType) {
@@ -52,6 +49,15 @@ public class NoBlocksTransactionsController implements Initializable {
         label.setText("Starting...");
         break;
       case TRANSACTIONS:
+        label.setText("Starting...");
+        break;
+      case DATA:
+        label.setText("Starting...");
+        break;
+      case EXPLORER:
+        label.setText("Starting...");
+        break;
+      case TON_HTTP_API:
         label.setText("Starting...");
         break;
       case ACCOUNTS:
@@ -63,6 +69,9 @@ public class NoBlocksTransactionsController implements Initializable {
   public enum ViewType {
     BLOCKS,
     TRANSACTIONS,
+    DATA,
+    EXPLORER,
+    TON_HTTP_API,
     ACCOUNTS;
   }
 }

@@ -67,7 +67,9 @@ for ARM64 architecture use:
 * `explorer` - enables native ton blockchain explorer on start. Runs on port `8001`.
 * `ip.addr.xxx.xxx` - used to bind specific IP to MyLocalTon instead of 127.0.0.1.
 * `with-validators-N` - used to start MyLocalTon with N additional validators.
-* `elections=int,int,int,int,int` - used to start MyLocalTon with specific election timing. 5 integers represent these parameters in seconds: **electedFor**, **electionStartBefore**, **electionEndBefore**, **electionStakesFrozenFor** and the last one - **how often to participate in elections**.
+* `elections=int,int,int,int,int` - used to start MyLocalTon with specific election timing. 5 integers represent these
+  parameters in seconds: **electedFor**, **electionStartBefore**, **electionEndBefore**, **electionStakesFrozenFor** and
+  the last one - **how often to participate in elections**.
 * `custom-binaries=absolute-path` - used to start MyLocalTon with custom TON binaries. The folder should contain
   validator-engine, validator-engine-console, lite-client, fift, func, generate-random-id, create-state, dht-server,
   tonlibjson, blockchain-explorer binaries and also **smartcont** and lib **folders** in its root folder.
@@ -77,6 +79,7 @@ for ARM64 architecture use:
 * `version` - simply returns current version of MyLocalTon.
 
 ### HTTP server
+
 By default, MyLocalTon starts with a simple HTTP server, that serves the following endpoints:
 
 | Endpoint                                           | Description                                                                                                                       |
@@ -149,12 +152,16 @@ functionality is in the backlog, so it will be implemented in future releases.
 
 ## Manual TON-HTTP-API installation (optional)
 
+After executing the commands below `ton-http-api` will be globally available via the command line.
+
 ### Linux
 
 ```commandline
 sudo apt install -y python3
 sudo apt install -y python3-pip
-pip3 install --user ton-http-api
+sudo apt install pipx 
+pipx ensurepath
+pipx install ton-http-api
 ```
 
 ### MacOS
@@ -164,7 +171,9 @@ Note: Python version must be 3.11 or greater
 ```commandline
 brew install -q python3
 python3 -m ensurepip --upgrade
-pip3 install --user ton-http-api
+brew install pipx
+pipx ensurepath
+pipx install ton-http-api
 ```
 
 ### Windows
@@ -174,6 +183,10 @@ wget https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
 python -m ensurepip --upgrade
 pip install uvicorn[standard]
 start pip3 install -U ton-http-api
+# or
+scoop install pipx
+pipx ensurepath
+pipx install ton-http-api
 ```
 
 ## Star History
