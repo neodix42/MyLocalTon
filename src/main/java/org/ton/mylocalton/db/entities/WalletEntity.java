@@ -1,25 +1,18 @@
 package org.ton.mylocalton.db.entities;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.ton4j.smartcontract.types.WalletVersion;
-import org.ton.ton4j.tonlib.types.RawAccountState;
+import org.ton.ton4j.tlb.Account;
 import org.ton.mylocalton.wallet.WalletAddress;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 
-import static java.util.Objects.isNull;
-
 @Entity
 @Builder
-@ToString
-@Getter
-@Setter
+@Data
 @IdClass(WalletPk.class)
 public class WalletEntity {
   @Id Long wc;
@@ -29,7 +22,7 @@ public class WalletEntity {
 
   WalletVersion walletVersion;
   WalletAddress wallet;
-  RawAccountState accountState;
+  Account accountState;
   String accountStatus;
 
   Boolean mainWalletInstalled;
@@ -40,9 +33,9 @@ public class WalletEntity {
     return WalletPk.builder().wc(wc).hexAddress(StringUtils.upperCase(hexAddress)).build();
   }
 
-  public void setAccountState(RawAccountState accountState) {
+  public void setAccountState(Account accountState) {
     this.accountState = accountState;
-    this.accountStatus = getStatusFromCode(accountState);
+    this.accountStatus = accountState.getAccountState();
   }
 
   public String getFullAddress() {
@@ -50,21 +43,6 @@ public class WalletEntity {
   }
 
   public String getAccountStatus() {
-    return getStatusFromCode(accountState);
-  }
-
-  private String getStatusFromCode(RawAccountState state) {
-    if (isNull(state)) {
-      return "uninitialized";
-    }
-    if (StringUtils.isEmpty(state.getCode())) {
-      if (StringUtils.isEmpty(state.getFrozen_hash())) {
-        return "uninitialized";
-      } else {
-        return "frozen";
-      }
-    } else {
-      return "active";
-    }
+    return accountState.getAccountState();
   }
 }

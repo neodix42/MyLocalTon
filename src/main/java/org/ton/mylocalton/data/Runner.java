@@ -12,11 +12,11 @@ import java.util.concurrent.TimeUnit;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.AdnlLiteClient;
+import org.ton.ton4j.smartcontract.SendResponse;
 import org.ton.ton4j.smartcontract.highload.HighloadWallet;
 import org.ton.ton4j.smartcontract.types.Destination;
 import org.ton.ton4j.smartcontract.types.HighloadConfig;
-import org.ton.ton4j.tonlib.Tonlib;
-import org.ton.ton4j.tonlib.types.ExtMessageInfo;
 import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.db.DataDB;
 import org.ton.mylocalton.data.db.DataWalletEntity;
@@ -35,7 +35,7 @@ public class Runner {
   private HighloadWallet dataHighloadFaucet;
   private long period;
 
-  private Tonlib tonlib;
+  private AdnlLiteClient adnlLiteClient;
 
   private static Runnable errorHandlingWrapper(Runnable action) {
     return () -> {
@@ -57,7 +57,7 @@ public class Runner {
 
       dataHighloadFaucet =
           HighloadWallet.builder()
-              .tonlib(tonlib)
+              .adnlLiteClient(adnlLiteClient)
               .keyPair(keyPair)
               .wc(-1)
               .walletId(42)
@@ -150,8 +150,8 @@ public class Runner {
                         .destinations(destinations250)
                         .build();
 
-                ExtMessageInfo extMessageInfo = dataHighloadFaucet.send(config);
-                log.info("extMessageInfo top up {}", extMessageInfo);
+                SendResponse sendResponse = dataHighloadFaucet.send(config);
+                log.info("sendResponse top up {}", sendResponse);
 
                 for (Destination destination : destinations250) {
                   DataDB.updateDataWalletStatus(
@@ -186,8 +186,8 @@ public class Runner {
                               return;
                             }
                             clazz = Class.forName("org.ton.mylocalton.data.scenarios." + scenario);
-                            Constructor<?> constructor = clazz.getConstructor(Tonlib.class);
-                            Object instance = constructor.newInstance(tonlib);
+                            Constructor<?> constructor = clazz.getConstructor(AdnlLiteClient.class);
+                            Object instance = constructor.newInstance(adnlLiteClient);
                             ((Scenario) instance).run();
 
                           } catch (Throwable e) {

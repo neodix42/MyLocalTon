@@ -13,7 +13,7 @@
         <ton_branch>master</ton_branch>
         <arch></arch> <!-- add when work or compile on/for arm64  -aarch64 -->
         <maven.compiler.release>21</maven.compiler.release>
-        <ton4j.version>1.0.0</ton4j.version>
+        <ton4j.version>1.1.0</ton4j.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
         <maven.assembly.plugin.version>3.6.0</maven.assembly.plugin.version>
@@ -21,7 +21,7 @@
         <apache.commons.lang3.version>3.9</apache.commons.lang3.version>
         <openjfx.version>23.0.2</openjfx.version>
         <jfoenix.version>9.0.4</jfoenix.version>
-        <commons-io.version>2.7</commons-io.version>
+        <commons-io.version>2.14.0</commons-io.version>
         <commons-codec.version>1.14</commons-codec.version>
         <lombok.version>1.18.30</lombok.version>
         <jupiter.version>5.7.1</jupiter.version>

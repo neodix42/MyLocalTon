@@ -4,15 +4,15 @@ import java.math.BigInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.mylocalton.data.db.DataDB;
 import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.smartcontract.wallet.Contract;
 import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
-import org.ton.ton4j.tonlib.Tonlib;
 import org.ton.ton4j.utils.Utils;
 
 @Slf4j
 public class MyUtils {
-  public BigInteger getBalance(Tonlib tonlib, Address address) {
-    return new BigInteger(tonlib.getRawAccountState(address).getBalance());
+  public BigInteger getBalance(AdnlLiteClient adnlLiteClient, Address address) {
+    return adnlLiteClient.getBalance(address);
   }
 
   /**
@@ -23,9 +23,9 @@ public class MyUtils {
    * @param tolerateNanoCoins tolerate value
    */
   public void waitForBalanceChangeWithTolerance(
-      Tonlib tonlib, Address address, int timeoutSeconds, BigInteger tolerateNanoCoins) {
+      AdnlLiteClient adnlLiteClient, Address address, int timeoutSeconds, BigInteger tolerateNanoCoins) {
 
-    BigInteger initialBalance = getBalance(tonlib, address);
+    BigInteger initialBalance = getBalance(adnlLiteClient, address);
     long diff;
     int i = 0;
     do {
@@ -33,7 +33,7 @@ public class MyUtils {
         break;
       }
       Utils.sleep(2);
-      BigInteger currentBalance = getBalance(tonlib, address);
+      BigInteger currentBalance = getBalance(adnlLiteClient, address);
 
       diff =
           Math.max(currentBalance.longValue(), initialBalance.longValue())
@@ -41,13 +41,13 @@ public class MyUtils {
     } while (diff < tolerateNanoCoins.longValue());
   }
 
-  public Contract deploy(Tonlib tonlib, BigInteger topUpAmount) {
+  public Contract deploy(AdnlLiteClient adnlLiteClient, BigInteger topUpAmount) {
     long walletId = Math.abs(Utils.getRandomInt());
-    WalletV3R2 contract = WalletV3R2.builder().tonlib(tonlib).walletId(walletId).build();
+    WalletV3R2 contract = WalletV3R2.builder().adnlLiteClient(adnlLiteClient).walletId(walletId).build();
 
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     DataDB.addDataRequest(nonBounceableAddress, topUpAmount);
-    tonlib.waitForBalanceChange(contract.getAddress(), 60);
+    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
     contract.deploy();
     contract.waitForDeployment();
 

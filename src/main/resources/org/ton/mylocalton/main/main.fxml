@@ -42,21 +42,26 @@
         </closeButton>
 
         <info>
-            <CustomInfoLabel fx:id="liteClientInfo" layoutX="10.0" layoutY="0.0" onMouseClicked="#liteServerClicked"
+            <CustomInfoLabel fx:id="liteClientInfo" layoutX="10.0" layoutY="-30.0" onMouseClicked="#liteServerClicked"
                              primaryText="Lite Server:" primaryWidth="80.0"
                              secondaryText="" secondaryWidth="110.0"/>
 
-            <CustomInfoLabel fx:id="currentBlockNum" layoutX="10.0" layoutY="30.0"
+            <CustomInfoLabel fx:id="currentBlockNum" layoutX="10.0" layoutY="0.0"
                              primaryText="Current Block:" primaryWidth="100.0"
                              secondaryText="" secondaryWidth="90.0"/>
 
-            <CustomInfoLabel fx:id="shardsNum" layoutX="10.0" layoutY="60.0"
+            <CustomInfoLabel fx:id="shardsNum" layoutX="10.0" layoutY="30.0"
                              primaryText="Shards:" primaryWidth="55.0"
                              secondaryText="" secondaryWidth="135.0"/>
 
-            <CustomInfoLabel fx:id="dbSizeId" layoutX="10.0" layoutY="90.0"
+            <CustomInfoLabel fx:id="dbSizeId" layoutX="10.0" layoutY="60.0"
                              primaryText="Size:" primaryWidth="35.0"
                              secondaryText="" secondaryWidth="155.0"/>
+
+            <CustomInfoLabel fx:id="globalConfigLinkId" layoutX="10.0" layoutY="90.0" onMouseClicked="#globalConfigLink"
+                             style="-fx-cursor: hand; -fx-text-fill: blue;"
+                             primaryText="global.config.json" primaryWidth="355.0" prefWidth="320.0"
+                             secondaryText="" secondaryWidth="355.0"/>
         </info>
 
         <blocksPane>

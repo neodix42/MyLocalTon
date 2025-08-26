@@ -369,4 +369,13 @@ public interface Node {
   BigInteger getDefaultValidatorStake();
 
   void setDefaultValidatorStake(BigInteger amount);
+
+  /**
+   * Indicates whether this node should participate in elections.
+   * Default behavior for UI-created nodes is to participate (true).
+   * Can be overridden via API when creating a node.
+   */
+  Boolean getParticipateInElections();
+
+  void setParticipateInElections(Boolean participateInElections);
 }

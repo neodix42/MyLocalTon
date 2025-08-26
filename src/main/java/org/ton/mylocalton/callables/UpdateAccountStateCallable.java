@@ -7,7 +7,7 @@ import org.ton.mylocalton.db.DB2;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
 import org.ton.ton4j.smartcontract.types.WalletVersion;
-import org.ton.ton4j.tonlib.types.RawAccountState;
+import org.ton.ton4j.tlb.Account;
 
 import javax.persistence.EntityManager;
 import java.util.concurrent.Callable;
@@ -19,7 +19,7 @@ import static java.util.Objects.nonNull;
 public class UpdateAccountStateCallable implements Callable<WalletCallbackParam> {
   DB2 db;
   WalletPk walletPk;
-  RawAccountState accountState;
+  Account accountState;
   Long seqno;
   WalletVersion walletVersion;
 

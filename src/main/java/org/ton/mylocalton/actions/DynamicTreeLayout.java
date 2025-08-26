@@ -27,10 +27,10 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.extern.slf4j.Slf4j;
-import org.ton.mylocalton.db.entities.TxEntity;
-import org.ton.mylocalton.ui.controllers.TxController;
 import org.ton.ton4j.tlb.Message;
 import org.ton.ton4j.utils.Utils;
+import org.ton.mylocalton.db.entities.TxEntity;
+import org.ton.mylocalton.ui.controllers.TxController;
 
 @Slf4j
 public class DynamicTreeLayout {

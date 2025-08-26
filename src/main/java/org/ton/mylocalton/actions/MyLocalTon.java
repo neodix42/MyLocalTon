@@ -43,6 +43,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.AdnlLiteClient;
+import org.ton.ton4j.smartcontract.types.WalletVersion;
+import org.ton.ton4j.tl.liteserver.responses.BlockTransactionsExt;
+import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
+import org.ton.ton4j.tlb.*;
+import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.Runner;
 import org.ton.mylocalton.db.entities.BlockEntity;
 import org.ton.mylocalton.db.entities.TxEntity;
@@ -51,6 +58,7 @@ import org.ton.mylocalton.db.entities.WalletPk;
 import org.ton.mylocalton.enums.LiteClientEnum;
 import org.ton.mylocalton.executors.blockchainexplorer.BlockchainExplorer;
 import org.ton.mylocalton.executors.fift.Fift;
+import org.ton.mylocalton.executors.httpserver.ConfigHttpServerManager;
 import org.ton.mylocalton.executors.liteclient.LiteClient;
 import org.ton.mylocalton.executors.liteclient.LiteClientParser;
 import org.ton.mylocalton.executors.liteclient.api.ResultComputeReturnStake;
@@ -71,14 +79,6 @@ import org.ton.mylocalton.ui.custom.events.event.CustomSearchEvent;
 import org.ton.mylocalton.utils.MyLocalTonUtils;
 import org.ton.mylocalton.wallet.MyWallet;
 import org.ton.mylocalton.wallet.WalletAddress;
-import org.ton.ton4j.address.Address;
-import org.ton.ton4j.cell.Cell;
-import org.ton.ton4j.cell.CellSlice;
-import org.ton.ton4j.smartcontract.types.WalletVersion;
-import org.ton.ton4j.tlb.*;
-import org.ton.ton4j.tonlib.Tonlib;
-import org.ton.ton4j.tonlib.types.*;
-import org.ton.ton4j.utils.Utils;
 
 @Slf4j
 @Getter
@@ -99,14 +99,14 @@ public class MyLocalTon {
   public static final int SCROLL_BAR_DELTA = 30;
   public static final Long MAX_ROWS_IN_GUI = 1000L;
   public static final int YEAR_1971 = 34131600;
-  public static final int VALIDATION_GUI_REFRESH_SECONDS = 60;
   private static final String CURRENT_DIR = System.getProperty("user.dir");
 
   private static final String SETTINGS_JSON = "settings.json";
   public static final String SETTINGS_FILE =
       CURRENT_DIR + File.separator + MY_LOCAL_TON + File.separator + SETTINGS_JSON;
   public static ScheduledExecutorService validatorsMonitor = null;
-  public static Tonlib tonlib;
+  //  public static Tonlib tonlib;
+  public static AdnlLiteClient adnlLiteClient;
   //  public static Tonlib tonlibBlockMonitor;
   //  public static Tonlib tonlibDataGenerator;
   private static MyLocalTon singleInstance = null;
@@ -123,16 +123,27 @@ public class MyLocalTon {
   ScheduledExecutorService monitorExecutorService;
   private Runnable fetchTask;
   @Setter @Getter private MyLocalTonSettings settings;
+  private ConfigHttpServerManager configHttpServerManager;
 
   private MyLocalTon() {
     //    prevBlockSeqno = new AtomicBigInteger(BigInteger.ZERO);
     autoScroll = true;
+    configHttpServerManager = new ConfigHttpServerManager();
   }
 
   public static MyLocalTon getInstance() {
     if (singleInstance == null) singleInstance = new MyLocalTon();
 
     return singleInstance;
+  }
+
+  /** Starts the Config HTTP Server that serves the global config file. */
+  public void runConfigHttpServer() {
+    log.info("Starting HTTP Server on port " + settings.getUiSettings().getSimpleHttpServerPort());
+    configHttpServerManager.startConfigHttpServer(
+        settings.getGenesisNode(),
+        settings.getUiSettings().getSimpleHttpServerPort(),
+        mainController);
   }
 
   public void runBlockchainExplorer() {
@@ -188,17 +199,14 @@ public class MyLocalTon {
                           try {
 
                             if (App.testBinaries) {
-                              if (tonlib.getLast().getLast().getSeqno() > 40) {
+                              if (adnlLiteClient.getMasterchainInfo().getLast().getSeqno() > 40) {
                                 log.info("force exiting since in testing mode");
                                 System.exit(0);
                               }
                             }
 
                             Node node = settings.getNodeByName(nodeName);
-                            MasterChainInfo lastBlock = tonlib.getLast();
-                            //                                LiteClientParser.parseLast(
-                            //
-                            // LiteClient.getInstance(LiteClientEnum.LOCAL).executeLast(node));
+                            MasterchainInfo lastBlock = adnlLiteClient.getMasterchainInfo();
                             if (isNull(lastBlock)) {
                               node.setStatus("not ready");
                               log.info("{} is not ready", nodeName);
@@ -343,7 +351,7 @@ public class MyLocalTon {
             .hexAddress(walletAddress.getHexWalletAddress().toUpperCase())
             .walletVersion(walletVersion)
             .wallet(walletAddress)
-            .accountState(RawAccountState.builder().build())
+            .accountState(Account.builder().build())
             .createdAt(Instant.now().getEpochSecond())
             .build();
 
@@ -494,40 +502,6 @@ public class MyLocalTon {
     }
   }
 
-  //  private void createValidator2ControllingSmartContract(Node node) {
-  //    if (isNull(node.getWalletAddress())) {
-  //      log.info("Creating validator controlling smart-contract for node {}", node.getNodeName());
-  //      createWalletSynchronously(
-  //          node,
-  //          getSettings().getGenesisNode().getTonBinDir()
-  //              + ZEROSTATE
-  //              + File.separator
-  //              + "validator-1",
-  //          WalletVersion.V3R2,
-  //          -1L,
-  //          settings.getWalletSettings().getDefaultSubWalletId(),
-  //          node.getInitialValidatorWalletAmount(),
-  //          true);
-  //    }
-  //  }
-  //
-  //  private void createValidator3ControllingSmartContract(Node node) {
-  //    if (isNull(node.getWalletAddress())) {
-  //      log.info("Creating validator controlling smart-contract for node {}", node.getNodeName());
-  //      createWalletSynchronously(
-  //          node,
-  //          getSettings().getGenesisNode().getTonBinDir()
-  //              + ZEROSTATE
-  //              + File.separator
-  //              + "validator-1",
-  //          WalletVersion.V3R2,
-  //          -1L,
-  //          settings.getWalletSettings().getDefaultSubWalletId(),
-  //          node.getInitialValidatorWalletAmount(),
-  //          true);
-  //    }
-  //  }
-
   public void createWalletEntity(
       Node node,
       String fileBaseName,
@@ -584,7 +558,7 @@ public class MyLocalTon {
         .scheduleWithFixedDelay(
             () -> {
               Thread.currentThread().setName("MyLocalTon - Validation Monitor");
-
+              log.info("haja");
               if (Main.appActive.get()) {
                 try {
                   long currentTime = MyLocalTonUtils.getCurrentTimeSeconds();
@@ -620,7 +594,7 @@ public class MyLocalTon {
 
                   if (((v.getStartValidationCycle() > YEAR_1971)
                           && ((currentTime > v.getStartElections())
-                              && (currentTime < v.getEndElections() - 10))) // 10 sec to process
+                              && (currentTime < v.getEndElections()))) // 10 sec to process
                       || ((v.getStartValidationCycle() > YEAR_1971)
                           && ((currentTime - v.getStartElections()) > (electionsDelta * 2)))) {
 
@@ -651,8 +625,8 @@ public class MyLocalTon {
                             new Timeline(
                                 new KeyFrame(
                                     Duration.ZERO, new KeyValue(progress.progressProperty(), 0)),
-                                new KeyFrame(
-                                    Duration.seconds(VALIDATION_GUI_REFRESH_SECONDS),
+                        new KeyFrame(
+                                    Duration.seconds(settings.getUiSettings().getValidationGuiRefreshSeconds()),
                                     new KeyValue(progress.progressProperty(), 1)));
                         timeline.setCycleCount(1);
                         timeline.play();
@@ -661,7 +635,7 @@ public class MyLocalTon {
               }
             },
             0L,
-            VALIDATION_GUI_REFRESH_SECONDS,
+            settings.getUiSettings().getValidationGuiRefreshSeconds(),
             TimeUnit.SECONDS);
   }
 
@@ -672,7 +646,7 @@ public class MyLocalTon {
           .execute(
               () -> {
                 Thread.currentThread().setName("MyLocalTon - data-generator");
-                Runner runner = Runner.builder().tonlib(tonlib).period(1).build();
+                Runner runner = Runner.builder().adnlLiteClient(adnlLiteClient).period(1).build();
                 runner.run();
               });
     }
@@ -682,7 +656,8 @@ public class MyLocalTon {
     for (String nodeName : settings.getActiveNodes()) {
       Node node = settings.getNodeByName(nodeName);
 
-      if (node.getStatus().equals("ready")) {
+      if (((node.getParticipateInElections() == null) || Boolean.TRUE.equals(node.getParticipateInElections()))
+          && node.getStatus().equals("ready")) {
         log.info("participates in elections {}", nodeName);
         ForkJoinPool.commonPool()
             .execute(
@@ -691,6 +666,8 @@ public class MyLocalTon {
                       .setName("MyLocalTon - Participation in elections by " + nodeName);
                   MyLocalTonUtils.participate(node, v);
                 });
+      } else if (!Boolean.TRUE.equals(node.getParticipateInElections())) {
+        log.info("participation disabled for {}", nodeName);
       }
     }
   }
@@ -699,7 +676,8 @@ public class MyLocalTon {
     for (String nodeName : settings.getActiveNodes()) {
       Node node = settings.getNodeByName(nodeName);
 
-      if (node.getStatus().equals("ready")) {
+      if (((node.getParticipateInElections() == null) || Boolean.TRUE.equals(node.getParticipateInElections()))
+          && node.getStatus().equals("ready")) {
 
         ForkJoinPool.commonPool()
             .execute(
@@ -710,57 +688,23 @@ public class MyLocalTon {
                     Platform.runLater(() -> updateReapedValuesTab(node));
                   }
                 });
+      } else if (!Boolean.TRUE.equals(node.getParticipateInElections())) {
+        log.info("reaping disabled for {}", nodeName);
       }
     }
   }
 
-  private String getTonlibName() {
-    String tonlibName = null;
-    switch (Utils.getOS()) {
-      case LINUX:
-        tonlibName = "libtonlibjson.so";
-        break;
-      case LINUX_ARM:
-        tonlibName = "libtonlibjson.so";
-        break;
-      case WINDOWS:
-        tonlibName = "tonlibjson.dll";
-        break;
-      case WINDOWS_ARM:
-        tonlibName = "tonlibjson.dll";
-        break;
-      case MAC:
-        tonlibName = "libtonlibjson.dylib";
-        break;
-      case MAC_ARM64:
-        tonlibName = "libtonlibjson.dylib";
-        break;
-      case UNKNOWN:
-        System.out.println("Unknown OS. Simple tonlib test failed.");
-        System.exit(11);
-      default:
-        System.out.println("Unknown OS. Simple tonlib test failed.");
-        System.exit(12);
-    }
-    return tonlibName;
-  }
-
-  public void initTonlib(Node node) {
-    String tonlibName = settings.getGenesisNode().getTonBinDir() + getTonlibName();
-
+  public void initAdnlLiteClient(Node node) {
     try {
-      tonlib =
-          Tonlib.builder()
-              .pathToGlobalConfig(node.getNodeGlobalConfigLocation())
-              .keystorePath(node.getTonlibKeystore().replace("\\", "/"))
-              .pathToTonlibSharedLib(tonlibName)
-              .receiveTimeout(6)
-              .receiveRetryTimes(30)
-              //              .verbosityLevel(VerbosityLevel.DEBUG)
+
+      adnlLiteClient =
+          AdnlLiteClient.builder()
+              .configPath(node.getNodeGlobalConfigLocation())
+              .queryTimeout(2)
               .build();
     } catch (Throwable e) {
       System.out.println(ExceptionUtils.getStackTrace(e));
-      log.error("Cannot initialize tonlib!");
+      log.error("Cannot initialize adnlLiteClient!");
       System.exit(14);
     }
   }
@@ -784,8 +728,14 @@ public class MyLocalTon {
                         .setName("MyLocalTon - Dump Block " + prevBlockSeqno.get());
                     log.debug("Getting last block");
 
-                    ResultLastBlock lastBlock = MyLocalTonUtils.getLast();
-                    log.debug("got last block {}", lastBlock);
+                    ResultLastBlock lastBlock = null;
+                    try {
+                      lastBlock = MyLocalTonUtils.getLast();
+                      log.debug("got last block {}", lastBlock);
+                    } catch (Exception e) {
+                      // ignore
+                      // throw new RuntimeException(e); // todo review
+                    }
 
                     if (nonNull(lastBlock)) {
                       if ((prevBlockSeqno.get() != lastBlock.getSeqno().longValue())
@@ -795,8 +745,12 @@ public class MyLocalTon {
                         log.info(lastBlock.getShortBlockSeqno());
 
                         if (!GraphicsEnvironment.isHeadless()) {
-                          List<ResultLastBlock> shardsInBlock =
-                              insertBlocksAndTransactions(node, lastBlock, true);
+                          List<ResultLastBlock> shardsInBlock;
+                          try {
+                            shardsInBlock = insertBlocksAndTransactions(node, lastBlock, true);
+                          } catch (Exception e) {
+                            throw new RuntimeException(e); // todo review
+                          }
                           updateTopInfoBarGui(shardsInBlock.size());
                         }
                       }
@@ -820,7 +774,7 @@ public class MyLocalTon {
   }
 
   public List<ResultLastBlock> insertBlocksAndTransactions(
-      Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
+      Node node, ResultLastBlock lastBlock, boolean updateGuiNow) throws Exception {
 
     insertBlockEntity(lastBlock);
 
@@ -844,38 +798,45 @@ public class MyLocalTon {
 
     shardsInBlock.stream()
         .filter(b -> (b.getSeqno().compareTo(BigInteger.ZERO) != 0))
-        .forEach(shard -> dumpBlockTransactions(node, shard, updateGuiNow)); // txs from shards
+        .forEach(
+            shard -> {
+              try {
+                dumpBlockTransactions(node, shard, updateGuiNow);
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+            }); // txs from shards
 
     return shardsInBlock;
   }
 
-  public void dumpBlockTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow) {
+  public void dumpBlockTransactions(Node node, ResultLastBlock lastBlock, boolean updateGuiNow)
+      throws Exception {
 
     BlockTransactionsExt blockTransactions =
-        tonlib.getBlockTransactionsExt(lastBlock.getBlockIdExt(), 1000, null);
+        adnlLiteClient.listBlockTransactionsExt(
+            lastBlock.getBlockIdExt(), 0, 1000, null, false, false);
 
     log.debug(
         "found {} transactions in block {}",
-        blockTransactions.getTransactions().size(),
+        blockTransactions.getTransactionsParsed().size(),
         lastBlock.getShortBlockSeqno());
 
-    for (RawTransaction rawTx : blockTransactions.getTransactions()) {
-      org.ton.ton4j.tlb.Transaction txDetails =
-          org.ton.ton4j.tlb.Transaction.deserialize(
-              CellSlice.beginParse(Cell.fromBocBase64(rawTx.getData())));
+    for (Transaction tx : blockTransactions.getTransactionsParsed()) {
 
-      if (nonNull(txDetails)) {
-        List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, txDetails); // todo
+      if (nonNull(tx)) {
+        List<TxEntity> txEntities = extractTxsAndMsgs(lastBlock, tx);
         txEntities.forEach(App.dbPool::insertTx);
-        detectNewAccount(lastBlock, txDetails); // seems ok
+        detectNewAccount(lastBlock, tx);
         if (updateGuiNow) {
-          updateTxTabGui(lastBlock, txDetails, txEntities);
+          updateTxTabGui(lastBlock, tx, txEntities);
         }
       }
     }
   }
 
-  private void detectNewAccount(ResultLastBlock lastBlock, org.ton.ton4j.tlb.Transaction txDetails) {
+  private void detectNewAccount(
+      ResultLastBlock lastBlock, org.ton.ton4j.tlb.Transaction txDetails) {
     try {
       if ((txDetails.getOrigStatus().equals(AccountStates.NON_EXIST)
               && txDetails.getEndStatus().equals(AccountStates.UNINIT))
@@ -1214,7 +1175,7 @@ public class MyLocalTon {
       ResultLastBlock lastBlock, MainController c, TxEntity txE, javafx.scene.Node txRow) {
     String uniqueKey =
         lastBlock.getShortBlockSeqno() + txE.getTypeTx() + txE.getTypeMsg() + txE.getTxHash();
-    log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
+//    log.debug("showInGuiOnlyUniqueTxs {}", uniqueKey);
 
     if (!concurrentTxsHashMap.containsKey(uniqueKey)) {
 
@@ -1447,15 +1408,15 @@ public class MyLocalTon {
       msgType = txDesc.getType();
       status = txDetails.getEndStatus().toString();
 
-      log.debug(
-          "adding tx {} {} {} {} LT={} NOW={} seqno={}",
-          txDetails.getAccountAddr(),
-          txType,
-          msgType,
-          txDetails.getPrevTxHash(),
-          txDetails.getLt(),
-          txDetails.getNow(),
-          lastBlock.getSeqno());
+//      log.debug(
+//          "adding tx {} {} {} {} LT={} NOW={} seqno={}",
+//          txDetails.getAccountAddr(),
+//          txType,
+//          msgType,
+//          txDetails.getPrevTxHash(),
+//          txDetails.getLt(),
+//          txDetails.getNow(),
+//          lastBlock.getSeqno());
       txEntity.add(
           TxEntity.builder()
               .wc(lastBlock.getWc())
@@ -1490,15 +1451,15 @@ public class MyLocalTon {
           amount = outMsg.getInfo().getValueCoins();
           status = "";
 
-          log.debug(
-              "adding out-msg {} {} {} {} LT={} NOW={} seqno={}",
-              txDetails.getAccountAddr(),
-              txType,
-              msgType,
-              txDetails.getPrevTxHash(),
-              txDetails.getLt(),
-              txDetails.getNow(),
-              lastBlock.getSeqno());
+//          log.debug(
+//              "adding out-msg {} {} {} {} LT={} NOW={} seqno={}",
+//              txDetails.getAccountAddr(),
+//              txType,
+//              msgType,
+//              txDetails.getPrevTxHash(),
+//              txDetails.getLt(),
+//              txDetails.getNow(),
+//              lastBlock.getSeqno());
 
           txEntity.add(
               TxEntity.builder()
@@ -1539,15 +1500,15 @@ public class MyLocalTon {
         msgType = inMsg.getInfo().getType();
         status = "";
 
-        log.debug(
-            "adding in-msg {} {} {} {} LT={} NOW={} seqno={}",
-            txDetails.getAccountAddr(),
-            txType,
-            msgType,
-            txDetails.getPrevTxHash(),
-            txDetails.getLt(),
-            txDetails.getNow(),
-            lastBlock.getSeqno());
+//        log.debug(
+//            "adding in-msg {} {} {} {} LT={} NOW={} seqno={}",
+//            txDetails.getAccountAddr(),
+//            txType,
+//            msgType,
+//            txDetails.getPrevTxHash(),
+//            txDetails.getLt(),
+//            txDetails.getNow(),
+//            lastBlock.getSeqno());
 
         txEntity.add(
             TxEntity.builder()
@@ -1882,35 +1843,36 @@ public class MyLocalTon {
                 for (WalletEntity wallet : App.dbPool.getAllWallets()) {
                   if (Main.appActive.get()) {
                     Address address = Address.of(wallet.getWc() + ":" + wallet.getHexAddress());
-                    RawAccountState accountState = tonlib.getRawAccountState(address);
+                    Account accountState = adnlLiteClient.getAccount(address);
+                    StateInit stateInit = accountState.getStateInit();
                     WalletVersion walletVersion =
-                        MyLocalTonUtils.detectWalletVersion(accountState.getCode(), address);
+                        MyLocalTonUtils.detectWalletVersion(
+                            stateInit.getCode().toHex(), address); // todo with crc?
 
                     long subWalletId = -1;
                     long seqno = -1;
 
                     try {
-                      seqno = tonlib.getSeqno(address);
+                      seqno = adnlLiteClient.getSeqno(address);
                     } catch (Throwable ignored) {
                       // log.debug("can't detect contract's seqno for address {}", address.toRaw());
                     }
 
                     try {
-                      subWalletId =
-                          tonlib.getAccountState(address).getAccount_state().getWallet_id();
+                      subWalletId = adnlLiteClient.getSubWalletId(address);
                       if (subWalletId == 0) {
                         subWalletId = -1L;
                       }
                     } catch (Throwable ignored) {
-                      log.debug("can't detect contract's walletId for address {}", address.toRaw());
+                      //log.debug("can't detect contract's walletId for address {}", address.toRaw());
                     }
 
-                    log.debug(
-                        "runAccountsMonitor: {}, {}, {}, {}",
-                        walletVersion,
-                        seqno,
-                        subWalletId,
-                        accountState.getBalance());
+                    //                    log.debug(
+                    //                        "runAccountsMonitor: {}, {}, {}, {}",
+                    //                        walletVersion,
+                    //                        seqno,
+                    //                        subWalletId,
+                    //                        accountState.getBalance());
 
                     App.dbPool.updateWalletStateAndSeqno(
                         wallet, accountState, seqno, walletVersion);

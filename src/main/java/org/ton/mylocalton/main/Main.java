@@ -31,7 +31,7 @@ public class Main {
 
     for (String arg : args) {
       if (arg.equalsIgnoreCase("version")) {
-        System.out.println("v1.30");
+        System.out.println("v1.35");
         System.exit(0);
       }
     }
@@ -53,6 +53,7 @@ public class Main {
     myLocalTon.setSettings(MyLocalTonUtils.loadSettings());
     myLocalTon.saveSettingsToGson(); // create default config
     MyLocalTonSettings settings = myLocalTon.getSettings();
+    // UI parameters are read directly from settings where needed
     log.info("myLocalTon config file location: {}", MyLocalTonSettings.SETTINGS_FILE);
 
     MyLocalTonUtils.setMyLocalTonLogLevel(settings.getGenesisNode().getMyLocalTonLogLevel());
@@ -90,6 +91,34 @@ public class Main {
       if (arg.equalsIgnoreCase("data-generator")) {
         log.info("enabling data-generator on start");
         settings.getUiSettings().setEnableDataGenerator(true);
+      }
+
+      if (arg.startsWith("elections=")) {
+        String electionsValues = StringUtils.remove(arg, "elections=");
+        String[] values = electionsValues.split(",");
+        if (values.length == 5) {
+          try {
+            long electedFor = Long.parseLong(values[0]);
+            long electionStartBefore = Long.parseLong(values[1]);
+            long electionEndBefore = Long.parseLong(values[2]);
+            long electionStakesFrozenFor = Long.parseLong(values[3]);
+            int validationGuiRefreshSeconds = Integer.parseInt(values[4]);
+            
+            settings.getBlockchainSettings().setElectedFor(electedFor);
+            settings.getBlockchainSettings().setElectionStartBefore(electionStartBefore);
+            settings.getBlockchainSettings().setElectionEndBefore(electionEndBefore);
+            settings.getBlockchainSettings().setElectionStakesFrozenFor(electionStakesFrozenFor);
+            settings.getBlockchainSettings().setOriginalValidatorSetValidFor(electionStartBefore);
+            settings.getUiSettings().setValidationGuiRefreshSeconds(validationGuiRefreshSeconds);
+            
+            log.info("Elections settings updated: electedFor={}s, electionStartBefore={}s, electionEndBefore={}s, electionStakesFrozenFor={}s, validationGuiRefreshSeconds={}s",
+                electedFor, electionStartBefore, electionEndBefore, electionStakesFrozenFor, validationGuiRefreshSeconds);
+          } catch (NumberFormatException e) {
+            log.error("Invalid elections parameter format. Expected: elections=electedFor,electionStartBefore,electionEndBefore,electionStakesFrozenFor,participateInterval");
+          }
+        } else {
+          log.error("Invalid elections parameter format. Expected: elections=int,int,int,int,int");
+        }
       }
 
       if (InetAddresses.isInetAddress(arg)) {

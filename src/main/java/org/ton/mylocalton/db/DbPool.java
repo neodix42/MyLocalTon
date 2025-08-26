@@ -19,7 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
 import org.ton.ton4j.smartcontract.types.WalletVersion;
-import org.ton.ton4j.tonlib.types.RawAccountState;
+import org.ton.ton4j.tlb.Account;
 import org.ton.mylocalton.callables.ConfigWalletExistsCallable;
 import org.ton.mylocalton.callables.DeleteWalletCallable;
 import org.ton.mylocalton.callables.FindBlockCallable;
@@ -421,13 +421,8 @@ public class DbPool {
   }
 
   public void updateWalletStateAndSeqno(
-      WalletEntity walletEntity,
-      RawAccountState accountState,
-      long seqno,
-      WalletVersion walletVersion) {
-    //        log.debug("updating account state in db {}",
-    // walletEntity.getFullAddress().toUpperCase());
-    log.debug("updating account state in db");
+      WalletEntity walletEntity, Account accountState, long seqno, WalletVersion walletVersion) {
+    //    log.debug("updating account state in db");
     try {
 
       List<UpdateAccountStateCallable> callablesList = new ArrayList<>();
@@ -437,7 +432,7 @@ public class DbPool {
                 WalletCallbackParam.builder()
                     .db(db)
                     .walletPk(walletEntity.getPrimaryKey())
-                    .accountState(accountState)
+                    .accountState(accountState) // todo review
                     .seqno(seqno)
                     .walletVersion(walletVersion)
                     .build());

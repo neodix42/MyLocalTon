@@ -3,7 +3,7 @@ package org.ton.mylocalton.ui.controllers;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.mylocalton.actions.MyLocalTon.MAX_ROWS_IN_GUI;
-import static org.ton.mylocalton.actions.MyLocalTon.tonlib;
+import static org.ton.mylocalton.actions.MyLocalTon.adnlLiteClient;
 import static org.ton.mylocalton.main.App.mainController;
 import static org.ton.mylocalton.ui.custom.events.CustomEventBus.emit;
 import static org.ton.mylocalton.ui.custom.events.CustomEventBus.listenFor;
@@ -16,7 +16,6 @@ import com.jfoenix.controls.JFXListView;
 import com.jfoenix.controls.JFXTabPane;
 import com.jfoenix.controls.JFXTextField;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -71,16 +70,15 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.ton.ton4j.address.Address;
+import org.ton.ton4j.adnl.Participant;
+import org.ton.ton4j.tl.liteserver.responses.BlockHeader;
+import org.ton.ton4j.tl.liteserver.responses.BlockId;
 import org.ton.ton4j.tlb.*;
-import org.ton.ton4j.tonlib.types.BlockIdExt;
-import org.ton.ton4j.tonlib.types.Participant;
-import org.ton.ton4j.tonlib.types.RawAccountState;
 import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.BlockEntity;
@@ -114,6 +112,7 @@ import org.ton.mylocalton.ui.custom.layout.CustomLoadingPaneController;
 import org.ton.mylocalton.ui.custom.layout.CustomMainLayout;
 import org.ton.mylocalton.ui.custom.layout.SendCoinPaneController;
 import org.ton.mylocalton.utils.MyLocalTonUtils;
+import org.ton.mylocalton.services.ValidatorCreationService;
 
 @Slf4j
 public class MainController implements Initializable {
@@ -136,6 +135,8 @@ public class MainController implements Initializable {
   @FXML public CustomInfoLabel shardsNum;
 
   @FXML public CustomInfoLabel dbSizeId;
+
+  @FXML public CustomInfoLabel globalConfigLinkId;
 
   @FXML public JFXListView<Node> blockslistviewid;
 
@@ -936,9 +937,14 @@ public class MainController implements Initializable {
                       .forEach(
                           i -> {
                             try {
-                              BlockIdExt blockIdExt =
-                                  tonlib.lookupBlock(i, -1L, -9223372036854775808L, 0, 0);
-                              ResultLastBlock block = MyLocalTonUtils.getLast(blockIdExt);
+                              BlockId blockId =
+                                  BlockId.builder()
+                                      .seqno((int) i)
+                                      .shard(-9223372036854775808L)
+                                      .workchain(-1)
+                                      .build();
+                              BlockHeader blockIdExt = adnlLiteClient.lookupBlock(blockId, 0, 0, 0);
+                              ResultLastBlock block = MyLocalTonUtils.getLast(blockIdExt.getId());
                               log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
                               MyLocalTon.getInstance()
                                   .insertBlocksAndTransactions(
@@ -967,133 +973,160 @@ public class MainController implements Initializable {
 
   @FXML
   void txsOnScroll(ScrollEvent event) {
+    ExecutorService txsOnScrollExecutorService = Executors.newSingleThreadExecutor();
 
-    //    log.debug("txsOnScroll: {}", event);
+    txsOnScrollExecutorService.execute(
+        () -> {
+          try {
+            Thread.currentThread().setName("MyLocalTon - txsOnScroll");
 
-    Node n1 = transactionsvboxid.lookup(".scroll-bar");
+            Node n1 = transactionsvboxid.lookup(".scroll-bar");
 
-    if (n1 instanceof ScrollBar bar) {
+            if (n1 instanceof ScrollBar bar) {
 
-      if (event.getDeltaY() < 0 && bar.getValue() > 0) { // bottom reached
+              if (event.getDeltaY() < 0 && bar.getValue() > 0) { // bottom reached
 
-        Platform.runLater(
-            () -> {
-              BorderPane bp =
-                  (BorderPane)
-                      transactionsvboxid.getItems().get(blockslistviewid.getItems().size() - 1);
-              String shortseqno = ((Label) bp.lookup("#block")).getText();
+                Platform.runLater(
+                    () -> {
+                      BorderPane bp =
+                          (BorderPane)
+                              transactionsvboxid
+                                  .getItems()
+                                  .get(transactionsvboxid.getItems().size() - 1);
+                      String shortseqno = ((Label) bp.lookup("#block")).getText();
 
-              long createdAt =
-                  MyLocalTonUtils.datetimeToTimestamp(((Label) bp.lookup("#time")).getText());
+                      long createdAt =
+                          MyLocalTonUtils.datetimeToTimestamp(
+                              ((Label) bp.lookup("#time")).getText());
 
-              BlockShortSeqno blockShortSeqno =
-                  BlockShortSeqno.builder()
-                      .wc(Long.valueOf(StringUtils.substringBetween(shortseqno, "(", ",")))
-                      .shard(StringUtils.substringBetween(shortseqno, ",", ","))
-                      .seqno(
-                          new BigInteger(
-                              StringUtils.substring(
-                                  StringUtils.substringAfterLast(shortseqno, ","), 0, -1)))
-                      .build();
+                      BlockShortSeqno blockShortSeqno =
+                          BlockShortSeqno.builder()
+                              .wc(Long.valueOf(StringUtils.substringBetween(shortseqno, "(", ",")))
+                              .shard(StringUtils.substringBetween(shortseqno, ",", ","))
+                              .seqno(
+                                  new BigInteger(
+                                      StringUtils.substring(
+                                          StringUtils.substringAfterLast(shortseqno, ","), 0, -1)))
+                              .build();
 
-              log.debug(
-                  "bottom tx reached, seqno {}, hwm {}, createdAt {}, utc {}",
-                  blockShortSeqno.getSeqno(),
-                  MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get(),
-                  createdAt,
-                  MyLocalTonUtils.toUTC(createdAt));
+                      log.debug(
+                          "bottom tx reached, seqno {}, hwm {}, createdAt {}, utc {}",
+                          blockShortSeqno.getSeqno(),
+                          MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get(),
+                          createdAt,
+                          MyLocalTonUtils.toUTC(createdAt));
 
-              if (globalTxLastSeqno == blockShortSeqno.getSeqno().longValue()) {
-                log.debug(
-                    "lastSeqno {} == globalBlockLastSeqno {} already scroll-loading",
-                    blockShortSeqno.getSeqno().longValue(),
-                    globalTxLastSeqno);
-                return;
-              }
+                      if (globalTxLastSeqno == blockShortSeqno.getSeqno().longValue()) {
+                        log.debug(
+                            "lastSeqno {} == globalBlockLastSeqno {} already scroll-loading",
+                            blockShortSeqno.getSeqno().longValue(),
+                            globalTxLastSeqno);
+                        return;
+                      }
 
-              globalTxLastSeqno = blockShortSeqno.getSeqno().longValue();
+                      globalTxLastSeqno = blockShortSeqno.getSeqno().longValue();
 
-              if (blockShortSeqno.getSeqno().compareTo(BigInteger.ONE) == 0) {
-                return;
-              }
+                      if (blockShortSeqno.getSeqno().compareTo(BigInteger.ONE) == 0) {
+                        return;
+                      }
 
-              if (transactionsvboxid.getItems().size() > MAX_ROWS_IN_GUI) {
-                showWarningMsg(
-                    "Maximum amount ("
-                        + MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get()
-                        + ") of visible TXs in GUI reached.",
-                    5);
-                return;
-              }
+                      if (transactionsvboxid.getItems().size() > MAX_ROWS_IN_GUI) {
+                        showWarningMsg(
+                            "Maximum amount ("
+                                + MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().get()
+                                + ") of visible TXs in GUI reached.",
+                            5);
+                        return;
+                      }
 
-              List<TxEntity> txs = App.dbPool.loadTxsBefore(createdAt);
-              log.info("txs.size {}", txs.size());
+                      List<TxEntity> txs = App.dbPool.loadTxsBefore(createdAt);
+                      log.info("txs.size {}", txs.size());
 
-              MyLocalTon.getInstance().applyTxGuiFilters(txs);
+                      MyLocalTon.getInstance().applyTxGuiFilters(txs);
 
-              MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().addAndGet(txs.size());
+                      MyLocalTon.getInstance().getTxsScrollBarHighWaterMark().addAndGet(txs.size());
 
-              ObservableList<Node> txRows = FXCollections.observableArrayList();
+                      ObservableList<Node> txRows = FXCollections.observableArrayList();
 
-              for (TxEntity txEntity : txs) {
-                try {
-                  FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("txrow.fxml"));
-                  javafx.scene.Node txRow = fxmlLoader.load();
+                      for (TxEntity txEntity : txs) {
+                        try {
+                          FXMLLoader fxmlLoader =
+                              new FXMLLoader(App.class.getResource("txrow.fxml"));
+                          javafx.scene.Node txRow = fxmlLoader.load();
 
-                  String shortBlock =
-                      String.format(
-                          "(%d,%s,%d)", txEntity.getWc(), txEntity.getShard(), txEntity.getSeqno());
+                          String shortBlock =
+                              String.format(
+                                  "(%d,%s,%d)",
+                                  txEntity.getWc(), txEntity.getShard(), txEntity.getSeqno());
 
-                  MyLocalTon.getInstance().populateTxRowWithData(shortBlock, txRow, txEntity);
+                          MyLocalTon.getInstance()
+                              .populateTxRowWithData(shortBlock, txRow, txEntity);
 
-                  if (txEntity.getTypeTx().equals("Message")) {
-                    txRow.setStyle("-fx-background-color: e9f4ff;");
-                  }
-
-                  log.debug(
-                      "adding tx hash {}, addr {}",
-                      txEntity.getTxHash(),
-                      txEntity.getTx().getAccountAddr());
-
-                  txRows.add(txRow);
-
-                } catch (IOException e) {
-                  log.error("error loading txrow.fxml file, {}", e.getMessage());
-                  return;
-                }
-              }
-              log.debug("txRows.size  {}", txRows.size());
-
-              if ((txRows.isEmpty())
-                  && (blockShortSeqno.getSeqno().compareTo(BigInteger.TEN) < 0)) {
-                log.debug(
-                    "on start some blocks were skipped and thus some transactions get lost, load them from blocks 1");
-
-                LongStream.range(1, 10)
-                    .forEach(
-                        i -> {
-                          try {
-                            BlockIdExt blockIdExt =
-                                tonlib.lookupBlock(i, -1L, -9223372036854775808L, 0, 0);
-                            ResultLastBlock block = MyLocalTonUtils.getLast(blockIdExt);
-                            log.debug("Load missing block {}: {}", i, block.getFullBlockSeqno());
-                            MyLocalTon.getInstance()
-                                .insertBlocksAndTransactions(
-                                    MyLocalTon.getInstance().getSettings().getGenesisNode(),
-                                    block,
-                                    false);
-                          } catch (Exception e) {
-                            log.error("cannot load missing blocks {}", e.getMessage());
+                          if (txEntity.getTypeTx().equals("Message")) {
+                            txRow.setStyle("-fx-background-color: e9f4ff;");
                           }
-                        });
+
+                          log.debug(
+                              "adding tx hash {}, addr {}",
+                              txEntity.getTxHash(),
+                              txEntity.getTx().getAccountAddr());
+
+                          txRows.add(txRow);
+
+                        } catch (IOException e) {
+                          log.error("error loading txrow.fxml file, {}", e.getMessage());
+                          return;
+                        }
+                      }
+                      log.debug("txRows.size  {}", txRows.size());
+
+                      if ((txRows.isEmpty())
+                          && (blockShortSeqno.getSeqno().compareTo(BigInteger.TEN) < 0)) {
+                        log.debug(
+                            "on start some blocks were skipped and thus some transactions get lost, load them from blocks 1");
+
+                        LongStream.range(1, 10)
+                            .forEach(
+                                i -> {
+                                  try {
+                                    BlockId blockId =
+                                        BlockId.builder()
+                                            .seqno((int) i)
+                                            .shard(-9223372036854775808L)
+                                            .workchain(-1)
+                                            .build();
+                                    BlockHeader blockIdExt =
+                                        adnlLiteClient.lookupBlock(blockId, 0, 0, 0);
+                                    ResultLastBlock block =
+                                        MyLocalTonUtils.getLast(blockIdExt.getId());
+                                    //                            BlockIdExt blockIdExt =
+                                    //                                adnlLiteClient.lookupBlock(i,
+                                    // -1L, -9223372036854775808L, 0, 0);
+                                    //                            ResultLastBlock block =
+                                    // MyLocalTonUtils.getLast(blockIdExt);
+                                    log.debug(
+                                        "Load missing block {}: {}", i, block.getFullBlockSeqno());
+                                    MyLocalTon.getInstance()
+                                        .insertBlocksAndTransactions(
+                                            MyLocalTon.getInstance().getSettings().getGenesisNode(),
+                                            block,
+                                            false);
+                                  } catch (Exception e) {
+                                    log.error("cannot load missing blocks {}", e.getMessage());
+                                  }
+                                });
+                      }
+                      transactionsvboxid.getItems().addAll(txRows);
+                    });
               }
-              transactionsvboxid.getItems().addAll(txRows);
-            });
-      }
-      if (event.getDeltaY() > 0) { // top reached
-        log.debug("top reached");
-      }
-    }
+              if (event.getDeltaY() > 0) { // top reached
+                log.debug("top reached");
+              }
+            }
+          } catch (Exception e) {
+            log.error("Error loading blocksOnScroll, {}", e.getMessage());
+          }
+        });
   }
 
   @FXML
@@ -1975,13 +2008,12 @@ public class MainController implements Initializable {
           settings.elections.keySet().toArray()[settings.elections.size() - 1]; // get last element
       v = settings.elections.get(lastKey);
 
-      //      LiteClient liteClient = LiteClient.getInstance(LiteClientEnum.GLOBAL);
-      ConfigParams34 config34 = tonlib.getConfigParam34();
+      ConfigParams34 config34 = adnlLiteClient.getConfigParam34();
       Validators currentValidators = (Validators) config34.getCurrValidatorSet();
 
-      ConfigParams32 config32 = tonlib.getConfigParam32();
+      ConfigParams32 config32 = adnlLiteClient.getConfigParam32();
       Validators prevValidators = (Validators) config32.getPrevValidatorSet();
-      ConfigParams36 config36 = tonlib.getConfigParam36();
+      ConfigParams36 config36 = adnlLiteClient.getConfigParam36();
       Validators nextValidators = (Validators) config36.getNextValidatorSet();
 
       Platform.runLater(
@@ -2158,16 +2190,16 @@ public class MainController implements Initializable {
       // every 30 sec
       // MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
-      RawAccountState accountStateMain =
-          tonlib.getRawAccountState(Address.of(settings.getMainWalletAddrFull()));
+      BigInteger mainWalletBalance =
+          adnlLiteClient.getBalance(Address.of(settings.getMainWalletAddrFull()));
 
-      RawAccountState accountStateConfig =
-          tonlib.getRawAccountState(Address.of(settings.getConfigSmcAddrHex()));
+      BigInteger configWalletBalance =
+          adnlLiteClient.getBalance(Address.of(settings.getConfigSmcAddrHex()));
 
-      RawAccountState accountStateElector =
-          tonlib.getRawAccountState(Address.of(settings.getElectorSmcAddrHex()));
+      BigInteger electorBalance =
+          adnlLiteClient.getBalance(Address.of(settings.getElectorSmcAddrHex()));
 
-      List<Participant> participants = tonlib.getElectionParticipants();
+      List<Participant> participants = adnlLiteClient.getElectionParticipants();
       log.info("participants {}", participants);
 
       String participantsTooltip =
@@ -2180,9 +2212,9 @@ public class MainController implements Initializable {
 
       Platform.runLater(
           () -> {
-            minterBalance.setText(Utils.formatNanoValue(accountStateMain.getBalance(), 2));
-            configBalance.setText(Utils.formatNanoValue(accountStateConfig.getBalance(), 2));
-            electorBalance.setText(Utils.formatNanoValue(accountStateElector.getBalance(), 2));
+            minterBalance.setText(Utils.formatNanoValue(mainWalletBalance, 2));
+            configBalance.setText(Utils.formatNanoValue(configWalletBalance, 2));
+            this.electorBalance.setText(Utils.formatNanoValue(electorBalance, 2));
             totalParticipants.setText(String.valueOf(participants.size()));
             totalParticipants.setTooltip(new Tooltip(participantsTooltip));
           });
@@ -2204,8 +2236,8 @@ public class MainController implements Initializable {
   private void updateValidator1TabPage(ValidationParam v) {
     GenesisNode node1 = settings.getGenesisNode();
     if (nonNull(node1.getWalletAddress())) {
-      RawAccountState accountState =
-          tonlib.getRawAccountState(Address.of(node1.getWalletAddress().getFullWalletAddress()));
+      BigInteger balance =
+          adnlLiteClient.getBalance(Address.of(node1.getWalletAddress().getFullWalletAddress()));
 
       Platform.runLater(
           () -> {
@@ -2238,7 +2270,7 @@ public class MainController implements Initializable {
             validator1PubKeyHexNext.setText(node1.getValidationPubKeyHex());
             validator1PubKeyIntegerNext.setText(node1.getValidationPubKeyInteger());
             validator1WalletAddress.setText(node1.getWalletAddress().getFullWalletAddress());
-            validator1WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance(), 2));
+            validator1WalletBalance.setText(Utils.formatNanoValue(balance, 2));
             nodePublicPort1.setText(node1.getPublicPort().toString());
             nodeConsolePort1.setText(node1.getConsolePort().toString());
             liteServerPort1.setText(node1.getLiteServerPort().toString());
@@ -2249,8 +2281,8 @@ public class MainController implements Initializable {
   private void updateValidator2TabPage(ValidationParam v) {
     Node2 node2 = settings.getNode2();
     if (nonNull(node2.getWalletAddress())) {
-      RawAccountState accountState =
-          tonlib.getRawAccountState(Address.of(node2.getWalletAddress().getFullWalletAddress()));
+      BigInteger balance =
+          adnlLiteClient.getBalance(Address.of(node2.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node2.getPrevValidationAndlKey())) {
@@ -2274,7 +2306,7 @@ public class MainController implements Initializable {
             validator2PubKeyHexNext.setText(node2.getValidationPubKeyHex());
             validator2PubKeyIntegerNext.setText(node2.getValidationPubKeyInteger());
             validator2WalletAddress.setText(node2.getWalletAddress().getFullWalletAddress());
-            validator2WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance(), 2));
+            validator2WalletBalance.setText(Utils.formatNanoValue(balance, 2));
             nodePublicPort2.setText(node2.getPublicPort().toString());
             nodeConsolePort2.setText(node2.getConsolePort().toString());
             liteServerPort2.setText(node2.getLiteServerPort().toString());
@@ -2287,8 +2319,8 @@ public class MainController implements Initializable {
   private void updateValidator3TabPage(ValidationParam v) {
     Node3 node3 = settings.getNode3();
     if (nonNull(node3.getWalletAddress())) {
-      RawAccountState accountState =
-          tonlib.getRawAccountState(Address.of(node3.getWalletAddress().getFullWalletAddress()));
+      BigInteger balance =
+          adnlLiteClient.getBalance(Address.of(node3.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node3.getPrevValidationAndlKey())) {
@@ -2312,7 +2344,7 @@ public class MainController implements Initializable {
             validator3PubKeyHexNext.setText(node3.getValidationPubKeyHex());
             validator3PubKeyIntegerNext.setText(node3.getValidationPubKeyInteger());
             validator3WalletAddress.setText(node3.getWalletAddress().getFullWalletAddress());
-            validator3WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance(), 2));
+            validator3WalletBalance.setText(Utils.formatNanoValue(balance, 2));
             nodePublicPort3.setText(node3.getPublicPort().toString());
             nodeConsolePort3.setText(node3.getConsolePort().toString());
             liteServerPort3.setText(node3.getLiteServerPort().toString());
@@ -2325,8 +2357,8 @@ public class MainController implements Initializable {
   private void updateValidator4TabPage(ValidationParam v) {
     Node4 node4 = settings.getNode4();
     if (nonNull(node4.getWalletAddress())) {
-      RawAccountState accountState =
-          tonlib.getRawAccountState(Address.of(node4.getWalletAddress().getFullWalletAddress()));
+      BigInteger balance =
+          adnlLiteClient.getBalance(Address.of(node4.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node4.getPrevValidationAndlKey())) {
@@ -2350,7 +2382,7 @@ public class MainController implements Initializable {
             validator4PubKeyHexNext.setText(node4.getValidationPubKeyHex());
             validator4PubKeyIntegerNext.setText(node4.getValidationPubKeyInteger());
             validator4WalletAddress.setText(node4.getWalletAddress().getFullWalletAddress());
-            validator4WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance(), 2));
+            validator4WalletBalance.setText(Utils.formatNanoValue(balance, 2));
             nodePublicPort4.setText(node4.getPublicPort().toString());
             nodeConsolePort4.setText(node4.getConsolePort().toString());
             liteServerPort4.setText(node4.getLiteServerPort().toString());
@@ -2363,8 +2395,8 @@ public class MainController implements Initializable {
   private void updateValidator5TabPage(ValidationParam v) {
     Node5 node5 = settings.getNode5();
     if (nonNull(node5.getWalletAddress())) {
-      RawAccountState accountState =
-          tonlib.getRawAccountState(Address.of(node5.getWalletAddress().getFullWalletAddress()));
+      BigInteger balance =
+          adnlLiteClient.getBalance(Address.of(node5.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node5.getPrevValidationAndlKey())) {
@@ -2388,7 +2420,7 @@ public class MainController implements Initializable {
             validator5PubKeyHexNext.setText(node5.getValidationPubKeyHex());
             validator5PubKeyIntegerNext.setText(node5.getValidationPubKeyInteger());
             validator5WalletAddress.setText(node5.getWalletAddress().getFullWalletAddress());
-            validator5WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance()));
+            validator5WalletBalance.setText(Utils.formatNanoValue(balance));
             nodePublicPort5.setText(node5.getPublicPort().toString());
             nodeConsolePort5.setText(node5.getConsolePort().toString());
             liteServerPort5.setText(node5.getLiteServerPort().toString());
@@ -2401,8 +2433,8 @@ public class MainController implements Initializable {
   private void updateValidator6TabPage(ValidationParam v) {
     Node6 node6 = settings.getNode6();
     if (nonNull(node6.getWalletAddress())) {
-      RawAccountState accountState =
-          tonlib.getRawAccountState(Address.of(node6.getWalletAddress().getFullWalletAddress()));
+      BigInteger balance =
+          adnlLiteClient.getBalance(Address.of(node6.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node6.getPrevValidationAndlKey())) {
@@ -2426,7 +2458,7 @@ public class MainController implements Initializable {
             validator6PubKeyHexNext.setText(node6.getValidationPubKeyHex());
             validator6PubKeyIntegerNext.setText(node6.getValidationPubKeyInteger());
             validator6WalletAddress.setText(node6.getWalletAddress().getFullWalletAddress());
-            validator6WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance()));
+            validator6WalletBalance.setText(Utils.formatNanoValue(balance));
             nodePublicPort6.setText(node6.getPublicPort().toString());
             nodeConsolePort6.setText(node6.getConsolePort().toString());
             liteServerPort6.setText(node6.getLiteServerPort().toString());
@@ -2439,8 +2471,8 @@ public class MainController implements Initializable {
   private void updateValidator7TabPage(ValidationParam v) {
     Node7 node7 = settings.getNode7();
     if (nonNull(node7.getWalletAddress())) {
-      RawAccountState accountState =
-          tonlib.getRawAccountState(Address.of(node7.getWalletAddress().getFullWalletAddress()));
+      BigInteger balance =
+          adnlLiteClient.getBalance(Address.of(node7.getWalletAddress().getFullWalletAddress()));
       Platform.runLater(
           () -> {
             if (nonNull(node7.getPrevValidationAndlKey())) {
@@ -2465,7 +2497,7 @@ public class MainController implements Initializable {
             validator7PubKeyIntegerNext.setText(
                 node7.getValidationPubKeyInteger() + " (used in participants list)");
             validator7WalletAddress.setText(node7.getWalletAddress().getFullWalletAddress());
-            validator7WalletBalance.setText(Utils.formatNanoValue(accountState.getBalance(), 2));
+            validator7WalletBalance.setText(Utils.formatNanoValue(balance, 2));
             nodePublicPort7.setText(node7.getPublicPort().toString());
             nodeConsolePort7.setText(node7.getConsolePort().toString());
             liteServerPort7.setText(node7.getLiteServerPort().toString());
@@ -3635,67 +3667,13 @@ public class MainController implements Initializable {
   }
 
   public void createNewNodeBtn() {
-
+    ValidatorCreationService validatorCreationService =
+        new ValidatorCreationService(settings, this);
     ForkJoinPool.commonPool()
         .execute(
             () -> {
               Thread.currentThread().setName("MyLocalTon - Creating validator");
-
-              try {
-                mainController.addValidatorBtn.setDisable(true);
-                org.ton.mylocalton.settings.Node node = MyLocalTonUtils.getNewNode();
-
-                if (nonNull(node)) {
-                  log.info("creating validator {}", node.getNodeName());
-                  node.setTonLogLevel(settings.getGenesisNode().getTonLogLevel());
-
-                  // delete unfinished or failed node creation
-                  FileUtils.deleteQuietly(
-                      new File(
-                          MyLocalTonSettings.MY_APP_DIR + File.separator + node.getNodeName()));
-
-                  MyLocalTon.getInstance().createFullnode(node, true, true);
-
-                  Tab newTab = MyLocalTonUtils.getNewNodeTab();
-                  Platform.runLater(() -> validationTabs.getTabs().add(newTab));
-
-                  settings.getActiveNodes().add(node.getNodeName());
-                  MyLocalTon.getInstance().saveSettingsToGson();
-
-                  showDialogMessage(
-                      "Completed",
-                      "Validator "
-                          + node.getNodeName()
-                          + " has been cloned from genesis, now synchronizing and creating main wallet.");
-
-                  log.info(
-                      "Creating new validator controlling smart-contract (wallet) for node {}",
-                      node.getNodeName());
-                  //                    MyLocalTon.getInstance().createWalletEntity(node, null,
-                  // WalletVersion.V3R2, -1L, settings.getWalletSettings().getDefaultSubWalletId(),
-                  // node.getInitialValidatorWalletAmount(), true);
-
-                  MyLocalTon.getInstance().createValidatorControllingSmartContract(node);
-                  //                   node.setWalletAddress(walletEntity.getWallet()); // double
-                  // check
-
-                  mainController.addValidatorBtn.setDisable(false);
-                  App.mainController.showInfoMsg(
-                      "Main wallet for validator "
-                          + node.getNodeName()
-                          + " has been successfully created.",
-                      5);
-                } else {
-                  showDialogMessage(
-                      "The limit has been reached",
-                      "It is possible to have up to 6 additional validators. The first one is reserved, thus in total you may have 7 validators.");
-                }
-              } catch (Exception e) {
-                log.error("Error creating validator: {}", e.getMessage());
-                App.mainController.showErrorMsg("Error creating validator", 3);
-              } finally {
-                mainController.addValidatorBtn.setDisable(false);
-              }
+              validatorCreationService.createNewValidator();
             });
   }
 
@@ -3905,6 +3883,20 @@ public class MainController implements Initializable {
       log.info(text + " copied");
       App.mainController.showInfoMsg(text + " copied to clipboard", 2);
     }
+  }
+
+  @FXML
+  public void globalConfigLink(Event e) throws IOException {
+    String text =
+        "http://127.0.0.1:"
+            + settings.getUiSettings().getSimpleHttpServerPort()
+            + "/localhost.global.config.json";
+    final Clipboard clipboard = Clipboard.getSystemClipboard();
+    final ClipboardContent content = new ClipboardContent();
+    content.putString(text);
+    clipboard.setContent(content);
+    log.info(text + " copied");
+    App.mainController.showInfoMsg(text + " copied to clipboard", 2);
   }
 
   @FXML
