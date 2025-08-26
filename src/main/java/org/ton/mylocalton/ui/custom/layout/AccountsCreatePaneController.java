@@ -18,10 +18,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
 import org.ton.mylocalton.actions.MyLocalTon;
-import org.ton.ton4j.smartcontract.types.WalletVersion;
 import org.ton.mylocalton.ui.custom.events.CustomEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomActionEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomNotificationEvent;
+import org.ton.mylocalton.utils.WalletVersion;
 
 public class AccountsCreatePaneController implements Initializable {
 
@@ -48,7 +48,8 @@ public class AccountsCreatePaneController implements Initializable {
             WalletVersion.V2R2.getValue(),
             WalletVersion.V3R1.getValue(),
             WalletVersion.V3R2.getValue(),
-            WalletVersion.V4R2.getValue());
+            WalletVersion.V4R2.getValue(),
+            WalletVersion.V5R1.getValue());
 
     newWalletVersion.setItems(versions);
 
@@ -56,7 +57,7 @@ public class AccountsCreatePaneController implements Initializable {
         .valueProperty()
         .addListener(
             (value, oldValue, newValue) -> {
-              if (newValue.contains("V3") || newValue.contains("V4")) {
+              if (newValue.contains("V3") || newValue.contains("V4") || newValue.contains("V5")) {
                 showSubWalletID();
               } else {
                 hideSubWalletID();

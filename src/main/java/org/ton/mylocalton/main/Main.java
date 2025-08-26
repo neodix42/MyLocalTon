@@ -31,7 +31,7 @@ public class Main {
 
     for (String arg : args) {
       if (arg.equalsIgnoreCase("version")) {
-        System.out.println("v1.35");
+        System.out.println("v1.36");
         System.exit(0);
       }
     }
@@ -103,18 +103,24 @@ public class Main {
             long electionEndBefore = Long.parseLong(values[2]);
             long electionStakesFrozenFor = Long.parseLong(values[3]);
             int validationGuiRefreshSeconds = Integer.parseInt(values[4]);
-            
+
             settings.getBlockchainSettings().setElectedFor(electedFor);
             settings.getBlockchainSettings().setElectionStartBefore(electionStartBefore);
             settings.getBlockchainSettings().setElectionEndBefore(electionEndBefore);
             settings.getBlockchainSettings().setElectionStakesFrozenFor(electionStakesFrozenFor);
             settings.getBlockchainSettings().setOriginalValidatorSetValidFor(electionStartBefore);
             settings.getUiSettings().setValidationGuiRefreshSeconds(validationGuiRefreshSeconds);
-            
-            log.info("Elections settings updated: electedFor={}s, electionStartBefore={}s, electionEndBefore={}s, electionStakesFrozenFor={}s, validationGuiRefreshSeconds={}s",
-                electedFor, electionStartBefore, electionEndBefore, electionStakesFrozenFor, validationGuiRefreshSeconds);
+
+            log.info(
+                "Elections settings updated: electedFor={}s, electionStartBefore={}s, electionEndBefore={}s, electionStakesFrozenFor={}s, validationGuiRefreshSeconds={}s",
+                electedFor,
+                electionStartBefore,
+                electionEndBefore,
+                electionStakesFrozenFor,
+                validationGuiRefreshSeconds);
           } catch (NumberFormatException e) {
-            log.error("Invalid elections parameter format. Expected: elections=electedFor,electionStartBefore,electionEndBefore,electionStakesFrozenFor,participateInterval");
+            log.error(
+                "Invalid elections parameter format. Expected: elections=electedFor,electionStartBefore,electionEndBefore,electionStakesFrozenFor,participateInterval");
           }
         } else {
           log.error("Invalid elections parameter format. Expected: elections=int,int,int,int,int");

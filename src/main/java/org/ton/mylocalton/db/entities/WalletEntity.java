@@ -2,13 +2,15 @@ package org.ton.mylocalton.db.entities;
 
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
-import org.ton.ton4j.smartcontract.types.WalletVersion;
+import org.ton.mylocalton.utils.WalletVersion;
 import org.ton.ton4j.tlb.Account;
 import org.ton.mylocalton.wallet.WalletAddress;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+
+import static java.util.Objects.nonNull;
 
 @Entity
 @Builder
@@ -43,6 +45,11 @@ public class WalletEntity {
   }
 
   public String getAccountStatus() {
-    return accountState.getAccountState();
+    if (nonNull(accountState)) {
+      return accountState.getAccountState();
+    }
+    else {
+      return null;
+    }
   }
 }

@@ -11,7 +11,7 @@ import org.ton.ton4j.smartcontract.wallet.v1.WalletV1R1;
 import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.data.db.DataDB;
 
-/** to up V1R1 wallet, upload state-init, send back to faucet 0.08 */
+/** top up V1R1 wallet, upload state-init, send back to faucet 0.08 */
 @Slf4j
 public class Scenario1 implements Scenario {
   AdnlLiteClient adnlLiteClient;

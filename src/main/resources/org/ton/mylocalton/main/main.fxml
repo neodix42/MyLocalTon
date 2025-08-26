@@ -13,7 +13,7 @@
 <StackPane xmlns:fx="http://javafx.com/fxml/1" fx:id="superWindow" xmlns="http://javafx.com/javafx/11.0.1"
            fx:controller="org.ton.mylocalton.ui.controllers.MainController">
 
-    <CustomMainLayout fx:id="mainLayout" prefHeight="720.0" maxWidth="1400.0" prefWidth="1000.0">
+    <CustomMainLayout fx:id="mainLayout" prefHeight="820.0" maxWidth="1400.0" prefWidth="1000.0">
 
         <scrollButton>
             <Label fx:id="scrollBtn" contentDisplay="CENTER" graphicTextGap="0.0" onMouseClicked="#scrollBtnAction">
@@ -94,10 +94,8 @@
                     </VBox>
                 </HBox>
                 <JFXListView fx:id="blockslistviewid" focusTraversable="false" maxHeight="-Infinity"
-                             onScroll="#blocksOnScroll" prefHeight="582.0"
-
-                             prefWidth="1001.0" styleClass="content-list-view"
-                >
+                             onScroll="#blocksOnScroll" prefHeight="682.0" prefWidth="1001.0"
+                             styleClass="content-list-view">
                     <!-- add dynamic content here -->
                 </JFXListView>
             </VBox>
@@ -129,45 +127,239 @@
                     </VBox>
                 </HBox>
                 <JFXListView fx:id="transactionsvboxid" focusTraversable="false" maxHeight="-Infinity"
-                             onScroll="#txsOnScroll" prefHeight="582.0" prefWidth="1000.0"
+                             onScroll="#txsOnScroll" prefHeight="682.0" prefWidth="1000.0"
                              styleClass="content-list-view" BorderPane.alignment="CENTER">
                     <!-- add dynamic content here -->
                 </JFXListView>
             </VBox>
-
         </transactionsPane>
 
         <accountsPane>
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
                   AnchorPane.topAnchor="10.0">
-                <VBox prefHeight="582.0" prefWidth="1001.0">
-                    <HBox prefHeight="44.0" prefWidth="924.0">
-                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="208.0">
-                            <Label prefHeight="48.0" prefWidth="208.0" styleClass="content-header-label"/>
-                        </HBox>
-                        <VBox prefHeight="44.0" prefWidth="505.0">
-                            <Label prefHeight="44.0" prefWidth="505.0" styleClass="content-header-label"
-                                   text="ACCOUNT"/>
-                        </VBox>
-                        <VBox prefHeight="43.0" prefWidth="144.0">
-                            <Label prefHeight="43.0" prefWidth="143.0" styleClass="content-header-label"
-                                   text="BALANCE"/>
-                        </VBox>
-
-                        <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0">
-                            <Label prefHeight="48.0" prefWidth="199.0" styleClass="content-header-label"/>
-                        </HBox>
+                <HBox prefHeight="44.0" prefWidth="924.0">
+                    <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="208.0">
+                        <Label prefHeight="48.0" prefWidth="208.0" styleClass="content-header-label"/>
                     </HBox>
-                    <JFXListView fx:id="accountsvboxid" focusTraversable="false" maxHeight="-Infinity"
-                                 onScroll="#accountsOnScroll" prefHeight="582.0" prefWidth="1001.0"
-                                 styleClass="content-list-view" BorderPane.alignment="CENTER">
-                        <!-- add dynamic content here
-                        <fx:include fx:id="accs" source="accountrow.fxml"/>
-                        -->
-                    </JFXListView>
-                </VBox>
+                    <VBox prefHeight="44.0" prefWidth="505.0">
+                        <Label prefHeight="44.0" prefWidth="505.0" styleClass="content-header-label"
+                               text="ACCOUNT"/>
+                    </VBox>
+                    <VBox prefHeight="43.0" prefWidth="144.0">
+                        <Label prefHeight="43.0" prefWidth="143.0" styleClass="content-header-label"
+                               text="BALANCE"/>
+                    </VBox>
+
+                    <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="199.0">
+                        <Label prefHeight="48.0" prefWidth="199.0" styleClass="content-header-label"/>
+                    </HBox>
+                </HBox>
+                <JFXListView fx:id="accountsvboxid" focusTraversable="false" maxHeight="-Infinity"
+                             onScroll="#accountsOnScroll" prefHeight="682.0" prefWidth="1001.0"
+                             styleClass="content-list-view" BorderPane.alignment="CENTER">
+                    <!-- add dynamic content here
+                    <fx:include fx:id="accs" source="accountrow.fxml"/>
+                    -->
+                </JFXListView>
             </VBox>
         </accountsPane>
+
+        <dataPane>
+            <GridPane xmlns:fx="http://javafx.com/fxml" hgap="15" vgap="16">
+                <padding>
+                    <Insets bottom="0.0" left="50.0" right="30.0" top="0.0"/>
+                </padding>
+                <columnConstraints>
+                    <ColumnConstraints/>
+                    <ColumnConstraints/>
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                    <RowConstraints/>
+                </rowConstraints>
+
+                <Label fx:id="dataToggleLabel" text="Start data generator" GridPane.columnIndex="1"
+                       GridPane.rowIndex="0"
+                       styleClass="label-second-font-14"/>
+                <JFXToggleButton fx:id="toggleData" GridPane.columnIndex="0" maxWidth="40"
+                                 GridPane.rowIndex="0" onAction="#startData"/>
+
+                <Label text="Scenario 1 - uses V1R1 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
+                       GridPane.columnIndex="1" GridPane.rowIndex="1"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario1" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="1" onAction="#scenario1Action"/>
+
+                <Label text="Scenario 2 - uses V1R2 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
+                       GridPane.columnIndex="1" GridPane.rowIndex="2"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario2" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="2" onAction="#scenario2Action"/>
+
+                <Label text="Scenario 3 - uses V1R3 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
+                       GridPane.columnIndex="1" GridPane.rowIndex="3"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario3" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="3" onAction="#scenario3Action"/>
+
+                <Label text="Scenario 4 - uses V2R1 wallet, tops it up, uploads state-init and sends back to faucet 0.08 and to random address 0.01."
+                       GridPane.columnIndex="1" GridPane.rowIndex="4"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario4" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="4" onAction="#scenario4Action"/>
+
+                <Label text="Scenario 5 - uses V2R2 wallet, tops it up, uploads state-init and sends back to faucet 0.08 and to random address 0.01."
+                       GridPane.columnIndex="1" GridPane.rowIndex="5"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario5" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="5" onAction="#scenario5Action"/>
+
+                <Label text="Scenario 6 - uses V3R1 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
+                       GridPane.columnIndex="1" GridPane.rowIndex="6"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario6" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="6" onAction="#scenario6Action"/>
+
+                <Label text="Scenario 7 - uses V3R2 wallet, tops it up, uploads state-init and sends back to faucet 0.08."
+                       GridPane.columnIndex="1" GridPane.rowIndex="7"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario7" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="7" onAction="#scenario7Action"/>
+
+                <Label text="Scenario 8 - uses V4R2 wallet, tops it up, uploads state-init and sends back to faucet 0.06."
+                       GridPane.columnIndex="1" GridPane.rowIndex="8"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario8" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="8" onAction="#scenario8Action"/>
+
+                <Label text="Scenario 9 - uses V4R2 wallet, installs plugin, collects fee, pauses and collects fee again, uninstalls plugin."
+                       GridPane.columnIndex="1" GridPane.rowIndex="9"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario9" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="9" onAction="#scenario9Action"/>
+
+                <Label text="Scenario 10 - uses V5R1 wallet, tops it up, uploads state-init and sends back to faucet 0.03."
+                       GridPane.columnIndex="1" GridPane.rowIndex="10"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario10" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="10" onAction="#scenario10Action"/>
+
+                <Label text="Scenario 11 - uses V5R1 wallet, tops it up, uploads state-init and transfer to 255 random recipients."
+                       GridPane.columnIndex="1" GridPane.rowIndex="11"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario11" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="11" onAction="#scenario11Action"/>
+
+                <Label text="Scenario 12 - uses V5R1 wallet as library and do a transfer to 255 random recipients."
+                       GridPane.columnIndex="1" GridPane.rowIndex="12"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario12" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="12" onAction="#scenario12Action"/>
+
+                <Label text="Scenario 13 - uses Highload Wallet V3 and do a transfer to 1000 random recipients."
+                       GridPane.columnIndex="1" GridPane.rowIndex="13"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario13" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="13" onAction="#scenario13Action"/>
+
+                <Label text="Scenario 14 - deploy MultiSig V2 with 2/3 consensus, deploy order, sign order from other wallet, execute order."
+                       GridPane.columnIndex="1" GridPane.rowIndex="14"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario14" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="14" onAction="#scenario14Action"/>
+
+                <Label text="Scenario 15 - deploy jetton minter, mint jettons, edit minter's jetton, change minter admin, transfer jettons, burn jettons."
+                       GridPane.columnIndex="1" GridPane.rowIndex="15"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario15" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="15" onAction="#scenario15Action"/>
+
+                <Label text="Scenario 16 - deploy nft collection, 2 nfts on it, nft marketplace, nft sale contract, cancel sale."
+                       GridPane.columnIndex="1" GridPane.rowIndex="16"
+                       styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="scenario16" checkedColor="#0088CC" selected="true" GridPane.columnIndex="0"
+                             GridPane.rowIndex="16" onAction="#scenario16Action"/>
+
+                <Label text="Run selected scenarios every X seconds."
+                       GridPane.columnIndex="1" GridPane.rowIndex="17"
+                       styleClass="label-second-font-14"/>
+                <JFXTextField fx:id="scenarioPeriod" GridPane.columnIndex="0" maxWidth="40"
+                              GridPane.rowIndex="17"/>
+            </GridPane>
+        </dataPane>
+
+        <explorerPane>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <GridPane xmlns:fx="http://javafx.com/fxml" fx:id="explorerPaneGrid" hgap="15" vgap="16">
+                    <padding>
+                        <Insets bottom="0.0" left="0.0" right="0.0" top="0.0"/>
+                    </padding>
+                    <columnConstraints>
+                        <ColumnConstraints/>
+                        <ColumnConstraints/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints/>
+                    </rowConstraints>
+
+                    <Label fx:id="explorerToggleLabel" text="Start blockchain explorer" GridPane.columnIndex="1"
+                           GridPane.rowIndex="0"
+                           styleClass="label-second-font-14"/>
+                    <JFXToggleButton fx:id="toggleExplorer" GridPane.columnIndex="0"
+                                     GridPane.rowIndex="0" onAction="#startExplorer"/>
+                </GridPane>
+
+                <WebView fx:id="webView" prefHeight="682"/>
+            </VBox>
+        </explorerPane>
+
+        <tonHttpApiPane>
+            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
+                  AnchorPane.topAnchor="10.0">
+                <GridPane xmlns:fx="http://javafx.com/fxml" fx:id="tonCenterPaneGrid" hgap="15" vgap="16">
+                    <padding>
+                        <Insets bottom="0.0" left="0.0" right="0.0" top="0.0"/>
+                    </padding>
+                    <columnConstraints>
+                        <ColumnConstraints/>
+                        <ColumnConstraints/>
+                        <ColumnConstraints/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints/>
+                    </rowConstraints>
+
+                    <JFXToggleButton fx:id="toggleTonCenter" selected="true" GridPane.columnIndex="0"
+                                     GridPane.rowIndex="0" onAction="#startTonCenter"/>
+                    <Label fx:id="tonHttpApiToggleLabel" text="Start TON Center" GridPane.columnIndex="1"
+                           GridPane.rowIndex="0"
+                           styleClass="label-second-font-14"/>
+                    <Label text="Install manually first, see intructions here." GridPane.columnIndex="2"
+                           GridPane.rowIndex="0"
+                           styleClass="label-second-font-14"
+                           style="-fx-text-fill: #0088CC;" onMouseClicked="#openLink"/>
+
+                </GridPane>
+
+                <Label fx:id="webViewTonHttpApi" onMouseClicked="#webViewLinkOpen"
+                       style="-fx-cursor: hand; -fx-text-fill: #0000FF; -fx-font-size: 20px;"/>
+            </VBox>
+        </tonHttpApiPane>
 
         <validationPane>
             <JFXTabPane fx:id="validationTabs"
@@ -175,7 +367,7 @@
                         AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                 <Tab text="Info" style="-fx-text-base-color: #1F1F1F;">
                     <Pane>
-                        <GridPane xmlns:fx="http://javafx.com/fxml" fx:id="infoValidator" hgap="10" prefHeight="601.0"
+                        <GridPane xmlns:fx="http://javafx.com/fxml" fx:id="infoValidator" hgap="10" prefHeight="701.0"
                                   prefWidth="1110.0"
                                   vgap="10">
                             <padding>
@@ -196,6 +388,10 @@
                                 <ColumnConstraints/>
                             </columnConstraints>
                             <rowConstraints>
+                                <RowConstraints/>
+                                <RowConstraints/>
+                                <RowConstraints/>
+                                <RowConstraints/>
                                 <RowConstraints/>
                                 <RowConstraints/>
                                 <RowConstraints/>
@@ -263,9 +459,13 @@
                             <Label text="Minimum stake" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
                             <Label fx:id="minimumStake" text="0" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                             <Label text="Maximum stake" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
-                            <Label fx:id="maximumStake" text="0" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="15"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="16"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="17"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="18"/>
+                            <Label GridPane.columnIndex="1" GridPane.rowIndex="19"/>
                             <Pane fx:id="electionsChartPane" minHeight="130" visible="false" GridPane.columnSpan="3"
-                                  GridPane.rowIndex="16">
+                                  GridPane.rowIndex="20">
 
                                 <Label fx:id="electionsRange1" layoutX="20" layoutY="20" minWidth="100"
                                        style="-fx-background-color: radial-gradient(radius 180%, #87B8DE, derive(#87B8DE, -30%), derive(#87B8DE, 30%)); -fx-text-fill: white; -fx-padding: 5 5 5 5; -fx-border-radius: 20 20 0 0; -fx-background-radius: 5 5 5 5;"/>
@@ -311,7 +511,7 @@
                             </Pane>
                             <ProgressBar fx:id="progressValidationUpdate" minHeight="5.0" prefHeight="9.0"
                                          minWidth="1105.0" GridPane.columnSpan="11"
-                                         GridPane.rowIndex="17"/>
+                                         GridPane.rowIndex="21"/>
                         </GridPane>
                         <JFXButton fx:id="addValidatorBtn" disable="true" layoutX="1080.0" layoutY="20.0"
                                    onAction="#createNewNodeBtn" prefHeight="48.0" prefWidth="73.0"
@@ -1390,123 +1590,220 @@
         </aboutPane>
 
         <blockchainPane>
+            <Pane>
+                <GridPane xmlns:fx="http://javafx.com/fxml" hgap="15" vgap="20">
+                    <padding>
+                        <Insets bottom="50.0" left="50.0" right="50.0" top="10.0"/>
+                    </padding>
+                    <columnConstraints>
+                        <ColumnConstraints/>
+                        <ColumnConstraints/>
+                        <ColumnConstraints/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                        <RowConstraints/>
+                    </rowConstraints>
 
-            <BorderPane AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="10.0"
-                        AnchorPane.bottomAnchor="10.0" style="-fx-background-color: #FFFFFF;">
-                <center>
-                    <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #FFFFFF;">
-                        <VBox spacing="20.0" style="-fx-padding: 0 0 20 0; -fx-background-color: #FFFFFF;">
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Global ID" styleClass="label-second-font-14">
+                            <tooltip>
+                                <Tooltip text="Negative value means a test instance of the blockchain"/>
+                            </tooltip>
+                        </Label>
+                        <CustomTextField fx:id="globalId" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Initial balance" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="initialBalance" prefWidth="300.0"/>
+                    </VBox>
 
-                            <Label styleClass="label-second-font-16" style="-fx-text-fill: #F72B50;"
-                                   text="Change of these settings requires TON blockchain reset"/>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label text="max-validators" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="maxValidators" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Label text="max-main-validators" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="maxMainValidators" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                        <Label text="min-validators" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="minValidators" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="Global ID" styleClass="label-second-font-14">
-                                        <tooltip>
-                                            <Tooltip text="Negative value means a test instance of the blockchain"/>
-                                        </tooltip>
-                                    </Label>
-                                    <CustomTextField fx:id="globalId" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="Initial balance" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="initialBalance" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                        <Label text="elected-for" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="electedFor" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <Label text="elect-start-before" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="electionStartBefore" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                        <Label text="elect-end-before" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="electionEndBefore" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="max-validators" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="maxValidators" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="max-main-validators" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="maxMainValidators" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="min-validators" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="minValidators" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="elected-for" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="electedFor" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                        <Label text="min-stake" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="minStake" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                        <Label text="max-stake" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="maxStake" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                        <Label text="min-total-stake" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="minTotalStake" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="min-stake" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="minStake" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="elect-start-before" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="electionStartBefore" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="max-stake" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="maxStake" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="min-total-stake" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="minTotalStake" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="4">
+                        <Label text="max-factor" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="maxFactor" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="stakes-frozen-for" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="stakesFrozenFor" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="max-factor" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="maxFactor" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                        <Label text="stakes-frozen-for" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="stakesFrozenFor" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="gas-price-wc" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="gasPrice" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="gas-price-mc" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="gasPriceMc" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="cell-price-wc" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="cellPrice" prefWidth="300.0"/>
-                                </VBox>
-                                <VBox spacing="10.0">
-                                    <Label text="cell-price-mc" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="cellPriceMc" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="5">
+                        <Label text="gas-price-wc" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="gasPrice" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                        <Label text="gas-price-mc" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="gasPriceMc" prefWidth="300.0"/>
+                    </VBox>
 
-                            <HBox spacing="40.0">
-                                <VBox spacing="10.0">
-                                    <Label text="elect-end-before" styleClass="label-second-font-14"/>
-                                    <CustomTextField fx:id="electionEndBefore" prefWidth="300.0"/>
-                                </VBox>
-                            </HBox>
-                            <HBox style="-fx-padding: 40 0 0 0;">
-                                <CustomButton onAction="#resetAction" prefWidth="220.0" text="Reset TON Blockchain"
-                                              styleClass="custom-button-btn"/>
-                            </HBox>
 
-                        </VBox>
-                    </ScrollPane>
-                </center>
-            </BorderPane>
+                    <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="6">
+                        <Label text="cell-price-wc" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="cellPrice" prefWidth="300.0"/>
+                    </VBox>
+                    <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                        <Label text="cell-price-mc" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="cellPriceMc" prefWidth="300.0"/>
+                    </VBox>
+
+
+                    <CustomButton GridPane.columnIndex="0" GridPane.rowIndex="7" onAction="#resetAction"
+                                  prefWidth="220.0" text="Reset TON Blockchain"
+                                  styleClass="custom-button-btn"/>
+
+                </GridPane>
+            </Pane>
+
+            <!--            <BorderPane AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="20.0" AnchorPane.rightAnchor="10.0"-->
+            <!--                        AnchorPane.bottomAnchor="10.0" style="-fx-background-color: #FFFFFF;">-->
+            <!--                <center>-->
+            <!--                    <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #FFFFFF;">-->
+            <!--                        <VBox spacing="20.0" style="-fx-padding: 0 0 20 0; -fx-background-color: #FFFFFF;">-->
+
+            <!--                            <Label styleClass="label-second-font-16" style="-fx-text-fill: #F72B50;"-->
+            <!--                                   text="Change of these settings requires TON blockchain reset"/>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                <VBox spacing="10.0">-->
+            <!--                                    <Label text="max-validators" styleClass="label-second-font-14"/>-->
+            <!--                                    <CustomTextField fx:id="maxValidators" prefWidth="300.0"/>-->
+            <!--                                </VBox>-->
+            <!--                                <VBox spacing="10.0">-->
+            <!--                                    <Label text="max-main-validators" styleClass="label-second-font-14"/>-->
+            <!--                                    <CustomTextField fx:id="maxMainValidators" prefWidth="300.0"/>-->
+            <!--                                </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                <VBox spacing="10.0">-->
+            <!--                                    <Label text="min-validators" styleClass="label-second-font-14"/>-->
+            <!--                                    <CustomTextField fx:id="minValidators" prefWidth="300.0"/>-->
+            <!--                                </VBox>-->
+            <!--                                <VBox spacing="10.0">-->
+            <!--                                    <Label text="elected-for" styleClass="label-second-font-14"/>-->
+            <!--                                    <CustomTextField fx:id="electedFor" prefWidth="300.0"/>-->
+            <!--                                </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="min-stake" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="minStake" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="elect-start-before" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="electionStartBefore" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="max-stake" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="maxStake" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="min-total-stake" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="minTotalStake" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="stakes-frozen-for" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="stakesFrozenFor" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="max-factor" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="maxFactor" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                                        <HBox spacing="40.0">-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="gas-price-wc" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="gasPrice" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="gas-price-mc" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="gasPriceMc" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="cell-price-wc" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="cellPrice" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                                            <VBox spacing="10.0">-->
+            <!--                                                <Label text="cell-price-mc" styleClass="label-second-font-14"/>-->
+            <!--                                                <CustomTextField fx:id="cellPriceMc" prefWidth="300.0"/>-->
+            <!--                                            </VBox>-->
+            <!--                            </HBox>-->
+
+            <!--                            <HBox spacing="40.0">-->
+            <!--                                <VBox spacing="10.0">-->
+            <!--                                    <Label text="elect-end-before" styleClass="label-second-font-14"/>-->
+            <!--                                    <CustomTextField fx:id="electionEndBefore" prefWidth="300.0"/>-->
+            <!--                                </VBox>-->
+            <!--                            </HBox>-->
+            <!--                            <HBox style="-fx-padding: 40 0 0 0;">-->
+            <!--                                <CustomButton onAction="#resetAction" prefWidth="220.0" text="Reset TON Blockchain"-->
+            <!--                                              styleClass="custom-button-btn"/>-->
+            <!--                            </HBox>-->
+
+            <!--                        </VBox>-->
+            <!--                    </ScrollPane>-->
+            <!--                </center>-->
+            <!--            </BorderPane>-->
 
         </blockchainPane>
 
@@ -1520,6 +1817,7 @@
                     <ColumnConstraints/>
                 </columnConstraints>
                 <rowConstraints>
+                    <RowConstraints/>
                     <RowConstraints/>
                     <RowConstraints/>
                     <RowConstraints/>
@@ -1557,17 +1855,25 @@
                 <Label fx:id="enableBlockchainExplorerLabel" text="Enable native blockchain-explorer"
                        GridPane.columnIndex="1"
                        GridPane.rowIndex="5" styleClass="label-second-font-14"/>
-                <JFXCheckBox fx:id="enableBlockchainExplorer" checkedColor="#0088CC" selected="true"
+                <JFXCheckBox fx:id="enableBlockchainExplorer" checkedColor="#0088CC"
                              onMouseClicked="#BlockChainExplorerCheckBoxClick" GridPane.columnIndex="0"
                              GridPane.rowIndex="5"/>
 
                 <Label fx:id="enableTonHttpApiLabel"
-                       text="Enable ton-http-api service  (requires manual installation, see github.com/neodiX42/MyLocalTon)"
+                       text="Enable Ton Center V2 service  (requires manual installation, see github.com/neodiX42/MyLocalTon)"
                        GridPane.columnIndex="1"
                        GridPane.rowIndex="6" styleClass="label-second-font-14"/>
-                <JFXCheckBox fx:id="enableTonHttpApi" checkedColor="#0088CC" selected="true"
+                <JFXCheckBox fx:id="enableTonHttpApi" checkedColor="#0088CC"
                              GridPane.columnIndex="0"
                              GridPane.rowIndex="6"/>
+
+                <Label fx:id="enableDataLabel"
+                       text="Enable data generator service"
+                       GridPane.columnIndex="1"
+                       GridPane.rowIndex="7" styleClass="label-second-font-14"/>
+                <JFXCheckBox fx:id="enableData" checkedColor="#0088CC"
+                             GridPane.columnIndex="0"
+                             GridPane.rowIndex="7"/>
             </GridPane>
         </userInterfacePane>
 
@@ -2202,23 +2508,6 @@
 
         </settingsValidatorsPane>
 
-        <explorerPane>
-            <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
-                  AnchorPane.topAnchor="10.0">
-                <WebView fx:id="webView" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-                         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-            </VBox>
-        </explorerPane>
-
-        <tonHttpApiPane>
-            <VBox alignment="CENTER" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0"
-                  AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-
-                <Label fx:id="webViewTonHttpApi" onMouseClicked="#webViewLinkOpen"
-                       style="-fx-cursor: hand; -fx-text-fill: #0000FF; -fx-font-size: 24px;"/>
-            </VBox>
-        </tonHttpApiPane>
-
         <foundBlocksPane>
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
                   AnchorPane.topAnchor="10.0">
@@ -2250,7 +2539,7 @@
                 </HBox>
 
                 <JFXListView fx:id="foundBlockslistviewid" focusTraversable="false" onScroll="#foundBlocksOnScroll"
-                             prefHeight="582.0" prefWidth="1001.0" maxHeight="-Infinity"
+                             prefHeight="682.0" prefWidth="1001.0" maxHeight="-Infinity"
                              styleClass="content-list-view">
                     <!-- add dynamic content here -->
                 </JFXListView>
@@ -2270,7 +2559,7 @@
         <foundAccountsPane>
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
                   AnchorPane.topAnchor="10.0">
-                <VBox prefHeight="582.0" prefWidth="1001.0">
+                <VBox prefHeight="682.0" prefWidth="1001.0">
                     <HBox prefHeight="44.0" prefWidth="924.0">
                         <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="208.0">
                             <Label prefHeight="48.0" prefWidth="208.0" styleClass="content-header-label"/>
@@ -2289,7 +2578,7 @@
                         </HBox>
                     </HBox>
                     <JFXListView fx:id="foundAccountsvboxid" focusTraversable="false" onScroll="#accountsOnScroll"
-                                 maxHeight="-Infinity" prefHeight="582.0" prefWidth="1001.0"
+                                 maxHeight="-Infinity" prefHeight="682.0" prefWidth="1001.0"
                                  styleClass="content-list-view">
                         <!-- add dynamic content here-->
 
@@ -2332,7 +2621,7 @@
                 </HBox>
 
                 <JFXListView fx:id="foundTxsvboxid" focusTraversable="false" maxHeight="-Infinity"
-                             onScroll="#foundTxsOnScroll" prefHeight="582.0" prefWidth="1001.0"
+                             onScroll="#foundTxsOnScroll" prefHeight="682.0" prefWidth="1001.0"
                              styleClass="content-list-view">
                     <!-- add dynamic content here -->
                 </JFXListView>
@@ -2379,7 +2668,7 @@
                 </HBox>
 
                 <JFXListView fx:id="foundAccountsTxsvboxid" focusTraversable="false" maxHeight="-Infinity"
-                             onScroll="#foundTxsOnScroll" prefHeight="582.0" prefWidth="1001.0"
+                             onScroll="#foundTxsOnScroll" prefHeight="682.0" prefWidth="1001.0"
                              styleClass="content-list-view">
                     <!-- add dynamic content here -->
                 </JFXListView>

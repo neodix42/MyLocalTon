@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceException;
 import lombok.extern.slf4j.Slf4j;
-import org.ton.ton4j.smartcontract.types.WalletVersion;
+import org.ton.mylocalton.utils.WalletVersion;
 import org.ton.ton4j.tlb.Account;
 import org.ton.mylocalton.callables.ConfigWalletExistsCallable;
 import org.ton.mylocalton.callables.DeleteWalletCallable;
