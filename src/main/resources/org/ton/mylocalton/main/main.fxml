@@ -2539,7 +2539,7 @@
                 </HBox>
 
                 <JFXListView fx:id="foundBlockslistviewid" focusTraversable="false" onScroll="#foundBlocksOnScroll"
-                             prefHeight="582.0" prefWidth="1001.0" maxHeight="-Infinity"
+                             prefHeight="682.0" prefWidth="1001.0" maxHeight="-Infinity"
                              styleClass="content-list-view">
                     <!-- add dynamic content here -->
                 </JFXListView>
@@ -2559,7 +2559,7 @@
         <foundAccountsPane>
             <VBox AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0"
                   AnchorPane.topAnchor="10.0">
-                <VBox prefHeight="582.0" prefWidth="1001.0">
+                <VBox prefHeight="682.0" prefWidth="1001.0">
                     <HBox prefHeight="44.0" prefWidth="924.0">
                         <HBox alignment="CENTER_RIGHT" prefHeight="55.0" prefWidth="208.0">
                             <Label prefHeight="48.0" prefWidth="208.0" styleClass="content-header-label"/>
@@ -2578,7 +2578,7 @@
                         </HBox>
                     </HBox>
                     <JFXListView fx:id="foundAccountsvboxid" focusTraversable="false" onScroll="#accountsOnScroll"
-                                 maxHeight="-Infinity" prefHeight="582.0" prefWidth="1001.0"
+                                 maxHeight="-Infinity" prefHeight="682.0" prefWidth="1001.0"
                                  styleClass="content-list-view">
                         <!-- add dynamic content here-->
 
@@ -2621,7 +2621,7 @@
                 </HBox>
 
                 <JFXListView fx:id="foundTxsvboxid" focusTraversable="false" maxHeight="-Infinity"
-                             onScroll="#foundTxsOnScroll" prefHeight="582.0" prefWidth="1001.0"
+                             onScroll="#foundTxsOnScroll" prefHeight="682.0" prefWidth="1001.0"
                              styleClass="content-list-view">
                     <!-- add dynamic content here -->
                 </JFXListView>
@@ -2668,7 +2668,7 @@
                 </HBox>
 
                 <JFXListView fx:id="foundAccountsTxsvboxid" focusTraversable="false" maxHeight="-Infinity"
-                             onScroll="#foundTxsOnScroll" prefHeight="582.0" prefWidth="1001.0"
+                             onScroll="#foundTxsOnScroll" prefHeight="682.0" prefWidth="1001.0"
                              styleClass="content-list-view">
                     <!-- add dynamic content here -->
                 </JFXListView>
