@@ -232,7 +232,7 @@ public class App extends Application {
                 "Initializing TON blockchain very first time", "It can take up to 1 minute");
           } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
             mainController.showLoadingPane(
-                "Starting TON blockchain", "Should take no longer than 45 seconds");
+                "Starting TON blockchain", "Should take no longer than 30 seconds");
           } else {
             mainController.showLoadingPane(
                 "Starting TON blockchain",

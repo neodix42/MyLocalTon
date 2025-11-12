@@ -18,17 +18,17 @@ jobs:
         run: |
           mkdir artifacts
           git fetch -a
-          mvn clean compile package -DskipTests
+          mvn -q clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
 
       - name: Build x86-64 testnet
         run: |
-          mvn clean compile package -DskipTests -Dton_branch=testnet
+          mvn -q clean compile package -DskipTests -Dton_branch=testnet
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64-testnet.jar
 
       - name: Build arm64-aarch64 mainnet
         run: |
-          mvn clean compile package -DskipTests -Darch=-aarch64
+          mvn -q clean compile package -DskipTests -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
 
       - name: Build arm64-aarch64 testnet

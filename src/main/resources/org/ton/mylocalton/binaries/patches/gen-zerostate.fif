@@ -15,8 +15,8 @@ GLOBAL_ID setglobalid   // negative value means a test instance of the blockchai
 0 mkemptyShardState
 
 cr ."initial basechain state is:" cr dup <s csr. cr
-dup dup 31 boc+>B dup Bx. cr
-dup "basestate0" +suffix +".boc" tuck B>file
+dup 31 boc+>B
+dup "basestate0.boc" tuck B>file
 ."(Initial basechain state saved to file " type .")" cr
 Bhashu dup =: basestate0_fhash
 ."file hash=" dup 64x. space 256 u>B dup B>base64url type cr
@@ -426,9 +426,9 @@ Masterchain swap
  */
 
 create_state
-cr cr ."new state is:" cr dup <s csr. cr
-dup 31 boc+>B dup Bx. cr
-dup "zerostate" +suffix +".boc" tuck B>file
+// cr cr ."new state is:" cr dup <s csr. cr
+dup 31 boc+>B
+dup "zerostate.boc" tuck B>file
 ."(Initial masterchain state saved to file " type .")" cr
 Bhashu dup =: zerostate_fhash
 ."file hash= " dup X. space 256 u>B dup B>base64url type cr

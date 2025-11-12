@@ -13,6 +13,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'adopt'
+          architecture: 'aarch64'
 
       - name: Build & Test arm64 mainnet
         timeout-minutes: 10
@@ -20,14 +21,16 @@ jobs:
           git fetch -a
           git checkout main
           mkdir artifacts                 
-          mvn clean compile package -DskipTests -Darch=-aarch64
+          mvn -q clean compile package -DskipTests -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
           java -jar artifacts/MyLocalTon-arm64.jar nogui debug test-binaries
+          sleep 5
+          rm -rf target/myLocalTon
 
       - name: Build & Test arm64 testnet
         timeout-minutes: 10
         run: |
-          mvn clean compile package -DskipTests -Dton_branch=testnet -Darch=-aarch64
+          mvn -q clean compile package -DskipTests -Dton_branch=testnet -Darch=-aarch64
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64-testnet.jar
           java -jar artifacts/MyLocalTon-arm64-testnet.jar nogui debug test-binaries
 

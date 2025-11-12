@@ -2303,8 +2303,12 @@ public class MainController implements Initializable {
                     + DurationFormatUtils.formatDuration(
                         Duration.ofSeconds(v.getHoldPeriod()).toMillis(), "HH:mm:ss", true)
                     + ")");
-            minimumStake.setText(Utils.formatNanoValue(v.getMinStake(), 2));
-            maximumStake.setText(Utils.formatNanoValue(v.getMaxStake(), 2));
+            if (nonNull(v.getMinStake())) {
+              minimumStake.setText(Utils.formatNanoValue(v.getMinStake(), 2));
+            }
+            if (nonNull(v.getMaxStake())) {
+              maximumStake.setText(Utils.formatNanoValue(v.getMaxStake(), 2));
+            }
           });
       // every 30 sec
       // MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();

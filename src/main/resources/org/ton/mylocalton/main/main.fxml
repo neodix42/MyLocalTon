@@ -459,7 +459,7 @@
                             <Label text="Minimum stake" GridPane.columnIndex="0" GridPane.rowIndex="14"/>
                             <Label fx:id="minimumStake" text="0" GridPane.columnIndex="1" GridPane.rowIndex="14"/>
                             <Label text="Maximum stake" GridPane.columnIndex="0" GridPane.rowIndex="15"/>
-                            <Label GridPane.columnIndex="1" GridPane.rowIndex="15"/>
+                            <Label fx:id="maximumStake" text="0" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
                             <Label GridPane.columnIndex="1" GridPane.rowIndex="16"/>
                             <Label GridPane.columnIndex="1" GridPane.rowIndex="17"/>
                             <Label GridPane.columnIndex="1" GridPane.rowIndex="18"/>
