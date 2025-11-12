@@ -23,8 +23,8 @@ jobs:
           mvn -q clean compile package -DskipTests
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
           java -jar artifacts/MyLocalTon-x86-64.jar nogui debug test-binaries
-          timeout /t 5 /nobreak >nul
-          rmdir /s /q "target\myLocalTon"
+          Start-Sleep -Seconds 5
+          Remove-Item -Path "target\myLocalTon" -Recurse -Force
 
       - name: Build & Test x86-64 testnet
         timeout-minutes: 10
