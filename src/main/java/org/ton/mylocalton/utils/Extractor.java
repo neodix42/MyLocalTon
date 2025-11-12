@@ -117,48 +117,6 @@ public class Extractor {
         Files.createDirectories(
             Paths.get(
                 MY_LOCAL_TON_ROOT_DIR + nodeName + File.separator + DB + File.separator + "log"));
-        //                if
-        // (nonNull(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath())) {
-        //                    FileUtils.deleteQuietly(new
-        // File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator +
-        // "tonlib-keystore"));
-        //                    FileUtils.deleteQuietly(new
-        // File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator +
-        // "wallets"));
-        //                    FileUtils.deleteQuietly(new
-        // File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator +
-        // "zerostate"));
-        //                    FileUtils.deleteQuietly(new
-        // File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator +
-        // "certs"));
-        //                    FileUtils.deleteQuietly(new
-        // File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator +
-        // "smartcont" + File.separator + "validator-keys-1.pub"));
-        //                    FileUtils.deleteQuietly(new
-        // File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator +
-        // "smartcont" + File.separator + "validator-keys-2.pub"));
-        //                    FileUtils.deleteQuietly(new
-        // File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator +
-        // "smartcont" + File.separator + "validator-keys-3.pub"));
-        //                    FileUtils.deleteQuietly(new
-        // File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator +
-        // "smartcont" + File.separator + "validator-keys-4.pub"));
-        //                    FileUtils.deleteQuietly(new
-        // File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator +
-        // "smartcont" + File.separator + "validator-keys-5.pub"));
-        //                    FileUtils.deleteQuietly(new
-        // File(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator +
-        // "smartcont" + File.separator + "validator-keys-6.pub"));
-        //
-        //
-        // Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()+ File.separator + "tonlib-keystore"));
-        //
-        // Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath() + File.separator + "wallets"));
-        //
-        // Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()+ File.separator + "zerostate"));
-        //
-        // Files.createDirectories(Paths.get(MyLocalTon.getInstance().getSettings().getCustomTonBinariesPath()+ File.separator + "certs"));
-        //                }
 
         if (SystemUtils.IS_OS_WINDOWS) {
           extractWindowsBinaries();
@@ -447,7 +405,7 @@ public class Extractor {
                     if (!Files.exists(d)) Files.createDirectory(d);
                     return;
                   }
-                  Files.copy(s, d); // use flag to override existing
+                  Files.copy(s, d,StandardCopyOption.REPLACE_EXISTING); // use flag to override existing
                 } catch (Exception e) {
                   e.printStackTrace();
                 }

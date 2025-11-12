@@ -80,6 +80,8 @@ public class ValidatorEngine {
                     .toString(), // 10 years key blocks will be deleted after this time (in
                 // seconds), default 365*86400*10
                 "--celldb-preload-all",
+                "--initial-sync-delay",
+                "0.0",
                 "false");
     node.setNodeProcess(validator.getLeft());
     log.info(
