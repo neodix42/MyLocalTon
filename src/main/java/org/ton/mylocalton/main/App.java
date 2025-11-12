@@ -1,6 +1,5 @@
 package org.ton.mylocalton.main;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.ton.mylocalton.ui.custom.events.CustomEventBus.emit;
 
@@ -27,9 +26,6 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
-import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.DbPool;
 import org.ton.mylocalton.executors.dhtserver.DhtServer;
@@ -40,6 +36,8 @@ import org.ton.mylocalton.ui.controllers.MainController;
 import org.ton.mylocalton.ui.custom.events.CustomEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomActionEvent;
 import org.ton.mylocalton.utils.MyLocalTonUtils;
+import org.ton.ton4j.tl.liteserver.responses.MasterchainInfo;
+import org.ton.ton4j.utils.Utils;
 
 @Slf4j
 public class App extends Application {
@@ -231,7 +229,7 @@ public class App extends Application {
         windowEvent -> {
           if (MyLocalTon.getInstance().getSettings().getActiveNodes().isEmpty()) {
             mainController.showLoadingPane(
-                "Initializing TON blockchain very first time", "It can take up to 2 minutes");
+                "Initializing TON blockchain very first time", "It can take up to 1 minutes");
           } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
             mainController.showLoadingPane(
                 "Starting TON blockchain", "Should take no longer than 45 seconds");

@@ -358,10 +358,10 @@ GAS_PRICE_MC 1000000   70000000          10000      2500000         100000000   
 // mc-cc-lifetime sh-cc-lifetime sh-val-lifetime sh-val-num mc-shuffle
 250 250 5500 7 true config.catchain_params!
 // round-candidates next-cand-delay-ms consensus-timeout-ms fast-attempts attempt-duration cc-max-deps max-block-size max-collated-size new-cc-ids
-3 1000 16000 3 8 4 2 *Mi 2 *Mi true config.consensus_params!
+<b x{d9} s, 1 8 u, 3 8 u, 2 32 u, 16000 32 u, 3 32 u, 8 32 u, 4 32 u, 10 *Mi 32 u, 10 *Mi 32 u, 5 16 u, 10000 32 u, b> 29 config!
 
-128 *Ki 512 *Ki 1 *Mi triple  // [ underload soft hard ] : block bytes limit
-100000 500000 1000000 triple  // gas limits
+256 *Ki 1 *Mi 2 *Mi triple  // [ underload soft hard ] : block bytes limit
+2000000 10000000 20000000 triple  // gas limits
 1000 5000 10000 triple        // lt limits
 triple dup untriple config.mc_block_limits!
 untriple config.block_limits!
