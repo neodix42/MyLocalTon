@@ -43,7 +43,6 @@ public class Scenario15 implements Scenario {
             .content(
                 NftUtils.createOffChainUriCell(
                     "https://raw.githubusercontent.com/neodix42/ton4j/main/1-media/neo-jetton.json"))
-            .jettonWalletCodeHex(WalletCodes.jettonWallet.getValue())
             .build();
 
     log.info("jetton minter address {}", minter.getAddress());

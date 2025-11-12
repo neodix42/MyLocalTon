@@ -6,12 +6,13 @@ import com.iwebpp.crypto.TweetNaclFast;
 import java.math.BigInteger;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
+import org.ton.mylocalton.data.db.DataDB;
 import org.ton.ton4j.adnl.AdnlLiteClient;
+import org.ton.ton4j.smartcontract.SendMode;
 import org.ton.ton4j.smartcontract.types.Destination;
 import org.ton.ton4j.smartcontract.types.WalletV5Config;
 import org.ton.ton4j.smartcontract.wallet.v5.WalletV5;
 import org.ton.ton4j.utils.Utils;
-import org.ton.mylocalton.data.db.DataDB;
 
 /** to up V5R1 wallet, upload state-init, send back to faucet */
 @Slf4j
@@ -54,7 +55,7 @@ public class Scenario10 implements Scenario {
                             Destination.builder()
                                 .bounce(false)
                                 .address(dataHighloadFaucetAddress.toRaw())
-                                .mode(3)
+                                .sendMode(SendMode.PAY_GAS_SEPARATELY_AND_IGNORE_ERRORS)
                                 .amount(Utils.toNano(0.03))
                                 .comment("mlt-scenario-10")
                                 .build()))

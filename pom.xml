@@ -13,7 +13,7 @@
         <ton_branch>master</ton_branch>
         <arch></arch> <!-- add when work or compile on/for arm64  -aarch64 -->
         <maven.compiler.release>21</maven.compiler.release>
-        <ton4j.version>1.1.0</ton4j.version>
+        <ton4j.version>1.3.3</ton4j.version>
         <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
         <maven.assembly.plugin.version>3.6.0</maven.assembly.plugin.version>
@@ -23,13 +23,13 @@
         <jfoenix.version>9.0.4</jfoenix.version>
         <commons-io.version>2.14.0</commons-io.version>
         <commons-codec.version>1.14</commons-codec.version>
-        <lombok.version>1.18.30</lombok.version>
+        <lombok.version>1.18.38</lombok.version>
         <jupiter.version>5.7.1</jupiter.version>
         <junit.version>4.13.2</junit.version>
         <assertj.version>3.19.0</assertj.version>
         <concurrent-junit.version>1.0.2</concurrent-junit.version>
         <gson.version>2.8.6</gson.version>
-        <logback.version>1.4.12</logback.version>
+        <logback.version>1.5.20</logback.version>
         <zip4j.version>2.11.3</zip4j.version>
         <jetty.version>11.0.14</jetty.version>
         <jprocesses.version>1.6.5</jprocesses.version>
@@ -81,17 +81,17 @@
             <version>3.1.2</version>
         </dependency>
         <dependency>
-            <groupId>io.github.neodix42</groupId>
+            <groupId>org.ton.ton4j</groupId>
             <artifactId>smartcontract</artifactId>
             <version>${ton4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.github.neodix42</groupId>
+            <groupId>org.ton.ton4j</groupId>
             <artifactId>tlb</artifactId>
             <version>${ton4j.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.github.neodix42</groupId>
+            <groupId>org.ton.ton4j</groupId>
             <artifactId>adnl</artifactId>
             <version>${ton4j.version}</version>
         </dependency>

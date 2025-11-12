@@ -229,7 +229,7 @@ public class App extends Application {
         windowEvent -> {
           if (MyLocalTon.getInstance().getSettings().getActiveNodes().isEmpty()) {
             mainController.showLoadingPane(
-                "Initializing TON blockchain very first time", "It can take up to 1 minutes");
+                "Initializing TON blockchain very first time", "It can take up to 1 minute");
           } else if (MyLocalTon.getInstance().getSettings().getActiveNodes().size() == 1) {
             mainController.showLoadingPane(
                 "Starting TON blockchain", "Should take no longer than 45 seconds");
@@ -238,7 +238,7 @@ public class App extends Application {
                 "Starting TON blockchain",
                 "Launching "
                     + MyLocalTon.getInstance().getSettings().getActiveNodes().size()
-                    + " validators, wait up to 3 minutes");
+                    + " validators, wait up to 2 minutes");
           }
 
           // Running all the heavy initialization in the background thread
