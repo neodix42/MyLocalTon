@@ -101,7 +101,7 @@ After successful launch `localhost.global.config.json` will be available at
 ### Lite-client
 
 MyLocalTon uses deterministic (permanent) private and public keys for lite-server and validator-engine-console access.
-These keys can be found [here](./src/main/resources/org/ton/certs).
+These keys can be found [here](./src/main/resources/org/ton/mylocalton/certs).
 Once MyLocalTon is ready, you can use lite-client with the base64 key:
 
 `lite-client -a 127.0.0.1:4443 -b E7XwFSQzNkcRepUC23J2nRpASXpnsEKmyyHYV4u/FZY= -c last`
