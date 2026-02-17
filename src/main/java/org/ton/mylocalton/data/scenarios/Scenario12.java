@@ -40,9 +40,9 @@ public class Scenario12 implements Scenario {
       log.info("raw addressLib {}", libraryDeployer.getAddress().toRaw());
 
       DataDB.addDataRequest(nonBounceableAddressLib, Utils.toNano(1));
-      Utils.sleep(30, "wait for lib balance change");
+      Utils.sleep(20, "wait for lib balance change");
       libraryDeployer.deploy();
-      Utils.sleep(30, "wait for lib to be deployed");
+      Utils.sleep(20, "wait for lib to be deployed");
     }
 
     // deploy V5R1 as library
@@ -61,7 +61,7 @@ public class Scenario12 implements Scenario {
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     log.info("v5 address {}", nonBounceableAddress);
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(1.5));
-    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
+    Utils.sleep(20);
 
     contract.deploy();
     contract.waitForDeployment();
@@ -75,7 +75,7 @@ public class Scenario12 implements Scenario {
             .build();
 
     contract.send(config);
-    contract.waitForBalanceChangeWithTolerance(45, Utils.toNano(0.05));
+    Utils.sleep(10);
 
     BigInteger balance = contract.getBalance();
     if (balance.longValue() > Utils.toNano(0.07).longValue()) {

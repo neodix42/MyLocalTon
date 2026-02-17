@@ -61,7 +61,7 @@ public class Scenario15 implements Scenario {
 
     adminWallet.send(walletV3Config);
     log.info("deploying minter");
-    minter.waitForDeployment(60);
+    minter.waitForDeployment();
 
     //    getMinterInfo(minter); // nothing minted, so zero returned
 
@@ -88,7 +88,7 @@ public class Scenario15 implements Scenario {
     adminWallet.send(walletV3Config);
 
     log.info("minting...");
-    adminWallet.waitForBalanceChange();
+    Utils.sleep(6);
 
     getMinterInfo(minter);
 
@@ -107,7 +107,7 @@ public class Scenario15 implements Scenario {
     adminWallet.send(walletV3Config);
 
     log.info("edit minter content, OP 4");
-    adminWallet.waitForBalanceChange();
+    Utils.sleep(6);
 
     //    getMinterInfo(minter);
 
@@ -125,7 +125,7 @@ public class Scenario15 implements Scenario {
     adminWallet.send(walletV3Config);
 
     log.info("change minter admin, OP 3");
-    adminWallet.waitForBalanceChange();
+    Utils.sleep(6);
     getMinterInfo(minter);
     Utils.sleep(10);
 
@@ -156,7 +156,6 @@ public class Scenario15 implements Scenario {
     adminWallet.send(walletV3Config);
 
     log.info("transferring 444 jettons...");
-    adminWallet.waitForBalanceChange();
     //    log.info("admin balance {}", Utils.formatNanoValue(adminJettonWallet.getBalance()));
     Utils.sleep(10);
 
@@ -177,7 +176,6 @@ public class Scenario15 implements Scenario {
     adminWallet.send(walletV3Config);
 
     log.info("burning 111 jettons in admin wallet");
-    adminWallet.waitForBalanceChange();
 
     log.info("FINISHED SCENARIO 15");
   }

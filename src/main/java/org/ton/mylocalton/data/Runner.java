@@ -185,7 +185,7 @@ public class Runner {
               }
             });
 
-    topUpExecutor.scheduleAtFixedRate(topUpTask, 30, 15, TimeUnit.SECONDS);
+    topUpExecutor.scheduleAtFixedRate(topUpTask, 30, 10, TimeUnit.SECONDS);
   }
 
   public void runScenariosScheduler() {

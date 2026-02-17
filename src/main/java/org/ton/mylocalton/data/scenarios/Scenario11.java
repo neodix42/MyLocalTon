@@ -37,10 +37,9 @@ public class Scenario11 implements Scenario {
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     log.info("v5 address {}", nonBounceableAddress);
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(1.5));
-    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
+    Utils.sleep(20);
 
     contract.deploy();
-
     contract.waitForDeployment();
 
     WalletV5Config config =
@@ -51,7 +50,7 @@ public class Scenario11 implements Scenario {
             .build();
 
     contract.send(config);
-    contract.waitForBalanceChangeWithTolerance(45, Utils.toNano(0.05));
+    Utils.sleep(6);
 
     BigInteger balance = contract.getBalance();
     if (balance.longValue() > Utils.toNano(0.07).longValue()) {

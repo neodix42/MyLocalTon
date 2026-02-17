@@ -32,15 +32,15 @@ public class Scenario13 implements Scenario {
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     log.info("non-bounceable address {}", nonBounceableAddress);
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(1));
-    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
+    Utils.sleep(20);
 
     HighloadV3Config config =
         HighloadV3Config.builder()
             .walletId(walletId)
             .queryId(HighloadQueryId.fromSeqno(0).getQueryId())
             .build();
-    contract.deploy(config);
 
+    contract.deploy(config);
     contract.waitForDeployment();
 
     config =

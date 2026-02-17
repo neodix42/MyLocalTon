@@ -27,7 +27,7 @@ public class Scenario4 implements Scenario {
 
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(0.1));
-    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
+    Utils.sleep(20);
     contract.deploy();
     contract.waitForDeployment();
 

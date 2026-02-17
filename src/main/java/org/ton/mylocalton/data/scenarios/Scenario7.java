@@ -28,7 +28,7 @@ public class Scenario7 implements Scenario {
 
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(0.1));
-    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
+    Utils.sleep(20);
     contract.deploy();
     contract.waitForDeployment();
 
@@ -42,7 +42,7 @@ public class Scenario7 implements Scenario {
             .build();
 
     contract.send(config);
-    contract.waitForBalanceChangeWithTolerance(30, Utils.toNano(0.05));
+    Utils.sleep(6);
 
     BigInteger balance = contract.getBalance();
 

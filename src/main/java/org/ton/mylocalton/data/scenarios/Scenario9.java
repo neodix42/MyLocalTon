@@ -52,10 +52,9 @@ public class Scenario9 implements Scenario {
     String nonBounceableAddress = walletAddress.toNonBounceable();
 
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(1));
-    adnlLiteClient.waitForBalanceChange(contract.getAddress(), 60);
+    Utils.sleep(15);
 
     contract.deploy();
-
     contract.waitForDeployment();
 
     long walletCurrentSeqno = contract.getSeqno();
@@ -92,8 +91,6 @@ public class Scenario9 implements Scenario {
             .build();
 
     contract.send(config);
-
-    contract.waitForBalanceChangeWithTolerance(60, Utils.toNano(0.1));
 
     Utils.sleep(10);
 

@@ -85,7 +85,7 @@ public class Scenario16 implements Scenario {
             .build();
 
     adminWallet.send(adminWalletConfig);
-    Utils.sleep(30, "deploying NFT item #1");
+    Utils.sleep(20, "deploying NFT item #1");
 
     body =
         NftCollection.createMintBody(
@@ -101,7 +101,7 @@ public class Scenario16 implements Scenario {
             .build();
 
     adminWallet.send(adminWalletConfig);
-    Utils.sleep(30, "deploying NFT item #2");
+    Utils.sleep(20, "deploying NFT item #2");
 
     NftMarketplace marketplace =
         NftMarketplace.builder().adminAddress(adminWallet.getAddress()).build();
@@ -119,7 +119,7 @@ public class Scenario16 implements Scenario {
             .build();
 
     adminWallet.send(adminWalletConfig);
-    Utils.sleep(30, "deploying nft marketplace");
+    Utils.sleep(20, "deploying nft marketplace");
 
     // deploy nft sale for item 1
     NftSale nftSale1 =
@@ -151,7 +151,7 @@ public class Scenario16 implements Scenario {
 
     adminWallet.send(adminWalletConfig);
 
-    Utils.sleep(30, "deploying NFT sale smart-contract for nft item #1");
+    Utils.sleep(20, "deploying NFT sale smart-contract for nft item #1");
 
     // get nft item 1 data
     log.info("nftSale data for nft item #1 {}", nftSale1.getData());
@@ -185,7 +185,7 @@ public class Scenario16 implements Scenario {
     log.info("nft-sale-2 address {}", nftSale2.getAddress().toBounceable());
     adminWallet.send(adminWalletConfig);
 
-    Utils.sleep(30, "deploying NFT sale smart-contract for nft item #2");
+    Utils.sleep(20, "deploying NFT sale smart-contract for nft item #2");
 
     // get nft item 2 data
     log.info("nftSale data for nft item #2 {}", nftSale2.getData());
@@ -204,7 +204,7 @@ public class Scenario16 implements Scenario {
         Utils.toNano(0.02),
         "gift1".getBytes(),
         adminWallet.getAddress());
-    Utils.sleep(20, "transferring item-1 to nft-sale-1 and waiting for seqno update");
+    Utils.sleep(15, "transferring item-1 to nft-sale-1 and waiting for seqno update");
 
     transferNftItem(
         adminWallet,
@@ -215,7 +215,7 @@ public class Scenario16 implements Scenario {
         Utils.toNano(0.02),
         "gift2".getBytes(),
         adminWallet.getAddress());
-    Utils.sleep(20, "transferring item-2 to nft-sale-2 and waiting for seqno update");
+    Utils.sleep(15, "transferring item-2 to nft-sale-2 and waiting for seqno update");
 
     // cancels selling of item1, moves nft-item from nft-sale-1 smc back to adminWallet. nft-sale-1
     // smc becomes uninitialized
@@ -230,7 +230,7 @@ public class Scenario16 implements Scenario {
             .build();
     adminWallet.send(walletV3Config);
 
-    Utils.sleep(20, "cancel selling of item1");
+    Utils.sleep(15, "cancel selling of item1");
 
     // buy nft-item-2. send fullPrice+minimalGasAmount(1ton)
     walletV3Config =
