@@ -30,7 +30,7 @@ public class Scenario10 implements Scenario {
 
     WalletV5 contract =
         WalletV5.builder()
-            .adnlLiteClient(adnlLiteClient)
+            .tonProvider(adnlLiteClient)
             .walletId(walletId)
             .keyPair(keyPair)
             .isSigAuthAllowed(true)

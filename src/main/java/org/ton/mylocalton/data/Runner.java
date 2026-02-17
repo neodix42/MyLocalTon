@@ -14,7 +14,7 @@ import org.ton.mylocalton.data.db.DataWalletPk;
 import org.ton.mylocalton.data.scenarios.Scenario;
 import org.ton.ton4j.address.Address;
 import org.ton.ton4j.adnl.AdnlLiteClient;
-import org.ton.ton4j.smartcontract.SendResponse;
+import org.ton.ton4j.provider.SendResponse;
 import org.ton.ton4j.smartcontract.highload.HighloadWallet;
 import org.ton.ton4j.smartcontract.types.Destination;
 import org.ton.ton4j.smartcontract.types.HighloadConfig;
@@ -82,7 +82,7 @@ public class Runner {
 
       dataHighloadFaucet =
           HighloadWallet.builder()
-              .adnlLiteClient(adnlLiteClient)
+              .tonProvider(adnlLiteClient)
               .keyPair(keyPair)
               .wc(-1)
               .walletId(42)

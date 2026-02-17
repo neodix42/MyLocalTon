@@ -25,10 +25,9 @@ import org.ton.ton4j.utils.Utils;
 @Slf4j
 public class Scenario16 implements Scenario {
   private static final String WALLET2_ADDRESS = "EQB6-6po0yspb68p7RRetC-hONAz-JwxG9514IEOKw_llXd5";
+  AdnlLiteClient adnlLiteClient;
   private Address nftItem1Address;
   private Address nftItem2Address;
-
-  AdnlLiteClient adnlLiteClient;
 
   public Scenario16(AdnlLiteClient adnlLiteClient) {
     this.adnlLiteClient = adnlLiteClient;
@@ -42,7 +41,7 @@ public class Scenario16 implements Scenario {
 
     NftCollection nftCollection =
         NftCollection.builder()
-            .adnlLiteClient(adnlLiteClient)
+            .tonProvider(adnlLiteClient)
             .adminAddress(adminWallet.getAddress())
             .royalty(0.013)
             .royaltyAddress(adminWallet.getAddress())

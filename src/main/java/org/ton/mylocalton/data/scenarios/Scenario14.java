@@ -5,6 +5,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
+import org.ton.mylocalton.data.utils.MyUtils;
 import org.ton.ton4j.address.Address;
 import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.cell.Cell;
@@ -13,7 +14,6 @@ import org.ton.ton4j.smartcontract.types.*;
 import org.ton.ton4j.smartcontract.utils.MsgUtils;
 import org.ton.ton4j.smartcontract.wallet.v3.WalletV3R2;
 import org.ton.ton4j.utils.Utils;
-import org.ton.mylocalton.data.utils.MyUtils;
 
 /**
  * deploy signer2 wallet, deploy MultiSig V2 with 2 out 3 consensus, deploy order from admin wallet,
@@ -40,14 +40,14 @@ public class Scenario14 implements Scenario {
 
     WalletV3R2 signer3 =
         WalletV3R2.builder()
-            .adnlLiteClient(adnlLiteClient)
+            .tonProvider(adnlLiteClient)
             .keyPair(Utils.generateSignatureKeyPair())
             .walletId(42)
             .build();
 
     MultiSigWalletV2 multiSigWalletV2 =
         MultiSigWalletV2.builder()
-            .adnlLiteClient(adnlLiteClient)
+            .tonProvider(adnlLiteClient)
             .config(
                 MultiSigV2Config.builder()
                     .allowArbitraryOrderSeqno(false)

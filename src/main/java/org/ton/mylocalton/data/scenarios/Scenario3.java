@@ -3,11 +3,11 @@ package org.ton.mylocalton.data.scenarios;
 import static org.ton.mylocalton.data.Runner.dataHighloadFaucetAddress;
 
 import lombok.extern.slf4j.Slf4j;
+import org.ton.mylocalton.data.db.DataDB;
 import org.ton.ton4j.adnl.AdnlLiteClient;
 import org.ton.ton4j.smartcontract.types.WalletV1R3Config;
 import org.ton.ton4j.smartcontract.wallet.v1.WalletV1R3;
 import org.ton.ton4j.utils.Utils;
-import org.ton.mylocalton.data.db.DataDB;
 
 /** to up V1R3 wallet, upload state-init, send back to faucet 0.08 */
 @Slf4j
@@ -22,7 +22,7 @@ public class Scenario3 implements Scenario {
   public void run() {
     log.info("STARTED SCENARIO 3");
 
-    WalletV1R3 contract = WalletV1R3.builder().adnlLiteClient(adnlLiteClient).build();
+    WalletV1R3 contract = WalletV1R3.builder().tonProvider(adnlLiteClient).build();
 
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     DataDB.addDataRequest(nonBounceableAddress, Utils.toNano(0.1));

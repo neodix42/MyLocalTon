@@ -32,7 +32,7 @@ public class Scenario12 implements Scenario {
     Cell walletV5Code = CellBuilder.beginCell().fromBoc(WalletCodes.V5R1.getValue()).endCell();
 
     LibraryDeployer libraryDeployer =
-        LibraryDeployer.builder().adnlLiteClient(adnlLiteClient).libraryCode(walletV5Code).build();
+        LibraryDeployer.builder().tonProvider(adnlLiteClient).libraryCode(walletV5Code).build();
 
     if (!adnlLiteClient.isDeployed(libraryDeployer.getAddress())) {
       String nonBounceableAddressLib = libraryDeployer.getAddress().toNonBounceable();
@@ -51,7 +51,7 @@ public class Scenario12 implements Scenario {
 
     WalletV5 contract =
         WalletV5.builder()
-            .adnlLiteClient(adnlLiteClient)
+            .tonProvider(adnlLiteClient)
             .walletId(walletId)
             .keyPair(keyPair)
             .isSigAuthAllowed(true)

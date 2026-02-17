@@ -27,7 +27,7 @@ public class Scenario13 implements Scenario {
 
     TweetNaclFast.Signature.KeyPair keyPair = Utils.generateSignatureKeyPair();
     HighloadWalletV3 contract =
-        HighloadWalletV3.builder().adnlLiteClient(adnlLiteClient).keyPair(keyPair).walletId(walletId).build();
+        HighloadWalletV3.builder().tonProvider(adnlLiteClient).keyPair(keyPair).walletId(walletId).build();
 
     String nonBounceableAddress = contract.getAddress().toNonBounceable();
     log.info("non-bounceable address {}", nonBounceableAddress);

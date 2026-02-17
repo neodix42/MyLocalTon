@@ -1525,7 +1525,7 @@ public class MyLocalTon {
                   .amount(amount)
                   .fees(
                       (outMsg.getInfo() instanceof InternalMessageInfo)
-                          ? ((InternalMessageInfo) outMsg.getInfo()).getTotalFees()
+                          ? ((InternalMessageInfo) outMsg.getInfo()).getFwdFee()
                           : BigInteger.ZERO) // total fee in out msg = fwd+ihr+import fee
                   .tx(txDetails)
                   .message(outMsg)
@@ -1574,7 +1574,7 @@ public class MyLocalTon {
                 .amount(amount)
                 .fees(
                     (inMsg.getInfo() instanceof InternalMessageInfo)
-                        ? ((InternalMessageInfo) inMsg.getInfo()).getTotalFees()
+                        ? ((InternalMessageInfo) inMsg.getInfo()).getFwdFee()
                         : BigInteger.ZERO) // total fee in out msg = fwd+ihr+import fee
                 .tx(txDetails)
                 .message(inMsg)

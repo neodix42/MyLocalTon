@@ -38,7 +38,7 @@ public class Scenario15 implements Scenario {
 
     JettonMinter minter =
         JettonMinter.builder()
-            .adnlLiteClient(adnlLiteClient)
+            .tonProvider(adnlLiteClient)
             .adminAddress(adminWallet.getAddress())
             .content(
                 NftUtils.createOffChainUriCell(
