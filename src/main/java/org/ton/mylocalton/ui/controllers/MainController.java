@@ -1574,7 +1574,7 @@ public class MainController implements Initializable {
     enableData.setVisible(true);
     enableDataLabel.setVisible(true);
 
-    //    addValidatorBtn.setVisible(true);
+    addValidatorBtn.setVisible(true);
     addValidatorBtn.setDisable(false);
 
     // validator-tabs
