@@ -4,7 +4,7 @@ on: [ push,workflow_dispatch,workflow_call ]
 
 jobs:
   build:
-    runs-on: macos-15
+    runs-on: macos-15-intel
 
     steps:
       - uses: actions/checkout@v6
@@ -24,7 +24,7 @@ jobs:
           cp target/MyLocalTon.jar artifacts/MyLocalTon-x86-64.jar
           java -jar artifacts/MyLocalTon-x86-64.jar nogui debug test-binaries
           sleep 5
-          rm -rf target/myLocalTon
+          rm -rf artifacts/myLocalTon
 
       - name: Build & Test x86-64 testnet
         timeout-minutes: 10

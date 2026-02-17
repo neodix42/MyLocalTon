@@ -25,7 +25,7 @@ jobs:
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
           java -jar artifacts/MyLocalTon-arm64.jar nogui debug test-binaries
           sleep 5
-          rm -rf target/myLocalTon
+          rm -rf artifacts/myLocalTon
 
       - name: Build & Test arm64 testnet
         timeout-minutes: 10

@@ -1,10 +1,10 @@
-name: Test on macOS 14 arm64
+name: Test on macOS 15 arm64
 
 on: [ push,workflow_dispatch,workflow_call ]
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v6
@@ -23,7 +23,7 @@ jobs:
           cp target/MyLocalTon.jar artifacts/MyLocalTon-arm64.jar
           java -jar artifacts/MyLocalTon-arm64.jar nogui debug test-binaries
           sleep 5
-          rm -rf target/myLocalTon
+          rm -rf artifacts/myLocalTon
 
       - name: Build & Test arm64-aarch64 testnet
         timeout-minutes: 10
