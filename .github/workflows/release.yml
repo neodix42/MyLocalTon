@@ -40,7 +40,7 @@ jobs:
         id: tag
         run: |
           VERSION=$(java -jar artifacts/MyLocalTon-x86-64.jar version)
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT          
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Read version
         run: |
