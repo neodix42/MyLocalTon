@@ -156,29 +156,33 @@ After executing the commands below `ton-http-api` will be globally available via
 
 ### Linux
 
-```commandline
+```bash
 sudo apt install -y python3
 sudo apt install -y python3-pip
 sudo apt install pipx 
 pipx ensurepath
 pipx install ton-http-api
+# or if already installed
+pipx upgrade ton-http-api
 ```
 
 ### MacOS
 
 Note: Python version must be 3.11 or greater
 
-```commandline
+```bash
 brew install -q python3
 python3 -m ensurepip --upgrade
 brew install pipx
 pipx ensurepath
 pipx install ton-http-api
+# or if already installed
+pipx upgrade ton-http-api
 ```
 
 ### Windows
 
-```commandline
+```bash
 wget https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe
 python -m ensurepip --upgrade
 pip install uvicorn[standard]
@@ -187,6 +191,8 @@ start pip3 install -U ton-http-api
 scoop install pipx
 pipx ensurepath
 pipx install ton-http-api
+# or if already installed
+pipx upgrade ton-http-api
 ```
 
 ## Star History
