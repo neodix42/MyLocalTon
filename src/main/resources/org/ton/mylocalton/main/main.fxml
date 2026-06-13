@@ -1675,6 +1675,11 @@
                         <CustomTextField fx:id="stakesFrozenFor" prefWidth="300.0"/>
                     </VBox>
 
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                        <Label text="simplex-target-rate-ms" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="simplexTargetRateMs" prefWidth="300.0"/>
+                    </VBox>
+
 
                     <VBox spacing="4.0" GridPane.columnIndex="0" GridPane.rowIndex="5">
                         <Label text="gas-price-wc" styleClass="label-second-font-14"/>
@@ -1683,6 +1688,11 @@
                     <VBox spacing="4.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                         <Label text="gas-price-mc" styleClass="label-second-font-14"/>
                         <CustomTextField fx:id="gasPriceMc" prefWidth="300.0"/>
+                    </VBox>
+
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                        <Label text="simplex-slots-window" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="simplexSlotsPerLeaderWindow" prefWidth="300.0"/>
                     </VBox>
 
 
@@ -1695,10 +1705,20 @@
                         <CustomTextField fx:id="cellPriceMc" prefWidth="300.0"/>
                     </VBox>
 
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                        <Label text="simplex-first-timeout-ms" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="simplexFirstBlockTimeoutMs" prefWidth="300.0"/>
+                    </VBox>
+
 
                     <CustomButton GridPane.columnIndex="0" GridPane.rowIndex="7" onAction="#resetAction"
                                   prefWidth="220.0" text="Reset TON Blockchain"
                                   styleClass="custom-button-btn"/>
+
+                    <VBox spacing="4.0" GridPane.columnIndex="2" GridPane.rowIndex="7">
+                        <Label text="simplex-max-desync" styleClass="label-second-font-14"/>
+                        <CustomTextField fx:id="simplexMaxLeaderWindowDesync" prefWidth="300.0"/>
+                    </VBox>
 
                 </GridPane>
             </Pane>

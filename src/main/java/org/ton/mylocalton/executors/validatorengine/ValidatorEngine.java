@@ -514,6 +514,26 @@ public class ValidatorEngine {
             genZeroStateFifNew,
             "ORIGINAL_VSET_VALID_FOR",
             settings.getBlockchainSettings().getOriginalValidatorSetValidFor().toString());
+    genZeroStateFifNew =
+        StringUtils.replace(
+            genZeroStateFifNew,
+            "SIMPLEX_TARGET_RATE_MS",
+            settings.getBlockchainSettings().getSimplexTargetRateMs().toString());
+    genZeroStateFifNew =
+        StringUtils.replace(
+            genZeroStateFifNew,
+            "SIMPLEX_SLOTS_PER_LEADER_WINDOW",
+            settings.getBlockchainSettings().getSimplexSlotsPerLeaderWindow().toString());
+    genZeroStateFifNew =
+        StringUtils.replace(
+            genZeroStateFifNew,
+            "SIMPLEX_FIRST_BLOCK_TIMEOUT_MS",
+            settings.getBlockchainSettings().getSimplexFirstBlockTimeoutMs().toString());
+    genZeroStateFifNew =
+        StringUtils.replace(
+            genZeroStateFifNew,
+            "SIMPLEX_MAX_LEADER_WINDOW_DESYNC",
+            settings.getBlockchainSettings().getSimplexMaxLeaderWindowDesync().toString());
 
     FileUtils.writeStringToFile(
         new File(genZeroStateFifPath), genZeroStateFifNew, StandardCharsets.UTF_8);

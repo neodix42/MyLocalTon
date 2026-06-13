@@ -730,6 +730,10 @@ public class MainController implements Initializable {
       minTotalStake,
       stakesFrozenFor,
       maxFactor,
+      simplexTargetRateMs,
+      simplexSlotsPerLeaderWindow,
+      simplexFirstBlockTimeoutMs,
+      simplexMaxLeaderWindowDesync,
       gasPrice,
       gasPriceMc,
       cellPrice,
@@ -1296,6 +1300,10 @@ public class MainController implements Initializable {
     maxStake.setOnKeyTyped(onlyDigits);
     minTotalStake.setOnKeyTyped(onlyDigits);
     maxFactor.setOnKeyTyped(onlyDigits);
+    simplexTargetRateMs.setOnKeyTyped(onlyDigits);
+    simplexSlotsPerLeaderWindow.setOnKeyTyped(onlyDigits);
+    simplexFirstBlockTimeoutMs.setOnKeyTyped(onlyDigits);
+    simplexMaxLeaderWindowDesync.setOnKeyTyped(onlyDigits);
     electionEndBefore.setOnKeyTyped(onlyDigits);
 
     mainLayout
@@ -1401,6 +1409,14 @@ public class MainController implements Initializable {
     minTotalStake.setFieldText(
         settings.getBlockchainSettings().getMinTotalValidatorStake().toString());
     maxFactor.setFieldText(settings.getBlockchainSettings().getMaxFactor().toString());
+    simplexTargetRateMs.setFieldText(
+        settings.getBlockchainSettings().getSimplexTargetRateMs().toString());
+    simplexSlotsPerLeaderWindow.setFieldText(
+        settings.getBlockchainSettings().getSimplexSlotsPerLeaderWindow().toString());
+    simplexFirstBlockTimeoutMs.setFieldText(
+        settings.getBlockchainSettings().getSimplexFirstBlockTimeoutMs().toString());
+    simplexMaxLeaderWindowDesync.setFieldText(
+        settings.getBlockchainSettings().getSimplexMaxLeaderWindowDesync().toString());
 
     nodeBlockTtl1.setText(settings.getGenesisNode().getValidatorBlockTtl().toString());
     nodeArchiveTtl1.setText(settings.getGenesisNode().getValidatorArchiveTtl().toString());
@@ -1777,6 +1793,18 @@ public class MainController implements Initializable {
         .getBlockchainSettings()
         .setMinTotalValidatorStake(Long.valueOf(minTotalStake.getFieldText()));
     settings.getBlockchainSettings().setMaxFactor(new BigDecimal(maxFactor.getFieldText()));
+    settings
+        .getBlockchainSettings()
+        .setSimplexTargetRateMs(Long.valueOf(simplexTargetRateMs.getFieldText()));
+    settings
+        .getBlockchainSettings()
+        .setSimplexSlotsPerLeaderWindow(Long.valueOf(simplexSlotsPerLeaderWindow.getFieldText()));
+    settings
+        .getBlockchainSettings()
+        .setSimplexFirstBlockTimeoutMs(Long.valueOf(simplexFirstBlockTimeoutMs.getFieldText()));
+    settings
+        .getBlockchainSettings()
+        .setSimplexMaxLeaderWindowDesync(Long.valueOf(simplexMaxLeaderWindowDesync.getFieldText()));
 
     settings.getGenesisNode().setValidatorBlockTtl(Long.valueOf(nodeBlockTtl1.getText()));
     settings.getGenesisNode().setValidatorArchiveTtl(Long.valueOf(nodeArchiveTtl1.getText()));

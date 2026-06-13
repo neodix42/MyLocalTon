@@ -257,6 +257,10 @@ public class MyLocalTonSettings implements Serializable {
     Long electionStartBefore = 25 * 60L; // 2 min, 50 min
     Long electionEndBefore = 10 * 60L; // 1 min, 10 min
     Long electionStakesFrozenFor = 5 * 60L; // 30 sec, 20 min
+    Long simplexTargetRateMs = 300L;
+    Long simplexSlotsPerLeaderWindow = 4L;
+    Long simplexFirstBlockTimeoutMs = 400L;
+    Long simplexMaxLeaderWindowDesync = 700L;
 
     //        Long electedFor = 3 * 60L; // 3 min
     //        Long electionStartBefore = 2 * 60L; // 2 min
