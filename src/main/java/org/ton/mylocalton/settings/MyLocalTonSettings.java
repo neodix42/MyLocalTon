@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
 import org.ton.ton4j.smartcontract.types.WalletVersion;
 import org.ton.ton4j.utils.Utils;
@@ -21,7 +20,6 @@ import org.ton.mylocalton.parameters.ValidationParam;
 @Getter
 @Setter
 @ToString
-@Slf4j
 public class MyLocalTonSettings implements Serializable {
 
   public static final String LOCK_FILE =

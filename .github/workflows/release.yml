@@ -39,8 +39,9 @@ jobs:
       - name: Set version
         id: tag
         run: |
-          VERSION=$(java -jar artifacts/MyLocalTon-x86-64.jar version)
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          VERSION_OUTPUT=$(java -jar artifacts/MyLocalTon-x86-64.jar version)
+          VERSION=$(printf '%s\n' "$VERSION_OUTPUT" | tail -n 1)
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Read version
         run: |
