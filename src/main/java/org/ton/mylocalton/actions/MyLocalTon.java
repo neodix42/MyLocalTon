@@ -314,12 +314,12 @@ public class MyLocalTon {
     log.debug("{} validatorIdHex {}", node.getNodeName(), node.getValidatorPrvKeyHex());
 
     log.debug("Starting temporary full-node...");
+    ValidatorEngine validatorEngine = new ValidatorEngine();
     Process validatorProcess =
-        new ValidatorEngine().startValidatorWithoutParams(node, myGlobalConfig).getLeft();
+        validatorEngine.startValidatorWithoutParams(node, myGlobalConfig).getLeft();
 
-    log.debug("sleep 5s");
-    Thread.sleep(5000);
     ValidatorEngineConsole validatorEngineConsole = new ValidatorEngineConsole();
+    waitForTemporaryValidatorConsole(node, validatorProcess, validatorEngineConsole);
 
     String newNodeKey = validatorEngineConsole.generateNewNodeKey(node);
     String newNodePubKey = validatorEngineConsole.exportPubKey(node, newNodeKey);
@@ -343,11 +343,80 @@ public class MyLocalTon {
 
     validatorEngineConsole.addAdnl(node, newNodeKey);
     validatorEngineConsole.changeFullNodeAddr(node, newNodeKey);
-    validatorEngineConsole.importF(node, validatorPrvKeyHex);
+    validatorProcess =
+        importValidatorKeyWithTemporaryValidatorRetry(
+            node,
+            myGlobalConfig,
+            validatorEngine,
+            validatorEngineConsole,
+            validatorProcess,
+            validatorPrvKeyHex);
 
     saveSettingsToGson();
 
     validatorProcess.destroy();
+  }
+
+  private void waitForTemporaryValidatorConsole(
+      Node node, Process validatorProcess, ValidatorEngineConsole validatorEngineConsole)
+      throws Exception {
+    Throwable lastFailure = null;
+
+    for (int attempt = 1; attempt <= 3; attempt++) {
+      if (!validatorProcess.isAlive()) {
+        throw new IllegalStateException(
+            String.format(
+                "Temporary validator %s exited before validator-engine-console became ready,"
+                    + " exitValue %d",
+                node.getNodeName(), validatorProcess.exitValue()),
+            lastFailure);
+      }
+
+      try {
+        validatorEngineConsole.getStats(node);
+        return;
+      } catch (Error | RuntimeException | ExecutionException e) {
+        lastFailure = e;
+        log.debug(
+            "{} validator-engine-console is not ready yet, attempt {}",
+            node.getNodeName(),
+            attempt);
+        Thread.sleep(1000);
+      }
+    }
+
+    throw new IllegalStateException(
+        "validator-engine-console on " + node.getNodeName() + " did not become ready",
+        lastFailure);
+  }
+
+  private Process importValidatorKeyWithTemporaryValidatorRetry(
+      Node node,
+      String myGlobalConfig,
+      ValidatorEngine validatorEngine,
+      ValidatorEngineConsole validatorEngineConsole,
+      Process validatorProcess,
+      String validatorPrvKeyHex)
+      throws Exception {
+    for (int attempt = 1; attempt <= 2; attempt++) {
+      try {
+        validatorEngineConsole.importF(node, validatorPrvKeyHex);
+        return validatorProcess;
+      } catch (Error e) {
+        if (attempt == 2 || validatorProcess.isAlive()) {
+          throw e;
+        }
+
+        log.warn(
+            "{} temporary validator stopped before importf completed; restarting and retrying",
+            node.getNodeName());
+        validatorProcess =
+            validatorEngine.startValidatorWithoutParams(node, myGlobalConfig).getLeft();
+        waitForTemporaryValidatorConsole(node, validatorProcess, validatorEngineConsole);
+      }
+    }
+
+    return validatorProcess;
   }
 
   public WalletEntity createWalletWithFundsAndSmartContract(

@@ -28,7 +28,7 @@ public class ValidatorEngineConsole {
             "getstats");
     log.debug(result.getRight().get());
     if (!result.getRight().get().contains("conn ready")) {
-      throw new Error("validator-engine-console on " + node.getNodeName() + " cannot importf");
+      throw new Error("validator-engine-console on " + node.getNodeName() + " cannot getstats");
     }
   }
 

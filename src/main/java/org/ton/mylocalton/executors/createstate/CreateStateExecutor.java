@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class CreateStateExecutor {
@@ -52,8 +51,11 @@ public class CreateStateExecutor {
       }
       pb.directory(new File(node.getTonBinDir() + "zerostate" + File.separator));
       Process p = pb.start();
-      p.waitFor(5, TimeUnit.SECONDS);
       String result = IOUtils.toString(p.getInputStream(), Charset.defaultCharset());
+      int exitCode = p.waitFor();
+      if (exitCode != 0) {
+        log.error("create-state exited with code {}. Output: {}", exitCode, result);
+      }
 
       p.getInputStream().close();
       p.getErrorStream().close();

@@ -29,11 +29,10 @@ import org.ton.mylocalton.utils.MyLocalTonUtils;
 public class ValidatorEngine {
   private static final String VALIDATOR = "validator";
   private static final String ZEROSTATE = "zerostate";
-  private static final String DOUBLE_SPACE = "  ";
-  private static final String SPACE = " ";
   private static final String TEMPLATES = "templates";
   private static final String CURRENT_DIR = System.getProperty("user.dir");
   private static final String MY_LOCAL_TON = "myLocalTon";
+  private static final int MAX_ZERO_STATE_GENERATION_ATTEMPTS = 5;
 
   private static String sb(String str, String from, String to) {
     return StringUtils.substringBetween(str, from, to);
@@ -237,8 +236,23 @@ public class ValidatorEngine {
 
   public void createZeroState(Node node) throws Exception {
 
-    while (!generateZeroState(node))
-      ;
+    for (int attempt = 1; attempt <= MAX_ZERO_STATE_GENERATION_ATTEMPTS; attempt++) {
+      if (generateZeroState(node)) {
+        break;
+      }
+
+      if (attempt == MAX_ZERO_STATE_GENERATION_ATTEMPTS) {
+        throw new IllegalStateException(
+            "Failed to generate zero-state after "
+                + MAX_ZERO_STATE_GENERATION_ATTEMPTS
+                + " attempts");
+      }
+
+      log.warn(
+          "Retrying zero-state generation, attempt {}/{}",
+          attempt + 1,
+          MAX_ZERO_STATE_GENERATION_ATTEMPTS);
+    }
 
     MyLocalTonSettings settings = MyLocalTon.getInstance().getSettings();
 
@@ -296,6 +310,11 @@ public class ValidatorEngine {
 
     //    log.debug("creating zero-state output: {}", createStateResult);
     log.debug("creating zero-state output");
+    if (StringUtils.isBlank(createStateResult)) {
+      log.warn("gen-zerostate.fif produced empty output, recreating zero-state...");
+      cleanupGeneratedZeroStateFiles(node);
+      return false;
+    }
 
     String mainWalletAddrBoth =
         sb(createStateResult, "wallet address = ", "(Saving address to file");
@@ -303,20 +322,51 @@ public class ValidatorEngine {
         sb(createStateResult, "elector smart contract address = ", "(Saving address to file");
     String configSmcAddrBoth =
         sb(createStateResult, "config smart contract address = ", "(Saving address to file");
+    int initialStateIndex =
+        createStateResult.indexOf("(Initial masterchain state saved to file zerostate.boc)");
     String piece =
-        StringUtils.substring(
-            createStateResult,
-            createStateResult.indexOf("(Initial masterchain state saved to file zerostate.boc)"));
+        initialStateIndex < 0 ? null : StringUtils.substring(createStateResult, initialStateIndex);
     String masterFileHashBoth = sb(piece, "file hash= ", "root hash= ");
     String masterRootHashBoth = sb(piece, "root hash= ", "Basestate0 root hash= ");
     String basestateRootHashBoth = sb(piece, "Basestate0 root hash= ", "Basestate0 file hash= ");
     String basestateFileHashBoth = sb(piece, "Basestate0 file hash= ", "Zerostate root hash= ");
     String zerostateRootHashBoth = sb(piece, "Zerostate root hash= ", "Zerostate file hash= ");
     String zerostateFileHashBoth =
-        StringUtils.substring(
-            piece, piece.indexOf("Zerostate file hash= ") + "Zerostate file hash= ".length());
+        extractAfter(piece, "Zerostate file hash= ");
 
-    String[] mainWalletAddr = mainWalletAddrBoth.split(SPACE);
+    if (hasIncompleteZeroStateOutput(
+        mainWalletAddrBoth,
+        electorSmcAddrBoth,
+        configSmcAddrBoth,
+        masterFileHashBoth,
+        masterRootHashBoth,
+        basestateRootHashBoth,
+        basestateFileHashBoth,
+        zerostateRootHashBoth,
+        zerostateFileHashBoth)) {
+      log.warn("gen-zerostate.fif produced incomplete output, recreating zero-state...");
+      log.debug("create-state output: {}", createStateResult);
+      cleanupGeneratedZeroStateFiles(node);
+      return false;
+    }
+
+    if (hasInvalidZeroStateOutputPair(
+        mainWalletAddrBoth,
+        electorSmcAddrBoth,
+        configSmcAddrBoth,
+        masterFileHashBoth,
+        masterRootHashBoth,
+        basestateRootHashBoth,
+        basestateFileHashBoth,
+        zerostateRootHashBoth,
+        zerostateFileHashBoth)) {
+      log.warn("gen-zerostate.fif produced malformed output, recreating zero-state...");
+      log.debug("create-state output: {}", createStateResult);
+      cleanupGeneratedZeroStateFiles(node);
+      return false;
+    }
+
+    String[] mainWalletAddr = splitZeroStatePair(mainWalletAddrBoth);
     settings.setMainWalletAddrFull(mainWalletAddr[0].trim().toUpperCase());
     settings.setMainWalletAddrBase64(mainWalletAddr[1].trim());
 
@@ -345,11 +395,11 @@ public class ValidatorEngine {
     // basically genesis node uses main-wallet and sends requests to elections on its behalf
     // node.setWalletAddress(genesisWalletAddress);//  TODO
 
-    String[] electorSmcAddr = electorSmcAddrBoth.split(SPACE);
+    String[] electorSmcAddr = splitZeroStatePair(electorSmcAddrBoth);
     settings.setElectorSmcAddrHex(electorSmcAddr[0].trim().toUpperCase());
     settings.setElectorSmcAddrBase64(electorSmcAddr[1].trim());
 
-    String[] configSmcAddr = configSmcAddrBoth.split(SPACE);
+    String[] configSmcAddr = splitZeroStatePair(configSmcAddrBoth);
     settings.setConfigSmcAddrHex(configSmcAddr[0].trim().toUpperCase());
     settings.setConfigSmcAddrBase64(configSmcAddr[1].trim());
     byte[] configMasterPrvKey =
@@ -357,27 +407,27 @@ public class ValidatorEngine {
             new File(node.getTonBinDir() + ZEROSTATE + File.separator + "config-master.pk"));
     settings.setConfigSmcPrvKey(Hex.encodeHexString(configMasterPrvKey));
 
-    String[] masterStateFile = masterFileHashBoth.split(DOUBLE_SPACE);
+    String[] masterStateFile = splitZeroStatePair(masterFileHashBoth);
     settings.setMasterStateFileHashHex(masterStateFile[0].trim());
     settings.setMasterStateFileHashBase64(masterStateFile[1].trim());
 
-    String[] masterStateRoot = masterRootHashBoth.split(DOUBLE_SPACE);
+    String[] masterStateRoot = splitZeroStatePair(masterRootHashBoth);
     settings.setMasterStateRootHashHex(masterStateRoot[0].trim());
     settings.setMasterStateRootHashBase64(masterStateRoot[1].trim());
 
-    String[] baseStateFile = basestateFileHashBoth.split(DOUBLE_SPACE); // ok
+    String[] baseStateFile = splitZeroStatePair(basestateFileHashBoth);
     settings.setBaseStateFileHashHex(baseStateFile[0].trim());
     settings.setBaseStateFileHashBase64(baseStateFile[1].trim());
 
-    String[] baseStateRoot = basestateRootHashBoth.split(DOUBLE_SPACE);
+    String[] baseStateRoot = splitZeroStatePair(basestateRootHashBoth);
     settings.setBaseStateRootHashHex(baseStateRoot[0].trim());
     settings.setBaseStateRootHashBase64(baseStateRoot[1].trim());
 
-    String[] zeroStateFile = zerostateFileHashBoth.split(DOUBLE_SPACE); // ok
+    String[] zeroStateFile = splitZeroStatePair(zerostateFileHashBoth);
     settings.setZeroStateFileHashHex(zeroStateFile[0].trim());
     settings.setZeroStateFileHashHuman(zeroStateFile[1].trim());
 
-    String[] zeroStateRoot = zerostateRootHashBoth.split(DOUBLE_SPACE);
+    String[] zeroStateRoot = splitZeroStatePair(zerostateRootHashBoth);
     settings.setZeroStateRootHashHex(zeroStateRoot[0].trim());
     settings.setZeroStateRootHashHuman(zeroStateRoot[1].trim());
 
@@ -388,26 +438,55 @@ public class ValidatorEngine {
         || (settings.getZeroStateRootHashHex().length() < 64)
         || (settings.getZeroStateFileHashHex().length() < 64)) {
       log.debug("gen-zerostate.fif generated wrong hashes, recreating...");
-      Files.delete(
-          Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "config-master.addr"));
-      Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.fhash"));
-      Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.rhash"));
-      Files.delete(
-          Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "basestate0.fhash"));
-      Files.delete(
-          Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "basestate0.rhash"));
-      Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "elector.addr"));
-      Files.delete(
-          Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet.addr"));
-      Files.delete(
-          Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "config-master.pk"));
-      Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "main-wallet.pk"));
-      Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "basestate0.boc"));
-      Files.delete(Paths.get(node.getTonBinDir() + ZEROSTATE + File.separator + "zerostate.boc"));
+      cleanupGeneratedZeroStateFiles(node);
       return false;
     }
 
     return true;
+  }
+
+  private String extractAfter(String text, String marker) {
+    if (StringUtils.isBlank(text)) {
+      return null;
+    }
+
+    int markerIndex = text.indexOf(marker);
+    if (markerIndex < 0) {
+      return null;
+    }
+
+    return StringUtils.substring(text, markerIndex + marker.length());
+  }
+
+  private boolean hasIncompleteZeroStateOutput(String... values) {
+    return Arrays.stream(values).anyMatch(StringUtils::isBlank);
+  }
+
+  private boolean hasInvalidZeroStateOutputPair(String... values) {
+    return Arrays.stream(values)
+        .map(StringUtils::split)
+        .anyMatch(parts -> parts == null || parts.length < 2);
+  }
+
+  private String[] splitZeroStatePair(String value) {
+    return StringUtils.split(value);
+  }
+
+  private void cleanupGeneratedZeroStateFiles(Node node) {
+    File zeroStateDir = new File(node.getTonBinDir() + ZEROSTATE);
+    Arrays.asList(
+            "config-master.addr",
+            "zerostate.fhash",
+            "zerostate.rhash",
+            "basestate0.fhash",
+            "basestate0.rhash",
+            "elector.addr",
+            "main-wallet.addr",
+            "config-master.pk",
+            "main-wallet.pk",
+            "basestate0.boc",
+            "zerostate.boc")
+        .forEach(fileName -> FileUtils.deleteQuietly(new File(zeroStateDir, fileName)));
   }
 
   public void configureGenesisZeroState() throws IOException {

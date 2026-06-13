@@ -100,6 +100,7 @@ public class App extends Application {
             dhtServer.startDhtServer(genesisNode, genesisNode.getNodeGlobalConfigLocation());
           } catch (Exception e) {
             log.error(e.getMessage(), e);
+            throw new RuntimeException("Failed to initialize genesis", e);
           }
 
           new ValidatorEngine()
