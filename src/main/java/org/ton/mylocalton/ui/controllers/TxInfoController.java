@@ -44,7 +44,7 @@ public class TxInfoController implements Initializable {
   @FXML private Label newHashLabel;
   @FXML private VBox inMsgsContainer;
   @FXML private VBox outMsgsContainer;
-  @FXML private Label totalFeesToncoinsLabel;
+  @FXML private Label totalFeesGramsLabel;
   @FXML private Label totalFeesOtherCurrenciesLabel;
 
   @FXML private Label descTypeLabel;
@@ -53,7 +53,7 @@ public class TxInfoController implements Initializable {
   @FXML private Label descStorageStatusChangeLabel;
 
   @FXML private Label descCreditDueFeesCollectedLabel;
-  @FXML private Label descCreditCreditToncoinsLabel;
+  @FXML private Label descCreditCreditGramsLabel;
   @FXML private Label descCreditCreditOtherCurrenciesLabel;
 
   @FXML private Label descComputeGasFeesLabel;
@@ -168,12 +168,12 @@ public class TxInfoController implements Initializable {
         JsonObject totalFeesObj = root.getAsJsonObject("totalFees");
 
         String amount =
-            getStringSafe(totalFeesObj, "toncoins").isBlank()
+            getStringSafe(totalFeesObj, "grams").isBlank()
                 ? ""
-                : MyLocalTonUtils.amountFromNano(getStringSafe(totalFeesObj, "toncoins"))
+                : MyLocalTonUtils.amountFromNano(getStringSafe(totalFeesObj, "grams"))
                     .toPlainString();
 
-        totalFeesToncoinsLabel.setText(amount);
+        totalFeesGramsLabel.setText(amount);
 
         if (totalFeesObj.has("otherCurrencies")) {
           JsonArray oc = totalFeesObj.getAsJsonArray("otherCurrencies");
@@ -204,12 +204,12 @@ public class TxInfoController implements Initializable {
           if (creditObj.has("credit") && creditObj.get("credit").isJsonObject()) {
             JsonObject credit2Obj = creditObj.getAsJsonObject("credit");
             String amount =
-                getStringSafe(credit2Obj, "toncoins").isBlank()
+                getStringSafe(credit2Obj, "grams").isBlank()
                     ? ""
-                    : MyLocalTonUtils.amountFromNano(getStringSafe(credit2Obj, "toncoins"))
+                    : MyLocalTonUtils.amountFromNano(getStringSafe(credit2Obj, "grams"))
                         .toPlainString();
 
-            descCreditCreditToncoinsLabel.setText(amount);
+            descCreditCreditGramsLabel.setText(amount);
             if (credit2Obj.has("otherCurrencies")) {
               descCreditCreditOtherCurrenciesLabel.setText(
                   new Gson().toJson(credit2Obj.getAsJsonArray("otherCurrencies")));
@@ -304,16 +304,16 @@ public class TxInfoController implements Initializable {
 
     msgRoot.getChildren().add(fieldsGrid);
 
-    // -- value (toncoins + otherCurrencies) --
+    // -- value (grams + otherCurrencies) --
     if (msgObj.has("value") && msgObj.get("value").isJsonObject()) {
       JsonObject valueObj = msgObj.getAsJsonObject("value");
 
       GridPane valueGrid = createGridPane();
       String amount =
-          getStringSafe(valueObj, "toncoins").isBlank()
+          getStringSafe(valueObj, "grams").isBlank()
               ? ""
-              : MyLocalTonUtils.amountFromNano(getStringSafe(valueObj, "toncoins")).toPlainString();
-      addKeyValueRow(valueGrid, 0, "toncoins:", amount);
+              : MyLocalTonUtils.amountFromNano(getStringSafe(valueObj, "grams")).toPlainString();
+      addKeyValueRow(valueGrid, 0, "grams:", amount);
 
       // otherCurrencies
       Label ocLabel = new Label("otherCurrencies:");

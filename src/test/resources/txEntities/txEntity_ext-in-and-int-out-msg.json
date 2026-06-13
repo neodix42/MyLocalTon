@@ -36,7 +36,7 @@
       },
       "type": "External In",
       "value": {
-        "toncoins": 0
+        "grams": 0
       },
       "body": {
         "cells": [
@@ -65,7 +65,7 @@
         },
         "type": "Internal",
         "value": {
-          "toncoins": 55000000000,
+          "grams": 55000000000,
           "otherCurrencies": []
         },
         "createdAt": 1744094788,
@@ -93,7 +93,7 @@
     "prevTxLt": 1431000001,
     "now": 1744094788,
     "totalFees": {
-      "toncoins": 49159417,
+      "grams": 49159417,
       "otherCurrencies": []
     },
     "oldHash": "13FE82BE66255558E4F503AB04A0286091DE60B26E503271CC95484C50007EC7",

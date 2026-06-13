@@ -18,7 +18,7 @@ import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
 import org.ton.mylocalton.main.App;
-import org.ton.mylocalton.parameters.SendToncoinsParam;
+import org.ton.mylocalton.parameters.SendGramsParam;
 import org.ton.mylocalton.wallet.MyWallet;
 import org.ton.mylocalton.wallet.WalletAddress;
 
@@ -82,14 +82,14 @@ public class SendController implements Initializable {
                 .multiply(BigDecimal.valueOf(1_000_000_000))
                 .toBigInteger();
         log.info(
-            "Sending {} Toncoins from {} ({}) to {}",
+            "Sending {} nanograms from {} ({}) to {}",
             amount,
             fromWalletAddress.getFullWalletAddress(),
             fromWallet.getWalletVersion(),
             destAddress);
 
-        SendToncoinsParam sendToncoinsParam =
-            SendToncoinsParam.builder()
+        SendGramsParam sendGramsParam =
+            SendGramsParam.builder()
                 .executionNode(MyLocalTon.getInstance().getSettings().getGenesisNode())
                 .workchain(fromWalletAddress.getWc())
                 .fromWallet(fromWalletAddress)
@@ -102,18 +102,18 @@ public class SendController implements Initializable {
                 .comment(comment.getText())
                 .build();
 
-        boolean sentOK = new MyWallet().sendTonCoins(sendToncoinsParam);
+        boolean sentOK = new MyWallet().sendGrams(sendGramsParam);
 
         MainController c = fxmlLoader.getController();
         c.sendDialog.close();
 
         if (sentOK) {
           App.mainController.showSuccessMsg(
-              String.format("Sent %s Toncoins to %s", sendAmount.getText(), destAddress), 3);
+              String.format("Sent %s Grams to %s", sendAmount.getText(), destAddress), 3);
         } else {
-          log.debug("Failed to send {} Toncoins to {}", sendAmount.getText(), destAddress);
+          log.debug("Failed to send {} Grams to {}", sendAmount.getText(), destAddress);
           App.mainController.showErrorMsg(
-              String.format("Failed to send %s Toncoins to %s", sendAmount.getText(), destAddress),
+              String.format("Failed to send %s Grams to %s", sendAmount.getText(), destAddress),
               3);
         }
       } else {
@@ -125,7 +125,7 @@ public class SendController implements Initializable {
       log.error("Sending error {}", e.getMessage());
       log.error(ExceptionUtils.getStackTrace(e));
       App.mainController.showErrorMsg(
-          String.format("Error sending Toncoins %s", e.getMessage()), 5);
+          String.format("Error sending Grams %s", e.getMessage()), 5);
     }
   }
 }

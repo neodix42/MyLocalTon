@@ -18,7 +18,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.ton.mylocalton.enums.LiteClientEnum;
 import org.ton.mylocalton.executors.fift.Fift;
 import org.ton.mylocalton.executors.liteclient.LiteClient;
-import org.ton.mylocalton.parameters.SendToncoinsParam;
+import org.ton.mylocalton.parameters.SendGramsParam;
 import org.ton.mylocalton.settings.Node;
 import org.ton.mylocalton.utils.WalletVersion;
 import org.ton.ton4j.address.Address;
@@ -45,7 +45,7 @@ import org.ton.ton4j.utils.Utils;
 public class MyWallet {
 
   public static final BigDecimal BLN1 = BigDecimal.valueOf(1000000000);
-  static final double MINIMUM_TONCOINS = 0.09;
+  static final double MINIMUM_GRAMS = 0.09;
   private final LiteClient liteClient;
 
   public MyWallet() {
@@ -53,7 +53,7 @@ public class MyWallet {
   }
 
   //    boolean walletHasStateInit(AccountState accountState) {
-  //        return nonNull(accountState.getStatus()); // has stateInit with some toncoins
+  //        return nonNull(accountState.getStatus()); // has stateInit with some grams
   //    }
 
   public void walletHasContractInstalled(
@@ -82,7 +82,7 @@ public class MyWallet {
       log.debug("waiting for smc to be installed on {}", walletAddress.toString(false));
     } while (isNull(accountState)
         || (new BigDecimal(accountState.getBalance())
-                .compareTo(BigDecimal.valueOf(MINIMUM_TONCOINS).multiply(BLN1))
+                .compareTo(BigDecimal.valueOf(MINIMUM_GRAMS).multiply(BLN1))
             < 0));
     log.debug(
         "wallet has enough funds, wallet {}, balance {}",
@@ -111,22 +111,22 @@ public class MyWallet {
   }
 
   /**
-   * Used to send toncoins from one-time-wallet, where do we have prvkey, which is used in fift
+   * Used to send grams from one-time-wallet, where do we have prvkey, which is used in fift
    * script
    */
-  public boolean sendTonCoins(SendToncoinsParam sendToncoinsParam) {
+  public boolean sendGrams(SendGramsParam sendGramsParam) {
     try {
-      Address fromAddress = Address.of(sendToncoinsParam.getFromWallet().getFullWalletAddress());
-      Address toAddress = Address.of(sendToncoinsParam.getDestAddr());
-      if (nonNull(sendToncoinsParam.getForceBounce()) && (sendToncoinsParam.getForceBounce())) {
+      Address fromAddress = Address.of(sendGramsParam.getFromWallet().getFullWalletAddress());
+      Address toAddress = Address.of(sendGramsParam.getDestAddr());
+      if (nonNull(sendGramsParam.getForceBounce()) && (sendGramsParam.getForceBounce())) {
         toAddress = Address.of(toAddress.toString(true, false, true));
       }
 
       long seqno = 0;
-      if ((sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.highload))
-          || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.highloadV3))
-          || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1))) {
-        log.info("sendTonCoins, does not have seqno, use default seqno=0");
+      if ((sendGramsParam.getFromWalletVersion().equals(WalletVersion.highload))
+          || (sendGramsParam.getFromWalletVersion().equals(WalletVersion.highloadV3))
+          || (sendGramsParam.getFromWalletVersion().equals(WalletVersion.V1R1))) {
+        log.info("sendGrams, does not have seqno, use default seqno=0");
       } else {
         seqno = adnlLiteClient.getSeqno(fromAddress);
       }
@@ -138,181 +138,181 @@ public class MyWallet {
       //        return false;
       //      }
 
-      if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.highload)) {
+      if (sendGramsParam.getFromWalletVersion().equals(WalletVersion.highload)) {
         HighloadWallet highloadWallet =
             HighloadWallet.builder()
                 .keyPair(
                     Utils.generateSignatureKeyPairFromSeed(
                         Utils.hexToSignedBytes(
-                            sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
-                .wc(sendToncoinsParam.getFromWallet().getWc())
+                            sendGramsParam.getFromWallet().getPrivateKeyHex())))
+                .wc(sendGramsParam.getFromWallet().getWc())
                 .tonProvider(adnlLiteClient)
-                .walletId(sendToncoinsParam.getFromWallet().getSubWalletId())
+                .walletId(sendGramsParam.getFromWallet().getSubWalletId())
                 .queryId(BigInteger.ZERO)
                 .build();
         log.info("balance {}", adnlLiteClient.getBalance(highloadWallet.getAddress()));
         HighloadConfig config =
             HighloadConfig.builder()
-                .walletId(sendToncoinsParam.getFromWallet().getSubWalletId())
+                .walletId(sendGramsParam.getFromWallet().getSubWalletId())
                 .queryId(BigInteger.valueOf(Instant.now().getEpochSecond() + 10 * 60L << 32))
                 .destinations(
                     List.of(
                         Destination.builder()
                             .mode(3)
                             .address(toAddress.toRaw())
-                            .amount(sendToncoinsParam.getAmount())
+                            .amount(sendGramsParam.getAmount())
                             .build()))
                 .build();
         SendResponse sendResponse = highloadWallet.send(config);
         log.info("ExtMessageInfo {}", sendResponse);
-      } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1)) {
+      } else if (sendGramsParam.getFromWalletVersion().equals(WalletVersion.V1R1)) {
         WalletV1R1 walletV1R1 =
             WalletV1R1.builder()
                 .keyPair(
                     Utils.generateSignatureKeyPairFromSeed(
                         Utils.hexToSignedBytes(
-                            sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
-                .wc(sendToncoinsParam.getWorkchain())
+                            sendGramsParam.getFromWallet().getPrivateKeyHex())))
+                .wc(sendGramsParam.getWorkchain())
                 .tonProvider(adnlLiteClient)
                 .build();
 
         WalletV1R1Config walletV1R1Config =
             WalletV1R1Config.builder()
                 .destination(toAddress)
-                .amount(sendToncoinsParam.getAmount())
+                .amount(sendGramsParam.getAmount())
                 .seqno(seqno)
-                .comment(sendToncoinsParam.getComment())
+                .comment(sendGramsParam.getComment())
                 .build();
         walletV1R1.send(walletV1R1Config);
-      } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R2)) {
+      } else if (sendGramsParam.getFromWalletVersion().equals(WalletVersion.V1R2)) {
         WalletV1R2 walletV1R2 =
             WalletV1R2.builder()
                 .keyPair(
                     Utils.generateSignatureKeyPairFromSeed(
                         Utils.hexToSignedBytes(
-                            sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
-                .wc(sendToncoinsParam.getWorkchain())
+                            sendGramsParam.getFromWallet().getPrivateKeyHex())))
+                .wc(sendGramsParam.getWorkchain())
                 .tonProvider(adnlLiteClient)
                 .build();
 
         WalletV1R2Config walletV1R2Config =
             WalletV1R2Config.builder()
                 .destination(toAddress)
-                .amount(sendToncoinsParam.getAmount())
+                .amount(sendGramsParam.getAmount())
                 .seqno(seqno)
-                .comment(sendToncoinsParam.getComment())
+                .comment(sendGramsParam.getComment())
                 .build();
         walletV1R2.send(walletV1R2Config);
-      } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R3)) {
+      } else if (sendGramsParam.getFromWalletVersion().equals(WalletVersion.V1R3)) {
         WalletV1R3 walletV1R3 =
             WalletV1R3.builder()
                 .keyPair(
                     Utils.generateSignatureKeyPairFromSeed(
                         Utils.hexToSignedBytes(
-                            sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
-                .wc(sendToncoinsParam.getWorkchain())
+                            sendGramsParam.getFromWallet().getPrivateKeyHex())))
+                .wc(sendGramsParam.getWorkchain())
                 .tonProvider(adnlLiteClient)
                 .build();
 
         WalletV1R3Config walletV1R3Config =
             WalletV1R3Config.builder()
                 .destination(toAddress)
-                .amount(sendToncoinsParam.getAmount())
+                .amount(sendGramsParam.getAmount())
                 .seqno(seqno)
-                .comment(sendToncoinsParam.getComment())
+                .comment(sendGramsParam.getComment())
                 .build();
         walletV1R3.send(walletV1R3Config);
-      } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V2R1)) {
+      } else if (sendGramsParam.getFromWalletVersion().equals(WalletVersion.V2R1)) {
         WalletV2R1 walletV2R1 =
             WalletV2R1.builder()
                 .keyPair(
                     Utils.generateSignatureKeyPairFromSeed(
                         Utils.hexToSignedBytes(
-                            sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
-                .wc(sendToncoinsParam.getWorkchain())
+                            sendGramsParam.getFromWallet().getPrivateKeyHex())))
+                .wc(sendGramsParam.getWorkchain())
                 .tonProvider(adnlLiteClient)
                 .build();
 
         WalletV2R1Config walletV2R1Config =
             WalletV2R1Config.builder()
                 .destination1(toAddress)
-                .amount1(sendToncoinsParam.getAmount())
+                .amount1(sendGramsParam.getAmount())
                 .seqno(seqno)
-                .comment(sendToncoinsParam.getComment())
+                .comment(sendGramsParam.getComment())
                 .build();
         walletV2R1.send(walletV2R1Config);
-      } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V2R2)) {
+      } else if (sendGramsParam.getFromWalletVersion().equals(WalletVersion.V2R2)) {
         WalletV2R2 walletV2R2 =
             WalletV2R2.builder()
                 .keyPair(
                     Utils.generateSignatureKeyPairFromSeed(
                         Utils.hexToSignedBytes(
-                            sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
-                .wc(sendToncoinsParam.getWorkchain())
+                            sendGramsParam.getFromWallet().getPrivateKeyHex())))
+                .wc(sendGramsParam.getWorkchain())
                 .tonProvider(adnlLiteClient)
                 .build();
 
         WalletV2R2Config walletV2R2Config =
             WalletV2R2Config.builder()
                 .destination1(toAddress)
-                .amount1(sendToncoinsParam.getAmount())
+                .amount1(sendGramsParam.getAmount())
                 .seqno(seqno)
-                .comment(sendToncoinsParam.getComment())
+                .comment(sendGramsParam.getComment())
                 .build();
         walletV2R2.send(walletV2R2Config);
-      } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V3R1)) {
+      } else if (sendGramsParam.getFromWalletVersion().equals(WalletVersion.V3R1)) {
         WalletV3R1 walletV3R1 =
             WalletV3R1.builder()
                 .keyPair(
                     Utils.generateSignatureKeyPairFromSeed(
                         Utils.hexToSignedBytes(
-                            sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
-                .wc(sendToncoinsParam.getWorkchain())
-                .walletId(sendToncoinsParam.getFromSubWalletId())
+                            sendGramsParam.getFromWallet().getPrivateKeyHex())))
+                .wc(sendGramsParam.getWorkchain())
+                .walletId(sendGramsParam.getFromSubWalletId())
                 .tonProvider(adnlLiteClient)
                 .build();
 
         WalletV3Config walletV3Config =
             WalletV3Config.builder()
-                .walletId(sendToncoinsParam.getFromSubWalletId())
+                .walletId(sendGramsParam.getFromSubWalletId())
                 .destination(toAddress)
-                .amount(sendToncoinsParam.getAmount())
+                .amount(sendGramsParam.getAmount())
                 .seqno(seqno)
-                .comment(sendToncoinsParam.getComment())
+                .comment(sendGramsParam.getComment())
                 .build();
         walletV3R1.send(walletV3Config);
-      } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V3R2)) {
+      } else if (sendGramsParam.getFromWalletVersion().equals(WalletVersion.V3R2)) {
         WalletV3R2 walletV3R2 =
             WalletV3R2.builder()
                 .keyPair(
                     Utils.generateSignatureKeyPairFromSeed(
                         Utils.hexToSignedBytes(
-                            sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
-                .wc(sendToncoinsParam.getWorkchain())
-                .walletId(sendToncoinsParam.getFromSubWalletId())
+                            sendGramsParam.getFromWallet().getPrivateKeyHex())))
+                .wc(sendGramsParam.getWorkchain())
+                .walletId(sendGramsParam.getFromSubWalletId())
                 .tonProvider(adnlLiteClient)
                 .build();
 
-        if (StringUtils.isNoneEmpty(sendToncoinsParam.getComment())) {
+        if (StringUtils.isNoneEmpty(sendGramsParam.getComment())) {
           WalletV3Config walletV3Config =
               WalletV3Config.builder()
-                  .walletId(sendToncoinsParam.getFromSubWalletId())
+                  .walletId(sendGramsParam.getFromSubWalletId())
                   .destination(toAddress)
-                  .amount(sendToncoinsParam.getAmount())
+                  .amount(sendGramsParam.getAmount())
                   .seqno(seqno)
-                  .comment(sendToncoinsParam.getComment())
+                  .comment(sendGramsParam.getComment())
                   .build();
           walletV3R2.send(walletV3Config);
         } else {
-          if (nonNull(sendToncoinsParam.getBocLocation())) {
+          if (nonNull(sendGramsParam.getBocLocation())) {
             byte[] boc =
-                FileUtils.readFileToByteArray(new File(sendToncoinsParam.getBocLocation()));
+                FileUtils.readFileToByteArray(new File(sendGramsParam.getBocLocation()));
             Cell bodyCell = Cell.fromBoc(boc);
             WalletV3Config walletV3Config =
                 WalletV3Config.builder()
-                    .walletId(sendToncoinsParam.getFromSubWalletId())
+                    .walletId(sendGramsParam.getFromSubWalletId())
                     .destination(toAddress)
-                    .amount(sendToncoinsParam.getAmount())
+                    .amount(sendGramsParam.getAmount())
                     .seqno(seqno)
                     .body(bodyCell)
                     .build();
@@ -320,61 +320,61 @@ public class MyWallet {
           } else {
             WalletV3Config walletV3Config =
                 WalletV3Config.builder()
-                    .walletId(sendToncoinsParam.getFromSubWalletId())
+                    .walletId(sendGramsParam.getFromSubWalletId())
                     .destination(toAddress)
-                    .amount(sendToncoinsParam.getAmount())
+                    .amount(sendGramsParam.getAmount())
                     .seqno(seqno)
                     .build();
             walletV3R2.send(walletV3Config);
           }
         }
-      } else if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V4R2)) {
+      } else if (sendGramsParam.getFromWalletVersion().equals(WalletVersion.V4R2)) {
         WalletV4R2 walletV4R2 =
             WalletV4R2.builder()
                 .keyPair(
                     Utils.generateSignatureKeyPairFromSeed(
                         Utils.hexToSignedBytes(
-                            sendToncoinsParam.getFromWallet().getPrivateKeyHex())))
-                .wc(sendToncoinsParam.getWorkchain())
-                .walletId(sendToncoinsParam.getFromSubWalletId())
+                            sendGramsParam.getFromWallet().getPrivateKeyHex())))
+                .wc(sendGramsParam.getWorkchain())
+                .walletId(sendGramsParam.getFromSubWalletId())
                 .tonProvider(adnlLiteClient)
                 .build();
 
         WalletV4R2Config walletV4Config =
             WalletV4R2Config.builder()
-                .walletId(sendToncoinsParam.getFromSubWalletId())
+                .walletId(sendGramsParam.getFromSubWalletId())
                 .destination(toAddress)
-                .amount(sendToncoinsParam.getAmount())
+                .amount(sendGramsParam.getAmount())
                 .seqno(seqno)
-                .comment(sendToncoinsParam.getComment())
+                .comment(sendGramsParam.getComment())
                 .build();
         walletV4R2.send(walletV4Config);
-      } else if ((sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.master))
-          || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.config))) {
+      } else if ((sendGramsParam.getFromWalletVersion().equals(WalletVersion.master))
+          || (sendGramsParam.getFromWalletVersion().equals(WalletVersion.config))) {
         // send using fift from master and config wallets using base-file
         String externalMsgLocation =
-            new Fift().prepareSendTonCoinsFromNodeWallet(sendToncoinsParam, seqno);
+            new Fift().prepareSendGramsFromNodeWallet(sendGramsParam, seqno);
         if (isNull(externalMsgLocation)) {
           return false;
         }
         log.debug(
-            liteClient.executeSendfile(sendToncoinsParam.getExecutionNode(), externalMsgLocation));
+            liteClient.executeSendfile(sendGramsParam.getExecutionNode(), externalMsgLocation));
       } else {
-        log.error("{} wallet version is not supported", sendToncoinsParam.getFromWalletVersion());
+        log.error("{} wallet version is not supported", sendGramsParam.getFromWalletVersion());
       }
 
       log.info(
-          "Sent {} nano Toncoins by {} from {} to {}",
-          sendToncoinsParam.getAmount(),
-          sendToncoinsParam.getExecutionNode().getNodeName(),
+          "Sent {} nanograms by {} from {} to {}",
+          sendGramsParam.getAmount(),
+          sendGramsParam.getExecutionNode().getNodeName(),
           fromAddress.toRaw(),
           toAddress.toRaw());
 
       int counter = 0;
 
-      if ((sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.highload))
-          || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.highloadV3))
-          || (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.V1R1))) {
+      if ((sendGramsParam.getFromWalletVersion().equals(WalletVersion.highload))
+          || (sendGramsParam.getFromWalletVersion().equals(WalletVersion.highloadV3))
+          || (sendGramsParam.getFromWalletVersion().equals(WalletVersion.V1R1))) {
         return true;
       } else {
         while (true) {
@@ -386,15 +386,15 @@ public class MyWallet {
           log.info(
               "{} waiting for wallet {} to update seqno. oldSeqno {}, newSeqno {}",
               fromAddress.toString(false),
-              sendToncoinsParam.getExecutionNode().getNodeName(),
+              sendGramsParam.getExecutionNode().getNodeName(),
               seqno,
               newSeqno);
           counter++;
           if (counter > 15) {
             log.error(
-                "Error sending {} Toncoins by {} from {} to {}.",
-                sendToncoinsParam.getToncoinsAmount(),
-                sendToncoinsParam.getExecutionNode().getNodeName(),
+                "Error sending {} Grams by {} from {} to {}.",
+                sendGramsParam.getGramsAmount(),
+                sendGramsParam.getExecutionNode().getNodeName(),
                 fromAddress.toString(false),
                 toAddress.toString(false));
             return false;

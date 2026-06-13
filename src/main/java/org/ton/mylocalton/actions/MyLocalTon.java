@@ -61,7 +61,7 @@ import org.ton.mylocalton.executors.validatorengine.ValidatorEngine;
 import org.ton.mylocalton.executors.validatorengineconsole.ValidatorEngineConsole;
 import org.ton.mylocalton.main.App;
 import org.ton.mylocalton.main.Main;
-import org.ton.mylocalton.parameters.SendToncoinsParam;
+import org.ton.mylocalton.parameters.SendGramsParam;
 import org.ton.mylocalton.parameters.ValidationParam;
 import org.ton.mylocalton.settings.MyLocalTonSettings;
 import org.ton.mylocalton.settings.Node;
@@ -386,8 +386,8 @@ public class MyLocalTon {
             .filenameBaseLocation(settings.getMainWalletFilenameBaseLocation())
             .build();
 
-    SendToncoinsParam sendToncoinsParam =
-        SendToncoinsParam.builder()
+    SendGramsParam sendGramsParam =
+        SendGramsParam.builder()
             .executionNode(settings.getGenesisNode())
             .workchain(-1L)
             .fromWallet(fromMasterWalletAddress)
@@ -397,7 +397,7 @@ public class MyLocalTon {
             .amount(amount)
             .build();
 
-    boolean sentOK = myWallet.sendTonCoins(sendToncoinsParam);
+    boolean sentOK = myWallet.sendGrams(sendGramsParam);
 
     if (sentOK) {
       Thread.sleep(2000);
@@ -406,13 +406,13 @@ public class MyLocalTon {
       if (!GraphicsEnvironment.isHeadless()) {
         mainController.showErrorMsg(
             String.format(
-                "Failed to send %s Toncoins to %s",
+                "Failed to send %s nanograms to %s",
                 amount, walletAddress.getNonBounceableAddressBase64Url()),
             5);
       } else {
         log.error(
             String.format(
-                "Failed to send %s Toncoins to %s",
+                "Failed to send %s nanograms to %s",
                 amount, walletAddress.getNonBounceableAddressBase64Url()));
       }
     }
@@ -1357,7 +1357,7 @@ public class MyLocalTon {
     if (txEntity.getTypeTx().contains("Message")
         && !txEntity.getTypeMsg().contains("External In")) {
       if (!(txEntity.getTx().getInMsg().getBody().getCells().isEmpty())
-          && (txEntity.getTx().getInMsg().getValue().getToncoins().compareTo(BigDecimal.ZERO) > 0)
+          && (txEntity.getTx().getInMsg().getValue().getGrams().compareTo(BigDecimal.ZERO) > 0)
           && !txEntity.getTx().getInMsg().getBody().getCells().get(0).equals("FFFFFFFF")) {
 
         msg =
@@ -1380,7 +1380,7 @@ public class MyLocalTon {
                     .getOutMsgs()
                     .get(0)
                     .getValue()
-                    .getToncoins()
+                    .getGrams()
                     .compareTo(BigDecimal.ZERO)
                 > 0
             && !txEntity
@@ -1966,8 +1966,8 @@ public class MyLocalTon {
         new Fift().createRecoverStake(node);
 
         // send stake and validator-query.boc to elector
-        SendToncoinsParam sendToncoinsParam =
-            SendToncoinsParam.builder()
+        SendGramsParam sendGramsParam =
+            SendGramsParam.builder()
                 .executionNode(node)
                 .workchain(node.getWalletAddress().getWc())
                 .fromWallet(node.getWalletAddress())
@@ -1978,7 +1978,7 @@ public class MyLocalTon {
                 .bocLocation(node.getTonBinDir() + "recover-query.boc")
                 .build();
 
-        new MyWallet().sendTonCoins(sendToncoinsParam);
+        new MyWallet().sendGrams(sendGramsParam);
 
         // Basic rewards statistics. Better to fetch from the DB actual values, since recover stake
         // may fail e.g.

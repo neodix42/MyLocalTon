@@ -92,7 +92,7 @@
                                     styleClass="acc-delete-svg"/>
                         </graphic>
                         <tooltip>
-                            <Tooltip text="Delete account. All toncoins and private key will be lost."/>
+                            <Tooltip text="Delete account. All grams and private key will be lost."/>
                         </tooltip>
                     </JFXButton>
                 </HBox>
@@ -107,7 +107,7 @@
                                     styleClass="send-svg"/>
                         </graphic>
                         <tooltip>
-                            <Tooltip text="Send toncoins to other wallet"/>
+                            <Tooltip text="Send grams to other wallet"/>
                         </tooltip>
                     </JFXButton>
                 </HBox>

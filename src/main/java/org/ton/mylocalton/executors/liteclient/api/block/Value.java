@@ -12,6 +12,6 @@ import java.util.List;
 @ToString
 @Getter
 public class Value implements Serializable {
-  BigDecimal toncoins;
+  BigDecimal grams;
   private List<Currency> otherCurrencies;
 }

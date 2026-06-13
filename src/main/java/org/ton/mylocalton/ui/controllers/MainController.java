@@ -718,7 +718,7 @@ public class MainController implements Initializable {
       validatorLogDir5,
       validatorLogDir6,
       validatorLogDir7,
-      coinsPerWallet,
+      nanogramsPerWallet,
       globalId,
       initialBalance,
       maxValidators,
@@ -750,7 +750,7 @@ public class MainController implements Initializable {
         new FXMLLoader(
             App.class
                 .getClassLoader()
-                .getResource("org/ton/mylocalton/ui/custom/layout/send-coin-pane.fxml"));
+                .getResource("org/ton/mylocalton/ui/custom/layout/send-grams-pane.fxml"));
     Parent parent = null;
     try {
       parent = loader.load();
@@ -758,7 +758,7 @@ public class MainController implements Initializable {
       log.error(e.getMessage(), e);
       throw new RuntimeException(e);
     }
-    SendCoinPaneController controller = loader.getController();
+    SendGramsPaneController controller = loader.getController();
     controller.setHiddenWalletAddr(srcAddr);
 
     JFXDialogLayout content = new JFXDialogLayout();
@@ -1203,7 +1203,7 @@ public class MainController implements Initializable {
 
     listenFor(CustomActionEvent.class, this::handle);
     listenFor(CustomSearchEvent.class, this::handle);
-    coinsPerWallet.getTextField().setOnKeyTyped(onlyDigits);
+    nanogramsPerWallet.getTextField().setOnKeyTyped(onlyDigits);
 
     configNodePublicPort1.setOnKeyTyped(onlyDigits);
     configNodeConsolePort1.setOnKeyTyped(onlyDigits);
@@ -1371,7 +1371,7 @@ public class MainController implements Initializable {
     showMsgBodyCheckBox.setSelected(settings.getUiSettings().isShowBodyInMessage());
     shardStateCheckbox.setSelected(settings.getUiSettings().isShowShardStateInBlockDump());
 
-    coinsPerWallet.setFieldText(settings.getWalletSettings().getInitialAmount().toString());
+    nanogramsPerWallet.setFieldText(settings.getWalletSettings().getInitialAmount().toString());
 
     validatorLogDir1.setFieldText(settings.getGenesisNode().getTonLogDir());
     myLocalTonLog.setFieldText(MyLocalTonSettings.LOG_FILE);
@@ -1761,7 +1761,9 @@ public class MainController implements Initializable {
     settings.getUiSettings().setEnableTonHttpApi(enableTonHttpApi.isSelected());
     settings.getUiSettings().setShowShardStateInBlockDump(shardStateCheckbox.isSelected());
 
-    settings.getWalletSettings().setInitialAmount(new BigInteger(coinsPerWallet.getFieldText()));
+    settings
+        .getWalletSettings()
+        .setInitialAmount(new BigInteger(nanogramsPerWallet.getFieldText()));
 
     settings.getBlockchainSettings().setMinValidators(Long.valueOf(minValidators.getFieldText()));
     settings.getBlockchainSettings().setMaxValidators(Long.valueOf(maxValidators.getFieldText()));

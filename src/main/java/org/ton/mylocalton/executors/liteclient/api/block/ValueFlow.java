@@ -6,7 +6,7 @@ import lombok.ToString;
 
 import java.io.Serializable;
 
-/** basically shows the flow of toincoins (value) within a block */
+/** basically shows the flow of grams (value) within a block */
 @Builder
 @ToString
 @Getter

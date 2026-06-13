@@ -59,7 +59,7 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
             <RowConstraints/>
         </rowConstraints>
-        <Label prefHeight="39.0" prefWidth="595.0" style="-fx-background-color: dbedff;" text="SEND TONCOINS"
+        <Label prefHeight="39.0" prefWidth="595.0" style="-fx-background-color: dbedff;" text="SEND GRAMS"
                GridPane.columnSpan="6">
             <padding>
                 <Insets left="20.0"/>
@@ -79,7 +79,7 @@
             </opaqueInsets>
         </JFXTextField>
         <JFXTextField fx:id="sendAmount" alignment="BOTTOM_LEFT" prefHeight="34.0" prefWidth="313.0"
-                      promptText="Amount of Toncoins, e.g. 0.25" GridPane.rowIndex="2">
+                      promptText="Amount of Grams, e.g. 0.25" GridPane.rowIndex="2">
             <padding>
                 <Insets left="10.0"/>
             </padding>

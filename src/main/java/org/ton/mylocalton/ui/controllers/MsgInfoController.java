@@ -29,7 +29,7 @@ public class MsgInfoController {
   @FXML private Label ihrDisabledLabel;
   @FXML private Label bounceLabel;
   @FXML private Label bouncedLabel;
-  @FXML private Label valueToncoinsLabel;
+  @FXML private Label valueGramsLabel;
   @FXML private Label valueOtherCurrenciesLabel;
   @FXML private Label bodyCellsLabel;
   @FXML private Label initCodeLabel;
@@ -79,11 +79,11 @@ public class MsgInfoController {
       if (root.has("value")) {
         JsonObject valObj = root.getAsJsonObject("value");
         String amount =
-            valObj.has("toncoins")
-                ? MyLocalTonUtils.amountFromNano(valObj.get("toncoins").getAsString())
+            valObj.has("grams")
+                ? MyLocalTonUtils.amountFromNano(valObj.get("grams").getAsString())
                     .toPlainString()
                 : "";
-        valueToncoinsLabel.setText(amount);
+        valueGramsLabel.setText(amount);
         if (valObj.has("otherCurrencies")) {
           JsonArray arr = valObj.getAsJsonArray("otherCurrencies");
           valueOtherCurrenciesLabel.setText(new Gson().toJson(arr));

@@ -27,7 +27,7 @@ import org.ton.mylocalton.actions.MyLocalTon;
 import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.executors.validatorengineconsole.ValidatorEngineConsoleExecutor;
 import org.ton.mylocalton.main.App;
-import org.ton.mylocalton.parameters.SendToncoinsParam;
+import org.ton.mylocalton.parameters.SendGramsParam;
 import org.ton.mylocalton.settings.Node;
 import org.ton.mylocalton.wallet.WalletAddress;
 
@@ -36,7 +36,7 @@ public class Fift {
 
   private static final String EOL = "\n";
 
-  public String prepareSendTonCoinsFromNodeWallet(SendToncoinsParam sendToncoinsParam, long seqno)
+  public String prepareSendGramsFromNodeWallet(SendGramsParam sendGramsParam, long seqno)
       throws ExecutionException, InterruptedException {
 
     String resultBocFile = UUID.randomUUID().toString();
@@ -45,54 +45,54 @@ public class Fift {
 
     String walletScript;
 
-    if (sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.config)
-        || sendToncoinsParam.getFromWalletVersion().equals(WalletVersion.master)) {
+    if (sendGramsParam.getFromWalletVersion().equals(WalletVersion.config)
+        || sendGramsParam.getFromWalletVersion().equals(WalletVersion.master)) {
       walletScript = "wallet.fif";
     } else {
-      throw new Error("for this wallet version send toncoins using ton4j");
+      throw new Error("for this wallet version send grams using ton4j");
     }
 
     log.debug(
-        "{} sending using {}", sendToncoinsParam.getExecutionNode().getNodeName(), walletScript);
+        "{} sending using {}", sendGramsParam.getExecutionNode().getNodeName(), walletScript);
     String attachedBoc;
 
     if (SystemUtils.IS_OS_WINDOWS) {
       attachedBoc =
-          (StringUtils.isEmpty(sendToncoinsParam.getBocLocation()))
+          (StringUtils.isEmpty(sendGramsParam.getBocLocation()))
               ? ""
-              : "-B\"" + sendToncoinsParam.getBocLocation().trim() + "\"";
+              : "-B\"" + sendGramsParam.getBocLocation().trim() + "\"";
     } else {
       attachedBoc =
-          (StringUtils.isEmpty(sendToncoinsParam.getBocLocation()))
+          (StringUtils.isEmpty(sendGramsParam.getBocLocation()))
               ? ""
-              : "-B" + sendToncoinsParam.getBocLocation().trim();
+              : "-B" + sendGramsParam.getBocLocation().trim();
     }
 
     result =
         new FiftExecutor()
             .execute(
-                sendToncoinsParam.getExecutionNode(),
+                sendGramsParam.getExecutionNode(),
                 "smartcont" + File.separator + walletScript,
-                sendToncoinsParam
+                sendGramsParam
                     .getFromWallet()
                     .getFilenameBaseLocation(), // todo - review - not all wallets have filebase
-                sendToncoinsParam.getDestAddr(),
+                sendGramsParam.getDestAddr(),
                 //                (walletScript.equals("wallet-v3.fif")) ?
-                // String.valueOf(sendToncoinsParam.getFromSubWalletId()) : "",
+                // String.valueOf(sendGramsParam.getFromSubWalletId()) : "",
                 String.valueOf(seqno),
-                new BigDecimal(sendToncoinsParam.getAmount())
+                new BigDecimal(sendGramsParam.getAmount())
                     .divide(BigDecimal.valueOf(1_000_000_000))
                     .toPlainString(),
-                (nonNull(sendToncoinsParam.getForceBounce())
-                        && sendToncoinsParam.getForceBounce().equals(Boolean.TRUE))
+                (nonNull(sendGramsParam.getForceBounce())
+                        && sendGramsParam.getForceBounce().equals(Boolean.TRUE))
                     ? "-b"
                     : "",
                 //                StringUtils.isEmpty(timeout) ? "" : "-t" +
-                // sendToncoinsParam.getTimeout(),
+                // sendGramsParam.getTimeout(),
                 attachedBoc,
-                (StringUtils.isEmpty(sendToncoinsParam.getComment()))
+                (StringUtils.isEmpty(sendGramsParam.getComment()))
                     ? ""
-                    : "-C" + sendToncoinsParam.getComment().trim(),
+                    : "-C" + sendGramsParam.getComment().trim(),
                 resultBocFileLocation);
 
     String resultStr = result.getRight().get();
@@ -100,14 +100,14 @@ public class Fift {
 
     if (Files.exists(
         Paths.get(
-            sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc"),
+            sendGramsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc"),
         LinkOption.NOFOLLOW_LINKS)) {
       log.debug(
           "prepared boc file {}",
-          sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc");
-      return sendToncoinsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc";
+          sendGramsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc");
+      return sendGramsParam.getExecutionNode().getTonBinDir() + resultBocFileLocation + ".boc";
     } else {
-      log.error("Cannot send Toncoins. Stdout: {}", resultStr);
+      log.error("Cannot send Grams. Stdout: {}", resultStr);
       return null;
     }
   }

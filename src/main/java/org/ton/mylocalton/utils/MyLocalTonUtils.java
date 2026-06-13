@@ -70,7 +70,7 @@ import org.ton.mylocalton.executors.fift.Fift;
 import org.ton.mylocalton.executors.liteclient.api.ResultLastBlock;
 import org.ton.mylocalton.main.App;
 import org.ton.mylocalton.main.Main;
-import org.ton.mylocalton.parameters.SendToncoinsParam;
+import org.ton.mylocalton.parameters.SendGramsParam;
 import org.ton.mylocalton.parameters.ValidationParam;
 import org.ton.mylocalton.settings.GenesisNode;
 import org.ton.mylocalton.settings.MyLocalTonSettings;
@@ -800,8 +800,8 @@ public class MyLocalTonUtils {
       getInstance().saveSettingsToGson();
 
       // send stake and validator-query.boc to elector
-      SendToncoinsParam sendToncoinsParam =
-          SendToncoinsParam.builder()
+      SendGramsParam sendGramsParam =
+          SendGramsParam.builder()
               .executionNode(node)
               .workchain(-1L)
               .fromWallet(node.getWalletAddress())
@@ -813,21 +813,21 @@ public class MyLocalTonUtils {
               .timeout(60 * 10L)
               .build();
 
-      boolean sentOK = new MyWallet().sendTonCoins(sendToncoinsParam);
+      boolean sentOK = new MyWallet().sendGrams(sendGramsParam);
 
       if (sentOK) {
         node.getElectionsCounter().put(v.getStartValidationCycle(), v.getStartValidationCycle());
         saveSettingsToGson(settings);
       } else {
         log.error(
-            "Participation error. {} failed to send {} Toncoins to {}",
+            "Participation error. {} failed to send {} nanograms to {}",
             node.getNodeName(),
             node.getDefaultValidatorStake(),
             settings.getElectorSmcAddrHex());
         node.getElectionsCounter().remove(v.getStartValidationCycle());
         App.mainController.showErrorMsg(
             String.format(
-                "Participation error. %s failed to send %s Toncoins to %s",
+                "Participation error. %s failed to send %s nanograms to %s",
                 node.getNodeName(),
                 node.getDefaultValidatorStake(),
                 settings.getElectorSmcAddrHex()),

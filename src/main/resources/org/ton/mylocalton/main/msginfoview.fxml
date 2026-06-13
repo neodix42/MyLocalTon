@@ -56,8 +56,8 @@
             <TitledPane VBox.vgrow="ALWAYS" expanded="false" maxWidth="Infinity"
                         styleClass="label-second-font-14" text="value">
                 <GridPane hgap="10" vgap="5">
-                    <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="toncoins:"/>
-                    <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="valueToncoinsLabel"/>
+                    <Label GridPane.columnIndex="0" GridPane.rowIndex="0" text="grams:"/>
+                    <Label GridPane.columnIndex="1" GridPane.rowIndex="0" fx:id="valueGramsLabel"/>
 
                     <Label GridPane.columnIndex="0" GridPane.rowIndex="1" text="otherCurrencies:"/>
                     <Label GridPane.columnIndex="1" GridPane.rowIndex="1"

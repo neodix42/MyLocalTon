@@ -123,7 +123,7 @@
                     </VBox>
                     <VBox prefHeight="43.0" prefWidth="140.0">
                         <Label prefHeight="43.0" prefWidth="140.0"
-                               styleClass="content-header-label" text="TONCOINS/FEES"/>
+                               styleClass="content-header-label" text="GRAMS/FEES"/>
                     </VBox>
                 </HBox>
                 <JFXListView fx:id="transactionsvboxid" focusTraversable="false" maxHeight="-Infinity"
@@ -1533,13 +1533,13 @@
                 <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="20.0">
 
                     <VBox spacing="10.0">
-                        <Label text="Initial amount of nano Toncoins per wallet" styleClass="label-second-font-14">
+                        <Label text="Initial amount of nanograms per wallet" styleClass="label-second-font-14">
                             <tooltip>
                                 <Tooltip text="Used during a wallet creation"/>
                             </tooltip>
                         </Label>
                         <HBox alignment="CENTER_LEFT">
-                            <CustomTextField fx:id="coinsPerWallet" prefWidth="300.0" fieldText="30000"/>
+                            <CustomTextField fx:id="nanogramsPerWallet" prefWidth="300.0" fieldText="30000"/>
                         </HBox>
                     </VBox>
                 </VBox>
@@ -2636,7 +2636,7 @@
                     </VBox>
                     <VBox prefHeight="43.0" prefWidth="140.0">
                         <Label prefHeight="43.0" prefWidth="140.0"
-                               styleClass="content-header-label" text="TONCOINS/FEES"/>
+                               styleClass="content-header-label" text="GRAMS/FEES"/>
                     </VBox>
                 </HBox>
 
@@ -2683,7 +2683,7 @@
                     </VBox>
                     <VBox prefHeight="43.0" prefWidth="140.0">
                         <Label prefHeight="43.0" prefWidth="140.0"
-                               styleClass="content-header-label" text="TONCOINS/FEES"/>
+                               styleClass="content-header-label" text="GRAMS/FEES"/>
                     </VBox>
                 </HBox>
 

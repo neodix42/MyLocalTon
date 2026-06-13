@@ -22,7 +22,7 @@
                         <Label prefHeight="48.0" prefWidth="350.0" style="-fx-alignment: center;-fx-font-size: 16;" text="FROM/TO"/>
                     </VBox>
                     <VBox prefHeight="55.0" prefWidth="160.0">
-                        <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="TONCOINS/FEES"/>
+                        <Label prefHeight="48.0" prefWidth="160.0" style="-fx-alignment: center;-fx-font-size: 16;" text="GRAMS/FEES"/>
                     </VBox>
                 </HBox>
                 <JFXListView fx:id="foundTxsvboxid" focusTraversable="false" prefHeight="554.0" prefWidth="1079.0"

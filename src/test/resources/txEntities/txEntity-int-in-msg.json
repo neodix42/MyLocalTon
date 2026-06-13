@@ -39,7 +39,7 @@
       },
       "type": "Internal",
       "value": {
-        "toncoins": 33000000000,
+        "grams": 33000000000,
         "otherCurrencies": []
       },
       "createdAt": 1744094498,
@@ -67,7 +67,7 @@
     "prevTxLt": 704000005,
     "now": 1744094501,
     "totalFees": {
-      "toncoins": 10029202,
+      "grams": 10029202,
       "otherCurrencies": []
     },
     "oldHash": "5781D79D9C974FC51D762E9C1B6C03F8A7CA9EF2E134D84D68A6F6288B0D0B33",
@@ -82,7 +82,7 @@
       "credit": {
         "dueFeesCollected": 0,
         "credit": {
-          "toncoins": 33000000000,
+          "grams": 33000000000,
           "otherCurrencies": []
         }
       },
@@ -134,7 +134,7 @@
     },
     "type": "Internal",
     "value": {
-      "toncoins": 33000000000,
+      "grams": 33000000000,
       "otherCurrencies": []
     },
     "createdAt": 1744094498,

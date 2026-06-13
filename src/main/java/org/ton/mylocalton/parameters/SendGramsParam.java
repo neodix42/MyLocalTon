@@ -13,7 +13,7 @@ import java.math.BigInteger;
 @Builder
 @Setter
 @Getter
-public class SendToncoinsParam {
+public class SendGramsParam {
   Node executionNode;
   WalletAddress fromWallet;
   WalletVersion fromWalletVersion;
@@ -27,7 +27,7 @@ public class SendToncoinsParam {
   Long timeout;
 
   //    Currency extraCurrency; // TODO
-  public BigDecimal getToncoinsAmount() {
+  public BigDecimal getGramsAmount() {
     return new BigDecimal(amount).divide(new BigDecimal(1_000_000_000));
   }
 }

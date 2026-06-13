@@ -36,7 +36,7 @@ public class Hardfork {
         //ResultLastBlock lastBlock = getLastBlock(node);
 
         WalletAddress fromWalletAddress = settings.getNode(forkedNode).getWalletAddress();
-        SendToncoinsParam sendToncoinsParam = SendToncoinsParam.builder()
+        SendGramsParam sendGramsParam = SendGramsParam.builder()
                 .executionNode(forkedNode)
                 .fromWallet(fromWalletAddress)
                 .fromWalletVersion(WalletVersion.V1)
@@ -44,42 +44,42 @@ public class Hardfork {
                 .destAddr(toNode.getWalletAddress().getBounceableAddressBase64url())
                 .amount(new BigDecimal(123L))
                 .build();
-        String externalMsgLocation = new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
+        String externalMsgLocation = new Wallet().getSeqNoAndSendGrams(sendGramsParam);
         //String externalMsgLocation = new Wallet().getSeqNoAndPrepareBoc(node, fromWalletAddress, toNode.getWalletAddress().getBounceableAddress(), new BigDecimal(123L), null);
         settings.setExternalMsgLocation(externalMsgLocation);
         saveSettingsToGson();
 
         log.info("sleep 5sec");
         Thread.sleep(3 * 1000L);
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam); // 10 toncoins was
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam); // 10 grams was
         Thread.sleep(3 * 1000L);
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam);
         Thread.sleep(3 * 1000L);
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam);
         Thread.sleep(3 * 1000L);
 
-        log.info("**************** {} balance before: {}", forkedNode.getNodeName(), LiteClientParser.parseGetAccount(LiteClientExecutor.getInstance().executeGetAccount(forkedNode, toNode.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
+        log.info("**************** {} balance before: {}", forkedNode.getNodeName(), LiteClientParser.parseGetAccount(LiteClientExecutor.getInstance().executeGetAccount(forkedNode, toNode.getWalletAddress().getFullWalletAddress())).getBalance().getGrams());
 
         //get last block id
         ResultLastBlock forkFromBlock = getLastBlock(forkedNode);
 
         Thread.sleep(60 * 1000L);
 
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam); //20toncoins
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam); //20grams
         Thread.sleep(3 * 1000L);
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam);
 
         getStats(forkedNode);
 
         Thread.sleep(60 * 1000L);
 
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam); // 30 toncoins was
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam); // 30 grams was
         Thread.sleep(3 * 1000L);
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam);
         Thread.sleep(3 * 1000L);
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam);
         Thread.sleep(3 * 1000L);
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam);
 
         getStats(forkedNode);
 
@@ -87,13 +87,13 @@ public class Hardfork {
 
         getStats(forkedNode);
 
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam); // 40 toncoins was
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam); // 40 grams was
         Thread.sleep(3 * 1000L);
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam);
         Thread.sleep(3 * 1000L);
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam);
         Thread.sleep(3 * 1000L);
-        new Wallet().getSeqNoAndSendTonCoins(sendToncoinsParam);
+        new Wallet().getSeqNoAndSendGrams(sendGramsParam);
 
         //        settings.getGenesisNode().getNodeProcess().destroy();
         //        settings.getNode2().getNodeProcess().destroy();
@@ -214,7 +214,7 @@ public class Hardfork {
                 log.info("last from {}          {}", settings.getNode2().getNodeName(), getLastBlockFromForked(settings.getNode2()));
                 log.info("last from {}          {}", settings.getNode3().getNodeName(), getLastBlockFromForked(settings.getNode3()));
                 log.info("last from {}          {}", forkedNode.getNodeName(), getLastBlockFromForked(forkedNode));
-                log.info("**************** {} balance after: {}", forkedNode.getNodeName(), LiteClientParser.parseGetAccount(LiteClientExecutor.getInstance(true).executeGetAccount(forkedNode, toNode.getWalletAddress().getFullWalletAddress())).getBalance().getToncoins());
+                log.info("**************** {} balance after: {}", forkedNode.getNodeName(), LiteClientParser.parseGetAccount(LiteClientExecutor.getInstance(true).executeGetAccount(forkedNode, toNode.getWalletAddress().getFullWalletAddress())).getBalance().getGrams());
 
                 log.info("hashes on {} {}", settings.getNode2(), LiteClientExecutor.getInstance(true).executeBySeqno(settings.getNode2(), block.getWc(), block.getShard(), block.getSeqno()));
                 log.info("hashes on {} {}", settings.getNode3(), LiteClientExecutor.getInstance(true).executeBySeqno(settings.getNode3(), block.getWc(), block.getShard(), block.getSeqno()));

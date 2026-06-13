@@ -10,12 +10,12 @@
 <?import java.net.URL?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity" xmlns="http://javafx.com/javafx"
-            fx:controller="org.ton.mylocalton.ui.custom.layout.SendCoinPaneController"
+            fx:controller="org.ton.mylocalton.ui.custom.layout.SendGramsPaneController"
             prefHeight="370.0" prefWidth="750.0"
             styleClass="background-dialog-pane">
 
     <children>
-        <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Send Toncoins" styleClass="modal-pane-label">
+        <Label layoutX="25.0" layoutY="25.0" prefHeight="20.0" text="Send Grams" styleClass="modal-pane-label">
         </Label>
         <Line endX="750.0" layoutY="60.0" stroke="#888888"/>
 
@@ -34,7 +34,7 @@
 
     <stylesheets>
         <URL value="@../../../css/custom/main-layout.css"/>
-        <URL value="@../../../css/custom/send-coin-pane.css"/>
+        <URL value="@../../../css/custom/send-grams-pane.css"/>
         <URL value="@../../../css/global-font.css"/>
     </stylesheets>
 </AnchorPane>

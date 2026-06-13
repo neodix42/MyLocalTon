@@ -1,5 +1,5 @@
 target/
-myLocalTon/
+/myLocalTon/
 testDB/
 **/resources/**/*.zip
 .idea/

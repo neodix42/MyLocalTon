@@ -16,7 +16,7 @@ import org.ton.mylocalton.db.entities.WalletEntity;
 import org.ton.mylocalton.db.entities.WalletPk;
 import org.ton.ton4j.utils.Utils;
 import org.ton.mylocalton.main.App;
-import org.ton.mylocalton.parameters.SendToncoinsParam;
+import org.ton.mylocalton.parameters.SendGramsParam;
 import org.ton.mylocalton.ui.custom.control.CustomTextField;
 import org.ton.mylocalton.ui.custom.events.CustomEvent;
 import org.ton.mylocalton.ui.custom.events.event.CustomActionEvent;
@@ -25,7 +25,7 @@ import org.ton.mylocalton.wallet.MyWallet;
 import org.ton.mylocalton.wallet.WalletAddress;
 
 @Slf4j
-public class SendCoinPaneController implements Initializable {
+public class SendGramsPaneController implements Initializable {
 
   @FXML private CustomTextField destinationAddress, amount, message;
 
@@ -82,14 +82,14 @@ public class SendCoinPaneController implements Initializable {
         BigInteger amount = Utils.toNano(strAmount);
         //                BigDecimal amount = new BigDecimal(strAmount);
         log.info(
-            "Sending {} Toncoins from {} ({}) to {}",
+            "Sending {} nanograms from {} ({}) to {}",
             amount,
             fromWalletAddress.getFullWalletAddress(),
             fromWallet.getWalletVersion(),
             destAddress);
 
-        SendToncoinsParam sendToncoinsParam =
-            SendToncoinsParam.builder()
+        SendGramsParam sendGramsParam =
+            SendGramsParam.builder()
                 .executionNode(MyLocalTon.getInstance().getSettings().getGenesisNode())
                 .workchain(fromWalletAddress.getWc())
                 .fromWallet(fromWalletAddress)
@@ -101,7 +101,7 @@ public class SendCoinPaneController implements Initializable {
                 .comment(message.getFieldText())
                 .build();
 
-        boolean sentOK = new MyWallet().sendTonCoins(sendToncoinsParam);
+        boolean sentOK = new MyWallet().sendGrams(sendGramsParam);
 
         emit(new CustomActionEvent(CustomEvent.Type.DIALOG_SEND_CLOSE));
 
@@ -109,13 +109,13 @@ public class SendCoinPaneController implements Initializable {
           emit(
               new CustomNotificationEvent(
                   CustomEvent.Type.SUCCESS,
-                  String.format("Sent %s Toncoins to %s", strAmount, destAddress),
+                  String.format("Sent %s Grams to %s", strAmount, destAddress),
                   3));
         } else {
           emit(
               new CustomNotificationEvent(
                   CustomEvent.Type.ERROR,
-                  String.format("Failed to send %s Toncoins to %s", strAmount, destAddress),
+                  String.format("Failed to send %s Grams to %s", strAmount, destAddress),
                   3));
         }
       } else {
@@ -132,7 +132,7 @@ public class SendCoinPaneController implements Initializable {
       emit(
           new CustomNotificationEvent(
               CustomEvent.Type.ERROR,
-              String.format("Error sending Toncoins %s", e.getMessage()),
+              String.format("Error sending Grams %s", e.getMessage()),
               5));
     }
   }
