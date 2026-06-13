@@ -384,6 +384,18 @@ config.param_proposals_setup!
 // deposit bit_pps cell_pps
 GR$100 1 500 config.complaint_prices!
 
+// "path_to_genesis_pub_key" file>B { dup Blen } { 32 B| swap dup ."Validator 1 public key = " Bx. cr initial_stake_genesis add-validator } while drop
+// "path_to_node2_pub_key" file>B { dup Blen } { 32 B| swap dup ."Validator 2 public key = " Bx. cr initial_stake_node2 add-validator } while drop
+// "path_to_node3_pub_key" file>B { dup Blen } { 32 B| swap dup ."Validator 3 public key = " Bx. cr initial_stake_node3 add-validator } while drop
+// "path_to_node4_pub_key" file>B { dup Blen } { 32 B| swap dup ."Validator 4 public key = " Bx. cr initial_stake_node4 add-validator } while drop
+// "path_to_node5_pub_key" file>B { dup Blen } { 32 B| swap dup ."Validator 5 public key = " Bx. cr initial_stake_node5 add-validator } while drop
+// "path_to_node6_pub_key" file>B { dup Blen } { 32 B| swap dup ."Validator 6 public key = " Bx. cr initial_stake_node6 add-validator } while drop
+
+// newkeypair nip dup ."Validator #1 public key = " Bx. cr
+// 17 add-validator
+// newkeypair nip dup ."Validator #2 public key = " Bx. cr
+// 239 add-validator
+
 SIMPLEX_TARGET_RATE_MS SIMPLEX_SLOTS_PER_LEADER_WINDOW SIMPLEX_FIRST_BLOCK_TIMEOUT_MS SIMPLEX_MAX_LEADER_WINDOW_DESYNC make-simplex-params // masterchain
 SIMPLEX_TARGET_RATE_MS SIMPLEX_SLOTS_PER_LEADER_WINDOW SIMPLEX_FIRST_BLOCK_TIMEOUT_MS SIMPLEX_MAX_LEADER_WINDOW_DESYNC make-simplex-params // basechain
 config.new_consensus_params_all!
@@ -432,4 +444,3 @@ basestate0_rhash ."Basestate0 root hash= " dup X. space 256 u>B B>base64url type
 basestate0_fhash ."Basestate0 file hash= " dup X. space 256 u>B B>base64url type cr
 zerostate_rhash ."Zerostate root hash= " dup X. space 256 u>B B>base64url type cr
 zerostate_fhash ."Zerostate file hash= " dup X. space 256 u>B B>base64url type cr
-
